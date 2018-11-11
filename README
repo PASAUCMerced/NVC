@@ -51,49 +51,28 @@ Documentation of NVC's key APIs
 	Arguments:
 		p: the address need to be written back.
 
-4. VOID PrintFullCallingContext(ContextHandle_t ctxtHandle);
+4. void flush_cache_line(void const *p);
 	Description:
-		Prints the full calling context whose handle is ctxtHandle. Client tools must call PIN_LockClient() before calling this API and release lock via PIN_UnlockClient().
-		I have intentionally made client tool to hold lock (PIN_LockClient) instead of CCTLib holding the lock so that it becomes efficient and the granularity of locking is left to the user.
-		If the client tool is already holding the lock, it does not make sense for CCTLib to acquire it again (It is not clear from Pin manual if this lock is reentrant), hence this design is justified.
-	Typical use:
-		PIN_LockClient();
-
-		for (...) {
-			PrintFullCallingContext(i);
-		}
-
-		PIN_UnlockClient();
+		Flush a cache line containing address p, invalidate this cache line from every level of the cache hierarchy in the cache coherence domain. 
+		This API is used to emulate CLFLUSH and CLFLUSHOPT.
 		
-5. VOID GetFullCallingContext(ContextHandle_t ctxtHandle, vector<Context>& contextVec);
+5. void flush_whole_cache();
 	Description:
-		Returns the full calling context whose handle is ctxtHandle. Client tools must call PIN_LockClient() before calling this API and release lock via PIN_UnlockClient().
-                I have intentionally made client tool to hold lock (PIN_LockClient) instead of CCTLib holding the lock so that it becomes efficient and the granularity of locking is left to the user.
-                If the client tool is already holding the lock, it does not make sense for CCTLib to acquire it again (It is not clear from Pin manual if this lock is reentrant), hence this design is justified.
-        Typical use:
-                PIN_LockClient();
+		writes back all modified cache lines in the processor's internal cache to main memory and does not invalidate (flush) the internal caches. 
+		This API is used to emulate WBNOINVD
 
-                for (...) {
-                        GetFullCallingContext(...);
-                }
-
-                PIN_UnlockClient();
-
-
-	Arguments:
-		ctxtHandle: is the context handle for which the full call path is requested.
-		contextVec: is a vector that will be populated with the full call path.
-
-6. int PinCCTLibInitForPostmortemAnalysis(FILE* logFile, string serializedFilesDirectory);
+6. void write_back_invalidate_cache();
 	Description:
-		Reads serialized CCT metadata and rebuilds CCTs for postmortem analysis.
-	Arguments:
-		logFile: file pointer where CCTLib will put its output data.
-		serializedFilesDirectory: Path to directory where previously files were serialized.
+		 Writes back all dirty cache lines in the processor\textquotesingle s cache to main memory and invalidates (flushes) the cache hierarchy. 
+		 This API is used to emulate WBINVD.
 
-		Caution: This should never be called with PinCCTLibInit().
+6. bool read_cache(void *dst, void const *src, size_t size);
+	Description:
+		 Read specified number of bytes in simulated cache from a source address to a destination address. 
+		 The function returns whether the data in source address is in simulated cache.
 
-
-
-
+7. read_memory(void *dst, void const *src, size_t size);
+	Description:
+		 Read specified number of bytes in simulated memory from a source address to a destination address. 
+		 The function returns whether the data in source address is in simulated memory.
 
