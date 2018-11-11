@@ -1,0 +1,99 @@
+NVC (Non-Volatile memory Crash tester) is a PIN-based crash simulator. NVC simulates a multi-level cache hierarchy with cache coherence and main memory; NVC also includes a random crash generator, a set of APIs to support the con-  guration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+
+
+--------------------------------------------------
+	Supported platform
+--------------------------------------------------
+1. Linux x86_64
+
+--------------------------------------------------
+	Requirements	
+--------------------------------------------------
+
+0. Ensure you have g++ 4.8.2 or higher as the default compiler and make sure you compile everything with -std=c++11 flag
+
+1. Download and install the latest Pin framework matching your platform from
+http://www.pintool.org/downloads.html. In case you don't download Pin, our build script has an option to automatically download from WWW.
+* I have tested the current release only on Pin 2.14 rev 67254 *
+
+
+--------------------------------------------------
+	Compiling
+--------------------------------------------------
+To build the environment for NVC, simply type "sh build.sh"
+This will configure the environment of building NVC. 
+
+In test folder, run "make"
+This will build the NVC
+
+--------------------------------------------------
+Documentation of NVC's key APIs 
+--------------------------------------------------
+
+1. void start_crash(); void end_crash();
+	Description: 
+   		Define where a crash could happen.
+		A crash could happen within the code region encapsulated by the two APIs.
+	Arguments:
+		None
+2. void critical_data(void const *p, char type[], int const size); 
+	Description:
+		Collect the address, type and size information of a critical data object.
+	Arguments:
+		p: critical data object address.
+		type: critical data object type, can be CHAR, INT, FLOAT, DOUBLE, LONG LONG 
+                size: critical data object size.
+
+3. void cache_line_write_back(void const *p);
+	Description:
+		Writes back a dirty cache line containing the address p, and marks the cache line as clean in the cache hierarchy.
+		This API is used to emulate CLWB.
+	Arguments:
+		p: the address need to be written back.
+
+4. VOID PrintFullCallingContext(ContextHandle_t ctxtHandle);
+	Description:
+		Prints the full calling context whose handle is ctxtHandle. Client tools must call PIN_LockClient() before calling this API and release lock via PIN_UnlockClient().
+		I have intentionally made client tool to hold lock (PIN_LockClient) instead of CCTLib holding the lock so that it becomes efficient and the granularity of locking is left to the user.
+		If the client tool is already holding the lock, it does not make sense for CCTLib to acquire it again (It is not clear from Pin manual if this lock is reentrant), hence this design is justified.
+	Typical use:
+		PIN_LockClient();
+
+		for (...) {
+			PrintFullCallingContext(i);
+		}
+
+		PIN_UnlockClient();
+		
+5. VOID GetFullCallingContext(ContextHandle_t ctxtHandle, vector<Context>& contextVec);
+	Description:
+		Returns the full calling context whose handle is ctxtHandle. Client tools must call PIN_LockClient() before calling this API and release lock via PIN_UnlockClient().
+                I have intentionally made client tool to hold lock (PIN_LockClient) instead of CCTLib holding the lock so that it becomes efficient and the granularity of locking is left to the user.
+                If the client tool is already holding the lock, it does not make sense for CCTLib to acquire it again (It is not clear from Pin manual if this lock is reentrant), hence this design is justified.
+        Typical use:
+                PIN_LockClient();
+
+                for (...) {
+                        GetFullCallingContext(...);
+                }
+
+                PIN_UnlockClient();
+
+
+	Arguments:
+		ctxtHandle: is the context handle for which the full call path is requested.
+		contextVec: is a vector that will be populated with the full call path.
+
+6. int PinCCTLibInitForPostmortemAnalysis(FILE* logFile, string serializedFilesDirectory);
+	Description:
+		Reads serialized CCT metadata and rebuilds CCTs for postmortem analysis.
+	Arguments:
+		logFile: file pointer where CCTLib will put its output data.
+		serializedFilesDirectory: Path to directory where previously files were serialized.
+
+		Caution: This should never be called with PinCCTLibInit().
+
+
+
+
+

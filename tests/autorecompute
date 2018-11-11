@@ -1,0 +1,6 @@
+#!/bin/sh
+cat 'wholeresult.txt' | while read line;
+ do
+  /home/cc/recomputation/NPB3.3-OMP-C/bin/mg.B.x ${line};
+done
+
