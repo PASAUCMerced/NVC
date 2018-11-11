@@ -71,7 +71,7 @@ Documentation of NVC's key APIs
 		 Read specified number of bytes in simulated cache from a source address to a destination address. 
 		 The function returns whether the data in source address is in simulated cache.
 
-7. read_memory(void *dst, void const *src, size_t size);
+7. bool read_memory(void *dst, void const *src, size_t size);
 	Description:
 		 Read specified number of bytes in simulated memory from a source address to a destination address. 
 		 The function returns whether the data in source address is in simulated memory.
