@@ -1,4 +1,4 @@
-NVC (Non-Volatile memory Crash tester) is a PIN-based crash simulator. NVC simulates a multi-level cache hierarchy with cache coherence and main memory; NVC also includes a random crash generator, a set of APIs to support the con-  guration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+NVC (Non-Volatile memory Crash tester) is a PIN-based crash simulator. NVC simulates a multi-level cache hierarchy with cache coherence and main memory; NVC also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
 
 
 --------------------------------------------------
