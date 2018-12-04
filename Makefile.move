@@ -59,10 +59,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/nvc
-pkgincludedir = $(includedir)/nvc
-pkglibdir = $(libdir)/nvc
-pkglibexecdir = $(libexecdir)/nvc
+pkgdatadir = $(datadir)/NVC
+pkgincludedir = $(includedir)/NVC
+pkglibdir = $(libdir)/NVC
+pkglibexecdir = $(libexecdir)/NVC
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -106,14 +106,14 @@ am__can_run_installinfo = \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/cc/nvc/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/cc/NVC/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/cc/nvc/missing autoconf
-AUTOHEADER = ${SHELL} /home/cc/nvc/missing autoheader
-AUTOMAKE = ${SHELL} /home/cc/nvc/missing automake-1.14
+AUTOCONF = ${SHELL} /home/cc/NVC/missing autoconf
+AUTOHEADER = ${SHELL} /home/cc/NVC/missing autoheader
+AUTOMAKE = ${SHELL} /home/cc/NVC/missing automake-1.14
 AWK = gawk
-BOOST_PATH = /home/cc/nvc/boost_1_56_0-install/
+BOOST_PATH = /home/cc/NVC/boost_1_56_0-install/
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CCTLIB_EXTRA_CPPFLAGS = -DNDEBUG
@@ -137,34 +137,34 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS =
-LIBELF_PATH = /home/cc/nvc/libelf-0.8.9-install/
+LIBELF_PATH = /home/cc/NVC/libelf-0.8.9-install/
 LIBOBJS =
 LIBS =
 LTLIBOBJS =
 MAINT = #
-MAKEINFO = ${SHELL} /home/cc/nvc/missing makeinfo
+MAKEINFO = ${SHELL} /home/cc/NVC/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = nvc
+PACKAGE = NVC
 PACKAGE_BUGREPORT = chabbi.milind@gmail.com
-PACKAGE_NAME = nvc
-PACKAGE_STRING = nvc 0.1
-PACKAGE_TARNAME = nvc
+PACKAGE_NAME = NVC
+PACKAGE_STRING = NVC 0.1
+PACKAGE_TARNAME = NVC
 PACKAGE_URL =
 PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
-PIN_PATH = /home/cc/nvc/pin-2.14-71313-gcc.4.4.7-linux
-PIN_ROOT = /home/cc/nvc/pin-2.14-71313-gcc.4.4.7-linux
+PIN_PATH = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
+PIN_ROOT = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
 RANLIB = ranlib
 SET_MAKE =
 SHELL = /bin/bash
-SPARSEHASH_PATH = /home/cc/nvc/sparsehash-2.0.2-install/
+SPARSEHASH_PATH = /home/cc/NVC/sparsehash-2.0.2-install/
 STRIP =
 VERSION = 0.1
-abs_builddir = /home/cc/nvc/tests
-abs_srcdir = /home/cc/nvc/tests
-abs_top_builddir = /home/cc/nvc
-abs_top_srcdir = /home/cc/nvc
+abs_builddir = /home/cc/NVC/tests
+abs_srcdir = /home/cc/NVC/tests
+abs_top_builddir = /home/cc/NVC
+abs_top_srcdir = /home/cc/NVC
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -184,7 +184,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/cc/nvc/install-sh
+install_sh = ${SHELL} /home/cc/NVC/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -216,8 +216,8 @@ LIBELF_LD_FLAGS = -L$(LIBELF_PATH)/lib -Wl,-rpath $(LIBELF_PATH)/lib
 LIBELF_LIBS = -lelf
 CLIENT_LD_FLAGS = $(BOOST_LD_FLAGS) $(LIBELF_LD_FLAGS)
 CLIENT_LIBS = $(BOOST_LIBS) $(LIBELF_LIBS)
-CCTLIB_SHADOW_BASED_LIBRARY = ../src/$(OBJDIR)libnvc$(LIB_SUFFIX)
-CCTLIB_TREE_BASED_LIBRARY = ../src/$(OBJDIR)libnvc_tree_based$(LIB_SUFFIX)
+CCTLIB_SHADOW_BASED_LIBRARY = ../src/$(OBJDIR)libNVC$(LIB_SUFFIX)
+CCTLIB_TREE_BASED_LIBRARY = ../src/$(OBJDIR)libNVC_tree_based$(LIB_SUFFIX)
 all: all-am
 
 .SUFFIXES:
@@ -421,4 +421,3 @@ clean-local:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
-
