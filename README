@@ -23,6 +23,13 @@ http://www.pintool.org/downloads.html. In case you don't download Pin, our build
 To build the environment for NVC, simply type "sh build.sh"
 This will configure the environment of building NVC. 
 
+To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
+
+copy Makefile.move to test folder Makefile, "cp Makefile.move test/Makefile"
+
+Change PIN setting and enable c++11, "vim NVC/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
+In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
+
 In test folder, run "make"
 This will build the NVC
 
