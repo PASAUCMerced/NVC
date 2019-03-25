@@ -1,4 +1,4 @@
-Non-Volatile Main Memory Crash Test Tool is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; NVC also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+Non-Volatile Main Memory Crash Test Tool is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; Non-Volatile Main Memory Crash Test Tool also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
 
 
 --------------------------------------------------
@@ -21,13 +21,14 @@ http://www.pintool.org/downloads.html. In case you don't download Pin, our build
 	Compiling
 --------------------------------------------------
 To build the environment for Non-Volatile Main Memory Crash Test Tool, simply type "sh build.sh"
-This will configure the environment of building NVC. 
+This will configure the environment of building Non-Volatile Main Memory Crash Test Tool. 
 
 To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
 
 copy Makefile.move to test folder Makefile, "cp Makefile.move test/Makefile"
 
-Change PIN setting and enable c++11, "vim NVC/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
+Change PIN setting and enable c++11, "vim 
+/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
 In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
 
 In test folder, run "make"
