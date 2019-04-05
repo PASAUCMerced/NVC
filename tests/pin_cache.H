@@ -38,7 +38,7 @@ END_LEGAL */
 #include "globals.H"
 #include "memory.H"
 #include "pin_util.H"
-
+#include <deque>
 using namespace std;
 
 //defind the memory, how many blocks the memroy has, define as unlimited memory
@@ -234,6 +234,81 @@ class CACHE_DATA
               return -1;
             }
     };
+
+
+    /*!
+     * @BIP cache replacement algo ISCA 07'
+     * LRU Insertion Policy (LIP) which places all incoming lines in the LRU position
+     * These lines are promoted from the LRU position to the MRU position only if they get referenced while in the LRU position
+     * LIP prevents thrashing for workloads whose working set is greater than the cache size and obtains near-optimal hit rates for workloads that have a cyclic access pattern
+     * LIP can easily be implemented by avoiding the recency update at insertion.
+     *
+     *   Bimodal Insertion Policy (BIP)
+     *   similar as LIP, except that BIP infrequently (with a low probability) places the incoming line in the MRU position
+     */
+     class BIP_REPLACE{
+        private:
+            std::deque<UINT32> d;
+            UINT32 _size;
+            double t;
+        public:
+            BIP_REPLACE(UINT32 size = BLOCK_SIZE)
+            {
+              _size = size;
+              t = 1/32;
+            }
+
+            VOID setsize(UINT32 size) //must call this function before using the map!!!
+            {
+                _size = size;
+            }
+
+            UINT32 findemptyline(){
+              ASSERTX(d.size()<=_size);
+              //cout<<"d size is "<<d.size()<<endl;
+              double r = ((double) rand() / (RAND_MAX));
+              //cout<<"r = "<<r<<endl;
+              if(r < t){
+                //insert at MRU position
+                if(d.size() == _size)
+                {
+                  UINT32 index = d.back();
+                  d.pop_back();
+                  return index;
+                }
+                else{
+                  return d.size();
+                }
+              }
+              else{
+                //insert at LRU position
+                if(d.size() == _size)
+                {
+                  UINT8 index = d.back();
+                  d.pop_back();
+                  d.push_front(index);
+                  return index;
+                }
+                else{
+                  //cout<<"I should be here!"<<endl;
+                  return d.size();
+                }
+              }
+
+            }
+
+            VOID update(UINT32 index){
+              if( d.size()!=0 && d.back() == index)
+              {
+                  d.pop_back();
+                  d.push_front(index);
+              }
+              else if(d.size() == 0){
+                d.push_front(index);
+              }
+            }
+     };
+
 
     /*!
      * @bried CACHE_LINE - record all the info that a cache line should contain.
@@ -714,6 +789,283 @@ class LRU
       }
     }
 };
+
+
+
+/*!
+ *  @brief Cache set with Bimodal Insertion Policy
+ */
+template <UINT32 MAX_ASSOCIATIVITY = 4>
+class BIPLRU
+{
+  private:
+    CACHE_TAG _tags[MAX_ASSOCIATIVITY];
+    CACHE_DATA _data[MAX_ASSOCIATIVITY];
+    CACHE_DIRTY _dirty[MAX_ASSOCIATIVITY];
+    CACHE_VALID _valid[MAX_ASSOCIATIVITY];
+    BIP_REPLACE _bip;
+    UINT32 _tagsLastIndex;
+    UINT32 _nextReplaceIndex;
+    UINT32 _hitindex;
+    UINT8 _lineShift;
+    UINT8 _lineSize;
+
+  public:
+    BIPLRU(UINT32 associativity = MAX_ASSOCIATIVITY)
+    :_tagsLastIndex(MAX_ASSOCIATIVITY-1)
+    {
+        ASSERTX(associativity <= MAX_ASSOCIATIVITY);
+        for (INT32 index = _tagsLastIndex; index >= 0; index--)
+        {
+            _tags[index] = CACHE_TAG(0);
+            _data[index] = CACHE_DATA();
+            _dirty[index] = CACHE_DIRTY(0);
+            _valid[index] = CACHE_VALID(0);
+        }
+    }
+
+    VOID SetAssociativity(UINT32 associativity)
+    {
+        ASSERTX(associativity <= MAX_ASSOCIATIVITY);
+        _tagsLastIndex = associativity - 1;
+        _bip.setsize(associativity);
+        //_nextReplaceIndex = _map.findemptyline();
+        //Alert inform
+        //ASSERTX(_nextReplaceIndex >= 0);
+        _hitindex = -1;
+
+    }
+
+    UINT32 GetAssociativity(UINT32 associativity)
+    {
+        return _tagsLastIndex + 1;
+    }
+
+    VOID SetLinesize(UINT8 lineSize)
+    {//must be called when initialize a cache set!
+        _lineSize = lineSize;
+        _lineShift= FloorLog2(lineSize);
+    }
+
+
+    UINT32 PreFind(CACHE_TAG tag)
+    {
+        bool result = true;
+        for (INT32 index = 0 ; index <= _tagsLastIndex; index++)
+        {
+            // this is an ugly micro-optimization, but it does cause a
+            // tighter assembly loop for ARM that way ...
+            if(_tags[index] == tag &&  _valid[index] == CACHE_VALID(1))
+            {
+              //_valid[index] = CACHE_VALID(0);
+              goto end;
+            }
+        }
+        result = false;
+        end: return result;
+    }
+
+    UINT32 SetInvalid(CACHE_TAG tag)
+    {
+        bool result = true;
+        for (INT32 index = 0 ; index <= _tagsLastIndex; index++)
+        {
+            // this is an ugly micro-optimization, but it does cause a
+            // tighter assembly loop for ARM that way ...
+            if(_tags[index] == tag &&  _valid[index] == CACHE_VALID(1))
+            {
+              _valid[index] = CACHE_VALID(0);
+              goto end;
+            }
+        }
+        result = false;
+        end: return result;
+    }
+
+    UINT32 Find(CACHE_TAG tag)
+    {
+        bool result = true;
+        for (INT32 index = 0 ; index <= _tagsLastIndex; index++)
+        {
+            // this is an ugly micro-optimization, but it does cause a
+            // tighter assembly loop for ARM that way ...
+            if(_tags[index] == tag && _valid[index] == CACHE_VALID(1))
+            {
+              _hitindex = index;
+              _bip.update(index);
+              goto end;
+            }
+        }
+        _hitindex = -1;
+        result = false;
+
+        end: return result;
+    }
+
+    VOID Replace(CACHE_TAG tag, CACHE_LINE &evict_info)
+    {
+        // g++ -O3 too dumb to do CSE on following lines?!
+        _nextReplaceIndex = _bip.findemptyline();
+        ASSERTX(_nextReplaceIndex >= 0);
+        const UINT32 index = _nextReplaceIndex;
+        //cout<< "index here is "<<index<<endl;
+        /*
+        if(_dirty[index] == CACHE_DIRTY(1))
+        {//if data in this persition alreay dirty
+            WriteBackCacheLine(index);
+            replace_addr = _tags[index] << _lineShift;
+        }*/
+        ADDRINT tag_addr = tag << _lineShift;
+
+        if(_valid[index] == CACHE_VALID(1))
+        {//need to evict, record all the infomation from orig data in that cache line
+            evict_info.if_evict = true;
+            evict_info._addr = _tags[index] << _lineShift;
+            evict_info._data = _data[index];
+            evict_info._dirty = _dirty[index];
+        }
+        _tags[index] = tag;
+        //set valid
+        _valid[index] = CACHE_VALID(1);
+        //Load(index);
+        //UpdateBitMap Here!!!
+        _bip.update(index);
+        _hitindex = index;
+    }
+
+    VOID Load(CACHE_LINE cache_line)
+    {
+        ASSERTX(_hitindex>=0);
+        const UINT8 index = _hitindex;
+        _data[index] = cache_line._data;
+        _dirty[index] = cache_line._dirty;
+
+        //_valid[index] = CACHE_VALID(1);
+    }
+
+    VOID Update(UINT32 lineindex, UINT8 size, UINT8 v[])
+    {
+        //Set data
+        ASSERTX(_hitindex >= 0);
+        UINT32 index = _hitindex;
+
+        for(UINT8 i=0; i<size; i++)
+        {
+            _data[index].Set(lineindex+i,v[i]);
+        }
+        //_dirty[index] = CACHE_DIRTY(1);  //set Dirty
+        _dirty[index].selfincrease();
+        //WriteBackCacheLine(index);
+        //flush the consistent data!
+/*
+        for(UINT8 i = 0; i<consistent_variable.size();i++)
+        {
+            ADDRINT temp_tag = consistent_variable[i] >> _lineShift;
+            if(temp_tag == _tags[index])
+            {
+              //  cout<<"Consistent value hit!"<<endl;
+                WriteBackCacheLine(index);
+            }
+        }
+        */
+    }
+
+    VOID Flush()
+    {
+        for (INT32 index = _tagsLastIndex; index >= 0; index--)
+        {
+            //cout<<"dirty value"<<endl;
+            if(_dirty[index].ifdirty()&& _valid[index] == CACHE_VALID(1))
+            {//if data in this persition alreay dirty
+                //_dirty[index].get();
+                WriteBackCacheLine(index);
+                //cache_count++;
+            }
+        }
+    }
+
+    VOID WriteBackCacheLine(INT32 index)
+    {
+        //flush the whole cacheline
+        ADDRINT addr = _tags[index] << _lineShift;
+        UINT8 data[64];
+        _data[index].GetWholeCacheLine(data);
+        /*
+        if(checkFlush)
+        {
+          for(UINT8 ii=0; ii<64; ii++)
+          {
+            cout<<+data[ii]<<endl;
+          }
+        }*/
+
+        //write into memory
+        memory.WriteAsBlock(addr, data);
+
+        _dirty[index] = CACHE_DIRTY(0);
+        //_valid[index] = CACHE_VALID(0);
+        //no need to clean the cache
+    }
+
+    void FlushCacheLine(INT32 index)
+    {
+        //flush the whole cacheline
+        ADDRINT addr = _tags[index] << _lineShift;
+        UINT8 data[64];
+        _data[index].GetWholeCacheLine(data);
+        /*
+        if(checkFlush)
+        {
+          for(UINT8 ii=0; ii<64; ii++)
+          {
+            cout<<+data[ii]<<endl;
+          }
+        }*/
+
+        //write into memory
+        memory.WriteAsBlock(addr, data);
+
+        _dirty[index] = CACHE_DIRTY(0);
+        _valid[index] = CACHE_VALID(0);
+        //no need to clean the cache
+    }
+
+    UINT8 Read(UINT32 lineindex)
+    { //Read data in Cache byte by byte! need to call fuction find first!
+        ASSERTX(_hitindex >= 0);
+        return _data[_hitindex].GetData(lineindex);
+    }
+
+    VOID ReadCacheLine(CACHE_LINE &cache_line)
+    {
+        ASSERTX(_hitindex >= 0);
+        const UINT8 index = _hitindex;
+        cache_line._data = _data[index];
+        cache_line._dirty = _dirty[index];
+    }
+
+    VOID CountDirty()
+    {
+      for (INT32 index = _tagsLastIndex; index >= 0; index--)
+      {
+          //cout<<"dirty value"<<endl;
+          if(_dirty[index].ifdirty()&& _valid[index] == CACHE_VALID(1))
+          {//if data in this persition alreay dirty
+              ADDRINT dirty_addr =  _tags[index] << _lineShift;
+              MEM::iterator it = dirty_count.find(dirty_addr);
+              if(it == dirty_count.end())
+              {
+                UINT8 data[BLOCK_SIZE];
+                _data[index].GetWholeCacheLine(data);
+                BLOCK newline;
+                std::copy(data,data + BLOCK_SIZE, newline.begin());
+                dirty_count.emplace(std::make_pair(dirty_addr, newline));
+              }
+          }
+      }
+    }
+};
+
 }
 // namespace CACHE_SET
 
@@ -1303,6 +1655,6 @@ void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::CountDirtyCacheLine()
 #define CACHE_DIRECT_MAPPED(MAX_SETS, ALLOCATION) CACHE<CACHE_SET::DIRECT_MAPPED, MAX_SETS, ALLOCATION>
 #define CACHE_ROUND_ROBIN(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) CACHE<CACHE_SET::ROUND_ROBIN<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
 #define CACHE_LRU(MAX_SETS,MAX_ASSOCIATIVITY,ALLOCATION) CACHE<CACHE_SET::LRU<MAX_ASSOCIATIVITY>,MAX_SETS,ALLOCATION>
+#define CACHE_BIPLRU(MAX_SETS,MAX_ASSOCIATIVITY,ALLOCATION) CACHE<CACHE_SET::BIPLRU<MAX_ASSOCIATIVITY>,MAX_SETS,ALLOCATION>
 
 #endif // PIN_CACHE_H
-

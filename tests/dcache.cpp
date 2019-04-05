@@ -54,7 +54,7 @@ using namespace PinCCTLib;
 // CG class = D/E
 //453981865
 //#define INS_MAX 91913574283;
-const UINT64 INS_MAX = 54197099359;
+const UINT64 INS_MAX = 7099359;
 //#define MAX_FILE_PATH 128
 #define DOUBLE "double"
 #define INT "int"
@@ -170,7 +170,8 @@ namespace DL1
     const UINT32 max_associativity = 256;
 
     //typedef CACHE_ROUND_ROBIN(max_sets, max_associativity, allocation) CACHE;
-    typedef CACHE_LRU(max_sets, max_associativity, allocation) CACHE;
+    typedef CACHE_BIPLRU(max_sets, max_associativity, allocation) CACHE;
+    //typedef CACHE_LRU(max_sets, max_associativity, allocation) CACHE;
 }
 //That's for private cache
 // DL1::CACHE **dl1;
@@ -185,6 +186,7 @@ namespace DL2
 
     //typedef CACHE_DIRECT_MAPPED(max_sets, allocation) CACHE;
     //typedef CACHE_ROUND_ROBIN(max_sets, max_associativity, allocation) CACHE;
+    //typedef CACHE_BIPLRU(max_sets, max_associativity, allocation) CACHE;
     typedef CACHE_LRU(max_sets, max_associativity, allocation) CACHE;
 }
 LOCALVAR DL2::CACHE *dl2;
@@ -1051,7 +1053,6 @@ VOID AfterCrush()
     UINT64 critical_data_count[128] = {0};
     ADDRINT *pvalue;
     UINT64 all_data = 0;
-    DIS cd[16];
 
     //seperate consistent data
     for(UINT16 i = 0; i<consistent_variable.size(); i++)
@@ -1287,7 +1288,7 @@ VOID AfterCrush()
       rate = double(in_cache[i] - hit_count[i])/double(critical_data_count[i]);
       CMRFile<<rate<<",";
       cout<<"The inconsistency rate for critical data is "<<rate<<endl;
-      cout<< "Crash distance is "<<dec<<cd[i].first<<endl;
+      //cout<< "Crash distance is "<<dec<<cd[i].first<<endl;
     }
     cout<<endl;
     cout<<"The number of critical data is "<<dec<<all_data<<endl;
@@ -1304,8 +1305,8 @@ VOID AfterCrush()
       fprintf(gInfoFile,"The number of critical data in cache and value in mem are the same is %lu.\n",hit_count[i]);
       rate = double(in_cache[i] - hit_count[i])/double(critical_data_count[i]);
       fprintf(gInfoFile,"The inconsistency rate for critical data is %lf.\n",rate);
-      fprintf(gInfoFile,"Crash distance is %u\n", cd[i].first);
-        CMRFile<<cd[i].first<<","<<cd[i].second<<",";
+      //fprintf(gInfoFile,"Crash distance is %u\n", cd[i].first);
+       // CMRFile<<cd[i].first<<","<<cd[i].second<<",";
     }
     fprintf(gInfoFile,"\nThe number of critical data is %lu.\n",all_data);
     rate = double(total_in_cache - total_hit_count)/double(all_data);
@@ -1806,8 +1807,8 @@ INT32 Usage()
 int main(int argc, char* argv[]) {
 
     //srand((unsigned)time(NULL));
-    //rand_crush = rand()%INS_MAX + 1;
-    rand_crush = Random(INS_MAX);
+    rand_crush = 10*INS_MAX + 1;
+    //rand_crush = Random(INS_MAX);
     cout<<"The rand_crush num is "<<rand_crush<<endl;
 
     gettimeofday(&tv1, NULL);
@@ -1896,4 +1897,3 @@ int main(int argc, char* argv[]) {
     printf("runtime is %lf\n",tv4.tv_sec-tv1.tv_sec+(tv4.tv_usec-tv1.tv_usec)/1000000.0);
     return 0;
 }
-
