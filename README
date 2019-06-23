@@ -1,4 +1,4 @@
-Non-Volatile Memory Crash Test Tool (NVCT) is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; NVCT also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+Non-Volatile Memory Crash Test Tool (NVC) is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; NVCT also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
 
 
 --------------------------------------------------
@@ -16,7 +16,7 @@ Non-Volatile Memory Crash Test Tool (NVCT) is a PIN-based crash simulator. The t
 http://www.pintool.org/downloads.html. In case you don't download Pin, our build script has an option to automatically download from WWW.
 * I have tested the current release only on Pin 2.14 rev 71313 *
 
-
+2. Linux kernel version 4.x may have problem on runing Pin 2.14. Solution: https://github.com/s5z/zsim/issues/109
 --------------------------------------------------
 	Compiling
 --------------------------------------------------
@@ -24,23 +24,23 @@ http://www.pintool.org/downloads.html. In case you don't download Pin, our build
 0. To build the environment for Non-Volatile Memory Crash Test Tool, simply type "sh build.sh"
    This will configure the environment of building Non-Volatile Main Memory Crash Test Tool. 
 
-1. Type "make" to build NVCT and related library
+1. Type "make" to build NVC and related library
 
-If there is PIN test error during building the NVCT: 
+If there is PIN test error during building the NVC: 
 * To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
 
 If there is issue about using c++11 to compile:
 * Change PIN setting and enable c++11, "vim /pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
    In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
 
-If you want to recompile NVCT instead of any other libraies:
+If you want to recompile NVC instead of any other libraies:
 * In test folder, run "make"
-   This will build the NVCT
+   This will build the NVC
    
 --------------------------------------------------
-	How to run NVCT
+	How to run NVC
 --------------------------------------------------
-The cache simulator code is in folder "tests". Before run NVCT, change cache configuration first in "tests/dcache.cpp" or by adding KNOB command flag in PIN.
+The cache simulator code is in folder "tests". Before run NVC, change cache configuration first in "tests/dcache.cpp" or by adding KNOB command flag in PIN.
 
 A. Change code in tests/dcache.cpp:
 	The maxmium number of instruction crash could happens:      line 57   INS_MAX
@@ -61,14 +61,14 @@ B. Knob command flag:
 	-l3  l3 cacheline size in bytes
 	```
 
-Run NVCT:
-The command to run NVCT is:
+Run NVC:
+The command to run NVC is:
 /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/cc/tools/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- /path/to/application 
 
 Crash test for application with single thread can simply use script in folder "tests"
 E.g. ./run /path/to/application
 --------------------------------------------------
-Documentation of NVCT's key APIs 
+Documentation of NVC's key APIs 
 --------------------------------------------------
 
 1. void start_crash(); void end_crash();
@@ -120,7 +120,7 @@ Documentation of NVCT's key APIs
 ---------------------------------------------------
 Example to use 
 ---------------------------------------------------
-We provide few examples to show how to use NVCT to trigger a crash and recompute based on carsh result. 
+We provide few examples to show how to use NVC to trigger a crash and recompute based on carsh result. 
 The crash examples can be found under "Benchmarks/CrashTests"; 
 The recomputation examples can be found under "Benchmarks/Recomputation".
 
@@ -146,3 +146,7 @@ So what we do is geting root access and seting the kernel/yama/ptrace_scope sysc
 
 echo 0 > /proc/sys/kernel/yama/ptrace_scope
 
+--------------------------------------------------
+Publication based on NVC
+--------------------------------------------------
+Jie Ren, Kai Wu, and Dong Li. 2018. Understanding Application Recomputability without Crash Consistency in Non-Volatile Memory. In MCHPC’18: Workshop on Memory Centric High Performance Computing (MCHPC’18), November 11, 2018, Dallas, TX, USA. ACM, New York, NY, USA, 10 pages. https://doi.org/10.1145/3286475.3286476
