@@ -20,7 +20,7 @@
 
 instroot =
 
-prefix = /home/cc/NVCT/libelf-0.8.9-install
+prefix = /home/jren6/NVC/libelf-0.8.9-install
 exec_prefix = ${prefix}
 localedir = $(prefix)/share/locale
 

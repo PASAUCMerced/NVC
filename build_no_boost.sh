@@ -93,8 +93,8 @@ PATH_TO_LIBELF=$CUR_DIR/libelf-0.8.9-install/
 #./configure --with-Pin=$PATH_TO_PIN --with-boost=$PATH_TO_BOOST --with-sparse-hash=$PATH_TO_GOOGLE_SPARSE_HASH --with-libelf=$PATH_TO_LIBELF --enable-develop
 ./configure --with-Pin=$PATH_TO_PIN --with-sparse-hash=$PATH_TO_GOOGLE_SPARSE_HASH --with-libelf=$PATH_TO_LIBELF
 make
-echo "*********YOU SUCCESSFULLY BUILT CCTLib***********"
+echo "*********YOU SUCCESSFULLY BUILT NVC***********"
 # uncomment to run sanity tests
 make check
-echo "*********YOU SUCCESSFULLY TESTED CCTLib***********"
+echo "*********YOU SUCCESSFULLY TESTED NVC***********"
 
