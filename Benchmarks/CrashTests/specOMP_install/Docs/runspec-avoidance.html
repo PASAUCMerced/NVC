@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Avoiding runspec</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+
+</style>
+
+</head>
+<body>
+
+
+<h1 style="margin-bottom:0em;">Runspec Avoidance</h1>
+
+<h1 style="padding: 8px 25%; margin: 0em;  font-size:130%; text-align:center; font-style:italic;">Using the SPEC OMP2012 benchmarks
+while making minimal use of SPEC's tool set</h1>
+
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p>
+
+
+<p class="contents">Contents</p>
+<p class="contentsl1" style="margin-top:0.2em;"><a href="#intro"     >Introduction</a> </p>
+<p class="contentsl1"><a href="#env"   >Environment</a></p>
+
+<p class="contentsl1"><a href="#steps"   >Steps</a></p>
+<p class="contentsl2"><a href="#rules">Review two rules</a></p>
+<p class="contentsl2"><a href="#install">Install</a> </p>
+<p class="contentsl2"><a href="#pickone">Pick a benchmark</a></p>
+<p class="contentsl2"><a href="#getconfig">Pick a config file</a></p>
+<p class="contentsl2"><a href="#makedirs">Fake it</a></p>
+<p class="contentsl2"><a href="#findlog">Find the log</a></p>
+<p class="contentsl2"><a href="#findbuild">Find the build dir</a></p>
+<p class="contentsl2"><a href="#copy">Copy the build dir (triple only)</a></p>
+<p class="contentsl2"><a href="#buildit">Build it</a></p>
+<p class="contentsl2"><a href="#rename">Figure out the correct name for the binary</a></p>
+<p class="contentsl2"><a href="#findrun">Place the binary in the run dir</a></p>
+<p class="contentsl2"><a href="#copyrun">Copy the run dir</a></p>
+<p class="contentsl2"><a href="#runit">Run it</a></p>
+<p class="contentsl2"><a href="#savework">Save your work</a></p>
+<p class="contentsl2"><a href="#moredirs"> Repeat</a></p>
+<p class="contentsl2last"><a href="#validation">Validation</a></p>
+
+      <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+      assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+      some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+      documents at one of the following locations:</p>
+      <ul class="commentaryul">
+      <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li>
+      <li class="commentaryli">The <span class="ttnobr">$SPEC/Docs/</span> (Unix) or <span class="ttnobr">%SPEC%\Docs\</span>
+      (Microsoft Windows) directory on a system where SPEC OMP2012 has been installed.</li>
+      <li class="commentaryli">The <span class="tt">Docs/</span> directory on your SPEC OMP2012 distribution media.</li>
+      </ul>
+      <p class="commentaryend"></p>
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>This document is for those who prefer to avoid using some of the SPEC-supplied tools, typically because of a need for more
+direct access to the benchmarks.  For example:</p>
+
+<ul>
+  <li><p>Some users want to work directly with benchmark source code and compile by hand, rather than through the SPEC supplied tools.
+  Perhaps an experimental compiler is under development, and it is more convenient to just issue "<tt>cc</tt>" commands in a sandbox.
+  Perhaps a custom build process is needed in order to add instrumentation.</p></li>
+
+  <li><p>Some users want to run the benchmarks directly from the command line, rather than via the SPEC supplied tools.  Perhaps this is
+  part of a debugging effort, or is needed in order to collect a performance "trace".</p></li>
+
+</ul>
+
+<p>If the above describes you, here is a suggested path which should lead quickly to your desired state.  This document 
+shows you how to use SPEC's tools for the minimal purpose of just generating work directories, for use as a private
+sandbox.  <b>Note, </b> however, that you cannot do formal, "reportable" runs without using SPEC's toolset.</p>
+
+
+<h2 id="env">Environments</h2>
+
+<p>Three different environments are referenced in this document, using these labels:</p>
+<ul>
+<li><p>"<i>Unified</i>": The SPEC toolset, the compilers, and the run environment are all on the same system.</p></li>
+<li><p>"<i>Cross compile</i>": The SPEC toolset and the compilers are on one system; the run time environment is a different
+system.</p> </li>
+<li><p>"<i>Triple</i>": The SPEC toolset is on one system, the compiler is on a second, and the run time environment is a
+third.</p></li>
+</ul>
+
+<h2 id="steps">Steps</h2>
+
+<ol>
+<li id="rules"> 
+
+    <p><b>Review two rules:</b> Please read just one page from <a class="external" href="runrules.html#section4.5">runrules.html</a>, namely "<cite>4.5
+    Research and Academic usage of OMP2012</cite>" and "<cite>4.4 Required Disclosures</cite>"</p>
+
+    <p>These run rules sections acknowledge that the suite may be used in ways other than the formal environment that the
+    tools help to enforce; but they warn that if you plan to publish your results, you should be able to state HOW your usage
+    of the suite differs from the standard usage.</p>  
+
+    <p>So even if you skip over the tools and the run rules today, you should plan a time to come back and learn them
+    later.</p></li>
+
+
+<li id="install"> 
+   <p><b>Install:</b> Get through a successful installation, even if it is on a different system than the one that you care
+   about.  Yes, we are about to teach you how to mostly bypass the tools, but there will still be some minimal use.  So you
+   need a working toolset and a valid installation.  If you have troubles with the install procedures described in <a
+   class="external" href="install-guide-unix.html">install-guide-unix.html</a> or <a
+   class="external" href="install-guide-windows.html">install-guide-windows.html</a>, please see <a
+   class="external" href="techsupport.html">techsupport.html</a> and we'll try to help you.</p></li>
+
+
+<li id="pickone">
+   <p><b>Pick a benchmark:</b> Pick a benchmark that will be your starting point.</p>
+
+    <p>Choose one benchmark from the OMP2012 suite that you'd like to start with.  For example, you might start with
+    363.swim (Fortran) or 359.botsspar (C).  These are two of the shortest benchmarks for lines of code, and therefore
+    relatively easy to understand.</p></li>
+
+<li id="getconfig">
+    <p><b>Pick a config file:</b> Pick a config file for an environment that resembles your environment.  You'll find a
+    variety of config files in the directory <span class="ttnobr">$SPEC/config/</span> on Unix systems, or <span
+    class="ttnobr">%SPEC%\config\</span> on Windows, or at <a class="external" href="http://www.spec.org/omp2012">www.spec.org/omp2012</a>
+    with the submitted OMP2012 results.  Don't worry if the config file you pick doesn't exactly match your environment;
+    you're just looking for a somewhat reasonable starting point.</p></li>
+
+<li id="makedirs"> 
+    <p><b>Fake it:</b> Execute a "fake" run to set up run directories, including a build directory for source code, for the
+    benchmark.</p>
+
+    <p>For example, let's suppose that you want to work with 363.swim and your environment is at least partially similar to
+    the environment described in the comments for <span class="ttnobr">$SPEC/config/example-sgi-linux-x86_64-intel.cfg</span>   </p>
+
+    <p>[Other Unix-like systems should behave similarly to the example in this section.]</p>
+
+    <p>For example, you could enter the following commands:
+<!-- better now? --></p>
+
+<pre>
+  % <b>sh</b>      
+      ... if you're not already in a Bourne-compatible shell
+  $ <b>cd  /myspecdisk/tools/omp2012/</b>
+      ... or wherever you installed the SPEC OMP2012 tree
+  $ <b>. ./shrc</b>      (that's dot-space-dot-slash-shrc)*
+  $ <b>cd config</b>
+  $ <b>cp example-sgi-linux-x86_64-intel.cfg my_test.cfg</b>
+  $ <b>go</b>          (to the $SPEC directory)
+
+  $ <b>runspec --fake --loose --size test --threads 16 --tune base --config my_test swim </b>
+</pre>
+
+    <p>This command should report a success for the build, run and validation phases of the test case, but the actual
+    commands have not been run.  It is only a report of what would be run according to the config file that you have
+    supplied.  </p> </li>
+
+<li id="findlog">
+    <p><b>Find the log:</b> Near the bottom of the output from the previous step, notice the location of the log file for
+    this run.  The log file contains a record of the commands as reported by the "fake" run.  You can find the commands by
+    searching for "<tt>%%</tt>".</p></li>
+
+<li id="findbuild">
+    <p><b>Find the build dir:</b> To find the build directory that was set up in the fake run go to the <tt>build</tt>
+    directory for that benchmark.  For example:,</p>
+<pre>
+  $ <b>cd $SPEC/benchspec/OMP2012/363.swim/build</b>  ( or 'go 363 build' )
+  $ <b>ls -ltd *build*</b>
+</pre>
+    <p>The above command prints the names of each build subdirectory, with the most recent first.  (On Windows, the analogous
+    comamnd would use reversed slashes, and "<tt>$SPEC</tt>" is spelt "<tt>%SPEC%</tt>".  Instead of "<tt>ls -ltd</tt>", you
+    would say something like "<span class="ttnobr">dir build*/o:d</span>".)  If this is your first time here, there will be
+    only one directory listed, e.g. <span class="ttnobr">build_base_sgi-x86_64.0000</span></p>
+
+    <p>You can work in this build directory, make source code changes, and try other build commands without affecting the
+    original sources.  </p>  </li>
+
+<li id="copy">
+   <p><b>Copy the build dir (triple only):</b> If you are using a unified or cross-compile <a href="#env">environment</a>,
+   you can skip to the next step.  But if you are using a triple environment, then you will want to package up the build
+   directory with a program such as <tt>tar</tt> --  a handy copy is in the <tt>bin</tt> directory of your SPEC installation,
+   as <tt>spectar</tt>.  Then, you will move the package off to whatever system has compilers.</p>
+   
+   <p>For example, you might say something like this:</p>
+<pre>
+  $ <b>spectar -cvf  -  build_base_sgi-x86_64.0000 | specxz > mybuild.tar.xz</b>
+  $ <b>ftp</b>
+  ftp&gt; <b>op buildsys</b>
+  Connected to buildsys
+  Name: <b>whoever</b>
+  Password:
+  ftp&gt; <b>bin</b>
+  ftp&gt; <b>put mybuild.tar.xz</b>
+</pre>
+   <p>Note that the above example assumes that you have versions of <tt>xz</tt> and <tt>tar</tt> available on the system that has
+   compilers, which you will use to unpack the compressed tarfile, typically with something like this:</p>
+   <p class="l1ex"><b>xz -dc mybuild.tar.xz | tar -xvf  -</b></p></li>
+
+<li id="buildit"> 
+    <p><b>Build it:</b> Generate an executable using the build directory.  If you are using a unified or cross-compile <a
+    href="#env">environment</a>, then you can say commands such as these:</p>
+<pre>
+  $ <b>cd build_base_sgi-x86_64.0000</b>
+        ...assuming only one such build directory
+  $ <b>specmake clean</b>
+        ...only if there is a previous build 
+  $ <b>specmake</b>
+  ifort -c -o swim.o -O3 -xSSE4.2 -openmp -mcmodel=medium -shared-intel swim.f
+  ... 
+</pre> 
+
+   <p class="snugtop">You can also carry out a dry run of the build, which will display the build commands without attempting
+   to run them, by adding <tt>-n</tt> to the <tt>specmake</tt> command line.  You might find it useful to capture the output of
+   <span class="ttnobr">specmake -n</span> to a file, so it can easily be edited, and used as a script.</p>
+
+   <p><b>Re-build with (for example) different optimization flags:</b>
+<pre>
+  $ <b>vi Makefile.spec</b>
+        ...edit the values of the FOPTIMIZE and perhaps EXTRA_LDFLAGS variables
+  $ <b>specmake clean</b>
+  $ <b>specmake</b>
+  ifort -c -o swim.o -O3 -xSSE4.2 -ipo1 -openmp -mcmodel=medium -shared-intel swim.f
+
+  ... 
+</pre></p> 
+
+
+   <p>If you are trying to debug a new system, you can prototype changes to <span class="ttnobr">Makefile.spec</span> or even 
+   to the benchmark sources.</p>  
+   
+   <p>If you are using a triple <a href="#env">environment</a>, then presumably it's because you don't have <tt>specmake</tt>
+   working on the system where the compiler resides.  But fear not: <tt>specmake</tt> is just GNU make under another name, so
+   whatever <tt>make</tt> you have handy on the target system might work fine with the above commands.  If not, then you'll
+   need to extract the build commands from the <a href="#findlog">log</a> and try them on the system that has the
+   compilers.</p>
+
+   </li>
+
+<li id="rename"> 
+   <p><b>Figure out the correct name for the binary:</b>  Once you have built an executable image, figure out its new name.
+   You can either rename it now, in the build directory; or you can do so when you copy it to the run directory (next step).
+   The new name will need to be of the form:</p>
+   <p class="l1ex">&lt;exename&gt;_&lt;tuning&gt;.&lt;extension&gt;</p>
+   <p> where:</p>
+
+   <ul>
+   <li><tt>exename</tt> is typically the same as the name of the benchmark, but not always.  The precise string can be
+   found by saying 
+   <br /><span class="ttnobr">&nbsp;&nbsp;&nbsp;&nbsp;grep exename $SPEC/benchspec/OMP2012/<i>nnn.benchmark</i>/Spec/object.pm</span>
+   <br />(On Windows, of course, you would spell "<tt>$SPEC</tt>" as "<tt>%SPEC%</tt>", turn the slashes around, and use 
+   <tt>findstr</tt>)</li>
+   <li><tt>tuning</tt> is either <tt>base</tt> or <tt>peak</tt></li>
+   <li><tt>extension</tt> is the extension specified in your config file.  </li>
+   </ul>
+
+   <p class="snugbot">For example, if you are working with 363.swim and your config file has the line</p> 
+   <p class="l1ex">ext=sgi-x86_64</p>
+   <p class="snugtop">you would rename your executable to <span class="ttnobr">swim_base.sgi-x86_64</span></p> </li>
+
+<li id="findrun"> 
+    <p><b>Place the binary in the run dir:</b> Using techniques similar to those used to find the build directory, find the
+    run directory established <a href="#makedirs">above</a>, and place the binary into it.  If you are using a unified or
+    cross-compile <a href="#env">environment</a>, you can copy the binary directly into the run directory; if you are using a
+    triple environment, then you'll have to retrieve the binary from the compilation system using whatever program (such as
+    <tt>ftp</tt>) you use to communicate between systems.</p>
+    
+    <p>In a unified environment, the commands might look something like this:</p>
+
+<pre>
+  $ <b>go swim run</b>
+  $ <b>ls -td run* </b>
+  run_base_test_sgi-x86_64.0000
+  $ <b>cd run_base_test_sgi-x86_64.0000</b>
+  $ <b>cp ../build_base_sgi-x86_64.0000/swim_base.sgi-x86_64  . </b>
+</pre></li>
+
+<li id="copyrun">
+   <p><b>Copy the run dir:</b> If you are using a unified <a href="#env">environment</a>, you can skip this step.  Otherwise,
+   you'll need to package up the run directory and transport it to the system where you want to run the benchmark.  For
+   example:</p>
+
+<pre>
+  $ <b>cd $SPEC/benchspec/OMP2012/363.swim/run</b>
+  $ <b>spectar cvf  -  run_base_test_sgi-x86_64.0000 | specxz > myrun.tar.xz</b>
+  $ <b>ftp</b>
+  ftp&gt; <b>op runsys</b>
+  Connected to runsys
+  Name: <b>whoever</b>
+  Password:
+  ftp&gt; <b>bin</b>
+  ftp&gt; <b>put myrun.tar.xz</b>
+</pre>
+   <p>Note that the above example assumes that you have versions of <tt>bzip2</tt> and <tt>tar</tt> available on the run time
+   system, which you will use to unpack the compressed tarfile, typically with something like this:</p>
+   <p class="l1ex"><b>xz -dc myrun.tar.bz2 | tar -xvf  -</b></p></li>
+
+<li id="runit">
+    <p><b>Run it:</b> If you are using a unified <a href="#env">environment</a>, you are now ready to try
+    "<tt>specinvoke</tt>":</p>
+<pre>
+  $ <b>specinvoke -n</b>
+        ... shows the command line that executes the benchmark, in this example 
+
+# specinvoke r6392
+#  Invoked as: specinvoke -n
+# timer ticks over every 1000 ns
+# Use another -n on the command line to see chdir commands and env dump
+# Starting run for copy #0
+dplace -x2 ../run_base_test_sgi_x86.0000/swim_base.sgi-x86_64 < swim.in > swim.out 2>> swim.err
+
+  $ <b>specinvoke -h</b>
+        ... explains other options to specinvoke, including '-i #' 
+            for running multiple iterations
+  $ <b>specinvoke</b>
+        ... executes that command line
+</pre>
+
+  <p>If you are using a cross-compile or triple environment, then you won't be able to use <tt>specinvoke</tt>.  Instead,
+  you'll need to extract the run commands from the <a href="#log">log</a> and enter them by hand.</p>
+     </li>
+
+<li id="savework"> 
+   <p><b>Save your work:</b> Important: if you are at all interested in saving your work, move the <span
+   class="ttnobr">run/build*</span> and <span class="ttnobr">run/run*</span> directories to some safer location.  That way,
+   your work areas will not be accidentally deleted the next time someone comes along and uses one of <tt>runspec</tt> 
+   <a class="external" href="runspec.html#cleaning">cleanup actions.</a>.</p></li>
+
+<li id="moredirs"> 
+   <p><b>Repeat:</b> Admittedly, the large number of steps that it took to get here may seem like a lot of trouble.  But
+   that's why you <a href="#pickone">started</a> with a simple benchmark and the simplest workload (<span
+   class="ttnobr">--size test</span> in the <a href="#makedirs">fake step</a>).  Now that you've got the pattern down, it is
+   hoped that it will be straightforward to repeat the process for the other available workloads: <span
+   class="ttnobr">--size=train</span> and <span class="ttnobr">--size=ref</span>, and then for additional
+   benchmarks.</p>
+    
+    <p>But if you're finding it tedious... then maybe this is an opportunity to sell you on the notion of using <a
+    class="external" href="runspec.html">runspec</a> after all, which automates all this tedium.  If the reason you came here was because
+    <tt>runspec</tt> doesn't work on your brand-new environment, then perhaps you'll want to try to get it built, using the
+    hints in <a class="external" href="tools-build.html">tools-build.html</a>.</p></li>
+
+</ol>
+
+<h2 id="validation">Validation</h2>
+
+<p>Note that this document has only discussed getting the benchmarks built and running.  Presumably at some point you'd like
+to know whether your system got the correct answer.  At that point, you can use <tt>specdiff</tt>, which is explained in <a
+class="external" href="utility.html#specdiff">utility.html</a>.  </p>
+
+<hr />
+<p>*  dot-space-dot-slash-shrc is the safe way to type it.  If you use Linux/bash, or if you 
+have the current directory in your path, you can probably type ". shrc" (dot-space-shrc) with no problems.
+</p>
+
+<hr />
+<p>Copyright 1999-2012 Standard Performance Evaluation Corporation</p>
+<p>All Rights Reserved</p>
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:900px;">&nbsp;</p>
+
+</body></html>
+

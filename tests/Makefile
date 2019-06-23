@@ -59,10 +59,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/NVC
-pkgincludedir = $(includedir)/NVC
-pkglibdir = $(libdir)/NVC
-pkglibexecdir = $(libexecdir)/NVC
+pkgdatadir = $(datadir)/cctlib
+pkgincludedir = $(includedir)/cctlib
+pkglibdir = $(libdir)/cctlib
+pkglibexecdir = $(libexecdir)/cctlib
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -92,11 +92,11 @@ am__v_P_1 = :
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 =
+am__v_GEN_1 = 
 AM_V_at = $(am__v_at_$(V))
 am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
 am__v_at_0 = @
-am__v_at_1 =
+am__v_at_1 = 
 SOURCES =
 DIST_SOURCES =
 am__can_run_installinfo = \
@@ -106,20 +106,20 @@ am__can_run_installinfo = \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/cc/NVC/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/cc/NVCT/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/cc/NVC/missing autoconf
-AUTOHEADER = ${SHELL} /home/cc/NVC/missing autoheader
-AUTOMAKE = ${SHELL} /home/cc/NVC/missing automake-1.14
+AUTOCONF = ${SHELL} /home/cc/NVCT/missing autoconf
+AUTOHEADER = ${SHELL} /home/cc/NVCT/missing autoheader
+AUTOMAKE = ${SHELL} /home/cc/NVCT/missing automake-1.14
 AWK = gawk
-BOOST_PATH = /home/cc/NVC/boost_1_56_0-install/
+BOOST_PATH = /home/cc/NVCT/boost_1_56_0-install/
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CCTLIB_EXTRA_CPPFLAGS = -DNDEBUG
 CCTLIB_EXTRA_CXXFLAGS = -Wno-unused-result -Wno-unused-variable -Wno-unused-local-typedefs -Wno-unused-function -std=c++11 -DUSE_BOOST
 CFLAGS = -g -O2
-CPPFLAGS =
+CPPFLAGS = 
 CXX = g++
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
@@ -127,64 +127,64 @@ CYGPATH_W = echo
 DEBUG = 0
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-ECHO_C =
+ECHO_C = 
 ECHO_N = -n
-ECHO_T =
-EXEEXT =
+ECHO_T = 
+EXEEXT = 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS =
-LIBELF_PATH = /home/cc/NVC/libelf-0.8.9-install/
-LIBOBJS =
-LIBS =
-LTLIBOBJS =
+LDFLAGS = 
+LIBELF_PATH = /home/cc/NVCT/libelf-0.8.9-install/
+LIBOBJS = 
+LIBS = 
+LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/cc/NVC/missing makeinfo
+MAKEINFO = ${SHELL} /home/cc/NVCT/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = NVC
+PACKAGE = cctlib
 PACKAGE_BUGREPORT = chabbi.milind@gmail.com
-PACKAGE_NAME = NVC
-PACKAGE_STRING = NVC 0.1
-PACKAGE_TARNAME = NVC
-PACKAGE_URL =
+PACKAGE_NAME = cctlib
+PACKAGE_STRING = cctlib 0.1
+PACKAGE_TARNAME = cctlib
+PACKAGE_URL = 
 PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
-PIN_PATH = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
-PIN_ROOT = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
+PIN_PATH = /home/cc/NVCT/pin-2.14-71313-gcc.4.4.7-linux/
+PIN_ROOT = /home/cc/NVCT/pin-2.14-71313-gcc.4.4.7-linux/
 RANLIB = ranlib
-SET_MAKE =
+SET_MAKE = 
 SHELL = /bin/bash
-SPARSEHASH_PATH = /home/cc/NVC/sparsehash-2.0.2-install/
-STRIP =
+SPARSEHASH_PATH = /home/cc/NVCT/sparsehash-2.0.2-install/
+STRIP = 
 VERSION = 0.1
-abs_builddir = /home/cc/NVC/tests
-abs_srcdir = /home/cc/NVC/tests
-abs_top_builddir = /home/cc/NVC
-abs_top_srcdir = /home/cc/NVC
+abs_builddir = /home/cc/NVCT/tests
+abs_srcdir = /home/cc/NVCT/tests
+abs_top_builddir = /home/cc/NVCT
+abs_top_srcdir = /home/cc/NVCT
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
 am__leading_dot = .
-am__quote =
+am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build_alias =
+build_alias = 
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host_alias =
+host_alias = 
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/cc/NVC/install-sh
+install_sh = ${SHELL} /home/cc/NVCT/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -200,7 +200,7 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
 sysconfdir = ${prefix}/etc
-target_alias =
+target_alias = 
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
@@ -208,16 +208,17 @@ top_srcdir = ..
 #include ../Makefile.inc
 #PIN_ROOT=$(PIN_PATH)
 CONFIG_ROOT = $(PIN_ROOT)/source/tools/Config
-TEST_TOOL_ROOTS = dcache profile MyPinTool
-#all:  cct_client.so  deadspy_client.so cct_data_centric_client.so cct_client_mem_only.so cct_data_centric_client_tree_based.so deadWrites
+TEST_TOOL_ROOTS = dcache profile MyPinTool #cct_client deadspy_client redspy_client redspy_temporal_client redspy_temporal_approx_client cct_data_centric_client cct_client_mem_only cct_data_centric_client_tree_based redspy_spatial_client redspy_spatial_approx_client cct_metric_client cctlib_reader footprint_client footprint_client2 valueNum omp_datarace_client cache
+APP_ROOTS = deadWrites threaded 
+#all:  cct_client.so  deadspy_client.so cct_data_centric_client.so cct_client_mem_only.so cct_data_centric_client_tree_based.so deadWrites 
 ALLOW_UNUSED_BUT_SET = -Wno-unused-but-set-variable
 CCTLIB_TEST_FLAGS = $(CCTLIB_EXTRA_CXXFLAGS)  $(CCTLIB_EXTRA_CPPFLAGS) $(TOOL_CXXFLAGS) -I$(SPARSEHASH_PATH)/include -I../src/ $(ALLOW_UNUSED_BUT_SET)
 LIBELF_LD_FLAGS = -L$(LIBELF_PATH)/lib -Wl,-rpath $(LIBELF_PATH)/lib
 LIBELF_LIBS = -lelf
 CLIENT_LD_FLAGS = $(BOOST_LD_FLAGS) $(LIBELF_LD_FLAGS)
 CLIENT_LIBS = $(BOOST_LIBS) $(LIBELF_LIBS)
-CCTLIB_SHADOW_BASED_LIBRARY = ../src/$(OBJDIR)libNVC$(LIB_SUFFIX)
-CCTLIB_TREE_BASED_LIBRARY = ../src/$(OBJDIR)libNVC_tree_based$(LIB_SUFFIX)
+CCTLIB_SHADOW_BASED_LIBRARY = ../src/$(OBJDIR)libcctlib$(LIB_SUFFIX)
+CCTLIB_TREE_BASED_LIBRARY = ../src/$(OBJDIR)libcctlib_tree_based$(LIB_SUFFIX)
 all: all-am
 
 .SUFFIXES:
@@ -403,15 +404,125 @@ uninstall-am:
 
 include $(CONFIG_ROOT)/makefile.config
 
-	CCTLIB_TEST_FLAGS +=  -I$(BOOST_PATH)/include
-	BOOST_LD_FLAGS =  -L$(BOOST_PATH)/lib -Wl,-rpath $(BOOST_PATH)/lib
-	BOOST_LIBS =  -lboost_filesystem
+	CCTLIB_TEST_FLAGS +=  -I$(BOOST_PATH)/include 
+	BOOST_LD_FLAGS =  -L$(BOOST_PATH)/lib -Wl,-rpath $(BOOST_PATH)/lib 
+	BOOST_LIBS =  -lboost_filesystem 
+
+$(OBJDIR)dcache$(OBJ_SUFFIX): dcache.cpp ../src/cctlib.H ../src/cctlib.cpp
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+#$(OBJDIR)dcache$(PINTOOL_SUFFIX): $(OBJDIR)dcache$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+#	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+#$(OBJDIR)cct_client$(OBJ_SUFFIX): cct_client.cpp ../src/cctlib.H
+#	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
 
 $(OBJDIR)dcache$(OBJ_SUFFIX): dcache.cpp ../src/cctlib.H ../src/cctlib.cpp
 	$(CXX) $(CCTLIB_TEST_FLAGS) -DHAVE_METRIC_PER_IPNODE $(COMP_OBJ)$@ $<
 
 $(OBJDIR)dcache$(PINTOOL_SUFFIX): $(OBJDIR)dcache$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_PER_IPNODE_METRIC_LIBRARY)
 	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_metric  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cct_client$(PINTOOL_SUFFIX): $(OBJDIR)cct_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)deadspy_client$(OBJ_SUFFIX): deadspy_client.cpp ../src/cctlib.H
+	$(CXX) -Wno-deprecated  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)deadspy_client$(PINTOOL_SUFFIX): $(OBJDIR)deadspy_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)redspy_client$(OBJ_SUFFIX): redspy_client.cpp ../src/cctlib.H
+	$(CXX) -Wno-deprecated  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)redspy_client$(PINTOOL_SUFFIX): $(OBJDIR)redspy_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)redspy_temporal_client$(OBJ_SUFFIX): redspy_temporal_client.cpp ../src/cctlib.H
+	$(CXX) -Wno-deprecated  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)redspy_temporal_client$(PINTOOL_SUFFIX): $(OBJDIR)redspy_temporal_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)redspy_temporal_approx_client$(OBJ_SUFFIX): redspy_temporal_approx_client.cpp ../src/cctlib.H
+	$(CXX) -Wno-deprecated  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)redspy_temporal_approx_client$(PINTOOL_SUFFIX): $(OBJDIR)redspy_temporal_approx_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)omp_datarace_client$(OBJ_SUFFIX): omp_datarace_client.cpp ../src/cctlib.H shadow_memory.cpp
+	$(CXX) -Wno-deprecated  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)omp_datarace_client$(PINTOOL_SUFFIX): $(OBJDIR)omp_datarace_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cct_data_centric_client$(OBJ_SUFFIX): cct_data_centric_client.cpp ../src/cctlib.H
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cct_data_centric_client$(PINTOOL_SUFFIX): $(OBJDIR)cct_data_centric_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cct_client_mem_only$(OBJ_SUFFIX): cct_client_mem_only.cpp ../src/cctlib.H
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cct_client_mem_only$(PINTOOL_SUFFIX): $(OBJDIR)cct_client_mem_only$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cctlib_reader$(OBJ_SUFFIX): cctlib_reader.cpp ../src/cctlib.H
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cctlib_reader$(PINTOOL_SUFFIX): $(OBJDIR)cctlib_reader$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cct_data_centric_client_tree_based$(OBJ_SUFFIX): cct_data_centric_client_tree_based.cpp ../src/cctlib.H
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cct_data_centric_client_tree_based$(PINTOOL_SUFFIX): $(OBJDIR)cct_data_centric_client_tree_based$(OBJ_SUFFIX) $(CCTLIB_TREE_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS) -lcctlib_tree_based  $(TOOL_LIBS) $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)redspy_spatial_client$(OBJ_SUFFIX): redspy_spatial_client.cpp ../src/cctlib.H
+	$(CXX)  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)redspy_spatial_client$(PINTOOL_SUFFIX): $(OBJDIR)redspy_spatial_client$(OBJ_SUFFIX) $(CCTLIB_TREE_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_tree_with_addr  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)redspy_spatial_approx_client$(OBJ_SUFFIX): redspy_spatial_approx_client.cpp ../src/cctlib.H
+	$(CXX)  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)redspy_spatial_approx_client$(PINTOOL_SUFFIX): $(OBJDIR)redspy_spatial_approx_client$(OBJ_SUFFIX) $(CCTLIB_TREE_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_tree_with_addr  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cct_metric_client$(OBJ_SUFFIX): cct_metric_client.cpp ../src/cctlib.H
+	$(CXX)  $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cct_metric_client$(PINTOOL_SUFFIX): $(OBJDIR)cct_metric_client$(OBJ_SUFFIX) $(CCTLIB_TREE_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_metric  $(TOOL_LIBS)   $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+#Value numbering 
+$(OBJDIR)valueNum$(OBJ_SUFFIX): valueNum.cpp ../src/cctlib.H
+	$(CXX) $(CCTLIB_TEST_FLAGS)  $(COMP_OBJ)$@ $<
+
+$(OBJDIR)valueNum$(PINTOOL_SUFFIX): $(OBJDIR)valueNum$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+#Footprint clients
+$(OBJDIR)footprint_client$(OBJ_SUFFIX): footprint_client.cpp ../src/cctlib.H ../src/cctlib.cpp
+	$(CXX) $(CCTLIB_TEST_FLAGS) -DHAVE_METRIC_PER_IPNODE $(COMP_OBJ)$@ $<
+
+$(OBJDIR)footprint_client$(PINTOOL_SUFFIX): $(OBJDIR)footprint_client$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_PER_IPNODE_METRIC_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_metric  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)footprint_client2$(OBJ_SUFFIX): footprint_client2.cpp ../src/cctlib.H ../src/cctlib.cpp
+	$(CXX) $(CCTLIB_TEST_FLAGS) -DHAVE_METRIC_PER_IPNODE $(COMP_OBJ)$@ $<
+
+$(OBJDIR)footprint_client2$(PINTOOL_SUFFIX): $(OBJDIR)footprint_client2$(OBJ_SUFFIX) $(CCTLIB_SHADOW_BASED_PER_IPNODE_METRIC_LIBRARY)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)  -lcctlib_metric  $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
+
+$(OBJDIR)cache$(OBJ_SUFFIX): cache.cpp 
+	$(CXX) $(CCTLIB_TEST_FLAGS) $(COMP_OBJ)$@ $<
+
+$(OBJDIR)cache$(PINTOOL_SUFFIX): $(OBJDIR)cache$(OBJ_SUFFIX) 
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $< -L../src/$(OBJDIR) $(TOOL_LPATHS)   $(TOOL_LIBS)  $(CLIENT_LD_FLAGS) $(CLIENT_LIBS)
 
 include $(TOOLS_ROOT)/Config/makefile.default.rules
 

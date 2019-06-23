@@ -1,0 +1,678 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags1.dtd"
+>
+
+<!-- The lines above are NOT optional.  If you're adept at reading DTDs,
+     the one that this file conforms to is at the URL listed above.  
+     
+     But most humans writing a flags file will want to have it automatically 
+     checked using a validating parser such as RXP (available at
+     http://www.ltg.ed.ac.uk/~richard/rxp.html), or use one of the on-line
+     parsers:
+       http://www.stg.brown.edu/service/xmlvalid/
+       http://www.cogsci.ed.ac.uk/~richard/xml-check.html
+     
+     The parser used by the MPI tools is _not_ a validating parser, so it
+     may be possible to sneak things by it that would not pass the checkers
+     above.  However, if the checkers above say that your file is clean, it's
+     clean.
+
+     Flag files submitted to SPEC _will_ be checked by a validating parser.
+     Invalid or not-well-formed flag files will be rejected.
+-->
+
+<!-- **********************************************************************
+     **********************************************************************
+     Unless otherwise explicitly noted, all references to "section n.nn"
+     refer to flag-description.html, available at
+
+     http://www.spec.org/mpi2007/Docs/flag-description.html
+     **********************************************************************
+     ********************************************************************** -->
+
+<!--
+     This file is
+       Copyright (C) 2007 Standard Performance Evaluation Corporation
+       All Rights Reserved
+     
+     This file may be freely modified and redistributed, provided that the
+     copyright notice above and this notice remain unaltered.
+
+     $Id: flags-simple.xml 605 2007-02-21 16:45:16Z keeper $
+-->
+
+<!-- This starts the fun. -->
+<flagsdescription>
+
+<!-- =====================================================================
+  All flag descriptions MUST have a title.  It'll be used as the page
+  title for the full dump, and also as the page heading for both the
+  flag dump and the per-result flag report.
+
+  See section 2.3 for the longer version of this summary.
+     ===================================================================-->
+<title>Non-Apple SPEC MPI Flags</title>
+
+<!-- The phrase "Non-Apple" above is intended to indicate that although this 
+  example is based on the manpage from Apple's version of the gcc compiler,
+  no representation is made that Apple itself would agree with this example
+  flags description file.  -->
+
+<!-- =====================================================================
+  The <style> section is entirely optional.  If the default styling is not
+  to your taste, or if you need to add styles for elements in your flag
+  descriptions, you may put it here.
+  This result doesn't need it; it's just here as an illustration.
+
+  This example puts the stylesheet within a CDATA section.  This is a good
+  idea in general.  See section 2.3.1 for slightly more detail.
+
+  CSS is pretty powerful; please don't try to do sneaky things.  The text
+  of your XML will still be available for review.
+     ===================================================================-->
+<style>
+<![CDATA[
+body { background: white; }
+]]>
+</style>
+
+<!-- =====================================================================
+  The <header> section is also entirely optional.  If it is provided, and
+  no class is specified, then it will be inserted verbatim at the top
+  of the flags dump.
+
+  If a class is specified, that text will be inserted verbatim before flags
+  of that class.  
+  
+  As the contents should be HTML, it will save lots of time to just enclose
+  the whole thing in a CDATA section.  Section 2.3.1 again.
+     ===================================================================-->
+<header>
+<![CDATA[
+<p>Compilers: GCC 4.0.1 (Apple)</p>
+<p>Last updated: 14-Feb-2006</p>
+]]>
+</header>
+
+<!-- =====================================================================
+  Information about the meaning of boot-time settings, BIOS options,
+  kernel tuning, and so forth can go in the 'platform_settings' section.
+
+  They'll be appended to the end of both the flags dump and per-result flag report.
+
+  As the contents should be HTML, it will save lots of time to just enclose
+  the whole thing in a CDATA section.  Section 2.3.1 again.
+     ===================================================================-->
+<platform_settings>
+<![CDATA[
+<p>No system settings were harmed in the making of this result.</p>
+]]>
+</platform_settings>
+
+<!-- ======================================================================
+     ======================================================================
+     Finally!  Descriptions of flags start here, and don't end until the
+     end of the file.
+
+     In the flag dump, these flags will appear in the same order that they
+     appear in this file.
+
+     When doing flag matching, these flags will be tried in the same order
+     that they appear in this file.(*)
+
+     You might want to keep that in mind when figuring out how to order
+     the individual descriptions.  There ARE some cases where order is
+     important, but since this is supposed to be a simple example, there
+     won't be any here.
+     ======================================================================
+     (*) Except for the "compiler" class; see below
+     ====================================================================== -->
+
+<!-- =====================================================================
+  First, we'll describe our compiler.  There's no requirement that this
+  flag be first; it just seems logical to me.
+
+  When the flags are all being matched, the compiler list _is_ promoted to
+  the front, so they are always matched first.  This is only important 
+  for flags that only match a specific compiler.  There are none of those
+  in this file.
+     ===================================================================-->
+<!-- The <flag> element is where all the action is.  It takes several
+     attributes.  Sorry that all the comments are up top; it's not allowed
+     to intersperse them in the <flag...> tag. -->
+      <!-- Each flag must have a unique name.  See section 3.1. -->
+      <!-- Each flag must have a class.  The class list is in section 3.2. -->
+      <!-- Each flag does have a regular expression that can be used to pick
+           it out of a string.  Usually the default regexp (section 3.3.1)
+           will be sufficient; in some cases, you'll have to roll your own.
+           This is one of those cases ONLY because the compiler may be
+           specified with its full path.  With the default regexp, the compiler
+           path would be left as an "unknown" flag. 
+           
+           The regexp below says that we can optionally match a string that 
+           starts and ends with "/" and which contains non-blank characters.  
+           (<opinion>Anyone who puts a blank into a directory name should not 
+           be allowed to operate a compiler.  (<spite>There.  I (jh) have said
+           it and I'm proud.</spite>)</opinion>) -->
+<flag
+      name="cc"
+      class="compiler"
+      regexp="(?:/\S+/)?cc\b">
+
+<!-- Each flag MAY have some example text (section 3.7).  Usually the "name"
+  of the flag appearing next to its description will be the actual text from
+  the command line that was matched.  When doing a flag dump, there's no
+  matching, so the example text is used instead.  If this is omitted, the
+  flag's name will be used (subject to certain transformations, described in 
+  section 3.7). -->
+<example>cc</example>
+<!-- The main event!  What follows is the descriptive text for the flag.
+     If this section contains HTML, it must be enclosed
+     in a CDATA section.  See section 2.3.1, if you haven't already. -->
+<![CDATA[
+<p>
+Invoke Apple's <i>modified</i> version of the GCC C compiler.
+</p>
+]]>
+<!-- Without the closing tag, the flag description is neither valid nor
+     well-formed. -->
+</flag>
+
+<!-- Now the same thing again, but for the C++ compiler.   -->
+<!-- The regexp is a little different; '+' is a "magic" character for
+     regular expressions, so it must be escaped with a backslash. 
+     Also, '+' is not a word character, so '\b' is useless.  See section
+     3.3.4 for an explanation of the thing at the end. -->
+<!-- Hey!  After all these times where we've been saying "use CDATA",
+     why isn't there any this time?  Well, actually, the rule is that
+     you have to use CDATA if you're using any HTML.  But all we want 
+     to say today is a simple sentence, with no emphasis, no HTML, no
+     italics, no flashing, just a simple plain declarative uncurliqued 
+     straightforward unembelished sentence.  Fine.  We can skip the 
+     CDATA stuff.  See the bottom part of section 2.3.1 -->
+<flag name="CC"
+      class="compiler"
+      regexp="(?:/\S+/)?g\+\+(?=\s|$)">
+<example>g++</example>
+Invoke Apple's modified version of the GCC C++ compiler.
+</flag>
+
+<!-- The first non-compiler flag!  For a simple flag like this, the default
+     regexp will do, so it's not specified. -->
+<flag name="F-fast"
+      class="optimization">
+<example>
+-fast
+</example>
+
+<!-- Here's the description.  This is the first one to use some real HTML.
+     Note that ALL of the tags are closed.  This is an XHTML requirement.
+     If you're worried about whether it's okay or not, dump it with flag_dump
+     (see utility.html#flag_dump) and run it through an XHTML validator like
+     the one at validator.w3.org.
+-->
+<![CDATA[
+<p>Optimize for maximum performance. -fast  changes the overall optimization
+strategy of GCC in order to produce the fastest possible running code for
+PPC7450 and G5 architectures. By default, -fast optimizes for G5. Programs
+optimized for G5 will not run on PPC7450.</p>
+
+<p>-fast currently enables the following optimization flags. These flags may
+change in the future. You cannot override any of these options if you use -fast
+except by setting -mcpu=7450. Note that -ffast-math, -fstrict-aliasing and
+-malign-natural are unsafe in some situations.</p>
+]]>
+<!-- Good grief, that's a lot of flags.  They'll all be described later; for
+     now we'll include them by reference, and this description will have
+     links to them.
+
+     Note that if you "forget" to describe these flags later, the validator
+     and/or the MPI tools will remind you.
+
+     Note that these are all "singleton" elements, so they can be self-closed.
+     That's what the "/>" at the end is.  You could also get away with
+     something like
+       <include flag="foo"></include>
+     but... ew.  Yuck.
+  -->
+<include flag="F-O3" />
+<include flag="F-funroll-loops" />
+<include flag="F-fstrict-aliasing" />
+<include flag="F-fsched-interblock" />
+<include flag="F-falign-loops" flagtext="-falign-loops=16" />
+<include flag="F-falign-jumps" flagtext="-falign-jumps=16" />
+<include flag="F-falign-functions" flagtext="-falign-functions=16" />
+<include flag="F-falign-jumps-max-skip" flagtext="-falign-jumps-max-skip=15" />
+<include flag="F-falign-loops-max-skip" flagtext="-falign-loops-max-skip=15" />
+<include flag="F-malign-natural" />
+<include flag="F-ffast-math" />
+<include flag="F-mdynamic-no-pic" />
+<include flag="F-mpowerpc-gpopt" />
+<include flag="F-force_cpusubtype_ALL" />
+<include flag="F-fstrict-aliasing" />
+<include flag="F-mtune" flagtext="-mtune=G5" />
+<include flag="F-mcpu" flagtext="-mcpu=G5" />
+<include flag="F-mpowerpc64" />
+</flag>
+
+<flag name="F-O3"
+      class="optimization">
+<example>-O3</example>
+<![CDATA[
+<p>Optimize yet more.  -O3 turns on all optimizations specified by -O2
+   and also turns on the -finline-functions and -frename-registers
+   options.</p>
+<p>Okay, I (cds) made an extreme tactical error when choosing gcc as the 
+   basis of an allegedly "simple" flags example.  I don't want this example 
+   to grow to the size of the GCC man page so let me just leave off by saying 
+   that a formal reference to -O2 <strong>should</strong> be included here, 
+   and that the description of -O2 <strong>must</strong> also contain 
+   references to the 25 flags that <i>it</i> turns on.</p>
+]]>
+<include flag="F-finline-functions" />
+<include flag="F-frename-registers" />
+</flag>
+
+<!-- Here's a flag that matches '-mcpu=' followed by some arbitrary non-empty
+     non-whitespace characters.  I _could_ have listed all the possibilities,
+     but I didn't.  The upside would be that config file typos in this flag
+     would be caught (because it wouldn't match the fat fingered version).
+     The downside is that it would make the regexp LONG and thus more
+     difficult to maintain.
+-->
+<flag name="F-mcpu"
+      class="optimization"
+      regexp="-mcpu=(\S+)\b">
+<example>-mcpu=7450, -mcpu=G5</example>
+<![CDATA[
+<p>Set architecture type, register usage, choice of mnemonics, and
+   instruction scheduling parameters for a particular machine type.</p>
+
+<p>Supported values for this flag are</p>
+<ul>
+  <li>rios	</li>
+  <li>rios1	</li>
+  <li>rsc	</li>
+  <li>rios2	</li>
+  <li>rs64a	</li>
+  <li>601	</li>
+  <li>602	</li>
+  <li>603	</li>
+  <li>603e	</li>
+  <li>604	</li>
+  <li>604e	</li>
+  <li>620	</li>
+  <li>630	</li>
+  <li>740	</li>
+  <li>7400	</li>
+  <li>7450	</li>
+  <li>750	</li>
+  <li>power	</li>
+  <li>power2	</li>
+  <li>powerpc	</li>
+  <li>403	</li>
+  <li>505	</li>
+  <li>801	</li>
+  <li>821	</li>
+  <li>823	</li>
+  <li>860	</li>
+  <li>common	</li>
+  <!-- Um, hey, G5 isn't listed as one of the choices!  Someone file a doc
+       bug against the Apple GCC man page! -->
+</ul>
+]]>
+</flag>
+
+<!-- ======================================================================
+     ======================================================================
+     At this point we're to all of the "subordinate" flags; that is, flags
+     that are only referenced indirectly.  There is NO technical reason that
+     these flags must be segregated.  I'm only doing it here because
+     initially the flags above (sans includes) were the only ones I had
+     described.  (I used to use this flags file for some of my test runs.)
+
+     Also, the comments will start to thin out; I've already covered all of
+     the basics.
+     ======================================================================
+     ====================================================================== -->
+
+<flag name="F-falign-functions"
+      class="optimization">
+<example>
+-falign-functions,
+-falign-functions=n
+</example>
+<![CDATA[
+<p>Align the start of functions to the next power-of-two greater than
+   <i>n</i>, skipping up to <i>n</i> bytes.  For instance,
+   <tt>-falign-functions=32</tt> aligns functions to the next 32-byte
+   boundary, but <tt>-falign-functions=24</tt> would align to the next
+   32-byte boundary only if this can be done by skipping 23 bytes or less.</p>
+
+<p><tt>-fno-align-functions</tt> and <tt>-falign-functions=1</tt> are
+   equivalent and mean that functions will not be aligned.</p>
+
+<p>Some assemblers only support this flag when <i>n</i> is a power of two; in
+   that case, it is rounded up.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-falign-loops"
+      class="optimization">
+<example>
+-falign-loops,
+-falign-loops=n
+</example>
+<![CDATA[
+<p>Align loops to a power-of-two boundary, skipping up to <i>n</i> bytes like
+   <tt>-falign-functions.</tt>  The hope is that the loop will be executed
+   many times, which will make up for any execution of the dummy
+   operations.</p>
+]]>
+</flag>
+
+<flag name="F-falign-loops-max-skip"
+      class="optimization">
+<example>
+-falign-loops-max-skip,
+-falign-loops-max-skip=n
+</example>
+<![CDATA[
+<p>When aligning loops to a power-of-two boundary, only do so if can skip by
+   up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-falign-jumps"
+      class="optimization">
+<example>
+-falign-jumps,
+-falign-jumps=n
+</example>
+<![CDATA[
+<p>Align branch targets to a power-of-two boundary, for branch targets
+    where the targets can only be reached by jumping, skipping up to <i>n</i>
+    bytes like <tt>-falign-functions.</tt>  In this case, no dummy operations
+    need be executed.</p>
+]]>
+</flag>
+
+<flag name="F-falign-jumps-max-skip"
+      class="optimization">
+<example>
+-falign-jumps-max-skip,
+-falign-jumps-max-skip=n
+</example>
+<![CDATA[
+<p>When aligning branch targets to a power-of-two boundary, only do so
+   if can skip by up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-force_cpusubtype_ALL"
+      class="optimization">
+<example>
+-force_cpusubtype_ALL
+</example>
+<![CDATA[
+<p>Hey!  What does this flag do?  It's not in the man page.</p>
+<p>Well, I know that <strong>you</strong>, as the well informed and well-
+   connected (with your compiler vendor) will be able to document ALL of
+   your implicitly included flags.</p>
+]]>
+</flag>
+
+<flag name="F-fsched-interblock"
+      class="optimization">
+<example>
+-fsched-interblock
+</example>
+<![CDATA[
+<p>Schedule instructions across basic blocks.  This is enabled by default when
+scheduling before register allocation, i.e. with <tt>-fschedule-insns</tt> or  
+at <tt>-O2</tt> or higher.</p>
+]]>
+</flag>
+
+<flag name="F-fstrict-aliasing"
+      class="optimization">
+<example>
+-fstrict-aliasing
+</example>
+<![CDATA[
+<p>Allows the compiler to assume the strictest aliasing rules applicable to
+   the language being compiled.  For C (and C++), this activates optimizations
+   based on the type of expressions.  In particular, an object of one type is
+   assumed never to reside at the same address as an object of a different
+   type, unless the types are almost the same.  For example, an "unsigned int"
+   can alias an "int", but not a "void*" or a "double".  A character type may
+   alias any other type.</p>
+
+<p>Pay special attention to code like this:</p>
+<pre>
+   union a_union {
+     int i;
+     double d;
+   };
+
+   int f() {
+     a_union t;
+     t.d = 3.0;
+     return t.i;
+   }
+</pre>
+
+<p>The practice of reading from a different union member than the one
+   most recently written to (called ``type-punning'') is common.  Even
+   with <tt>-fstrict-aliasing</tt>, type-punning is allowed, provided the
+   memory is accessed through the union type.  So, the code above will
+   work as expected.  However, this code might not:</p>
+<pre>
+   int f() {
+     a_union t;
+     int* ip;
+     t.d = 3.0;
+     ip = &amp;t.i;
+     return *ip;
+   }
+</pre>
+]]>
+</flag>
+
+<flag name="F-funroll-loops"
+      class="optimization">
+<example>
+-funroll-loops
+</example>
+<![CDATA[
+<p>Unroll loops whose number of iterations can be determined at compile time
+   or upon entry to the loop.  <tt>-funroll-loops</tt> implies both
+   <tt>-fstrength-reduce</tt> and <tt>-frerun-cse-after-loop</tt>.  This
+   option makes code larger, and may or may not make it run faster.</p>
+]]>
+<include flag="F-fstrength-reduce" />
+<include flag="F-frerun-cse-after-loop" />
+</flag>
+
+<flag name="F-ffast-math"
+      class="optimization">
+<example>
+-ffast-math
+</example>
+<![CDATA[
+<p>Sets the following flags:</p>
+<ul>
+  <li>-fno-math-errno		</li>
+  <li>-funsafe-math-optimizations</li>
+  <li>-fno-trapping-math	</li>
+  <li>-ffinite-math-only	</li>
+  <li>-fno-signaling-nans	</li>
+</ul>
+]]>
+<include flag="F-fno-math-errno" />
+<include flag="F-funsafe-math-optimizations" />
+<include flag="F-fno-trapping-math" />
+<include flag="F-ffinite-math-only" />
+<include flag="F-fno-signaling-nans" />
+</flag>
+
+<flag name="F-mpowerpc64"
+      class="optimization">
+<example>
+-mpowerpc64
+</example>
+<![CDATA[
+<p>The <tt>-mpowerpc64</tt> option allows GCC to generate the additional 64-bit
+instructions that are found in the full PowerPC64 architecture and
+to treat GPRs as 64-bit, doubleword quantities.  GCC defaults to
+<tt>-mno-powerpc64</tt>.</p>
+]]>
+</flag>
+
+<!-- How did the next flag get so simple? We've defaulted both the 
+     regexp and the example from the name; and the description is simple
+     enough not to need HTML.  Sections 2.3.1, 3.3.1 and 3.7 -->
+
+<flag name="F-malign-natural"
+      class="optimization">
+Aligns larger data types such as doubles on their natural boundaries.
+</flag>
+
+<flag name="F-mpowerpc-gpopt"
+      class="optimization">
+Allows GCC to use the optional PowerPC architecture instructions in the  
+General Purpose group, including floating-point square root.
+</flag>
+
+<flag name="F-mtune"
+      class="optimization">
+<example>
+-mtune=7450,
+-mtune=G5
+</example>
+<![CDATA[
+<p>Sets the instruction scheduling parameters for a particular machine type,
+but does not set the architecture type, register usage, or choice of
+mnemonics, as <tt>-mcpu=</tt><i>cpu_type</i> would.  The same values for
+<i>cpu_type</i> are used for <tt>-mtune</tt> as for <tt>-mcpu</tt>.  If both
+are specified, the code generated will use the architecture, registers, and
+mnemonics set by <tt>-mcpu</tt>, but the scheduling parameters set by
+<tt>-mtune</tt>.</p>
+]]>
+</flag>
+
+<flag name="F-mdynamic-no-pic"
+      class="optimization">
+   Compile code so that it is not relocatable, but that its external
+   references are relocatable.  The resulting code is suitable for
+   applications, but not shared libraries.
+</flag>
+
+<flag name="F-fstrength-reduce"
+      class="optimization">
+Perform the optimizations of loop strength reduction and elimination of
+iteration variables.
+</flag>
+
+<flag name="F-fno-trapping-math"
+      class="optimization">
+<![CDATA[
+<p>Compile code assuming that floating-point operations cannot generate
+user-visible traps.  These traps include division by zero, overflow,
+underflow, inexact result and invalid operation.  This option implies
+<tt>-fno-signaling-nans</tt>.  Setting this option may allow faster code
+if one relies on `non-stop' IEEE arithmetic, for example.</p>
+
+<p>Use of this option can result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications for
+   math functions.</p>
+]]>
+<include flag="F-fno-signaling-nans" />
+</flag>
+
+<flag name="F-fno-signaling-nans"
+      class="optimization">
+Compile code assuming that IEEE signaling NaNs may not generate
+user-visible traps during floating-point operations.  Setting this
+option enabled optimizations that may change the number of exceptions
+visible with signaling NaNs.
+</flag>
+
+<flag name="F-funsafe-math-optimizations"
+      class="optimization">
+<![CDATA[
+<p>Allow optimizations for floating-point arithmetic that
+(a) assume that arguments and results are valid and (b) may violate  
+IEEE or ANSI standards.  When used at link-time, it may include  
+libraries or startup files that change the default FPU control  
+word or other similar optimizations.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-ffinite-math-only"
+      class="optimization">
+<![CDATA[
+<p>Allow optimizations for floating-point arithmetic that assume that
+   arguments and results are not NaNs or +-Infs.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-fno-math-errno"
+      class="optimization">
+<![CDATA[
+<p>Do not set ERRNO after calling math functions that are executed
+   with a single instruction, e.g., sqrt.  A program that relies on
+   IEEE exceptions for math error handling may want to use this flag
+   for speed while maintaining IEEE arithmetic compatibility.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-frerun-cse-after-loop"
+      class="optimization">
+   Re-run common subexpression elimination after loop optimizations
+   have been performed.
+</flag>
+
+<flag name="F-finline-functions"
+      class="optimization">
+<![CDATA[
+<p>Integrate all simple functions into their callers.  The compiler
+   heuristically decides which functions are simple enough to be worth
+   integrating in this way.</p>
+
+<p>If all calls to a given function are integrated, and the function
+   is declared "static", then the function is normally not output as
+   assembler code in its own right.</p>
+]]>
+</flag>
+
+<flag name="F-frename-registers"
+      class="optimization">
+   Attempt to avoid false dependencies in scheduled code by making use
+   of registers left over after register allocation.  This optimization will
+   most benefit processors with lots of registers.  It can, however, make
+   debugging impossible, since variables will no longer stay in a `home
+   register'.
+</flag>
+
+<!-- This ends the fun. -->
+</flagsdescription>

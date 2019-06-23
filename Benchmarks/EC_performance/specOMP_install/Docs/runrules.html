@@ -1,0 +1,3407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>SPEC OMP2012 Run & Reporting Rules</title>
+<!-- $Id: runrules.html 522 2012-10-12 14:13:58Z BrianWhitney $ -->
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+
+a.switchstrike {white-space:nowrap; margin-left:1.3em; text-decoration:line-through;}
+p.background      {background-color:#ffd0d0}
+pre.background    {background-color:#ffd0d0}
+h3.background     {background-color:#ffd0d0}
+h4.background     {background-color:#ffd0d0}
+ul.background     {background-color:#ffd0d0}
+ol.background     {background-color:#ffd0d0}
+
+p.background1      {background-color:#ddffa0}
+pre.background1    {background-color:#ddffa0}
+h3.background1     {background-color:#ddffa0}
+h4.background1     {background-color:#ddffa0}
+ul.background1     {background-color:#ddffa0}
+dl.background1     {background-color:#ddffa0}
+
+h2   { color:#eeeeef; background:#446688; padding:10px; text-align: left; margin-right:75%}
+</style>
+
+</head>
+<body>
+
+<h1>
+SPEC OMP2012<br />
+Run and Reporting Rules<br />
+<span style="font-size:60%">SPEC High Performance Group</span>
+</h1>
+
+
+<div style="text-align: center;">
+<p>
+<strong>ABSTRACT</strong><br />
+This document provides guidelines required to build,<br>
+run, and report on the SPEC OMP2012 benchmarks.
+</p>
+</div>
+
+
+<br />
+<div style="text-align: center;"> <b>Version 1.000</b> </div>
+<div style="text-align: center;"> <b>October 16, 2012</b> </div>
+<div style="text-align: center;"> (To check for possible updates to this document, please see 
+<a class="external" href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/RunRules.html</a> ) </div>
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+
+<h2>Abbreviated Contents</h2>
+
+<p class="contentsl1"> <a href="#Dtoc_1"  >1. </a> Philosophy</p>
+<p class="contentsl2"> <a href="#Dtoc_1.1">1.1</a> A SPEC OMP2012 Result Is An Observation</p>
+<p class="contentsl2"> <a href="#Dtoc_1.2">1.2</a> A Published SPEC OMP2012 Result Is a Declaration of Expected Performance</p>
+<p class="contentsl2"> <a href="#Dtoc_1.3">1.3</a> A SPEC OMP2012 Result is a Claim About Maturity of Performance Methods</p>
+<p class="contentsl2"> <a href="#Dtoc_1.4">1.4</a> Peak and Base Builds and Runs</p>
+<p class="contentsl2"> <a href="#Dtoc_1.5">1.5</a> Power Measurements</p>
+<p class="contentsl2"> <a href="#Dtoc_1.6">1.6</a> Estimates</p>
+<p class="contentsl2"> <a href="#Dtoc_1.7">1.7</a> About SPEC</p>
+<p class="contentsl2"> <a href="#Dtoc_1.8">1.8</a> Compliance and Compatibility Commitments</p>
+<p class="contentsl2"> <a href="#Dtoc_1.9">1.9</a> Usage of the Philosophy Section</p>
+<p class="contentsl1"> <a href="#Dtoc_2"  >2. </a> Building SPEC OMP2012</p>
+<p class="contentsl2"> <a href="#Dtoc_2.1">2.1</a> Build Procedures</p>
+<p class="contentsl2"> <a href="#Dtoc_2.2">2.2</a> General Rules for Selecting Compilation Flags</p>
+<p class="contentsl2"> <a href="#Dtoc_2.3">2.3</a> Base Optimization Rules</p>
+<p class="contentsl2"> <a href="#Dtoc_2.4">2.3</a> Peak Optimization Rules</p>
+<p class="contentsl1"> <a href="#Dtoc_3"  >3. </a> Running SPEC OMP2012</tt></p>
+<p class="contentsl2"> <a href="#Dtoc_3.1">3.1</a> System Configuration </p>
+<p class="contentsl2"> <a href="#Dtoc_3.2">3.2</a> Controlling Benchmark Jobs </p>
+<p class="contentsl2"> <a href="#Dtoc_3.2">3.3</a> Power Measurement</p>
+<p class="contentsl2"> <a href="#Dtoc_3.4">3.4</a> Run-time Environment</p>
+<p class="contentsl2"> <a href="#Dtoc_3.5">3.5</a> Continuous Run Requirement</p>
+<p class="contentsl2"> <a href="#Dtoc_3.6">3.6</a> Base, peak, and basepeak</p>
+<p class="contentsl2"> <a href="#Dtoc_3.7">3.7</a> Run-Time Dynamic Optimization</p>
+<p class="contentsl1"> <a href="#Dtoc_4"  >4. </a> Results Disclosure</p>
+<p class="contentsl2"> <a href="#Dtoc_4.1">4.1</a> Rules regarding availability dates and systems not yet shipped</p>
+<p class="contentsl2"> <a href="#Dtoc_4.2">4.2</a> Configuration Disclosure</p>
+<p class="contentsl2"> <a href="#Dtoc_4.3">4.3</a> Test Results Disclosure</p>
+<p class="contentsl2"> <a href="#Dtoc_4.4">4.4</a> Required Disclosures</p>
+<p class="contentsl2"> <a href="#Dtoc_4.5">4.5</a> Research and Academic usage of OMP2012</p>
+<p class="contentsl2"> <a href="#Dtoc_4.6">4.6</a> Fair Use</p>
+<p class="contentsl2"> <a href="#Dtoc_4.7">4.7</a> Submitting Results to SPEC</p>
+<p class="contentsl1"> <a href="#Dtoc_5"  >5. </a> Run Rule Exceptions</p>
+
+<p>(Click on an item number above, to go to the detailed contents about that item.)</p>
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+
+<h2>Detailed Contents</h2>
+
+<table style="border:none;">
+<tr style="border:none;">
+<td style="border:none; padding-right:1em; width:48%">
+<p class="contentsl1" id="Dtoc_1"  > <a href="#section1">       1.</a> Philosophy</p>
+<p class="contentsl2" id="Dtoc_1.1"> <a href="#section1.1">     1.1.</a> A SPEC OMP2012 Result Is An Observation</p>
+<p class="contentsl3"              > <a href="#section1.1.1">   1.1.1.</a> Test Methods</p>
+<p class="contentsl3"              > <a href="#section1.1.2">   1.1.2.</a> Conditions of Observation</p>
+<p class="contentsl3"              > <a href="#section1.1.3">   1.1.3.</a> Assumptions About the Tester</p>
+<p class="contentsl3"              > <a href="#section1.1.4">   1.1.4.</a> A SPEC OMP2012 Result is a measurement using OpenMP as the parallel paradigm</p>
+<p class="contentsl2" id="Dtoc_1.2"> <a href="#section1.2">     1.2.</a> A Published SPEC OMP2012 Result Is a Declaration of Expected Performance</p>
+<p class="contentsl3"              > <a href="#section1.2.1">   1.2.1.</a> Reproducibility</p>
+<p class="contentsl3"              > <a href="#section1.2.2">   1.2.2.</a> Obtaining Components</p>
+<p class="contentsl4"              > <a href="#section1.2.2.1"> 1.2.2.1</a> Hardware, Operating System and Compilers</p>
+<p class="contentsl2" id="Dtoc_1.3"> <a href="#section1.3">     1.3.</a> A SPEC OMP2012 Result is a Claim About Maturity of Performance Methods</p>
+<p class="contentsl2" id="Dtoc_1.4"> <a href="#section1.4">     1.4.</a> Peak and Base Builds and Runs</p>
+<p class="contentsl2" id="Dtoc_1.5"> <a href="#section1.5">     1.5.</a> Power Measurements</p>
+<p class="contentsl2" id="Dtoc_1.6"> <a href="#section1.6">     1.6.</a> Estimates</p>
+<p class="contentsl2" id="Dtoc_1.7"> <a href="#section1.7">     1.7.</a> About SPEC</p>
+<p class="contentsl3"              > <a href="#section1.7.1">   1.7.1.</a> Publication on SPEC's web site is encouraged </p>
+<p class="contentsl3"              > <a href="#section1.7.2">   1.7.2.</a> Publication on SPEC's web site is not required</p>
+<p class="contentsl3"              > <a href="#section1.7.3">   1.7.3.</a> SPEC May Require New Tests</p>
+<p class="contentsl3"              > <a href="#section1.7.4">   1.7.4.</a> SPEC May Adapt the Suite</p>
+<p class="contentsl2" id="Dtoc_1.8"> <a href="#section1.8">     1.8.</a> Compliance and Compatibility Commitments</p>
+<p class="contentsl3"              > <a href="#section1.8.1">   1.8.1.</a> 32- and 64- Bit Systems</p>
+<p class="contentsl3"              > <a href="#section1.8.2">   1.8.2.</a> Target Languages </p>
+<p class="contentsl3"              > <a href="#section1.8.3">   1.8.3.</a> Supported Operating Systems</p>
+<p class="contentsl3"              > <a href="#section1.8.4">   1.8.4.</a> OpenMP Standard </p>
+<p class="contentsl2" id="Dtoc_1.9"> <a href="#section1.9">     1.9.</a> Usage of the Philosophy Section</p>
+<p class="contentsl1" id="Dtoc_2"  > <a href="#section2">       2.</a> Building SPEC OMP2012</p>
+<p class="contentsl2" id="Dtoc_2.1"> <a href="#section2.1">     2.1.</a> Build Procedures</p>
+<p class="contentsl3"              > <a href="#section2.1.1">    2.1.1</a> SPEC's tools must be used</p>
+<p class="contentsl3"              > <a href="#section2.1.2">    2.1.2</a> The <tt>runspec</tt> build environment</p>
+<p class="contentsl3"              > <a href="#section2.1.3">    2.1.3</a> Continuous Build requirement</p>
+<p class="contentsl3"              > <a href="#section2.1.4">    2.1.4</a> Changes to the <tt>runspec</tt> build environment</p>
+<p class="contentsl3"              > <a href="#section2.1.5">    2.1.5</a> Cross-compilation allowed</p>
+<p class="contentsl3"              > <a href="#section2.1.6">    2.1.6</a> Individual builds allowed</p>
+<p class="contentsl3"              > <a href="#section2.1.7">    2.1.7</a> Tester's assertion of equivalence between build types</p>
+<p class="contentsl2" id="Dtoc_2.2"> <a href="#section2.2"  >    2.2  </a> General Rules for Selecting Compilation Flags</p>
+<p class="contentsl3"              > <a href="#section2.2.1">    2.2.1</a> Must not use names</p>
+<p class="contentsl3"              > <a href="#section2.2.2">    2.2.2</a> Limitations on library substitutions</p>
+<p class="contentsl3"              > <a href="#section2.2.3">    2.2.3</a> Limitations on size changes</p>
+<p class="contentsl3"              > <a href="#section2.2.4">    2.2.4</a> Portability Flags</p>
+<p class="contentsl2" id="Dtoc_2.3"> <a href="#section2.3"  >    2.3  </a> Base Optimization Rules</p>
+<p class="contentsl3"              > <a href="#section2.3.1">    2.3.1</a> Safety and Standards Conformance</p>
+<p class="contentsl3"              > <a href="#section2.3.2">    2.3.2</a> Same for all benchmarks of a given language</p>
+<p class="contentsl3"              > <a href="#section2.3.3">    2.3.3</a> Assertion flags must NOT be used in base</p>
+<p class="contentsl3"              > <a href="#section2.3.4">    2.3.4</a> Floating point reordering allowed</p>
+<p class="contentsl3"              > <a href="#section2.3.5">    2.3.5</a> Base build environment</p>
+<p class="contentsl3"              > <a href="#section2.3.6">    2.3.6</a> Portability Switches for Data Models</p>
+<p class="contentsl3"              > <a href="#section2.3.7">    2.3.7</a> Cross-module optimization</p>
+<p class="contentsl3"              > <a href="#section2.3.8">    2.3.8</a> Alignment switches are allowed</p>
+<p class="contentsl3"              > <a href="#section2.3.9">    2.3.9</a> Feedback-directed optimization</p>
+<p class="contentsl2" id="Dtoc_2.4"> <a href="#section2.4"  >    2.3  </a> Peak Optimization Rules</p>
+<p class="contentsl3"              > <a href="#section2.4.1">    2.3.1</a> Permitted source code changes</p>
+
+</td>
+
+<td style="border:none; padding-right:1em; width:48%">
+<p class="contentsl1" id="Dtoc_3"  > <a href="#section3"    >    3.   </a> Running SPEC OMP2012</p>
+<p class="contentsl2" id="Dtoc_3.1"> <a href="#section3.1"  >    3.1. </a> System Configuration </p>
+<p class="contentsl3"              > <a href="#section3.1.1">    3.1.1</a> Operating System State</p>
+<p class="contentsl3"              > <a href="#section3.1.2">    3.1.2</a> File Systems and File Servers</p>
+<p class="contentsl3"              > <a href="#section3.1.3">    3.1.3</a> Power and Temperature</p>
+<p class="contentsl2" id="Dtoc_3.2"> <a href="#section3.2"  >    3.2. </a> Controlling Benchmark Jobs </p>
+<p class="contentsl3"              > <a href="#section3.2.1">    3.2.1</a> Number of runs in a reportable result</p>
+<p class="contentsl3"              > <a href="#section3.2.2">    3.2.2</a> Number of threads in base</p>
+<p class="contentsl3"              > <a href="#section3.2.3">    3.2.3</a> Number of threads in peak</p>
+<p class="contentsl3"              > <a href="#section3.2.4">    3.2.4</a> The <tt>submit</tt> directive</p>
+<p class="contentsl2" id="Dtoc_3.3"> <a href="#section3.3"  >    3.3. </a> Power Measurement</p>
+<p class="contentsl2" id="Dtoc_3.4"> <a href="#section3.4"  >    3.4. </a> Run-time Environment</p>
+<p class="contentsl2" id="Dtoc_3.5"> <a href="#section3.5"  >    3.5. </a> Continuous Run Requirement</p>
+<p class="contentsl2" id="Dtoc_3.6"> <a href="#section3.6"  >    3.6. </a> Base, Peak, and Basepeak</p>
+<p class="contentsl2" id="Dtoc_3.7"> <a href="#section3.7"  >    3.7. </a> Run-Time Dynamic Optimization</p>
+<p class="contentsl3"              > <a href="#section3.7.1">    3.7.1</a> Definitions and Background</p>
+<p class="contentsl3"              > <a href="#section3.7.2">    3.7.2</a> RDO Is Allowed, Subject to Certain Conditions</p>
+<p class="contentsl3"              > <a href="#section3.7.3">    3.7.3</a> RDO Disclosure and Resources</p>
+<p class="contentsl3"              > <a href="#section3.7.4">    3.7.4</a> RDO Settings Cannot Be Changed At Run-time</p>
+<p class="contentsl3"              > <a href="#section3.7.5">    3.7.5</a> RDO and safety in base</p>
+<p class="contentsl3"              > <a href="#section3.7.6">    3.7.6</a> RDO carry-over by program is not allowed</p>
+<p class="contentsl1" id="Dtoc_4"  > <a href="#section4"    >    4.   </a> Results Disclosure</p>
+<p class="contentsl2" id="Dtoc_4.1"> <a href="#section4.1"  >    4.1. </a> Rules regarding availability dates and systems not yet shipped</p>
+<p class="contentsl3"              > <a href="#section4.1.1">    4.1.1</a> Pre-production software can be used</p>
+<p class="contentsl3"              > <a href="#section4.1.2">    4.1.2</a> Software Component Names</p>
+<p class="contentsl3"              > <a href="#section4.1.3">    4.1.3</a> Specifying Dates</p>
+<p class="contentsl3"              > <a href="#section4.1.4">    4.1.4</a> If dates are not met</p>
+<p class="contentsl3"              > <a href="#section4.1.5">    4.1.5</a> Performance changes for pre-production systems</p>
+<p class="contentsl2" id="Dtoc_4.2"> <a href="#section4.2"  >    4.2. </a> Configuration Disclosure</p>
+<p class="contentsl3"              > <a href="#section4.2.1">    4.2.1</a> Identification of System, Manufacturer and Tester</p>
+<p class="contentsl3"              > <a href="#section4.2.1.1">  4.2.1.1</a> Identification of Equivalent Systems</p>
+<p class="contentsl3"              > <a href="#section4.2.2">    4.2.2</a> Node Configuration</p>
+<p class="contentsl3"              > <a href="#section4.2.3">    4.2.3</a> Software Configuration</p>
+<p class="contentsl3"              > <a href="#section4.2.4">    4.2.4</a> Tuning Configuration</p>
+<p class="contentsl3"              > <a href="#section4.2.5">    4.2.5</a> Description of Portability and Tuning Options ("Flags File")</p>
+<p class="contentsl3"              > <a href="#section4.2.6">    4.2.6</a> Power Measurement Devices</p>
+<p class="contentsl3"              > <a href="#section4.2.7">    4.2.7</a> Configuration Disclosure for User Built Systems</p>
+<p class="contentsl2" id="Dtoc_4.3"> <a href="#section4.3"  >    4.3. </a> Test Results Disclosure</p>
+<p class="contentsl3"              > <a href="#section4.3.1">    4.3.1</a> OMP2012 Performance Metrics</p>
+<p class="contentsl3"              > <a href="#section4.3.2">    4.3.2</a> OMP2012 Energy Metrics</p>
+<p class="contentsl3"              > <a href="#section4.3.3">    4.3.3</a> Metric Selection</p>
+<p class="contentsl3"              > <a href="#section4.3.4">    4.3.4</a> Estimates are allowed</p>
+<p class="contentsl3"              > <a href="#section4.3.5">    4.3.5</a> Performance changes for production systems</p>
+<p class="contentsl2" id="Dtoc_4.4"> <a href="#section4.4"  >    4.4. </a> Required Disclosures</p>
+<p class="contentsl2" id="Dtoc_4.5"> <a href="#section4.5"  >    4.5. </a> Research and Academic usage of OMP2012</p>
+<p class="contentsl2" id="Dtoc_4.6"> <a href="#section4.6"  >    4.6. </a> Fair Use</p>
+<p class="contentsl2" id="Dtoc_4.7"> <a href="#section4.7"  >    4.7. </a> Submitting Results to SPEC</p>
+<p class="contentsl1" id="Dtoc_5"  > <a href="#section5"    >    5.   </a> Run Rule Exceptions</p>
+</td>
+</tr>
+</table>
+
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+
+
+<h2 id="section1">1. Philosophy</h2>
+
+<p>This section is an overview of the purpose, definitions, methods, and
+assumptions for the SPEC OMP2012 run rules. The purpose of the SPEC
+OMP2012 benchmark and its run rules is to further the cause of fair and objective benchmarking of
+high-performance computing systems. The rules help ensure that published results are meaningful,
+comparable to other results, and reproducible. SPEC believes that the user community benefits from an objective series of tests which serve
+as a common reference.
+</p>
+
+<p>
+Per the SPEC license agreement, all SPEC OMP2012 results disclosed in
+public -- whether in writing or in verbal form -- must adhere to the
+SPEC OMP2012 Run and Reporting Rules, or be clearly described as estimates.
+</p>
+
+<p>
+A published SPEC OMP2012 result means three things:
+<ol>
+  <li>A performance <a href="#section1.1">observation</a>; </li>
+  <li>A <a href="#section1.2">declaration</a> of expected performance; and </li>
+  <li>A claim about maturity of performance <a href="#section1.3">methods</a>. </li>
+</ol>
+
+<h3 id="section1.1">1.1 A SPEC OMP2012 Result Is An Observation</h3>
+<p>
+A published SPEC OMP2012 result is an empirical report of performance
+observed when carrying out certain computation- and communication-intensive tasks.
+</p>
+
+<h4 id="section1.1.1">1.1.1 Test Methods</h4>
+<p>
+SPEC supplies the OMP2012 benchmarks in the form of source code, which
+testers are not allowed to modify except under certain very restricted
+circumstances. SPEC OMP2012 includes 14 benchmarks. The SPEC OMP2012 
+benchmarks are work-based benchmarks. The amount of work is fixed,
+and the time used to perform the work is measured.<br>
+</p>
+
+<p>
+The tester supplies compilers, and the System Under Test
+(SUT). <font size="3">In addition, the tester provides a <tt>config</tt> file,
+where appropriate optimization flags are set, as well as, where they
+are needed, portability flags. SPEC provides example <tt>config</tt> files in
+the <tt>config</tt> subtree as well as documentation on how to create a <tt>config</tt>
+file in <tt>Docs/config.html</tt></font>. SPEC supplies tools which
+automatically:
+</p>
+
+<ol type="a">
+  <li>archive the user-selected configuration file,</li>
+  <li>generate Makefiles which are used to compile the benchmarks,</li>
+  <li>run all the benchmarks in the suite in a single continuous run,</li>
+  <li>validate each benchmark output to ensure that the benchmark generated acceptable outputs,</li>
+  <li>pick the median across the benchmark runs, </li>
+  <li>and compute metrics, such as <b>SPECompG_base2012</b></li>
+</ol>
+
+
+<h4 id="section1.1.2">1.1.2 Conditions of Observation</h4>
+<p>
+The report that certain performance has been observed is meaningful
+only if the conditions of observation are stated. SPEC therefore
+requires that a published result include a description of all
+performance-relevant conditions.
+</p>
+
+<h4 id="section1.1.3">1.1.3 Assumptions About the Tester</h4>
+<p>
+It is assumed that the tester:
+</p>
+
+<ol>
+  <li>is willing to describe the observation and its conditions clearly;</li>
+  <li>is able to learn how to operate the SUT in ways that comply with
+	  the rules in this document, for example by selecting compilation
+	  options that meet SPEC's requirements;</li>
+  <li>knows the SUT better than those who have only indirect contact with it;</li>
+  <li>is honest: SPEC HPG does not employ an independent auditor
+	  process, though it does have requirements for reproducibility and does
+	  encourage use of a peer review process.</li>
+</ol>
+
+<p>
+The person who actually carries out the test is, therefore, the first
+and the most important audience for these run rules. The rules attempt
+to help the tester by trying to be clear about what is and what is not
+allowed.
+</p>
+
+<h3 id="section1.1.4">1.1.4 A SPEC OMP2012 Result is a measurement using OpenMP as the parallel paradigm</h3>
+<p>
+The intention of this benchmark suite is to measure performance of
+applications using OpenMP as the means to
+implement parallel computation. Hybrid models of parallelism which, in
+addition to OpenMP, use explicit thread-level parallelism (such as
+automatic parallelization compiler features, multi-threaded math or
+scientific libraries, or MPI calls) to perform computation, are
+not allowed.
+</p>
+
+
+<h3 id="section1.2">1.2 A Published SPEC OMP2012 Result Is a Declaration of Expected Performance</h3>
+<p>
+A published SPEC OMP2012 result is a declaration that the observed
+level of performance can be obtained by others. Such declarations are
+widely used by vendors in their marketing literature, and are expected
+to be meaningful to ordinary customers.
+</p>
+
+<h4 id="section1.2.1">1.2.1 Reproducibility</h4>
+<p>
+It is expected that later testers can obtain a copy of the SPEC OMP2012
+suite, obtain the components described in the original result, and
+reproduce the claimed performance, within a small range to allow for
+run-to-run variation.
+</p>
+
+<h4 id="section1.2.2">1.2.2 Obtaining Components</h4>
+<p>
+Therefore, it is expected that the components used in a published
+result can in fact be obtained, with the level of quality commonly
+expected for products sold to ordinary customers. Different components
+are subject to different standards, described below:
+</p>
+
+<h5 id="section1.2.2.1">1.2.2.1 Hardware, Operating System and Compilers</h5>
+<p>
+Subcomponents are required to:
+</p>
+
+<ol>
+  <li>be specified using customer-recognizable names,</li>
+  <li>be generally available within certain time frames,</li>
+  <li>provide documentation,</li>
+  <li>provide an option for customer support,</li>
+  <li>be of production quality, and </li>
+  <li>provide a suitable environment for programming.</li>
+</ol>
+
+<p>
+The judgment of whether a component meets the above list may sometimes
+pose difficulty, and various references are given in these rules to
+provide guidelines for such judgment. But by way of introduction, imagine a
+vendor-internal version of a compiler, designated only by an internal
+code name, unavailable to customers, which frequently generates
+incorrect code. Such a compiler would fail to provide a suitable
+environment for general programming, and would not be ready for use in
+a SPEC OMP2012 result.
+</p>
+
+<h3 id="section1.3">1.3 A SPEC OMP2012 Result is a Claim About Maturity of Performance Methods</h3>
+<p>
+A published SPEC OMP2012 result carries an implicit claim that the
+performance methods it employs are more than just "prototype" or
+"experimental" or "research" methods; it is a claim that there is a
+certain level of maturity and general applicability in its methods.
+Unless clearly described as an estimate, a published SPEC result is a
+claim that the performance methods employed (whether hardware or
+software, compiler, or other):
+</p>
+
+<ol>
+  <li>Generate correct code for a class of programs larger than the SPEC OMP2012 suite,</li>
+  <li>Improve performance for a class of programs larger than the SPEC OMP2012 suite,</li>
+  <li>Are recommended by the vendor for a specified class of programs larger than the SPEC OMP2012 suite,</li>
+  <li>Are generally available, documented, supported, and</li>
+  <li>If used as part of <a href="#section2.3">base</a>,
+	   are <a href="#section2.3.1">safe</a>. (Refer
+	   to section 2.3.1 on safety issues). </li>
+</ol>
+
+<p>
+SPEC is aware of the importance of optimizations in producing the best
+performance. SPEC is also aware that it is sometimes hard to draw an
+exact line between legitimate optimizations that happen to benefit SPEC
+benchmarks, versus optimizations that exclusively target the SPEC
+benchmarks. However, with the list above, SPEC wants to increase
+awareness of implementers and end users to issues of unwanted
+benchmark-specific optimizations that would be incompatible with SPEC's
+goal of fair benchmarking.
+</p>
+
+<p>
+The tester must describe the performance methods that are used in terms
+that a performance-aware user can follow, so that users can understand
+how the performance was obtained and can determine whether the methods
+may be applicable to their own applications. The tester must be able to
+make a credible public claim that a class of applications in the real
+world may benefit from these methods.
+</p>
+
+
+<h3 id="section1.4">1.4 Peak and Base Builds and Runs</h3>
+<p>
+"Peak" metrics may be produced by building each benchmark in the suite
+with a set of optimizations individually selected for that benchmark,
+and running them with environment settings individually selected for
+that benchmark.
+The optimizations selected must adhere to the set of general benchmark
+optimization rules described in <a href="#section2.2">section 2.2</a> below. This
+may also be referred to as "aggressive compilation".
+</p>
+
+<p>
+"Base" metrics must be produced by building all the benchmarks in the
+suite with a common set of optimizations, and running them with
+environment settings common to all the benchmarks in the suite. In
+addition to the general
+benchmark optimization rules (<a href="#section2.2">section
+2.2</a>), base optimizations must
+adhere to a stricter set of rules described in <a href="#section2.3">section 2.3</a>.
+</p>
+
+<p>
+These additional rules serve to form a "baseline" of performance that
+can be obtained with a single set of compiler switches, single-pass
+make process, and a high degree of portability, safety, and performance.
+</p>
+
+<ol>
+  <li>The choice of a single set of switches is intended
+	  to reflect the performance that may be attained by a user who is
+	  interested in performance, but who prefers not to invest the time
+	  required for tuning of individual programs.</li>
+  <li>SPEC allows base builds to assume that the program follows the
+	  relevant language standard (i.e. it is portable). But this assumption
+	  may be made only where it does not interfere with getting the expected
+	  answer. For all testing, SPEC requires that benchmark outputs match an
+	  expected set of outputs, typically within a benchmark-defined tolerance
+	  to allow for implementation differences among systems. <br />
+	  Because the SPEC OpenMP
+	  benchmarks are drawn from real applications, some of them use popular
+	  practices that compilers must commonly cater to, even if those
+	  practices are non compliant with the language standard. In particular,
+	  some of the programs (and, therefore, all of base) may have to be
+	  compiled with settings that do not exploit all optimization
+	  possibilities that would be possible for programs with perfect
+	  standards compliance.
+	</li>
+  <li>In base, the compiler may not make unsafe assumptions that are
+	  more aggressive than what the language standard allows.</li>
+  <li>Finally, though, as a performance suite, SPEC HPG has throughout
+	  its history allowed certain common optimizations to nevertheless be
+	  included in base, such as reordering of operands in accordance with
+	  algebraic identities.</li>
+</ol>
+
+<p>
+Rules for building the benchmarks are described in <a href="#section2">section 2</a>.
+</p>
+
+<h3 id="section1.5">1.5 Power Measurements</h3>
+
+<p align="justify">Power measurements may be produced. The system configuration used
+for the measurement of power must be in accordance with Section <a
+href="#section3.1.3">3.1.3</a>. The power measurement itself must be in accordance with Section <a
+href="#section3.3">3.3</a> and  the <a class="external" href="http://www.spec.org/power/docs/SPECpower-Power_and_Performance_Methodology.pdf">
+SPEC Power and Performance Benchmark Methodology, version 2.1 (08/17/2011)</a>.</p>
+
+<p align="justify">Note, currently DC power voltage sources are
+not supported by the power measurement framework. Contact SPEC HPG for discussions and review 
+if you wish to propose adding DC line voltage source.
+Contact information may be found via the SPEC web site,
+http://www.spec.org.</p>
+
+</p>
+
+<h3 id="section1.6">1.6 Estimates</h3>
+<p>
+SPEC OMP2012 metrics may be estimated, with the exception of the power
+measurement. All <a href="#section4.8">estimates</a>
+must be clearly designated as such.
+</p>
+
+<p>
+This philosophy section has described how a "result" has certain characteristics: e.g. a result is an <a href="#section1.1">empirical report</a>
+of performance, includes a full disclosure of performance-relevant <a href="#section1.1.2">conditions</a>,
+can be <a href="#section1.2.1">reproduced</a>, uses <a href="#section1.3">mature performance methods</a>. By contrast, estimates may fail to provide one
+or even all of these characteristics.
+</p>
+
+<p>
+Nevertheless, estimates have long been seen as valuable for SPEC benchmarks. Estimates are set at
+inception of a new chip design and are tracked carefully through analytic, simulation, and HDL
+(Hardware Description Language) models. They are validated against prototype hardware and, eventually,
+production hardware. With chip designs taking years, and requiring very large investments, estimates
+are central to corporate roadmaps. Such roadmaps may compare SPEC OMP2012 estimates for several generations
+of processors, and, explicitly or by implication, contrast one company's products and plans with another's.
+</p>
+
+<p>
+SPEC wants the OpenMP benchmarks to be useful, and part of that usefulness is allowing the metrics to be estimated.
+</p>
+
+<p>
+The key philosophical point is simply that <a href="#section4.8">estimates</a> must be clearly distinguished from results.
+</p>
+
+
+<h3 id="section1.7">1.7 About SPEC</h3>
+
+<h4 id="section1.7.1">1.7.1 Publication on SPEC's web site is encouraged</h4>
+<p>
+SPEC encourages the review of OMP2012 results by the relevant
+subcommittee, and subsequent publication on SPEC's web site (<a class="external" href="http://www.spec.org/omp2012">http://www.spec.org/omp2012</a>).
+SPEC uses a peer-review process prior to publication, in order to
+improve consistency in the understanding, application, and
+interpretation of these run rules.
+</p>
+
+<h4 id="section1.7.2">1.7.2 Publication on SPEC's web site is not required</h4>
+<p>
+Review by SPEC is not required. Testers may publish rule-compliant
+results independently. No matter where published, all results publicly
+disclosed must adhere to the SPEC Run and Reporting Rules, or be
+clearly marked as estimates. SPEC may <a href="#section4.6">take action</a> if
+the rules are not followed.
+</p>
+<p>
+Any public use of SPEC OMP2012 results must, at the time of
+publication, adhere to the then-currently-posted version of SPEC's
+Fair Use Rules, <a class="external" href="http://www.spec.org/fairuse.html">http://www.spec.org/fairuse.html</a>.
+</p>
+
+<h4 id="section1.7.3">1.7.3 SPEC May Require New Tests</h4>
+<p>
+In cases where it appears that the run rules have not been followed,
+SPEC may investigate such a claim and require that a result be
+regenerated, or may require that the tester correct the deficiency
+(e.g. make the optimization more general purpose or correct problems
+with code generation).
+</p>
+
+<h4 id="section1.7.4">1.7.4 SPEC May Adapt the Suite</h4>
+<p>
+The SPEC High Performance Group reserves the right to adapt the SPEC
+OMP2012 suite as it deems necessary to preserve its goal of fair
+benchmarking. Such adaptations might include (but are not limited to)
+removing benchmarks, modifying codes or workloads, adapting metrics,
+republishing old results adapted to a new metric, or requiring
+retesting by the original tester.
+</p>
+
+<h3 id="section1.8">1.8 Compliance and Compatibility Commitments</h3>
+
+<h4 id="section1.8.1">1.8.1 32- and 64- Bit Systems</h4>
+<p>
+The OMP2012 benchmarks and data sets are intended to use upto 32 GB of memory, 
+for sufficient numbers of threads.
+It is unlikely to run in 32-bit address spaces on most systems.
+SPEC is aware that some systems that are commonly described as "32-bit" may provide a smaller number of bits to user applications,
+for example if one or more bits are reserved to privileged code.
+SPEC is also aware that there are many ways to spend profligate amounts of virtual memory.
+Therefore, although 32-bit systems are within the design center for the OMP2012 suite,
+SPEC does not guarantee any particular memory size for the benchmarks,
+nor that they will necessarily fit on all systems that are described as 32-bit.
+</p>
+
+<p>
+While the benchmarks have been tested extensively as 64-bit binaries on a range of systems,
+you are welcome to run them as 32-bit binaries subject to the restrictions in sections
+<a href="#section2.2.3">2.2.3</a>, <a href="#section2.2.4">2.2.4</a> and <a href="#section2.3.6">2.3.6</a>.
+The SPEC HPG committee is unlikely to accommodate any source-code changes enabling a benchmark to run as a 32-bit binary.
+</p>
+
+<h4 id="section1.8.1">1.8.2 Target Languages</h4>
+<p>
+The SPEC OMP2012 benchmarks are written in Fortran, C and C++. If
+benchmarks fail due to non-compliance with
+the appropriate Language Standard, the SPEC HPG Committee will be
+inclined to approve performance-neutral source-code changes.
+</p>
+
+<h4 id="section1.8.1">1.8.3 Supported Operating Systems</h4>
+<p>
+The SPEC OMP2012 benchmarks have been tested on Linux/UNIX
+systems. It is not our intent to exclude them from
+working on other platforms. The burden of porting the benchmarks and
+tools to other operating systems is likely to fall on you, however, if
+you decide to submit results. <a href="#section5">Section 5</a>
+provides for exceptional cases where the standard run- and
+submission- rules cannot be followed.
+</p>
+
+<h4 id="section1.8.1">1.8.4 OpenMP Standards</h4>
+<p>
+The SPEC OMP2012 suite is written to comply with the OpenMP Standard
+3.0. If benchmarks fail due
+to non-compliance with the OpenMP
+Standard, the SPEC HPG Committee will be inclined to approve
+performance-neutral source-code changes. In cases where the library is
+non-compliant or imposes some fundamental limitation, the SPEC HPG Committee is inclined to
+advocate fixing the library rather than accept changes to the benchmark
+source.
+</p>
+
+
+<h3 id="section1.9">1.9 Usage of the Philosophy Section</h3>
+<p>
+This philosophy section is intended to introduce concepts of fair
+benchmarking. It is understood that in some cases, this section uses
+terms that may require judgment, or which may lack specificity. For
+more specific requirements, please see the sections below.
+</p>
+
+<p>
+In case of a conflict between this philosophy section and a run rule in
+one of the sections below, normally the run rule found below takes
+priority.
+</p>
+
+<p>
+Nevertheless, there are several conditions under which questions should
+be resolved by reference to this section: (a) self-conflict: if rules
+below are found to impose incompatible requirements; (b) ambiguity: if
+they are unclear or silent with respect to a question that affects how
+a result is obtained, published, or interpreted; (c) obsolescence: if
+the rules below are made obsolete by changing technical circumstances
+or by directives from superior entities within SPEC.
+</p>
+
+<p>
+When questions arise as to interpretation of the run rules:
+</p>
+
+<ol>
+  <li>Interested parties should seek first to resolve questions based
+	  on the rules as written in the sections that follow. If this is not
+	  practical (because of problems of contradiction, ambiguity, or
+	  obsolescence), then the principles of the philosophy section should be
+	  used to resolve the issue.</li>
+  <li>The SPEC HPG subcommittee should be notified of the issue.
+	  Contact information may be found via the SPEC web site, <a class="external" href="http://www.spec.org">www.spec.org</a>.</li>
+  <li>SPEC may choose to declare a ruling on the issue at hand, and may
+	  choose to amend the rules to avoid in the future such issues.</li>
+</ol>
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+
+<h2 id="section2">2. Building SPEC OMP2012</h2>
+<p>
+SPEC has adopted a set of rules defining how the SPEC OMP2012 benchmark
+suite must be built and run to produce peak and base metrics.
+</p>
+
+<h3 id="section2.1">2.1 Build Procedures</h3>
+
+<h4 id="section2.1.1">2.1.1 SPEC's tools must be used</h4>
+<p>
+With the release of the SPEC OMP2012 suite, a set of tools based on GNU
+Make and Perl5 are supplied to build and run the benchmarks. To produce
+publication-quality results, these SPEC tools must be used. This helps
+ensure reproducibility of results by requiring that all individual
+benchmarks in the suite are run in the same way and that a
+configuration file is available that defines the optimizations used.
+</p>
+
+<p>
+The primary tool is called <tt>runspec</tt> (<tt>runspec.bat</tt> for Microsoft Windows).
+It is described in the <tt>runspec</tt> documentation in the <tt>Docs</tt>
+subdirectory of the SPEC root directory -- in a Bourne shell that would
+be called <tt>${SPEC}/Docs/</tt>, or on Microsoft Windows <tt>%SPEC%\Docs\</tt>.
+</p>
+
+<p>
+Some Fortran programs need to be
+preprocessed, for example to choose variable sizes depending on whether
+<tt>-DSPEC_LP64</tt> has been
+set. Fortran preprocessing must be done using the SPEC-supplied
+preprocessor, even if the vendor's compiler has its
+own preprocessor. The <tt>runspec</tt>
+tool will automatically enforce this requirement by invoking the SPEC
+preprocessor.
+</p>
+
+<p>
+SPEC supplies pre-compiled versions of the tools for a variety of
+platforms. If a new platform is used, please see
+<tt>tools-build[.html]</tt> in the
+<tt>Docs</tt>
+directories for information on how to build the tools, and how to
+obtain approval for them. SPEC's approval is required for the tools
+build, so a log must be generated during the build.
+</p>
+
+<p>
+For more complex ways of compilation, SPEC has provided hooks in the
+tools so that such
+compilation and execution is possible (see the tools documentation for
+details). If, for some reason, building and running with the SPEC tools
+does not work for your environment, the test sponsor may ask for
+permission to use performance-neutral alternatives (see
+<a href="#section5">section 5</a>).
+</p>
+
+<h4 id="section2.1.2">2.1.2 The <tt>runspec</tt> build environment</h4>
+<p>
+When <tt>runspec</tt> is used to
+build the SPEC OMP2012 benchmarks, it must be
+used in generally available, documented, and supported environments
+(see <a href="#section1">section 1</a>), and any aspects of the
+environment that
+contribute to performance must be disclosed to SPEC (see
+<a href="#section4">section 4</a>).
+</p>
+
+<p>
+On occasion, it may be possible to improve run time performance by
+environmental choices at build time. For example, one might install a
+performance monitor, turn on an operating system feature such as <tt>BIGPAGES</tt>,
+or set an environment variable that causes the
+<tt>cc</tt> driver to
+invoke a faster version of the linker.
+</p>
+
+<p>
+It is difficult to draw a precise line between environment settings
+that are reasonable versus settings that are not. Some settings are
+obviously not relevant to performance (such as <tt>hostname</tt>), and
+SPEC
+makes no attempt to regulate such settings. But for settings that do
+have a performance effect, for the sake of clarity, SPEC has chosen
+that:
+</p>
+
+<ol>
+  <li>The tester may install whatever
+	  software the tester wishes, including performance-enhancing software,
+	  but such software must be installed prior to starting the builds, must
+	  remain installed throughout the builds, and must be documented,
+	  supported, generally available, and disclosed to SPEC.</li>
+  <li>The tester may set whatever system configuration parameters the
+	  tester wishes, but these must be applied at boot time, documented,
+	  supported, generally available, and disclosed to SPEC. "Dynamic" system
+	  parameters (i.e. ones that do not require a reboot) must nevertheless
+	  be applied at boot time, except as provided under section
+	  <a href="#section2.1.4">2.1.4</a>.</li>
+  <li>After the boot process is completed, environment settings may be
+	  made as follows: <br />
+
+	  <ul>
+	  	<li>to specify resource limits (for example, as in the Bourne shell <tt>ulimit</tt> command), and</li>
+		<li>to select major components of the compilation system -- for example, as in:
+			<div style="margin-left: 40px;">
+			<span class="ttnobr">setenv CC_LOC /net/dist/version73/cc</span><br />
+			<span class="ttnobr">setenv LD_LOC /net/opt/dist/ld-fast</span>
+			</div>
+		</li>
+	  </ul>
+		-- but these settings must be documented; supported; generally
+		available; disclosed to SPEC; made PRIOR to starting the build; and
+		must not change during the build, except as provided in section <a
+ 		href="#section2.1.4">2.1.4</a>.
+		</li>
+</ol>
+
+
+<h4 id="section2.1.3">2.1.3 Continuous Build requirement</h4>
+<p>
+As described in <a href="#section1">section 1</a>, it is
+expected that testers
+can reproduce other testers' results. In particular, it must be
+possible for a new tester to compile both the base and peak benchmarks
+for an entire suite (to measure both SPECompG_base2012 and
+SPECompG_peak2012) in one
+execution of <tt>runspec</tt>,
+with appropriate
+command line arguments and an appropriate configuration file, and
+obtain executable binaries that are (from a performance point of view)
+equivalent to the binaries used by the original tester.
+</p>
+
+<p>
+The simplest and least error-prone way to meet this requirement is for
+the original tester to take production hardware, production software, a
+SPEC <tt>config</tt> file, and the SPEC tools and actually build the benchmarks
+in a single invocation of <tt>runspec</tt> on the System Under Test (SUT). But
+SPEC realizes that there is a cost to benchmarking and would like to
+address this, for example through the rules that follow regarding
+cross-compilation and individual builds. However, in all cases, the
+tester is taken to assert that the compiled executables will exhibit
+the same performance as if they all had been compiled with a single
+invocation of <tt>runspec</tt>
+(<a href="#section2.1.7">see 2.1.7</a>).
+</p>
+
+<h4 id="section2.1.4">2.1.4 Changes to the <tt>runspec</tt> build environment</h4>
+<p>
+SPEC OMP2012 base binaries must be built using the environment rules of
+section <a href="#section2.1.2">2.1.2</a>, and
+must not rely upon any changes
+to the environment during the build.
+</p>
+
+<p>
+<b>Note 1:</b> <i>Base cross compilations using multiple hosts are allowed (<a href="#section2.1.5">2.1.5</a>), but the
+performance of the resulting binaries
+must not depend upon environmental differences among the hosts. It must
+be possible to build performance-equivalent base binaries with one set
+of switches (<a href="#section2.3.1">2.3.1</a>), in one execution
+of </i><tt>runspec</tt>
+<i>
+(<a href="#section2.1.3">2.1.3</a>), on one host,
+with one environment (<a href="#section2.1.2">2.1.2</a>).
+</i>
+</p>
+
+<p>
+For a peak build, the environment may be changed, subject to the
+following constraints:
+</p>
+
+<ol>
+  <li>The environment change must be accomplished using the
+	  SPEC-provided <tt>config</tt> file hooks (such as <tt>ENV_</tt>).</li>
+  <li>The environment change must be fully disclosed to SPEC (see <a href="#section4">section 4</a>).</li>
+  <li>The environment change must not be incompatible with a Continuous Build (see <a href="#section2.1.3">section 2.1.3</a>).</li>
+  <li>The environment change must be accomplished using simple shell
+	  commands. It is not permitted to invoke a more complex entity unless
+	  that entity is provided as part of a generally-available software
+	  package.<br />
+		Examples:<br />
+	<ul>
+    <li>Allowed: simple shell commands such as <span class="ttnobr">/usr/opt/performance_monitor -start</span>, or
+	    <span class="ttnobr"> setenv BIGPAGES YES</span>.</li>
+    <li>Not allowed: a shell script, batch file, <tt>kdbx</tt> script, or
+	    Microsoft Windows registry adjustment program (unless provided as part
+	    of a generally-available software package).</li>
+    <li>Allowed: a script that is provided as part of the OS, and which
+	    uses <tt>kdbx </tt>to adjust the setting of <tt>BIGPAGES</tt>.</li>
+    <li>Not allowed: a <tt>kdbx</tt> script specially written by the tester just for SPEC.</li>
+	</ul>
+	</li>
+</ol>
+
+<p>
+<b>Note 2:</b> <i>Peak cross compilations
+using multiple hosts are allowed (<a href="#section2.1.5">2.1.5</a>), but the
+performance of the resulting binaries
+must not depend upon environmental differences among the hosts. It must
+be possible to build performance-equivalent peak binaries with one
+<tt>config</tt> file, in one execution of </i><tt>runspec</tt><i> (<a href="#section2.1.3">2.1.3</a>), in
+the same execution of </i><tt>runspec</tt> <i>that built the base binaries, on one
+host, starting from the environment used for the base build (<a href="#section2.1.2">2.1.2</a>),
+and changing that environment only through <tt>config</tt>
+file hooks (<a href="#section2.1.4">2.1.4</a>). </i>
+</p>
+
+<h4 id="section2.1.5">2.1.5 Cross-compilation allowed</h4>
+<p>
+It is permitted to use cross-compilation, that is, a building process
+where the benchmark executables are built on a host (or hosts) that
+differ(s) from the SUT. The <tt>runspec</tt>
+tool must be used on all systems (typically with
+<span class="ttnobr">-a build</span> on the host(s) and
+<span class="ttnobr">-a validate</span> on the SUT).
+</p>
+
+<p>
+If all systems belong to the same product family and if the software
+used to build the executables is available on all systems, this does
+not need to be documented. In the case of a true cross compilation,
+(e.g. if the software used to build the benchmark executables is not
+available on the SUT, or the host system provides performance gains via
+specialized tuning or hardware not on the SUT), the host system(s) and
+software used for the benchmark building process must be documented in
+the Notes section. See <a href="#section4">section 4</a>.
+</p>
+
+<p>
+It is permitted to use more than one host in a cross-compilation. If
+more than one host is used in a cross-compilation, they must be
+sufficiently equivalent so as not to violate rule <a href="#section2.1.3">2.1.3</a>. That is, it must
+be possible to build the entire
+suite on a single host and obtain binaries that are equivalent to the
+binaries produced using multiple hosts.
+</p>
+
+<p>
+The purpose of allowing multiple hosts is so that testers can save time
+when recompiling many programs. Multiple hosts must NOT be used in
+order to gain performance advantages due to environmental differences
+among the hosts. In fact, the tester must exercise great care to ensure
+that any environment differences are performance neutral among the
+hosts, for example by ensuring that each has the same version of the
+operating system, the same performance software, the same compilers,
+and the same libraries. The tester must exercise due diligence to
+ensure that differences that appear to be performance neutral - such as
+differing MHz or differing memory amounts on the build hosts - are in
+fact truly neutral.
+</p>
+
+<p>
+Multiple hosts must NOT be used in order to work around system or
+compiler incompatibilities (e.g. compiling the C benchmarks on a
+different OS version than the Fortran
+benchmarks in order to meet the different compilers' respective OS
+requirements), since that would violate the Continuous Build rule
+(<a href="#section2.1.3">2.1.3</a>).
+</p>
+
+
+
+<h4 id="section2.1.6">2.1.6 Individual builds allowed</h4>
+<p>
+It is permitted to build the benchmarks with multiple invocations of
+<tt>runspec</tt>, for example
+during a tuning effort. But, the executables must
+be built using a consistent set of software. If a change to the
+software environment is introduced (for example, installing a new
+version of the C compiler which is expected to improve the performance
+of one of the floating point benchmarks), then all affected benchmarks
+must be rebuilt (in this example, all the C benchmark).
+</p>
+
+<h4 id="section2.1.7">2.1.7 Tester's assertion of equivalence between build types</h4>
+<p>
+The previous 4 rules may appear to contradict each other (<a href="#section2.1.3">2.1.3</a> through
+<a href="#section2.1.6">2.1.6</a>), but the key
+word in <a href="#section2.1.3">2.1.3</a> is the
+word "possible".
+</p>
+
+<div style="margin-left: 40px;">
+<p>
+Consider the following sequence of events:
+</p>
+
+<blockquote>
+  <ol type="a">
+    <li>A tester has built a complete set of OMP2012 executable images ("binaries") on her usual host system.</li>
+    <li>A hot new SUT arrives for a limited period of time. It has no compilers installed.</li>
+    <li>A SPEC OMP2012 tree is installed on the SUT, along with the binaries and <tt>config</tt> file generated on the usual host.</li>
+    <li>It is learned that performance could be improved if the peak version of <tt>999.sluggard</tt> were compiled with <tt>-O5</tt>
+		instead of <tt>-O4</tt>.</li>
+    <li>On the host system, the tester edits the <tt>config</tt> file to change
+	 	to <tt>-O5</tt> for <tt>999.sluggard,</tt> and issues the command:
+		<pre>
+runspec -c myconfig -D -a build -T peak sluggard </pre>
+		</li>
+    <li>The tester copies the new binary and <tt>config</tt> file to the SUT</li>
+    <li>A complete run is started by issuing the command:
+		<pre>
+runspec -c myconfig -a validate all </pre>
+		</li>
+    <li>Performance is as expected, and the results are published at SPEC (including the <tt>config</tt> file).</li>
+  </ol>
+</blockquote>
+In this example, the tester is taken to
+be asserting that the above sequence of events produces binaries that
+are, from a performance point of view, equivalent to binaries that it
+would have been possible to build in a single invocation of the tools.
+</div>
+
+<p>
+If there is some optimization that can only be applied to individual
+benchmark builds, but which it is not possible to apply in a continuous
+build, the optimization must not be used.
+</p>
+
+<p>
+<a href="#section2.1.7">Rule 2.1.7</a> is
+intended to provide some guidance
+about the kinds of practices that are reasonable, but the ultimate
+responsibility for result reproducibility lies with the tester. If the
+tester is uncertain whether a cross-compile or an individual benchmark
+build is equivalent to a full build on the SUT, then a full build on
+the SUT is required (or, in the case of a true cross-compilation which is
+documented as such, then a single <span class="ttnobr">runspec -a build</span> is required on a single host.) Although full builds add
+to the cost of benchmarking, in some instances a full build in a single
+<tt>runspec</tt> may be the only
+way to ensure that results will be reproducible.
+</p>
+
+
+<h3 id="section2.2">2.2 General Rules for Selecting Compilation Flags</h3>
+<p>
+The following rules apply to compiler flag selection for SPEC OMP2012
+Peak and Base Metrics. Additional rules for Base Metrics follow in
+<a href="#section2.3">section 2.3</a>.
+</p>
+
+<h4 id="section2.2.1">2.2.1 Must not use names</h4>
+<p>
+Benchmark source file, variable, and subroutine names must not be used within
+optimization flags or compiler/build options.
+</p>
+
+<p>
+Identifiers used in preprocessor directives to select alternative
+source code are also forbidden, except for a rule-compliant library
+substitution (<a href="#section2.2.2">2.2.2</a>), an
+approved portability flag (<a href="#section2.2.4">2.2.4</a>), or a
+specifically provided SPEC-approved alternate source (<tt>src.alt</tt>).
+</p>
+
+<p>
+For example, if a benchmark source code uses one of:
+</p>
+
+<pre>
+#ifdef IDENTIFIER
+#ifndef IDENTIFIER
+#if defined IDENTIFIER
+#if !defined IDENTIFIER
+</pre>
+
+<p>
+to provide alternative source code under the control of a compiler
+option such as <tt>-DIDENTIFIER</tt>,
+such a switch may not be used unless it meets the criteria of <a href="#section2.2.2">2.2.2</a> or
+<a href="#section2.2.4">2.2.4</a>.
+</p>
+
+<h4 id="section2.2.2">2.2.2 Limitations on library substitutions</h4>
+<p>
+Flags which substitute pre-computed (e.g. library-based) routines for
+routines defined in the benchmark on the basis of the routine's name
+must not be used. Exceptions are:
+</p>
+
+<ol type="a">
+<li>the function <tt>alloca</tt>. It is permitted to use a flag that substitutes the system's <tt>builtin_alloca</tt>. Such a flag may be applied to individual benchmarks (in both base and peak).</li>
+<li> the level 1, 2 and 3 BLAS functions, LAPACK, and the FFTW functions. Such substitution may be used in a peak run, but must not be used in base.</li>
+</ol>
+
+<p>
+<b>Note:</b> This rule does not forbid flags that select alternative
+implementations of library functions defined in an ANSI/ISO language
+standard or the OpenMP language standard. For example, such flags
+might select an optimized library of these functions, or allow them to
+be inlined.
+</p>
+
+<h4 id="section2.2.3">2.2.3 Limitations on size changes</h4>
+<p>
+Flags that change a data type size to a size different from the default
+size of the compilation system are not allowed to be used in base
+builds. Exceptions are:
+</p>
+
+<ol type="1">
+  <li>C <tt>long</tt> can be set to 32 or greater bits.</li>
+  <li>Pointer sizes can be set different from the default size.</li>
+  <li>Fortran <tt>REAL</tt> can be promoted to 8 bytes.</li>
+</ol>
+
+<p>
+which are acceptable as <a href="#section2.2.4">portability flags</a>
+in base builds, and may be used as (or to facilitate) optimizations in peak builds.
+</p>
+
+<p>
+Pointer size changes, in particular, may be used to make the benchmark binaries execute within a 32-bit or 64-bit address space.
+Section <a href="#section2.3.6">2.3.6</a> states the restrictions on using mixtures of 32-bit and 64-bit binaries in base measurements.
+</p>
+
+<h4 id="section2.2.4">2.2.4 Portability Flags</h4>
+<p>
+Rule <a href="#section2.3.2">2.3.2</a> requires that all
+benchmarks use the
+same flags in base. <i>Portability flags</i>
+are an exception to this rule: they may differ from one benchmark to
+another, even in base. Such flags are subject to two major requirements:
+</p>
+
+<ol>
+  <li>They must be used via the provided <tt>config</tt> file <tt>PORTABILITY</tt> flags
+	  (such as <tt>CPORTABILITY</tt>, <tt>FPORTABILITY</tt>, etc).</li>
+  <li>They must be approved by the SPEC HPG Committee.</li>
+</ol>
+
+<p>
+The initial published results for OMP2012 will include a reviewed set
+of portability flags on several operating systems; later users who
+propose to apply additional portability flags must prepare a
+justification for their use.
+</p>
+
+<p>
+A proposed portability flag will normally be approved if one of the
+following conditions holds:
+</p>
+
+<ol>
+  <li>The flag selects a performance-neutral alternate benchmark source, and the benchmark
+	  cannot build and execute correctly on the given platform unless the
+	  alternate source is selected. (Examples might be flags such as
+	  <tt>-DHOST_WORDS_BIG_ENDIAN</tt>, <tt>-DHAVE_SIGNED_CHAR</tt>).</li>
+  <li>The flag selects a compiler mode that allows basic parsing of the
+	  input source program, and it is not possible to set that flag for all
+	  programs of the given language in the suite. (An example might be <tt>-fixedform</tt>, to select Fortran
+	  source code fixed format).</li>
+  <li>The flag selects features from a certain version of the language,
+	  and it is not possible to set that flag for all programs of the given
+	  language in the suite. (An example might be <tt>-language:c89</tt>).</li>
+  <li>The flag solves a data model problem, as described in section <a href="#section2.3.6">2.3.6</a>.</li>
+  <li>The flag adjusts a resource limit, and it is not possible to set
+	  that flag for all programs of the given language in the suite.</li>
+</ol>
+
+<p>
+A proposed portability flag will normally not be approved unless it is
+essential in order to successfully build and run the benchmark.
+</p>
+
+<p>
+If more than one solution can be used for a problem, the subcommittee
+will review attributes such as precedent from previously published
+results, performance neutrality, standards compliance, amount of code
+affected, impact on the expressed original intent of the program, and
+good coding practices (in rough order of priority).
+</p>
+
+<p>
+If a benchmark is discovered to violate the relevant standard, that may
+or may not be reason for the subcommittee to grant a portability flag.
+If the justification for a portability flag is standards compliance,
+the tester must include a specific reference to the offending source
+code module and line number, and a specific reference to the relevant
+sections of the appropriate standard. The tester should also address
+impact on the other attributes mentioned in the previous paragraph.
+</p>
+
+<p>
+If a given portability problem (within a given language) occurs in
+multiple places within a suite, then, in base, the same method(s) must
+be applied to solve all instances of the problem.
+</p>
+
+<p>
+If a library is specified as a portability flag, SPEC may request that
+the table of contents of the library be included in the disclosure.
+</p>
+
+<h3 id="section2.3">2.3 Base Optimization Rules</h3>
+<p>
+In addition to the rules listed in <a
+ href="#section2.2">section 2.2</a> above,
+the selection of optimizations to be used to produce SPEC OMP2012 Base
+Metrics includes the following:
+</p>
+
+<h4 id="section2.3.1">2.3.1 Safety and Standards Conformance</h4>
+<p>
+The optimizations used are expected to be safe, and it is expected that
+system or compiler vendors would endorse the general use of these
+optimizations by customers who seek to achieve good application
+performance.
+</p>
+
+<p>
+The requirements that optimizations be safe, and that they generate
+correct code for a class of programs larger than the suite itself
+(<a href="#section1.4">rule 1.4</a>), are
+normally interpreted as requiring
+that the system, as used in base, implement the language correctly.
+"The language" is defined by the appropriate ANSI/ISO standard (C99,
+Fortran-95, C++ 98).
+</p>
+
+<p>
+The principle of standards conformance is not automatically applied,
+because SPEC has historically allowed certain exceptions:
+</p>
+
+<ol>
+  <li>Section<a href="#section2.3.4"> 2.3.4</a>&nbsp;
+	  allows reordering of arithmetic
+	  operands.</li>
+  <li>SPEC has not insisted on conformance to the C standard in the
+	  setting of <tt>errno</tt>.</li>
+  <li>SPEC has not dealt with (and does not intend to deal with)
+	  language standard violations that are performance neutral for the
+	  OMP2012 suite.</li>
+  <li>When a more recent language standard modifies a requirement
+	  imposed by an earlier standard, SPEC will also accept systems that
+	  adhere to the more recent ANSI/ISO language standard.</li>
+</ol>
+
+<p>
+Otherwise, a deviation from the standard that is not performance
+neutral, and that gives the particular implementation a OMP2012 performance
+advantage over standard-conforming implementations, is considered an
+indication that the requirements about "safe" and "correct code"
+optimizations are probably not met. Such a deviation may be a reason
+for SPEC to find a result not rule-conforming.
+</p>
+
+<p>
+If an optimization causes any SPEC OMP2012 benchmark to fail to
+validate, and if the relevant portion of this benchmark's code is
+within the language standard, then the failure is taken as additional
+evidence that an optimization is not safe.
+</p>
+
+<p>
+<b>Regarding C++:</b> Note that for
+C++ applications, the standard calls for support of both run-time type
+information (RTTI) and exception handling. The compiler, as used in
+base, must enable these.
+</p>
+
+<div style="margin-left: 40px;">
+<p>For example, a compiler enables
+exception handling by default; it can be turned off with
+<tt>--noexcept</tt>. The switch <tt>--noexcept</tt> is not allowed in base.
+</p>
+
+<p>
+For example, a compiler defaults to no run time type information, but
+allows it to be turned on via <tt>--rtti</tt>.
+The switch <tt>--rtti</tt> must be
+used in base.
+</p>
+</div>
+
+<p>
+<b>Regarding accuracy:</b> Because
+language standards generally do not set specific requirements for
+accuracy, SPEC has also chosen not to do so. Nevertheless:
+</p>
+
+<ol>
+  <li>Optimizations are expected to generate code that provides
+	  appropriate accuracy for a class of problems, where that class is
+	  larger than the SPEC benchmarks themselves.</li>
+  <li>Implementations are encouraged to clearly document any accuracy limitations.</li>
+  <li>Implementations are encouraged to adhere to the principle of "no
+	  surprises"; this can be achieved both by predictable algorithms and by
+	  documentation.</li>
+</ol>
+
+<p>
+In cases where the class of appropriate applications appears to be so
+narrowly drawn as to constitute a "benchmark special", that may be a
+reason for SPEC to find a result non-conforming.
+</p>
+
+<h4 id="section2.3.2">2.3.2 Same for all benchmarks of a given language</h4>
+<p>
+In base, the same compiler must be used for all modules of a given
+language within a benchmark suite. Except for portability flags (see
+<a href="#section2.2.4">2.2.4</a> above), all flags or
+options that affect the
+transformation process from SPEC-supplied source to completed
+executable must be the same, including but not limited to:
+</p>
+
+<ol>
+  <li>compiler options</li>
+  <li>linker options</li>
+  <li>preprocessor options</li>
+  <li>libraries, including compiler, runtime, and optional math</li>
+  <li>flags that set warning levels (typically <tt>-w</tt>)</li>
+  <li>flags that create object files (typically -c, -o).</li>
+  <li>flags that affect the verbosity level of the compiler driver
+	  (typically <tt>-v</tt>)</li>
+  <li>language dialect selection switches (e.g. <tt>-ansi99</tt>,
+      <tt>-std</tt>)</li>
+  <li>flags that assert standards compliance by the benchmarks (see <a href="#section2.3.4">2.3.4</a>, below)</li>
+  <li>flags that are set at installation time</li>
+  <li>flags that are set on a system-global basis</li>
+</ol>
+
+<p>
+All flags must be applied in the same order for all compiles of a given language.
+</p>
+
+<p>
+<b>Note</b> that the SPEC tools provide methods to set flags on a per-language basis.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>For example, if a tester sets:
+</p>
+</span>
+
+<pre>
+default=base:
+COPTIMIZE = -O4
+FOPTIMIZE = -O5
+</pre>
+
+<span style="font-size:80%">
+<p>
+then the C benchmarks
+will be compiled with <tt>-O4</tt>
+and the Fortran benchmarks with <tt>-O5</tt>.
+(This is legal: there is
+no requirement to compile C codes with the same optimization level as
+Fortran codes).
+</p>
+</span>
+</div>
+
+<p>
+<b>Regarding benchmarks that have been written in more than one language:</b>
+</p>
+
+<p>
+In a mixed-language benchmark, the tools automatically compile each
+source module with the options that have been set for its language.
+</p>
+
+<p style="margin-left: 40px;">
+<span style="font-size:80%">
+Continuing the example just above, a
+benchmark that uses both C and Fortran would have its C modules
+compiled with <tt>-O4</tt> and its
+Fortran modules with <tt>-O5</tt>.
+This, too, is legal.
+</span>
+</p>
+
+<p>
+In order to link an executable for a mixed-language benchmark, the
+tools need to decide which link options to apply (e.g. those defined in
+<tt>CLD</tt>/<tt>CLDOPT</tt> vs. those in <tt>FLD</tt>/<tt>FLDOPT</tt> vs. those in
+<tt>CXXLD</tt>/<tt>CXXLDOPT</tt>).
+This decision is
+based on benchmark classifications that were determined during
+development of OMP2012. For reasons of link time library inclusion, the
+classifications were not made based on percentage of code nor on the
+language of the main routine; rather, the classifications had been set
+to either <tt>F</tt> (for mixed
+Fortran/C benchmarks) or <tt>CXX</tt>
+(for benchmarks that include C++).
+</p>
+
+<p>
+Link options must be consistent in a base build. For example, if
+<tt>FLD</tt> is set to
+<tt>/usr/opt/advanced/ld</tt> for pure
+Fortran benchmarks, the same setting must be used for any mixed
+language benchmarks that have been classified, for purpose of linking,
+as Fortran.
+</p>
+
+<p>
+<b>Inter-module optimization and mixed-language benchmarks:</b>
+</p>
+
+<p>
+For mixed-language benchmarks, if the compilers have an incompatible
+inter-module optimization format, flags that require inter-module
+format compatibility may be dropped from base optimization of
+mixed-language benchmarks. The same flags must be dropped from all
+benchmarks that use the same combination of languages. All other base
+optimization flags for a given language must be retained for the
+modules of that language.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>
+For example, suppose that a suite has
+exactly two benchmarks that employ both C and Fortran, namely
+<tt>997.CFmix1</tt> and <tt>998.CFmix2</tt>. A tester uses a C
+compiler and Fortran compiler that are sufficiently compatible to be
+able to allow their object modules to be linked together - but not
+sufficiently compatible to allow inter-module optimization. The C
+compiler spells its intermodule optimization switch
+<tt>-ifo</tt>, and the Fortran compiler spells its switch <tt>--intermodule_optimize</tt>.
+In this case, the following would be legal:
+</p>
+</span>
+
+<pre>
+default=base:
+COPTIMIZE = -fast -O4 -ur=8 -ifo
+FOPTIMIZE = --prefetch:all --optimize:5 --intermodule_optimize
+FLD=/usr/opt/advanced/ld
+FLDOPT=--nocompress --lazyload --intermodule_optimize
+
+997.CFmix1,998.CFmix2=base:
+COPTIMIZE = -fast -O4 -ur=8
+FOPTIMIZE = --prefetch:all --optimize:5
+FLD=/usr/opt/advanced/ld
+FLDOPT=--nocompress --lazyload
+</pre>
+
+<span style="font-size:80%">
+<p>
+Following the precedence rules as explained in <tt>config.html</tt>, the above
+section specifiers set default tuning for the C and Fortran benchmarks,
+but the tuning is modified for the two
+mixed-language benchmarks to remove switches that would have attempted
+inter-module optimization.
+</p>
+</span>
+</div>
+
+<h4 id="section2.3.3">2.3.3 Assertion flags must NOT be used in base</h4>
+<p>
+An assertion flag is one that supplies semantic information that the
+compilation system did not derive from the source statements of the
+benchmark.
+</p>
+
+<p>
+With an assertion flag, the programmer asserts to the compiler that the
+program has certain nice properties that allow the compiler to apply
+more aggressive optimization techniques (for example, that there is no
+aliasing via C pointers). The problem is that there can be legal
+programs (possibly strange, but still standard-conforming programs)
+where such a property does not hold. These programs could crash or give
+incorrect results if an assertion flag is used. This is the reason why
+such flags are sometimes also called "unsafe flags". Assertion flags
+should never be applied to a production program without previous
+careful checks; therefore they must not be used for base.
+</p>
+
+<p>
+Exception: a tester is free to turn on a flag that asserts that the
+benchmark source code complies to the relevant standard (e.g.
+<tt>-ansi_alias</tt>). Note, however,
+that if such a flag is used, it must be applied to all compiles of the
+given language (C, C++, or Fortran), while still passing SPEC's
+validation tools with correct answers for all the affected programs.
+</p>
+
+<h4 id="section2.3.4">2.3.4 Floating point reordering allowed</h4>
+<p>
+Base results may use flags which affect the numerical accuracy or
+sensitivity by reordering floating-point operations based on algebraic
+identities, provided of course that the result validates.
+</p>
+
+<h4 id="section2.3.5">2.3.5 Base Build Environment</h4>
+<p>
+The system environment must not be manipulated during a build of the
+base binaries.
+For example, suppose that an environment variable called <tt>BIGPAGES</tt> can be set to
+<tt>yes</tt> or <tt>no</tt>, and the default is <tt>no</tt>. The tester must not change
+the choice during the build of the base binaries. See <a href="#section2.1.4">section 2.1.4</a>.
+</p>
+
+<h4 id="section2.3.6">2.3.6 Portability Switches for Data Models</h4>
+<p>
+Normally, it is expected that the data model (such as pointer sizes,
+sizes of <tt>int</tt>, etc) will be consistent in base for all compilations of a
+given language. In particular, compilers provide switches like <tt>-m64</tt>,
+and several of the benchmark source codes supply <tt>-DSPEC_LP64</tt>,
+<tt>-DSPEC_P64</tt>, and/or <tt>-DSPEC_ILP64</tt> to select
+between data declarations of different sizes. If one of these flags is
+used in base, then normally it
+should be set for all benchmarks of the given language in the suite for
+base.
+</p>
+
+<p>
+If for some reason it is not practical to use a consistent data model
+in base, the following rules apply:
+</p>
+
+<ol>
+  <li>If 64-bit is the default, any benchmark which runs only as a
+	  32-bit binary can be compiled for 32 bits. Thus a flag like <tt>-m32</tt>
+	  can be considered a portability flag.</li>
+  <li>If 32-bit is the default, you may <i>not</i> compile failing
+	  cases as 64-bit binaries. Thus a flag like <tt>-m64</tt> <i>cannot</i>
+	  be considered a portability flag. Instead, 64-bit must be made the
+	  default and the rule 1 applied. This may have the effect that more of
+	  the benchmarks are compiled as 64-bit binaries than you intended.</li>
+</ol>
+
+<p>
+If no consistent combination of benchmark code switches and rule 1 can
+be found to work, possibly due to mixed-language
+benchmarks in the suite, the tester could describe the problem to
+SPEC and request that SPEC
+allow use of an inconsistent data model in base. SPEC would consider
+such a request using the same process outlined in rule <a
+ href="#section2.2.4">2.2.4</a>, including
+consideration of the technical arguments
+as to the nature of the data model problem and consideration of the
+practicality of technical alternatives, if any. SPEC might or might not
+grant the portability flag. SPEC might also choose to fix source code
+limitations, if any, that are causing difficulty.
+</p>
+
+<h4 id="section2.3.7">2.3.7 Cross-module Optimization</h4>
+<p>
+Frequently, performance may be improved via optimizations that work
+across source modules, for example <tt>-ifo</tt>, <tt>-xcrossfile</tt>, or
+<tt>-IPA</tt>. Some compilers may
+require the simultaneous presentation of all source files for
+inter-file optimization, as in:
+</p>
+
+<pre>
+cc -ifo -o a.out file1.c file2.c
+</pre>
+
+<p>
+Other compilers may be able to do cross-module optimization even with
+separate compilation, as in:
+</p>
+
+<pre>
+cc -ifo -c -o file1.o file1.c
+cc -ifo -c -o file2.o file2.c
+cc -ifo -o a.out file1.o file2.o
+</pre>
+
+<p>
+By default, the SPEC tools operate in the latter mode, but they can be
+switched to the former through the <tt>config</tt> file option <tt>ONESTEP=yes</tt>.
+</p>
+
+<p>
+<tt>ONESTEP</tt> <i>is not</i>
+allowed in base. Cross-module optimization without the use of <tt>ONESTEP</tt> <i>is</i>
+allowed in base.
+</p>
+
+<h4 id="section2.3.8">2.3.8 Alignment switches are allowed</h4>
+<p>
+Switches that cause data to be aligned on natural boundaries may be
+used in base.
+</p>
+
+<h4 id="section2.3.9">2.3.9 Feedback-directed optimization</h4>
+
+<p>
+Feedback-directed optimization is not allowed.
+</p>
+
+<h3 id="section2.4">2.4 Peak Optimization Rules</h3>
+
+<h4 id="section2.4.1">2.4.1 Permitted source code changes</h4>
+
+<p> 
+  SPEC OMP2012 allows source code modifications for peak runs.  Changes 
+  to the directives and source are permitted to facilitate generally 
+  useful and portable optimizations, with a focus on improving 
+  scalability. Changes in algorithm are not permitted. Vendor 
+  unique extensions to OpenMP are allowed, if they are portable.
+</p>
+
+<p>   
+  Examples of compiler flags that are allowed are as follows:
+</p>
+
+<ol type="a">    
+<li> Use of subroutine name or function name (e.g. Inlining.)
+<li> Different flags are permitted for each program.  (Base
+	allows only one set of flags to be used for all programs.)
+</ol>
+
+<p> 
+  Qualifications for permitted optimizations include:
+</p>
+
+<ol type="a">
+<li> ANSI standard compliant optimizations
+<li> ISO Fortran and C compliant optimizations
+<li> Optimizations that produce valid results on other compilers and 
+       architectures
+</ol>
+
+<p> 
+  Examples of permitted source code modifications and optimizations are as
+	follows:
+</p>
+
+<ol type="a">
+ <li>Loop Reordering</li>
+ <li>Loops for explicitly touching of memory in a specific order</li>
+ <li>Reshaping arrays</li>
+ <li>Inlining source code</li>
+ <li>Parallelization of serial sections without substantive algorithm changes</li>
+ <li>Vendor specific OpenMP extensions</li>
+ <li>Modifications to parallel workload and/or memory distribution</li>
+</ol>
+
+<p>
+  Examples of optimizations or source code modifications that are not permitted
+	are as follows:
+</p>
+
+<ol type="a">
+<li>Changing a direct solver to an iterative solver.
+<li>Adding calls to vendor specific subroutines, a.o. Recognizing specific algorithms and substituting math library calls
+          (A compiler would be allowed to do this automatically)
+<li>Vendor unique directives, which are not OpenMP extensions
+<li>Language Extensions
+</ol>
+
+<p>
+  Full source and a written report of the nature and justification
+  of the source changes is required with any peak submission
+  having source changes.  These reports will be made public on
+  the SPEC website.
+</p>
+
+<p>
+  Source code added by a vendor is expected to be portable to other 
+  compilers and architectures.  In particular, source code is required 
+  to run on at least one other compiler/run-time library/architecture
+  other than the platform of the vendor.
+</p>
+
+<p>
+  All source code changes are subject to review by the HPG committee.
+</p>
+
+<p>
+  Source code modifications are protected by a 6 week publication window.
+  That is, a period of 6 weeks after the publication of results based on a set 
+  of source code changes during which results based on the same source code 
+  modification or technique not approved by the tester may not be published.
+</p>
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+
+<h2 id="section3">3. Running SPEC OMP2012</h2>
+
+<h3 id="section3.1">3.1 System Configuration</h3>
+
+<h4 id="section3.1.1">3.1.1 Operating System State</h4>
+<p>
+The operating system state (multi-user, single-user, init level <tt>N</tt>) may be
+selected by the tester. This state along with any changes in the
+default configuration of daemon processes or system tuning parameters
+must be documented in the notes section of the results disclosure.
+(For Microsoft Windows, system state is normally "Default"; a list of services that
+are shut down should be provided, if any, e.g. print spooler shut down).
+</p>
+
+<h4 id="section3.1.2">3.1.2 File Systems and File Servers</h4>
+<p>
+SPEC OMP2012 requires that a single file system be used to contain the
+installed directory tree. Additional file systems may be used to store
+temporary and run directories. A single shared run-directory must be
+used for each
+benchmark in a base run.
+Peak runs are allowed to replicate run directories,
+and the directories and file systems can be arranged differently for
+different benchmarks.
+</p>
+
+<p>
+SPEC allows any
+type of file system (disk-based, memory-based, NFS, DFS, FAT, NTFS
+etc.) to be used. The type and arrangement of the directories and file
+systems must be disclosed in reported
+results.
+</p>
+
+<h4 id="section3.1.3">3.1.3 Power and Temperature</h4>
+
+<dl>
+  <dt>This section outlines
+    some of the environmental and other electrical requirements related
+    to power measurement while running the SPEC OMP2012 benchmark.
+More details can be found in the 
+<a class="external" href="http://www.spec.org/power/docs/SPECpower-Power_and_Performance_Methodology.pdf">
+SPEC Power and Performance Benchmark Methodology, version 2.1 (08/17/2011)</a>.
+</dt>
+</dl>
+<p> <b>Line Voltage Source</b></p>
+<p>The line
+  voltage source used for measurements is the main AC power as provided
+  by local utility companies. Power generated from other sources often
+  has unwanted harmonics which are incapable of being measured
+  correctly by many power analyzers, and thus would generate inaccurate
+  results. </p>
+<ul>
+  <li>An AC line voltage
+    source needs to meet the following characteristics:
+    <ul>
+      <li>Frequency: (60Hz,
+        50Hz) ± 1%</li>
+      <li>Voltage in rms: (100V, 110V,
+        120V, 200V, 208V, 220V, 230V, 240V or 400V) ± 5% </li>
+    </ul>
+  </li>
+</ul>
+
+<p>The usage of an
+  uninterruptible power source (UPS) as the line voltage source is
+  allowed, but the voltage output must be a pure sine-wave. This usage
+  must be specified in the Notes section. </p>
+<dl>
+  <dt>If an unlisted AC line
+    voltage source is used, a reference to the standard must be provided
+    to SPEC.</dt>
+</dl>
+<p> For situations in which the
+  appropriate voltages are not provided by local utility companies
+  (e.g. measuring a server in the United States which is configured for
+  European markets, or measuring a server in a location where the local
+  utility line voltage does not meet the required characteristics), an
+  AC power source may be used, and the power source must be specified
+  in the notes section of the disclosure report. In such situation the
+  following requirements must be met, and the relevant measurements or
+  power source specifications disclosed in the notes section of the
+  disclosure report:</p>
+<ul>
+  <li>Total harmonic
+    distortion of source voltage (loaded), based on IEC standards: &lt;
+    5% </li>
+  <li>The AC power source
+    needs to meet the frequency and voltage characteristics previously
+    listed in this section. </li>
+  <li>The
+    AC power source must not manipulate its output in a way that would
+    alter the power measurements compared to a measurement made using a
+    compliant line voltage source without the power source. </li>
+</ul>
+<p align="justify">The intent
+  is that the AC power source does not interfere with measurements such as
+  the power factor by trying to adjust its output power to improve the
+  power factor of the load.</p>
+<p align="justify">
+</p>
+<p><b>Environmental Conditions</b></p>
+<p align="justify">SPEC
+  requires that power measurements be taken in an environment
+  representative of the majority of usage environments. The intent is
+  to discourage extreme environments that may artificially impact power
+  consumption or performance of the server. </p>
+<p align="justify">SPEC OMP2012
+  requires the following environmental conditions to be met: </p>
+<ul>
+  <li>
+    <p align="justify">If air cooling is used, then the ambient
+      temperature range must be 20°C or above. If a different cooling method is used, 
+      then the temperature range is unspecified.</p>
+  </li>
+  <li>
+    <p align="justify"> Elevation: within
+      documented operating specification of SUT</p>
+  </li>
+  <li>
+    <p align="justify"> Humidity: within
+      documented operating specification of SUT</p>
+  </li>
+</ul>
+<p><b>Power Analyzer Setup</b></p>
+<p align="justify">The power
+  analyzer must be located between the AC line voltage source and the
+  SUT. No other active components are allowed between the AC line
+  voltage source and the SUT.</p>
+<p align="justify">Power
+  analyzer configuration settings that are set by SPEC PTDaemon must
+  not be manually overridden. </p>
+<p><b>Power Analyzer Specifications</b></p>
+
+<p align="justify">The power analyzer needs to have been calibrated in the last 12 months.</p>
+
+<p align="justify">To ensure
+  comparability and repeatability of power measurements, SPEC requires
+  the following attributes for the power measurement device used during
+  the benchmark.  Please note that a power analyzer may meet these
+  requirements when used in some power ranges but not in others, due to
+  the dynamic nature of power analyzer accuracy and crest factor.
+  The usage of power analyzer&#8217;s auto-ranging
+  function is discouraged. </p>
+<p><b>Uncertainty and Crest Factor</b></p>
+<ul>
+  <li>
+    <p align="justify"><b>Measurements</b> - the analyzer must report true RMS power (watts), voltage, amperes
+      and power factor.</p>
+  </li>
+  <li>
+    <p align="justify"> <b>Uncertainty</b> -
+      Measurements must be reported by the analyzer with an overall
+      uncertainty of 1% or less for the ranges measured during the
+      benchmark run. Overall uncertainty means the sum of all specified
+      analyzer uncertainties <font color="#000000">for the measurements
+      made during the benchmark run.</font></p>
+  </li>
+  <li>
+    <p align="justify"> <b>Calibration</b> - the
+      analyzer must be able to be calibrated by a standard traceable to
+      NIST (U.S.A.) (<a class="external" href="http://nist.gov/">http://nist.gov</a>)
+      or a counterpart national metrology institute in other countries.
+      The analyzer must have been calibrated within the past year.</p>
+  </li>
+  <li>
+    <p align="justify"> <b>Crest Factor</b> - The
+      analyzer must provide a current crest factor of a minimum value of
+      3. For analyzers which do not specify the crest factor, the analyzer
+      must be capable of measuring an amperage spike of at least 3 times
+      the maximum amperage measured during any 1-second sample of the
+      benchmark run.</p>
+  </li>
+  <li>
+    <p align="justify"> <b>Logging</b> - The
+      analyzer must have an interface that allows its measurements to be
+      read by the SPEC PTDaemon. The reading rate supported by the
+      analyzer must be at least 1 set of measurements per second, where
+      set is defined as watts and at least 2 of the following readings:
+      volts, amps and power factor. The data averaging interval of the
+      analyzer must be either 1 (preferred) or 2 times the reading
+      interval. "Data averaging interval" is defined as the time
+      period over which all samples captured by the high-speed sampling
+      electronics of the analyzer are averaged to provide the measurement
+      set.</p>
+  </li>
+</ul>
+<dl>
+  <dt>For example:</dt>
+</dl>
+<p> An analyzer with a
+  vendor-specified uncertainty of +/- 0.5% of <b>reading</b> +/- 4
+  digits, used in a test with a maximum wattage value of 200W, would
+  have "overall" uncertainty of
+  (((0.5%*200W)+0.4W)=1.4W/200W) or 0.7% at 200W.</p>
+<p>An analyzer with a
+  wattage range 20-400W, with a vendor-specified uncertainty of +/-
+  0.25% of <b>range</b> +/- 4 digits, used in a test with a maximum
+  wattage value of 200W, would have "overall" uncertainty of
+  (((0.25%*400W)+0.4W)=1.4W/200W) or 0.7% at 200W.</p>
+<p><b>Temperature Sensor Specifications</b></p>
+<p align="justify">Temperature
+  must be measured no more than 50mm in front of (upwind of) the main
+  airflow inlet of the SUT. To ensure comparability and repeatability
+  of temperature measurements, SPEC requires the following attributes
+  for the temperature measurement device used during the benchmark: </p>
+<ul>
+  <li>
+    <p align="justify">Logging
+      - The sensor must have an interface that allows its measurements to
+      be read by the benchmark harness. The reading rate supported by the
+      sensor must be at least 4 samples per minute.</p>
+  </li>
+  <li>
+    <p align="justify"> Accuracy - Measurements
+      must be reported by the sensor with an overall accuracy of +/- 0.5
+      degrees Celsius or better for the ranges measured during the
+      benchmark run.</p>
+  </li>
+</ul>
+<p><b>Supported and Compliant Devices</b></p>
+<palign="justify">See
+  accepted measurement devices list
+  (<a class="external" href="http://www.spec.org/power/docs/SPECpower-Device_List.html">http://www.spec.org/power/docs/SPECpower-Device_List.html</a>)
+  for a list of currently supported (by the benchmark software) and
+  compliant (in specifications) power analyzers and temperature
+  sensors.</p>
+<dl>
+  <dt>
+  </dt>
+</dl>
+
+<h3 id="section3.2">3.2 Controlling Benchmark Jobs</h3>
+
+<h4 id="section3.2.1">3.2.1 Number of runs in a reportable result</h4>
+<p>
+A reportable run consists of three runs of the suite. The
+reportable result will be the <b>median</b>
+of these three runs.
+</p>
+
+<h4 id="section3.2.2">3.2.2 Number of threads in base</h4>
+<p>
+For SPECompG_base2012 measurements, the tester must select a single value to use as the
+number of threads to be applied to all benchmarks in the suite.
+</p>
+
+<h4 id="section3.2.3">3.2.3 Number of threads in peak</h4>
+<p>
+For SPECompG_peak2012, the tester is free to choose the number of threads for
+each individual benchmark independently of the other benchmarks, and
+this number may be less than, equal to, or greater than the number
+of threads specified for base.
+</p>
+
+<h4 id="section3.2.4">3.2.4 The <tt>submit</tt> directive</h4>
+<p>
+The <tt>config</tt> file directive <tt>submit</tt>
+is the preferred means to assign work to processors. The tester may, if desired:
+</p>
+
+<ol>
+  <li>place benchmarks on desired processors;</li>
+  <li>place the benchmark memory on a desired memory unit;</li>
+  <li>do arithmetic (e.g. via shell commands) to derive a valid
+	  processor number for each thread;</li>
+  <li>cause the tools to write each copy's benchmark invocation lines
+	  to a file, which is then sent to its processor;</li>
+  <li>reference a testbed description provided by the tester.</li>
+</ol>
+
+<p>
+The <tt>submit</tt> directive can be used to change the run time environment (see
+<a href="#section3.4">section 3.4</a>). In addition, if a testbed
+description is referenced by a <tt>submit</tt> directive, the same description must be used by all benchmarks in a
+base run. This means that in base, the <tt>submit</tt> directive may only differ
+between benchmarks in the suite for portability reasons.
+</p>
+
+<p>
+In peak, different benchmarks may use different <tt>submit</tt> directives.
+</p>
+
+<h3 id="section3.3">3.3 Power Measurement</h3>
+
+<p align="justify">The system configuration used
+for the measurement of power must be in accordance with Section <a
+href="#section3.1.3">3.1.3</a> and the power measurement itself must be in
+accordance with the <a class="external" href="http://www.spec.org/power/docs/SPECpower-Power_and_Performance_Methodology.pdf">
+SPEC Power and Performance Benchmark Methodology, version 2.1 (08/17/2011)</a>.
+The SPEC OMP2012 benchmark tool set
+  provides the ability to automatically gather measurement data from
+  supported power analyzers and temperature sensors and integrate that
+  data into the benchmark result. SPEC requires that the analyzers and
+  sensors used in a submission be supported by the measurement
+  framework, and be compliant with the specifications in Section <a
+href="#section3.1.3">3.1.3</a>.
+  The tools provided by SPEC OMP2012 for power measurement (namely 
+  PTDaemon), or a more recent version provided by SPECpower must be 
+  used to run and produce measured SPEC OMP2012 results.  
+  SPEC OMP2012 includes PTDaemon version 1.4.2. 
+  For the latest version of the PTDaemon and for the list of accepted measurement devices, 
+see <a class="external" href="http://www.spec.org/power/docs/SPECpower-Device_List.html">this page</a>.</p>
+
+<h3 id="section3.4">3.4 Run-time Environment</h3>
+<p>
+Run-time environment settings are treated similarly to compilation
+options in SPEC OMP2012. The rules are as follows, from highest
+precedence to lowest:
+</p>
+
+<ol>
+  <li>Environment settings may be written into the <tt>submit</tt> line of the <tt>config</tt> file, i.e.
+<pre>
+submit = export MP_SPIN=wait; ....
+</pre>
+	   Settings are hard to discern if too many details are packed into the <tt>submit</tt>
+	   line. One advantage, however, is that changing the settings does <i>not</i>
+	   cause anything to rebuild.</li>
+  <li>Environment settings may be made in the <tt>config</tt> file using entries of the form
+<pre>
+env_vars = 1
+ENV_MP_SPIN = wait
+</pre>
+The settings are quite clear from reading the text of the
+<tt>config</tt> file. A disadvantage is that the settings also apply to the
+build phase, and changing a setting <i>will</i> cause the affected
+benchmarks to rebuild.</li>
+  <li>Environment settings may be made outside the invocation of <tt>runspec</tt>:
+<pre>
+export MP_SPIN=...
+runspec ...
+</pre>
+	  The settings are invisible to the automatic report generation and must
+	  be carefully documented.
+	  </li>
+  <li>For base runs, environment settings should be consistent for all
+benchmarks in the suite. If this is not possible,
+the same rules apply as with <a href="#section2.2.4">portability flags</a> in how the committee will accept them.</li>
+  <li>Environment settings can be varied between benchmarks in peak
+	  runs. Note that you can't do this with type 3 settings made prior to
+	  the <tt>runspec</tt> invocation.<br>
+  </li>
+  <li>The semantics of the settings must be documented.</li>
+</ol>
+
+<p>
+These SPEC OMP2012 run-time environment rules are
+consistent with MPI2007 but deviate from CPU2000 and CPU2006 because
+environment settings affecting the OpenMP and MPI libraries play an
+essential role in application performance.
+</p>
+
+<h3 id="section3.5">3.5 Continuous Run Requirement</h3>
+<p>
+All benchmark executions, including the validation steps, contributing
+to a particular submittable report must occur continuously, that is, in
+one execution of <tt>runspec</tt>. For a reportable run, the <tt>runspec</tt> tool will run all three workloads 
+(test, train, and ref), and will ensure that the correct answer is obtained for all three. (Note: the execution 
+and validation of test and train is not part of the timing of the benchmark - it is only an additional test for 
+correct operation of the binary.)
+</p>
+
+<h3 id="section3.6">3.6 Base, Peak, and Basepeak</h3>
+<p>
+If a submittable report will contain both base and peak measurements, a
+single <tt>runspec</tt> invocation must be used
+for the runs. When both base and peak are run, the tools run the base
+executables first, followed by the peak executables.
+</p>
+
+<p>
+It is permitted to publish base results as peak. This can be
+accomplished in various ways, all of which are allowed:
+</p>
+
+<ol>
+  <li>Set <tt>basepeak=yes</tt> in the <tt>config</tt> file for individual benchmarks.</li>
+</ol>
+<div style="margin-left: 40px;">In this case, the tools will run the
+same binary for both base and peak; however, the base times will be
+reported for both base and peak. (The reason for running the binary
+during both base and peak is to remove the possibility that skipping a
+benchmark altogether might somehow change the performance of some other
+benchmark.)<br>
+</div>
+<ol start="2" type="1">
+  <li>Set <tt> basepeak=yes</tt> in the <tt>config</tt> file for an entire suite.</li>
+</ol>
+<div style="margin-left: 40px;">In this case, the peak runs will be
+skipped and base results will be reported as both base and peak for the
+suite.<br>
+</div>
+<ol start="3">
+  <li>Select the <tt>--basepeak</tt> option when using rawformat.</li>
+</ol>
+<div style="margin-left: 40px;">Doing so will cause a new rawfile to be
+written, with base results copied to peak. It is permitted to use this
+feature to copy all of the base results to peak, or just the results
+for selected benchmarks.<br>
+</div>
+
+<p>
+<b>Note:</b> It is permitted but not required to compile in the same <tt>runspec</tt> invocation as the
+execution. See <a href="#section2.1.5">Section 2.1.5</a> regarding cross compilation.
+</p>
+
+<h3 id="section3.7">3.7 Run-Time Dynamic Optimization</h3>
+
+<h4 id="section3.7.1">3.7.1 Definitions and Background</h4>
+<p>
+As used in these run rules, the term "run-time dynamic optimization"
+(RDO) refers broadly to any method by which a system adapts to improve
+performance of an executing program based upon observation of its
+behavior as it runs. This is an intentionally broad definition,
+intended to include techniques such as:
+</p>
+
+<ul>
+  <li>rearrangement of code to improve instruction cache performance</li>
+  <li>replacement of emulated instructions by native code</li>
+  <li>value prediction</li>
+  <li>branch predictor training</li>
+  <li>reallocation of on-chip functional units among hardware threads</li>
+  <li>TLB training</li>
+  <li>adjustment of the supply of big pages</li>
+</ul>
+
+<p>
+RDO may be under control of hardware, software, or both.
+</p>
+
+<p>
+Understood this broadly, RDO is already commonly in use, and usage can be
+expected to increase. SPEC believes that RDO is useful, and does not wish
+to prevent its development. Furthermore, SPEC views at least some RDO
+techniques as appropriate for base, on the grounds that some techniques may
+require no special settings or user intervention; the system simply learns
+about the workload and adapts.
+</p>
+
+<p>
+However, benchmarking a system that includes RDO presents a challenge. A
+central idea of SPEC benchmarking is to create tests that are repeatable:
+if you run a benchmark suite multiple times, it is expected that results
+will be similar, although there will be a small degree of run-to-run
+variation. But an adaptive system may recognize the program that it is
+asked to run, and "carry over" lessons learned in the previous execution;
+therefore, it might complete a benchmark more quickly each time it is run.
+Furthermore, unlike in real life, the programs in the benchmark suite are
+presented with the same inputs each time they are run: value prediction is
+too easy if the inputs never change. In the extreme case, an adaptive
+system could be imagined that notices which program is about to run,
+notices what the inputs are, and which reduces the entire execution to a
+print statement. In the interest of benchmarking that is both repeatable
+and representative of real-life usage, it is therefore necessary to place
+limits on RDO carry-over.
+</p>
+
+
+<h4 id="section3.7.2">3.7.2 RDO Is Allowed, Subject to Certain Conditions</h4>
+<p>
+Run time dynamic optimization is allowed, subject to the usual
+provisions that the techniques must be generally available, documented,
+and supported. It is also subject to the conditions listed in the rules
+immediately following.
+</p>
+
+<h4 id="section3.7.3">3.7.3 RDO Disclosure and Resources</h4>
+<p>
+<a href="#section4.2">Section 4.2</a> applies to
+run-time dynamic optimization:
+any settings which the tester has set to non-default values must be
+disclosed. Resources consumed by RDO must be included in the
+description of the hardware configuration as used by the benchmark
+suite.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>
+For example, suppose that a system can
+be described as a 64-core
+system. After experimenting for a while, the tester decides that the
+optimum performance is achieved by dedicating 4 cores to the run-time
+dynamic optimizer, and running the benchmarks with only 60 threads. The
+system under test is still correctly described as a 64-core system,
+even though only 60 cores were used to run SPEC code.
+</p>
+</span>
+</div>
+
+<h4 id="section3.7.4">3.7.4 RDO Settings Cannot Be Changed At Run-time</h4>
+<p>
+Run time dynamic optimization is subject to <a href="#section3.4">Section 3.4</a>:
+settings cannot be changed at run-time. But Note 2 of rule 3.4 also
+applies to RDO: for example, in peak it would be acceptable to compile
+a subset of the benchmarks with a flag that suggests to the run-time
+dynamic optimizer that code rearrangement should be attempted. Of
+course, <a href="#section2.2.1">Section 2.2.1</a> also would
+apply: such a flag could not tell RDO which routines to rearrange.
+</p>
+
+<h4 id="section3.7.5">3.7.5 RDO and safety in base</h4>
+<p>
+If run-time dynamic optimization is effectively enabled for base (after
+taking into account the system state at run-time and any compilation
+flags that interact with the run-time state), then RDO must comply with
+<a href="#section2.3.1">2.3.1</a>, the safety rule.
+It is understood that the
+safety rule has sometimes required judgment, including deliberation by
+SPEC in order to determine its applicability. The following is intended
+as guidance for the tester and for SPEC:
+</p>
+
+<ul>
+  <li>If an RDO system optimizes a SPEC benchmark in a way which allows
+	  it to successfully process the SPEC-supplied inputs, that is not enough
+	  to demonstrate safety. If it can be shown that a different, but valid,
+	  input causes the program running under RDO to fail (either by giving a
+	  wrong answer or by exiting), where such failure does not occur without
+	  RDO, and if it is not a fault of the original source code, then this is
+	  taken as evidence that the RDO method is not safe.</li>
+  <li>If an RDO system requires that programs use a subset of the
+	  relevant ANSI/ISO language standard, or requires that they use
+	  non-standard features, then this is taken as evidence that it is not
+	  safe.</li>
+  <li>But an RDO system <b><i>is</i></b> allowed to assume that the programs
+	  adhere to the relevant ANSI/ISO language standard.</li>
+</ul>
+
+<h4 id="section3.7.6">3.7.6 RDO carry-over by program is not allowed</h4>
+<p>
+As described in <a href="#section3.7.1">section 3.7.1</a>, SPEC has an interest in preventing
+carry-over of information from run to run. Specifically, no information
+may be carried over which identifies the specific program or executable
+image. Here are some examples of behavior that is, and is not, allowed.
+</p>
+
+<p>
+It doesn't matter whether the information is intentionally stored, or
+just "left over"; if it's about a specific program, it's not allowed:
+</p>
+
+<ul>
+  <li>Allowed: when a program is run, its use of emulated instructions
+	  is noticed by the run-time dynamic optimizer, and these are replaced as
+	  it runs, during this run only, by native code.</li>
+  <li>Not allowed: when the program is re-run, a disk cache is
+	  consulted to find out what instructions were replaced last time, and
+	  the replacement code is used instead of the original program.</li>
+  <li>Not allowed: when the program is re-run, the replacement native
+	  instructions are still sitting in memory, and the replacement
+	  instructions are used instead of the original program.</li>
+</ul>
+
+<p>
+If information is left over from a previous run that is <b><i>not</i></b>
+associated with a specific program, that <b><i>is</i></b> allowed:
+</p>
+
+<ul>
+  <li>Allowed: a virtually-indexed branch predictor is trained during
+	  the reference run of 132.zeusmp2. When the second run of 132.zeusmp2 is
+	  begun, a portion of the branch predictor tables happen
+	  to still be in the state that they were in at the end of the previous
+	  run (i.e. some entries have not been re-used during runs of intervening
+	  programs).</li>
+  <li>Not allowed: a branch predictor specifically identifies that certain
+	  virtual addresses belong to the executable for 132.zeusmp2, and on
+	  the second run of that executable it uses that knowledge.</li>
+</ul>
+
+<p>
+Any form of RDO that uses memory about a specific program is forbidden:
+</p>
+
+<ul>
+  <li>Allowed: while 132.zeusmp2 is running, the run-time dynamic
+	  optimizer notices that it seems to be doing a poor job of rearranging
+	  instructions for instruction cache packing today, and gives up for the
+	  duration of this run.</li>
+  <li>Not allowed: the next time 132.zeusmp2 runs, the run-time
+	  dynamic optimizer remembers that it had difficulty last time and
+	  decides not to even try this time.</li>
+  <li>Not allowed: the run-time dynamic optimizer recognizes that this
+	  new program is 132.zeusmp2 by the fact that it has the same filename,
+	  or has the same size, or has the same checksum, or contains the same
+	  symbols.</li>
+</ul>
+
+<p>
+The system is allowed to respond to the currently running program, and
+to the overall workload:
+</p>
+
+<ul>
+  <li>Allowed: the operating system notices that demand for big pages
+	  is intense for the currently running program, and takes measures to
+	  increase their supply.</li>
+  <li>Not allowed: the operating system notices that the demand for big
+	  pages is intense for certain programs, and takes measures to supply big
+	  pages to those specific programs.</li>
+  <li>Allowed: the operating system notices that the demand for big
+	  pages is intense today, and takes measures to increase the supply of
+	  them. This causes all but the first few SPEC OMP2012 benchmarks to run more
+	  quickly, as the <tt>BIGPAGE</tt> supply is improved.</li>
+</ul>
+
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+<h2 id="section4">4. Results Disclosure</h2>
+<p>
+SPEC requires a full disclosure of results and configuration details
+sufficient to reproduce the results. For results published on its web
+site, SPEC also requires that base results be published whenever peak
+results are published. If peak results are published outside of the
+SPEC web site (<a class="external" href="http://www.spec.org/omp2012/">http://www.spec.org/omp2012/</a>)
+in a publicly available medium, the tester must supply base results on
+request. Publication of results under non-disclosure or company
+internal use or company confidential are not "publicly" available.
+</p>
+
+<p>
+A full disclosure of results must include:
+</p>
+
+<ol>
+  <li>The components of the disclosure page, as generated by the SPEC tools.</li>
+  <li>The tester's configuration file and any supplemental files needed
+	  to build the executables used to generate the results.</li>
+  <li>A flags definition disclosure.</li>
+</ol>
+
+<p>
+A full disclosure of results must include sufficient information to
+allow a result to be independently reproduced. If a tester is aware
+that a configuration choice affects performance, then s/he must
+document it in the full disclosure.
+</p>
+
+<p>
+<b>Note:</b> this rule is not meant to imply that the tester must describe
+irrelevant details or provide massively redundant information.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>
+For example, if the SuperHero Model 1
+comes with a write-through cache, and the SuperHero Model 2 comes with
+a write-back cache, then specifying the model number is sufficient, and
+no additional steps need to be taken to document the cache protocol.
+But if the Model 3 is available with both write-through and write-back
+caches, then a full disclosure must specify which cache is used.<br>
+</p>
+</span>
+</div>
+
+<p>
+For information on how to publish a result on SPEC's web site, contact
+the SPEC office. Contact information is maintained at the SPEC web
+site, <a class="external" href="http://www.spec.org/">http://www.spec.org/</a>.
+</p>
+
+<h3 id="section4.1">4.1 Rules regarding availability dates and systems not yet shipped</h3>
+<p>
+If a tester publishes results for a hardware or software configuration
+that has not yet shipped,
+</p>
+
+<ol>
+  <li>The component suppliers must have firm plans to make production
+	  versions of all components generally available within 90 days of the
+	  first public release of the result (whether first published by the
+	  tester or by SPEC); and</li>
+  <li>The tester must specify the general availability dates that are planned.</li>
+</ol>
+
+<p>
+<b>Note 1:</b> "Generally available" is defined in the SPEC High Performance
+Group Policy document, which can be found at <a class="external" href="http://www.spec.org/hpg/policy.html">http://www.spec.org/hpg/policy.html</a>.
+</p>
+
+<p>
+<b>Note 2:</b> It is acceptable to test larger configurations than customers
+are currently ordering, provided that the larger configurations can be
+ordered and the company is prepared to ship them.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>
+For example, if the SuperHero is
+available in configurations of 1 to 1000 CPUs, but the largest order
+received to date is for 128 CPUs, the tester would still be at liberty
+to test a 1000 CPU configuration and publish the result.
+</p>
+</span>
+</div>
+
+<h4 id="section4.1.1">4.1.1 Pre-production software can be used</h4>
+<p>
+A "pre-production", "alpha", "beta", or other pre-release version of a
+compiler (or other software) can be used in a test, provided that the
+performance-related features of the software are committed for
+inclusion in the final product.
+</p>
+
+<p>
+The tester must practice due diligence to ensure that the tests do not
+use an uncommitted prototype with no particular shipment plans. An
+example of due diligence would be a memo from the compiler Project
+Leader which asserts that the tester's version accurately represents
+the planned product, and that the product will ship on date X.
+</p>
+
+<p>
+The final, production version of all components must be generally
+available within 90 days after first public release of the result.
+</p>
+
+<h4 id="section4.1.2">4.1.2 Software component names</h4>
+<p>
+When specifying a software component name in the results disclosure,
+the component name that should be used is the name that customers are
+expected to be able to use to order the component, as best as can be
+determined by the tester. It is understood that sometimes this may not
+be known with full accuracy; for example, the tester may believe that
+the component will be called "TurboUnix V5.1.1" and later find out that
+it has been renamed "TurboUnix V5.2", or even "Nirvana 1.0". In such
+cases, an editorial request can be made to update the result after
+publication.
+</p>
+
+<p>
+Some testers may wish to also specify the exact identifier of the
+version actually used in the test (for example, "build 20070604"). Such
+additional identifiers may aid in later result reproduction, but are
+not required; the key point is to include the name that customers will
+be able to use to order the component.
+</p>
+
+<h4 id="section4.1.3">4.1.3 Specifying dates</h4>
+<p>
+The configuration disclosure includes fields for both "Hardware
+Availability" and "Software Availability". In both cases, the date
+which must be used is the date of the component which is the <b>last</b>
+of the respective type to
+become generally available. The date is specified <tt><i>Mmm-YYYY</i></tt>
+as in the following examples: <tt>Jan-2007</tt>, <tt>Feb-2007</tt>.
+The Month is abbreviated to three letters with the first letter
+capitalized. A hyphen separates the Month and Year fields. The Year
+field is specified with four digits.
+</p>
+
+<p>
+Since all components must be available within 90 days of the first
+public release of the result, the first day of the specified Month (and
+Year) must fall within this 90 day window.
+</p>
+
+<h4 id="section4.1.4">4.1.4 If dates are not met</h4>
+<p>
+If a software or hardware date changes, but still falls within 90 days
+of first publication, a result page may be updated on request to SPEC.
+</p>
+
+<p>
+If a software or hardware date changes to more than 90 days after
+first publication, the result is considered Non Compliant. For
+procedures regarding Non Compliant results, see the SPEC High
+Performance Group Policy Document, <a class="external" href="http://www.spec.org/hpg/policy.html">http://www.spec.org/hpg/policy.html</a>.
+</p>
+
+<h4 id="section4.1.5">4.1.5 Performance changes for pre-production systems</h4>
+<p>
+SPEC is aware that performance results for pre-production systems may
+sometimes be subject to change, for example when a last-minute bugfix
+reduces the final performance.
+</p>
+
+<p>
+For results measured on pre-production systems, if the tester becomes
+aware of something that will reduce production system performance by
+more than 5% on an overall metric, the tester is required to
+republish the result, and the original result shall be considered
+Non Compliant.
+</p>
+
+<p>
+Analogous rules apply to performance changes across post-production
+upgrades (<a href="#section4.3.4">Section 4.3.4</a>).
+</p>
+
+<h3 id="section4.2">4.2 Configuration Disclosure</h3>
+
+<p>The following sections describe the various elements that make up the disclosure of the system configuration tested.  The
+SPEC tools allow setting this information in the configuration file, prior to starting the measurement (i.e. prior to the
+<tt>runspec</tt> command).  </p>
+
+<p>It is also acceptable to update the information after a measurement has been completed, by editing the rawfile.
+Rawfiles include a marker that separates the user-editable portion from the rest of
+the file.  </p>
+<pre>
+# =============== do not edit below this point ===================
+</pre>
+<p>Edits are forbidden beyond that marker.  </p>
+<p class="example">(There is information about rawfile updating in the <tt>rawformat</tt> section of
+the document <a href="utility.html">utility.html</a>.)  </p>
+
+
+<h4 id="section4.2.1">4.2.1 Identification of System, Manufacturer and Tester</h4>
+<p> 
+Details are
+</p>
+<ol style="list-style-type: lower-alpha;">
+  <li> <b>Model Name</b></li>
+  <li> <b>Test Date:</b> Month, Year</li>
+  <li> <b>Hardware Availability Date: </b>Month, Year. If more than one date applies, use the latest one.</li>
+  <li> <b>Software Availability Date: </b>Month, Year. If more than one date applies, use the latest one.</li>
+  <li> <b>Hardware Vendor</b> </li>
+  <li> <b>Test sponsor</b>: the entity sponsoring the testing (defaults to hardware vendor). </li>
+  <li> <b>Tester</b>: the entity actually carrying out the tests (defaults to test sponsor). </li>
+  <li> <b>OMP2012 license number</b> of the test sponsor or the tester. </li>
+</ol>
+
+<h4 id="section4.2.1.1">4.2.1.1 Identification of Equivalent Systems</h4>
+
+<p>SPEC recommends that measurements be done on the actual systems for which results are claimed.  Nevertheless, SPEC recognizes
+that there is a cost of benchmarking, and that multiple publications from a single measurement may sometimes be appropriate.  For
+example, two systems badged as "Model A" versus "Model B" may differ only in the badge itself; in this situation, differences are
+sometimes described as only "paint deep", and a tester may wish to perform only a single test (i.e. the <tt>runspec</tt> tool is
+invoked only once, and multiple rawfiles are prepared with differing system descriptions).</p>
+
+<p>Although paint is usually not a performance-relevant difference, for other differences it can be difficult to draw a precise line
+as to when two similar systems should no longer be considered equivalent.  For example, what if Model A and B come from different
+vendors?  Use differing firmware, power supplies, or line voltage?  Support additional types or numbers of disks, or other devices?</p>
+
+<p>For SPEC OMP2012, a single measurement may be published as multiple equivalent results provided that all of the following
+requirements are met:</p>
+<ol>
+  <li><p class="snugbot">Performance differences from factors such as those listed in the paragraph above (paint, vendor,
+  firmware, and so forth) are within normal run-to-run variation.</p></li> 
+  <li><p class="snug">The CPU is the same.</p></li>
+  <li><p class="snug">The motherboards are the same:</p>
+     <ol style="list-style-type:lower-alpha;">
+     <li><p class="snug">same motherboard manufacturer</p></li>
+         <li><p class="snug">same electrical devices (for example, IO support chips, memory slots, PCI slots)</p></li> 
+         <li><p class="snug">same physical shape.</p></li>
+      </ol></li>
+  <li><p class="snug">The memory systems are the same:</p>
+      <ol style="list-style-type:lower-alpha;">
+        <li><p class="snug">same caches</p></li>
+        <li><p class="snug">same number of memory modules</p></li>
+        <li><p class="snug">memory modules are run at the same speed</p></li>
+        <li><p class="snug">memory modules comply with same specifications, where  applicable (for example, the same labels as
+        determined by the JEDEC DDR3 DIMM Label Specification).</p></li>
+        </ol></li>
+  <li><p class="snug">As tested, all hardware components are supported on both systems.  </p>
+  <p class="example">For example, the Model A and Model B meet the requirements listed above, including a motherboard with
+  the same number of DIMM slots.  The Model A can be fully populated with 96 DIMMs.  Due to space and thermal considerations,
+  the Model B can only be half-populated; i.e. it is not supported with more than 48 DIMMs.  If the actual sytem under test
+  is the Model A, the tester must fill only the DIMM slots that are allowed to be filled for both systems.</p></li>
+  <li><p class="snug">Disclosures must reference each other, and must state which system was used for the actual measurement.  For
+  example:</p>
+<p class="example">This result was measured on the
+Acme Model A.  The Acme Model A and the Bugle Model B are
+equivalent.</p>
+  <li><p class="snug">No power measurement is
+made. A single power measurement may not be published as multiple
+equivalent systems.</p></li>
+  </li>
+</ol>
+  <p>When a single measurement is used for multiple systems, SPEC may ask for a review of the differences between the systems, may
+  ask for substantiation of the requirements above, and/or may require that additional documentation be included in the
+  publications.</p>
+</td></tr></tbody></table>
+
+
+<h4 id="section4.2.2">4.2.2 Node Configuration</h4>
+<p>
+The system will consist of one node. Both the Hardware and the Software
+are described:
+</p>
+
+<ol style="list-style-type: lower-alpha;">
+  <li><b>Model Name</b></li>
+  <li><b>Hardware Vendor</b></li>
+  <li><b>CPU Name:</b> A manufacturer-determined processor formal name.</li>
+  <li><b>CPU Characteristics:</b> Technical characteristics to help identify the processor.</li>
+	<ol>
+  	<li>This field must be used to disambiguate which processor is
+	    used, unless the CPU is already unambiguously designated by the
+	    combination of the fields "CPU Name", "CPU MHz", and "Level (n)
+	    Cache".</li>
+	<li>In addition, SPEC encourages use of this field to make it
+	    easier for the reader to identify a processor, even if the processor
+	    choice is not, technically, ambiguous.</li>
+	<li>SPEC does not require that OMP2012 results be published on the
+	    SPEC web site, although such publication is encouraged. For results
+	    that are published on its web site, SPEC is likely to use this field to
+	    note CPU technical characteristics that SPEC may deem useful for
+	    queries, and may adjust its contents from time to time.</li>
+	<li>Some processor differences may not be relevant to performance,
+	    such as differences in packaging, distribution channels, or CPU
+	    revision levels that affect a SPEC OMP2012 overall performance metric
+	    by less than 5%. In those cases, SPEC does not require
+	    disambiguation as to which processor was tested.</li>
+	</ol>
+	<p>
+	An example may help to clarify these four points:
+	</p>
+
+	<div style="margin-left: 20px;">
+	<span style="font-size:80%">
+	<p>For example, when first introduced, the
+	   TurboBlaster series is available with only one instruction set, and
+	   runs at speeds up to 2GHz. Later, a second instruction set (known as
+	   "Arch2") is introduced and older processors are commonly, but
+	   informally, referred to as having employed "Arch1", even though they
+	   were not sold with that term at the time. Chips with Arch2 are sold at
+	   speeds of 2GHz and higher. The manufacturer has chosen to call both
+	   Arch1 and Arch2 chips by the same formal chip name (TurboBlaster).
+	</p>
+	</span>
+	</div>
+	<ol>
+	<li>A 2.0GHz TurboBlaster result is published. Since the formal chip
+	    name is the same, and since both Arch1 and Arch2 are available at
+	    2.0GHz, the CPU Characteristics field <b>must</b>
+	    be used to identify whether this is an Arch1 or Arch2 chip.</li>
+	<li>A 2.2GHz TurboBlaster result is published. In this case, there is
+	    technically no ambiguity, since all 2.2GHz results use Arch2.
+	    Nevertheless, the tester is encouraged to note that the chip uses
+	    Arch2, to help the reader disambiguate the processors.</li>
+	<li>As an aid to technical readers doing queries, SPEC may decide to
+	    adjust all the TurboBlaster results that have been posted on its
+	    website by adding either "Arch1" or "Arch2" to all posted results.</li>
+	<li>The 2.2GHz TurboBlaster is available in an OEM package and a
+	    Consumer package. These are highly similar, although the OEM version
+	    has additional testing features for use by OEMs. But these are both
+	    2.2GHz TurboBlasters, with the same cache structure, same instruction
+	    set, and, within run-to-run variation, the same OMP2012 performance. In
+	    this case, it is not necessary to specify whether the OEM or Consumer
+	    version was tested.</li>
+	</ol>
+
+  <li><b>CPU MHz:</b> a numeric value expressed in megahertz. That is, do not say "1.0 GHz", say "1000". The
+	  value here is to be the speed at which the CPU is run, even if the chip
+	  itself is sold at a different clock rate. That is, if you "over-clock"
+	  or "under-clock" the part, disclose here the actual speed used.</li>
+  <li><b>CPU Maximum MHz:</b> a numeric value expressed in megahertz. That is, do not say "1.0 GHz", say "1000". The
+	  value here is to be the maximum speed at which the CPU is run.
+	  This is typically what vendors call the maximum turbo frequency.  </li>
+  <li><b>Level 1 (primary) Cache:</b> Size, location, number of instances (e.g. "<span class="ttnobr">32 KB I + 64 KB D on chip per core</span>").</li>
+  <li><b>Level 2 (secondary) Cache:</b> Size, location, number of instances.</li>
+  <li><b>Level 3 (tertiary) Cache:</b> Size, location, number of instances.</li>
+  <li><b>Other Cache</b>: Size, location, number of instances.</li>
+  <li id="cpucount"><b>Number of CPUs in the node</b> It is assumed that processors can be described as 
+containing 
+	    one or more 
+	    "chips", each of which contains some number of
+		"cores", each of which can run some number of hardware "threads".
+		Fields are provided in the results disclosure for each of these. If
+		industry practice evolves such that these terms are no longer
+		sufficient to describe processors, SPEC may adjust the field set.</li>
+		<p>
+		The current fields are:
+		</p>
+		<ol>
+		  <li><tt>hw_ncores:</tt> number of processor cores enabled (total) during this test</li>
+		  <li><tt>hw_nchips:</tt> number of processor chips enabled during this test</li>
+		  <li><tt>hw_ncoresperchip:</tt> number of cores that are manufactured into a chip</li>
+		  <li><tt>hw_nthreadspercore:</tt> number of hardware threads enabled (per core) during this test</li>
+		</ol>
+		<p>
+		Regarding the fields in the above list
+		that mention the word "enabled": if a node, chip, core, or thread is
+		available for use during the test, then it must be counted. If one of
+		these resources is disabled - for example by a firmware setting prior
+		to boot - then it need not be counted, but the tester must exercise due
+		diligence to ensure that disabled resources are truly disabled, and not
+		silently giving help to the result.
+		</p>
+		<p>
+		Regarding the field (<tt>hw_ncoresperchip</tt>), the tester must count the cores irrespective of whether they are enabled.
+		</p>
+		<p>Example: In the following tests, the SUT is a Turboblaster Model 32-64-256, which contains 32
+		   chips. Each chip has 2 cores. Each core can run 4 hardware threads.
+		</p>
+		<ol>
+		    <li>A 256-thread SPEC OMP2012 test uses all the available resources. It is reported as:
+				<pre>
+hw_ncores:         64
+hw_nchips:         32
+hw_ncoresperchip:   2
+hw_nthreadspercore: 4
+				</pre>
+				</li>
+    <li>The system is halted, and firmware commands are entered to
+		enable 1 core per chip, and hardware
+		threading is turned off. The system is booted, and a 32-thread test is run. The
+		resources this time are:
+		<pre>
+hw_ncores:         32
+hw_nchips:         32
+hw_ncoresperchip:   1
+hw_nthreadspercore: 1
+		</pre> 
+		</li>
+  </ol>
+
+  	<p>
+	<b>Note:</b> if resources are disabled, the method(s) used for such disabling must be documented and supported.
+	</p>
+	</li>
+
+  <li><b>Number of CPUs orderable</b>.
+		Specify the number of processors that can be ordered, using whatever
+		units the customer would use when placing an order. If necessary,
+		provide a mapping from that unit to the nodes/chips/cores units just above.
+		For example:
+		<pre>
+1 to 8 TurboCabinets. Each TurboCabinet contains 4 chips.
+		</pre>
+		</li>
+
+  <li><b>Memory:</b> Size in MB/GB. 
+<span id="memoryconfig">Performance-relevant information as to the memory
+		configuration </span>must be included, either in the field or in the
+		notes section. If
+		there is one and only one way to configure memory of the stated size,
+		then no additional detail need be disclosed. But if a buyer of the
+		system has choices to make, then the result page must document the
+		choices that were made by the tester.
+		<div style="margin-left: 20px;">
+		<span style="font-size:80%">
+			For example, the tester may need to
+			document number of memory carriers, size of DIMMs, banks, interleaving,
+			access time, or even arrangement of modules: which sockets were used,
+			which were left empty, which sockets had the bigger DIMMs.
+		</span>
+		</div>
+		Exception: if the tester has evidence
+		that a memory configuration choice does not affect performance, then
+		SPEC does not require disclosure of the choice made by the tester.
+		<div style="margin-left: 20px;">
+		<span style="font-size:80%">
+			For example, if an 8GB system is known
+			to perform identically whether configured with 8 x 1GB DIMMs or 4 x
+			2GB DIMMs, then SPEC does not require disclosure of which choice was made.
+		</span>
+		</div>
+		</li>
+
+  <li><b>Disk Subsystem:</b> Describes disks attached to processor nodes. File Server disks are
+		documented as
+		below. Details are Size (GB/TB), Type (SCSI, Fast SCSI etc.), and any
+		other performance-relevant
+		characteristics. The disk subsystem used for the SPEC OMP2012 run
+		directories must be described. If other disks are also performance
+		relevant, then they must also be described.
+		</li>
+
+  <li><b>Other Hardware:</b> Additional equipment added to improve performance (special disk controller, NVRAM file system accelerator etc.).</li>
+
+
+</ol>
+
+<h4 id="section4.2.3">4.2.3 Software Configuration</h4>
+<p>
+This section describes the compiler invocation and running of the benchmarks.
+Details are:
+</p>
+<ol type="a">
+  <li><b>Operating System:</b> Name and Version</li>
+<br />
+
+  <li><b>System State</b>: On Linux systems with multiple run levels, the system state must be described by
+  stating the run level and a very brief description of the meaning of that run level, for example:
+<p class="example">
+  <b>System State</b>: Run level 4 (multi-user with display manager)
+</p>
+<p class="snugbot">
+  On other systems:
+<ul>
+<li>If the system is installed and booted using default options, document the System State as "Default".</li>
+<li>If the system is used in a non-default mode, document the system state using the vocabulary appropriate to
+     that system (for example, "Safe Mode with Networking", "Single User Mode").
+</ul>
+<p class="l1">
+Note: some Unix (and Unix-like) systems have deprecated the concept of "run levels", preferring other terminology
+for state description. In such cases, the system state field should use the vocabulary recommended by the operating system vendor.
+</p></li>
+Additional detail about system state may be added in free form notes.
+</li></p>
+
+  <li><b>File System Type</b> used for the SPEC OMP2012 run directories.</li>
+
+<br />
+  <li><b>Compilers:</b>
+  <ul>
+    <li>C Compiler Name and Version</li>
+    <li>C++ Compiler Name and Version</li>
+    <li>Fortran Compiler(s) Name and Version</li>
+  </ul></li>
+<br />
+  <li><b>System Services</b>: If performance relevant system services or daemons are shut down
+  (e.g. remote management service, disk indexer / defragmenter, spyware defender, screen savers)
+  these must be documented in the notes section. Incidental services that are not performance
+  relevant may be shut down without being disclosed, such as the print service on a system with
+  no printers attached. The tester remains responsible for the results being reproducible as described.</li>
+  <li><p><b>Scripted Installations and Pre-configured Software:</b>  In order to reduce the cost of benchmarking, test
+   systems are sometimes installed using automatic scripting, or installed as preconfigured system images.  A tester might
+   use a set of scripts that configure the corporate-required customizations for IT Standards, or might install by copying a
+   disk image that includes best practices of the performance community.  SPEC understands that there is a cost to
+   benchmarking, and does not forbid such installations, with the proviso that the tester is responsible to disclose how end
+   users can achieve the claimed performance (using appropriate fields above).</p>
+
+     <p class="example">Example: the Corporate Standard Jumpstart Installation Script has 73 documented customizations and
+     278 undocumented customizations, 34 of which no one remembers.  Of the various customizations, 17 are performance
+     relevant for SPEC CPU2006 - and 4 of these are in the category "no one remembers".  The tester is nevertheless
+     responsible for finding and documenting all 17.  Therefore to remove doubt, the tester prudently decides that it is less
+     error-prone and more straightforward to simply start from customer media, rather than the Corporate Jumpstart.</p>
+
+   </li>
+  <li><b>Other Software</b>: Additional software added to improve performance</li>
+</ol>
+
+
+<h4 id="section4.2.4">4.2.4 Tuning Configuration</h4>
+<ol type="a">
+  <li><b>Base flags</b> list.</li>
+  <li><b>Peak flags</b> for each benchmark.</li>
+  <li><b>Portability flags</b> used for any benchmark.</li>
+  <li><b>Base pointers:</b> size of pointers in base.</li>
+  <ol>
+    <li>"32-bit": if all benchmarks in base are compiled with switches
+that request only 32-bit pointers.</li>
+    <li>"64-bit": if all benchmarks in base are compiled with switches
+that request only 64-bit pointers.</li>
+    <li>"32/64-bit": if there is a mix of 32-bit and 64-bit</li>
+  </ol>
+  </li>
+  <li><b>Peak pointers</b>: size of pointers in peak.</li>
+  <li><b>System Tuning</b>: System tuning must be documented. The free form notes must mention the tuning
+  parameters (including BIOS settings) that have been applied. The definition of the parameters may be in
+  the free form notes or in the flags file. Tuning parameters must also be documented and supported by the vendor.</li>
+   <li><p>Any additional notes such as listing any use of SPEC-approved alternate sources or tool changes.</p></li>
+  <li>If a change is planned for the spelling of a tuning string, both spellings should be documented in the notes section.
+	<span style="font-size:80%">
+  	<p>
+		For example, suppose the tester uses a pre-release compiler with:
+	</p>
+	</span>
+	<pre>
+f90 -O4 --newcodegen --loopunroll:outerloop:alldisable
+	</pre>
+	<span style="font-size:80%">
+	<p>
+	but the tester knows that the new code
+	generator will be automatically applied in the final product, and that
+	the spelling of the unroll switch will be simpler than the spelling
+	used here. The recommended spelling for customers who wish to achieve
+	the effect of the above command will
+	be:
+	</p>
+	</span>
+	<pre>
+f90 -O4 -no-outer-unroll
+	</pre>
+	<span style="font-size:80%">
+	<p>
+	In this case, the flags report will
+	include the actual spelling used by the tester, but a note should be
+	added to document the spelling that will be recommended for customers.
+	</p>
+	</span>
+  </li>
+  <li>Mapping of Threads to Cores on the System. Utilities used to perform the mapping should be described.</li>
+  <li>Any additional notes.</li>
+</ol>
+
+
+<h4 id="section4.2.5">4.2.5 Description of Portability and Tuning Options ("Flags File")</h4>
+<p>
+SPEC OMP2012 provides benchmarks in source code form, which are
+compiled under control of SPEC's toolset. The SPEC tools automatically
+detect the use of compilation and linkage flags in the <tt>config</tt> file and document
+them in the benchmark configuration section of the final report. Both <i>portability</i>
+and <i>optimization</i> flags will be captured in the report
+subsection.
+</p>
+
+<p>
+The SPEC tools require a <i>flag description file</i> which provides information about the syntax of the flags and
+their meanings. A result will be marked "invalid" unless it has an associated flag
+description file. A description of how to write one may be found at <a class="external" href="http://www.spec.org/omp2012/Docs">www.spec.org/omp2012/Docs </a>.
+</p>
+<p>
+The level of detail in the description of a flag is expected to be
+sufficient so that an interested technical reader can form a
+preliminary judgment of whether he or she would also want to apply the
+option.
+</p>
+
+<ul>
+  <li>This requirement is phrased as a "preliminary judgment" because a
+	complete judgment of a performance option often requires testing with
+	the user's own application, to ensure that there are no unintended
+	consequences.</li>
+  <li>At minimum, if a flag has implications for safety, accuracy,
+	or standards conformance, such implications must be disclosed.</li>
+  <li>For example, one might write:
+  	<div style="margin-left: 20px;">
+	<span style="font-size:80%">
+	When <tt>--algebraII</tt> is used, the
+	compiler is allowed to use the rules of elementary algebra to simplify
+	expressions and perform calculations in an order that it deems
+	efficient. This flag allows the compiler to perform arithmetic in an
+	order that may differ from the order indicated by programmer-supplied
+	parentheses.
+	</span>
+	</div>
+	</li>
+  <li>The final sentence of the preceding paragraph is an example
+	of a deviation from a standard which must be disclosed.</li>
+</ul>
+
+<p>
+It is acceptable, and even common practice, for testers to build on
+each others' flags files, copying all or part of flags files posted by
+others into their own flags files; but doing so does not relieve an
+individual tester of the responsibility to ensure that the description
+is accurate.
+</p>
+
+<p>
+Although these descriptions have historically been called "flags
+files", they must also include descriptions of other
+performance-relevant options that have been selected, including but not
+limited to environment variables, kernel options, file system tuning
+options, BIOS options, and options for any other performance-relevant
+software
+packages.
+</p>
+
+<h4 id="section4.2.6">4.2.6 Power Measurement Devices</h4>
+<p>
+If an optional power measurement is reported, the following must included. More information on the fields can be found in the config file documentation.
+</p>
+<ul>
+  <li>Power Analyzer
+    <ul>
+      <li> Hardware vendor: <i>Company which manufactures and/or sales the power analyzer.</i></li>
+      <li> Model: <i>The model name of the power analyzer type used for this benchmark run.</i></li>
+      <li> Connectivity: <i>Which interface was used to connect the power analyzer to the PTDaemon host system and to read the power data, e.g. RS-232 (serial port), USB, GPIB etc.</i></li>
+      <li> Serial number: <i>The serial number uniquely identifying the power analyzer used for this benchmark run, in order to help making sure that the power analyzer has been calibrated in the last 12 months.</i></li>
+      <li> Calibration of the Power Analyzer: 
+      <ul> 
+           <li> Institute </li>
+           <li> Accredited by </li>
+           <li> Calibration label </li>
+           <li> Date of calibration </li>
+      </ul>
+      <li> Voltage range used for the measurement: <i>Value of voltage range setting to which the power analyzer has been configured.</i> </li>
+      <li> Electrical current range used for the measurement: <i>Value of current range setting to which the power analyzer has been configured.</i> </li>
+      <li> Input connection: <i>Input connection used to connect the load, if several options are available, or "Default" if not.</i> </li>
+      <li> Host system on which PTDaemon runs: <i>The manufacturer and model number of the system connected to power analyzer and running the power daemon.</i> </li>
+      <li> OS of host system: <i>The name and the version of the operating system installed on the power daemon host system.</i>
+      <li> Version: <i>The version of the power daemon program reading the analyzer data. This information is provided automatically by the benchmark software.</i></li>
+      <li> Setup description: <i>Free format textual description of the device or devices measured by this power analyzer and the accompanying PTDaemon instance, e.g. "SUT Power Supplies 1 and 2". This is especially useful if more than one power analyzer is used.</i> </li>
+    </ul>
+  </li>
+  <li>Temperature Sensor
+    <ul>
+      <li> Hardware vendor: <i>Company which manufactures and/or sales the temperature sensor.</i></li>
+      <li> Model: <i>The model name of the power analyzer type used for this benchmark run.</i> </li>
+      <li> Driver version: <i>The version number of the operating system driver used to control and read the temperature sensor </i></li>
+      <li> Connectivity: <i>Which interface was used to read the temperature data from the sensor, e.g. RS-232 (serial port), USB etc.</i></li>
+      <li> Host system on which PTDaemon runs: <i>The manufacturer and model number of the system connected to the temperature sensor and running the power daemon.</i> </li>
+      <li> OS of host system: <i>The name and the version of the operating system installed on the power daemon host system.</i>
+      <li> Version: <i>The version of the power daemon program reading the sensor data. This information is provided automatically by the benchmark software.</i></li>
+      <li> Setup description: <i>Free format textual description of the device or devices measured and the approximate location of this temperature sensor, e.g. "50 mm in front of SUT main airflow intake". This is especially useful if more than one temperature sensor is used.</i> </li>
+    </ul>
+  </li>
+</ul>
+<dl>
+  <dt>The power analyzer needs to have been calibrated in the last 12 months. Auto-ranging is not allowed. The voltage and current range used for measurement 
+must be reported. See the configuration file documentation for more details.
+   Also, the ranges used by the analyzer must 
+   be reportable by the SPEC PTDaemon in order to ensure that an 
+   uncertainty calculation can be made.</dt>
+</dl>
+
+<h4 id="section4.2.7">4.2.7 Configuration Disclosure for User Built Systems</h4>
+<p>
+SPEC OMP2012 results are for systems, not just for chips: it is required that a user be able
+to obtain the system described in the result page and reproduce the result
+(within a small range for run-to-run variation).
+</p>
+
+<p>
+Nevertheless, SPEC recognizes that chip and motherboard suppliers have a legitimate
+interest in OpenMP benchmarking. For those suppliers, the performance-relevant hardware
+components typically are the cpu chip, motherboard, and memory; but
+users would not be able to reproduce a result using only those three. To actually run
+the benchmarks, the user has to supply other components, such as a case, power supply,
+and disk; perhaps also a specialized CPU cooler, extra fans, a disk controller,
+graphics card, network adapter, BIOS, and configuration software.
+</p>
+
+<p>
+Such systems are sometimes referred to as "white box", "home built", "kit built", or
+by various informal terms. For SPEC purposes, the key point is that the user has to do
+extra work in order to reproduce the performance of the tested components; therefore,
+this document refers to such systems as "user built".
+</p>
+
+<p>
+For user built systems, the configuration disclosure must supply a parts list sufficient
+to reproduce the result. As of the listed availability dates in the disclosure, the user
+should be able to obtain the items described in the disclosure, spread them out on an
+anti-static work area, and, by following the instructions supplied with the components,
+plus any special instructions in the SPEC disclosure, build a working system that
+reproduces the result. It is acceptable to describe components using a generic name (e.g.
+"Any ATX case"), but the recipe must also give specific model names or part numbers that
+the user could order (e.g. "such as a Mimble Company ATX3 case").
+</p>
+
+<p>
+Component settings that are listed in the disclosure must be within the supported ranges
+for those components. For example, if the memory timings are manipulated in the BIOS, the
+selected timings must be supported for the chosen type of memory.
+</p>
+
+<p>
+Components for a user built system may be divided into two kinds: performance-relevant
+(for SPEC OMP2012), and non-performance-relevant. For example, SPEC OMP2012 benchmark scores are
+affected by memory speed, and motherboards often support more than one choice for memory;
+therefore, the choice of memory type is performance-relevant. By contrast, the motherboard
+needs to be mounted in a case. Which case is chosen in not normally performance-relevant;
+it simply has to be the correct size (e.g. ATX, microATX, etc).
+</p>
+
+<ul>
+    <li> Performance-relevant components must be described in fields for "Configuration
+         Disclosure" (see rules 4.2.2, and 4.2.4). These fields begin with <tt>hw_</tt> or <tt>sw_</tt> in
+         the <tt>config</tt> file, as described in <tt>config.html</tt> (including <tt>hw_other</tt> and <tt>sw_other</tt>,
+         which can be used for components not already covered by other fields). If more
+         detail is needed beyond what will fit in the fields, add more information under the free-form notes.
+	</li>
+    <li> Components that are not performance-relevant are to be described in the free-form notes.
+    </li>
+</ul>
+
+<p>
+Example:
+</p>
+
+<pre>
+hw_cpu_name    = Frooble 1500 
+hw_memory      = 2 GB (2x 1GB Mumble Inc Z12 DDR2 1066) 
+sw_other       = SnailBios 17
+notes_plat_000 = 
+notes_plat_005 = The BIOS is the Mumble Inc SnailBios Version 17,
+notes_plat_010 = which is required in order to set memory timings
+notes_plat_015 = manually to DDR2-800 5-5-5-15.  The 2 DIMMs were
+notes_plat_020 = configured in dual-channel mode. 
+notes_plat_025 = 
+notes_plat_030 = A standard ATX case is required, along with a 500W
+notes_plat_035 = (minimum) ATX power supply [4-pin (+12V), 8-pin (+12V)
+notes_plat_040 = and 24-pin are required].  An AGP or PCI graphics
+notes_plat_045 = adapter is required in order to configure the system.
+notes_plat_050 =
+notes_plat_055 = The Frooble 1500 CPU chip is available in a retail box,
+notes_plat_060 = part 12-34567, with appropriate heatsinks and fan assembly.  
+notes_plat_065 =
+notes_plat_070 = As tested, the system used a Mimble Company ATX3 case,
+notes_plat_075 = a Frimble Ltd PS500 power supply, and a Frumble
+notes_plat_080 = Corporation PCIe Z19 graphics adapter.
+notes_plat_085 = 
+</pre> 
+
+<p>
+Additional notes:
+</p>
+
+<p>
+<b>Note 1</b>: Regarding graphics adapters:
+</p>
+
+<ul>
+    <li> Sometimes a motherboard does not provide a graphics adapter. For many operating systems, in order
+         to install the software, a graphics card must be added; for such cases where the use of the graphics
+         adapter does not affect performance, it can be described in the free form notes, and does not need
+         to be listed in the field "Other Hardware".
+	</li>
+	<li> If SPEC OMP2012 performance improves when the external adapter is added, it is, therefore, performance relevant:
+         list the graphics adapter that was used under "Other Hardware".
+	</li>
+</ul>
+
+<p>
+<b>Note 2: Regarding power modes</b>: Sometimes CPU chips are capable of running with differing performance
+characteristics according to how much power the user would like to spend. If non-default power choices are made
+for a user built system, those choices must be documented in the notes section.
+</p>
+
+<p>
+<b>Note 3: Regarding cooling systems</b>: Sometimes CPU chips are capable of running with degraded performance
+if the cooling system (fans, heatsinks, etc.) is inadequate. When describing user built systems, the notes
+section must describe how to provide cooling that allows the chip to achieve the measured performance.
+</p>
+
+
+<h3 id="section4.3">4.3 Test Results Disclosure</h3>
+<p>
+The actual test results consist of the elapsed times and ratios for the
+individual benchmarks and the overall SPEC metric produced by running
+the benchmarks via the SPEC tools. The required use of the SPEC tools
+ensures that the results generated are based on benchmarks built, run,
+and validated according to the SPEC run rules.
+</p>
+
+<h4 id="section4.3.1">4.3.1 OMP2012 Performance Metrics</h4>
+<p>
+Below is a list of the measurement components for each SPEC OMP2012 suite and metric:
+</p>
+<ol>
+  	<ul style="list-style-type: none">
+		<li><b>SPECompG_base2012</b> (Required Base result)</li>
+		<li><b>SPECompG_peak2012</b> (Optional Peak result)</li>
+		<li><b>SPECompG_2012</b> (Greater of Base and Peak result)</li>
+	</ul>
+</ol>
+
+<p>
+These are calculated as follows:
+</p>
+
+<ol>
+  <li>For the given OMP2012 suite, the elapsed
+	time in seconds for each of its benchmark runs is reported.</li>
+  <li>The ratio of the reference system (Sun Fire X4140)
+	time divided by the corresponding measured time is reported.</li>
+  <li>Separately for base and peak, the <a style="font-weight: bold;" href="#section3.2.1">median</a>
+        of three runs of these ratios is reported per benchmark.</li>
+  <li>The "base" metric is the geometric mean of medians of the
+	base ratios, and the "peak" metric is the geometric mean of medians of the peak ratios.</li>
+</ol>
+
+<p>
+All runs of a specific
+benchmark when using the SPEC tools are required to have validated
+correctly.  The benchmark executables must have been built according to the rules
+described in <a href="#section2">section 2</a> above.
+</p>
+
+<h4 id="section4.3.2">4.3.2 OMP2012 Energy Metrics</h4>
+<p>
+Below is a list of the energy metrics for each SPEC OMP2012 suite:
+</p>
+<ol>
+  	<ul style="list-style-type: none">
+		<li><b>SPECompG_energy_base2012</b> (Optional Base result)</li>
+		<li><b>SPECompG_energy_peak2012</b> (Optional Peak result)</li>
+	</ul>
+</ol>
+
+<p>
+These are calculated as follows:
+</p>
+
+<ol>
+  <li>For the given OMP2012 suite, the energy measurement for each of its benchmark runs is reported.</li>
+  <li>The ratio of the energy measurement divided by the corresponding reference system (Sun Fire X4140)
+	energy is reported.</li>
+  <li>Separately for base and peak, the <a style="font-weight: bold;" href="#section3.2.1">median</a>
+        of three runs of these ratios is reported per benchmark.</li>
+  <li>The "base" metric is the geometric mean of medians of the
+	base ratios, and the "peak" metric is the geometric mean of medians of the peak ratios.</li>
+</ol>
+
+<p>
+
+<h4 id="section4.3.3">4.3.3 Metric Selection</h4>
+<p>
+Publication of energy and peak performance results are considered optional by SPEC, so the
+tester may choose to publish only base performance results. Since by definition
+base performance results adhere to all the rules that apply to peak performance results, the
+tester may choose to refer to these results by either the base or peak
+metric names (e.g. <b>SPECompG_base2012</b> or <b>SPECompG_peak2012</b>) or the name
+<b>SPECompG_2012</b> whose value is the greater of <b>SPECompG_base2012</b> and <b>SPECompG_peak2012</b>.
+</p>
+
+<p>
+It is permitted to publish base-only results. Alternatively, the use of
+the flag <tt>basepeak</tt> is permitted, as described in <a href="#section3.6">section 3.6</a>.
+</p>
+
+<h4 id="section4.3.4">4.3.4 Estimates are allowed</h4>
+<p>
+SPEC OMP2012 metrics may be estimated, with the exception of power measurements. All estimates must be clearly identified as such.
+It is acceptable to estimate a single metric (for example,
+SPECompG_base2012, or SPECompG_peak2012, or the elapsed seconds for 362.fma3d).
+Note that it is permitted to estimate a peak metric without being required to provide a corresponding estimate for base.
+</p>
+
+<p>
+SPEC requires that every use of an estimated number be clearly marked with "est." or "estimated"
+next to each estimated number, rather than burying a footnote at the bottom of a page.
+</p>
+
+<div style="margin-left: 40px;">
+<span style="font-size:80%">
+<p>
+For example, say that the JumboFast will achieve estimated performance of:
+</p>
+</span>
+<pre>
+Model 1   SPECompG_base2012        50 est.
+          SPECompG_peak2012        60 est.
+Model 2   SPECompG_base2012        70 est.
+          SPECompG_peak2012        80 est.
+</pre>
+</div>
+
+<p>
+If estimates are used in graphs, the word "estimated" or "est." must be plainly
+visible within the graph, for example in the title, the scale, the legend, or
+next to each individual result that is estimated.
+</p>
+
+<p>
+<b>Note</b>: the term "plainly visible" in this rule is not defined; it is intended as a
+call for responsible design of graphical elements. Nevertheless, for the sake of
+giving at least rough guidance, here are two examples of the right way and wrong
+way to mark estimated results in graphs:
+<ul>
+    <li>Acceptable: a 3 inch by 4 inch graph has 12 point (=1 pica) "est." markings
+        directly above the top of every affected bar, using black type against a white background.</li>
+    <li>Unacceptable: a 1 meter by 3 meter poster has 12 point "est." markings ambiguously placed,
+        with light gray text on a dark gray background.</li>
+</ul>
+</p>
+
+<p>
+Licensees are encouraged to give a rationale or methodology for any
+estimates, together with other information that may help the reader
+assess the accuracy of the estimate. For example:
+
+<ol>
+  <li>"This is a measured estimate: SPEC OMP2012 was run on pre-production
+	  hardware. Customer systems, planned for Q4, are expected to be similar."</li>
+  <li>"Performance estimates are modeled using the cycle simulator
+	  GrokSim Mark IV. It is likely that actual hardware, if built, would include
+	  significant differences."</li>
+</ol>
+</p>
+
+<p>
+Those who publish estimates are encouraged to publish actual SPEC
+OMP2012 metrics as soon as possible.
+</p>
+
+
+<h4 id="section4.3.5">4.3.5 Performance changes for production systems</h4>
+<p>
+As mentioned <a href="#section4.1.5">previously</a>,
+performance may sometimes
+change for pre-production systems; but this is also true of production
+systems (that is, systems that have already begun shipping). For
+example, a later revision to the firmware, or a mandatory OS bugfix,
+might reduce performance.
+</p>
+
+<p>
+For production systems, if the tester becomes aware of something that
+reduces performance by more than 5% on an overall metric (for
+example, SPECompG_2012 or SPECompG_peak2012), the tester
+is encouraged but not required to republish the result. In such cases,
+the original result is not considered Non Compliant. The tester is also
+encouraged, but not required, to include a reference to the change that
+makes the results different (e.g. "with OS patch 20020604-02").
+</p>
+
+<h3 id="section4.4">4.4 Required Disclosures</h3>
+<p>
+If a SPEC OMP2012 licensee publicly discloses an OMP2012 result
+(for example in a press release, academic paper, magazine article, or public web site),
+and does not clearly mark the result as an estimate, any SPEC member may request that
+the rawfile(s) from the run(s) be sent to SPEC. The rawfiles must be made available to
+all interested members no later than 10 working days after the request.
+The rawfile is expected to be complete, including configuration information (<a href="#section4.2">section 4.2</a> above).
+</p>
+
+<p>
+A required disclosure is considered public information as soon as it is provided,
+including the configuration description.
+</p>
+
+<p>
+For example, Company A claims a result of 1000 SPECompG_peak2012. A rawfile is requested,
+and supplied. Company B notices that the result was achieved by stringing together 50 chips
+in single-user mode. Company B is free to use this information in public
+(e.g. it could compare the Company A system vs. a Company B system that scores 999 using only 25 chips in multi-user mode).
+</p>
+
+<p>
+Review of the result: Any SPEC member may request that a required disclosure be reviewed by
+the SPEC HPG subcommittee. At the conclusion of the review period, if the tester does not wish
+to have the result posted on the SPEC result pages, the result will not be posted.
+Nevertheless, as described above, the details of the disclosure are public information.
+</p>
+
+<p>
+When public claims are made about OMP2012 results, whether by vendors or by academic researchers,
+SPEC reserves the right to take action if the rawfile is not made available,
+or shows different performance than the tester's claim, or has other rule violations. 
+</p>
+
+<h3 id="section4.5">4.5 Research and Academic usage of OMP2012</h3>
+<p>
+SPEC encourages use of the OMP2012 suite in academic and research
+environments. It is understood that experiments in such environments
+may be conducted in a less formal fashion than that demanded of testers
+who publish on the SPEC web site. For example, a research environment
+may use early prototype hardware that simply cannot be expected to stay
+up for the length of time required to meet the continuous run
+requirement (see <a href="#section3.5">section 3.5</a>),
+or may use research compilers that are unsupported and are not generally available (see <a href="#section1">section 1</a>).
+</p>
+
+<p>
+Nevertheless, SPEC would like to encourage researchers to obey as many
+of the run rules as practical, even for informal research. SPEC
+respectfully suggests that following the rules will improve the
+clarity, reproducibility, and comparability of research results.
+</p>
+
+<p>
+Where the rules cannot be followed, SPEC requires that the deviations
+from the rules be clearly disclosed, and that any SPEC metrics (such as
+SPECompG_2012) be clearly marked as estimated.
+</p>
+
+<p>
+It is especially important to clearly distinguish results that do not
+comply with the run rules when the areas of non-compliance are major,
+such as not using the reference workload, or only being able to
+correctly validate a subset of the benchmarks.
+</p>
+
+<h3 id="section4.6">4.6 Fair Use </h3>
+<p>
+Any public use of SPEC OMP2012 results must, at the time of
+publication, adhere to the then-currently-posted version of SPEC's
+Fair Use Rules, <a class="external" href="http://www.spec.org/fairuse.html">http://www.spec.org/fairuse.html</a>.
+</p>
+
+<p>
+If a competitive comparison uses SPEC OMP2012, it must use one or more
+of the following metrics:
+</p>
+
+<ol>
+  <li>The overall results: SPECompG_base2012, SPECompG_peak2012,
+	  SPECompG_2012;</li>
+  <li>Median run times of the individual benchmarks [see <a
+		 href="#section4.3.1">section 4.3.1</a>];</li>
+  <li>Median individual benchmark SPEC ratios [see <a
+		 href="#section4.3.1">section 4.3.1</a>];</li>
+</ol>
+
+<p>
+The basis for comparison must be stated. Information from result pages
+may be used to define a basis for comparing a subset of systems,
+including but not limited to operating system version, cache size,
+memory size, compiler version, or compiler optimizations used.
+</p>
+
+<p>
+All public statements regarding SPEC, its benchmarks, and especially
+results posted at <a class="external" href="http://www.spec.org">www.spec.org</a>, are
+required to be scrupulously correct as of the date listed in the public
+statement. However, there is no requirement to update public statements
+as new results are published. For example, if a web page says that the
+Turboblaster 1000 has "the best SPECompG_2012 result when compared versus
+all results published at <a class="external" href="http://www.spec.org">www.spec.org</a>
+through July 1, 2013", there is no requirement to change that web page
+if a better result is published on July 2.
+</p>
+
+<p>
+<b>Note:</b> <i>Regarding the use of non-median individual
+benchmark results: As described in <a href="#section4.3">section 4.3</a>, each
+benchmark is run multiple times and the median is picked from the set of runs.
+Any result from such a set may be mentioned in a competitive
+comparison, provided that the median from the same set is also
+mentioned.</i>
+</p>
+
+<h3 id="section4.7">4.7 Submitting Results to SPEC</h3>
+<p>
+You have decided you want to not only run the benchmark, but to have your
+results published at SPEC.  What do you do?  First, be aware, that if you
+are not a member of SPEC HPG, there is a cost associated with publishing
+results at SPEC.  Please check the SPEC website section
+<a class="external" href="http://www.spec.org/hpg/submitting_results.html">
+submitting results</a>, for
+more information about costs.
+</p>
+
+<p>
+The following lists the steps to do when submitting results for review
+and publication.
+<ul>
+<li>First, read the run rules.  If you do not follow the run rules, your
+results may not be valid and be rejected.</li>
+<li>Next, create a configuration file.  The document <a class="external" href="config.html">config.html</a>
+contains information about how to create and change configuration files.
+A good starting place for a configuration file are the examples in the 
+<tt>config</tt> subtree, or starting from previously submitted results which
+have been published at 
+<a class="external" href="http://www.spec.org">www.spec.org</a>.</li>
+<li>Then after you get done getting things how you want them, you 
+need to make a reportable run.</li>
+<li>After your reportable run is finished, and you are happy with the results,
+you can edit the documentation portion of the results (raw) file.  You
+can use the 
+<a class="external" href="utility.html#rawformat">rawformat</a> command
+to help you verify your results and make changes to help you get your
+result ready for submission.</li>
+<li>Now you have gotten the result ready to go, you need to send it to SPEC.
+This is done by attaching the results file (<tt>.rsf</tt>) to an email
+and address it to <tt>subomp2012@spec.org</tt>.  This is an automated system,
+and once it processes the submission, it will send you back a reply saying
+if it was accepted for review or needs more work. </li>
+<li>Results are reviewd on a two week cycle.  You can see the schedule at the
+<a class="external" href="http://www.spec.org/hpg/calendar">calendar</a>.
+</li> 
+<li>If you run into the need for support, please submit questions to
+omp2012support@spec.org.</li>
+</ul>
+</p>
+
+
+
+
+
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+<h2 id="section5">5. Run Rule Exceptions</h2>
+<p>
+If for some reason, the test sponsor cannot run the benchmarks as
+specified in these rules, the test sponsor can seek SPEC approval for
+performance-neutral alternatives. No publication may be done without
+such approval. The SPEC High Performance Group (HPG) maintains a
+Policies and Procedures document that defines the procedures for such
+exceptions.
+</p>
+
+<br />
+<hr style="width: 100%; height: 2px;" />
+<p>Copyright &copy 1999-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+</body>
+</html>

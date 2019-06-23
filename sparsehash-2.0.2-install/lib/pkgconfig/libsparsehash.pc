@@ -1,4 +1,4 @@
-prefix=/home/cc/NVC/sparsehash-2.0.2-install
+prefix=/home/cc/NVCT/sparsehash-2.0.2-install
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

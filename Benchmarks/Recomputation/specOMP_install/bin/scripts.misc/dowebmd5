@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+# dowebmd5 - Build an archive of flags files and the MD5 sums file for
+#            web-based flag and config file distribution.
+# No support is provided for this script.
+#
+# Copyright 2005-2012 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: dowebmd5 1727 2012-07-24 19:42:08Z CloyceS $
+#
+
+use strict;
+use Digest::MD5;
+use IO::File;
+use IO::Dir;
+use File::Copy;
+
+my $suite;
+my @bsets;
+my @files;
+
+my $SPEC = $ENV{'SPEC'};
+my $PERL = $ENV{'SPECPERL'} || 'perl';
+
+if ($SPEC eq '') {
+    die "SPEC is not set; please source the shrc file and try again.\n";
+}
+if (!-d $SPEC) {
+    die "SPEC is not set to a directory; please source the shrc file and try again.\n";
+}
+if (!-d "$SPEC/benchspec") {
+    die "SPEC is not set to a benchmark suite; source the shrc file and try again.\n";
+}
+if (!-f "$SPEC/benchspec/flags-mandatory.xml") {
+    die "The suite flags are missing!\n";
+}
+
+my $dh = new IO::Dir "$SPEC/benchspec";
+if (!defined($dh)) {
+    die "Could not open $SPEC/benchspec for reading: $!\n";
+}
+while(defined(my $fn = $dh->read)) {
+    next unless -d "$SPEC/benchspec/$fn";
+    next if ($fn =~ /^(?:CVS|\.svn|\.\.?)$/);
+    print "Found benchset $fn\n";
+    push @bsets, $fn;
+}
+undef $dh;
+
+if (@ARGV) {
+    $suite = $ARGV[0];
+    print "Suite name set explicitly to \"$suite\"\n";
+} else {
+    require "$SPEC/bin/vars_common.pl";
+    $suite = $main::lcsuite;
+}
+
+if (!defined($suite)) {
+    if (@bsets > 1) {
+        die "There's more than one benchset directory; please set the suite name explicitly!\n";
+    } else {
+        $suite = $bsets[0];
+    }
+}
+$suite = lc($suite);
+
+# Go ahead and copy the suite flags file and add it to the list of files
+# to process.
+copy("$SPEC/benchspec/flags-mandatory.xml", "$suite.flags.xml");
+push @files, [ 'suite', "$suite.flags.xml" ];
+
+# Go ahead and copy the syntax file and add it to the list of files to process.
+copy("$SPEC/bin/formats/$suite.syntax", "$suite.syntax");
+push @files, [ 'syntax', "$suite.syntax", 1 ];
+
+# Find benchmarks with flags files
+foreach my $bset (@bsets) {
+    $dh = new IO::Dir "$SPEC/benchspec/$bset";
+    while(defined(my $fn = $dh->read)) {
+        next unless -d "$SPEC/benchspec/$bset/$fn";
+        next unless -f "$SPEC/benchspec/$bset/$fn/Spec/flags.xml";
+        # Got one!  Copy it and add it to the list
+        copy("$SPEC/benchspec/$bset/$fn/Spec/flags.xml", "$fn.flags.xml");
+        push @files, [ $fn, "$fn.flags.xml" ];
+    }
+}
+
+# Take care of config files distributed with the suite
+$dh = new IO::Dir "$SPEC/config";
+while(defined(my $fn = $dh->read)) {
+    next unless -f "$SPEC/config/$fn";
+    next unless $fn =~ /\.cfg$/;
+    # Got one!  Copy it and add it to the list
+    copy("$SPEC/config/$fn", 'dist-'.$fn);
+    push @files, [ $fn, 'dist-'.$fn, 1 ];
+}
+
+# Take care of config files distributed with the suite
+$dh = new IO::Dir "$SPEC/Docs/flags";
+while(defined(my $fn = $dh->read)) {
+    next unless -f "$SPEC/Docs/flags/$fn";
+    next unless $fn =~ /\.xml$/;
+    # Got one!  Copy it and add it to the list
+    copy("$SPEC/Docs/flags/$fn", 'dist-'.$fn);
+    push @files, [ $fn, 'dist-'.$fn, 1 ];
+}
+
+# Now actually make the sums.
+# We can't just use md5sum directly, as the EOLs need to be normalized
+# in the same way that runspec will do it.
+
+my $ofh = new IO::File '>sums';
+die "Can't open sums for writing: $!\n" unless defined($ofh);
+
+undef $/;
+foreach my $fileref (sort { $a->[0] cmp $b->[0] } @files) {
+  my ($source, $file, $nodump) = @{$fileref};
+  die "$file isn't readable!\n" unless (-r $file);
+
+  # Make the flag dump that will be linked
+  if ($nodump) {
+    print "Processing $file\n";
+  } else {
+    system $PERL, "-I$ENV{'SPEC'}/bin", "$ENV{'SPEC'}/bin/flag_dump", '--debug=0', '--source', $source, '--force', $file;
+  }
+
+  # Read in the flags file so that it can be summed
+  my $ifh = new IO::File '<'.$file;
+  die "Can't open $file for reading: $!\n" unless defined($ifh);
+  my $flagsstring = <$ifh>;
+  $ifh->close();
+  my $flags = '';
+
+  if ($flagsstring =~ /^<flagsdescription>/m) {
+      # This split is to simulate what runspec does when looking for multiple
+      # flags files within one string:
+      my @flagsfiles = grep { $_ ne '' } split(/<\/flagsdescription>[\s\r\n]*/, $flagsstring, -1);
+      $flagsstring = $flagsfiles[0]."</flagsdescription>\n"; # Eliminated by split, earlier
+  }
+
+  if ($nodump || $flagsstring =~ /^<flagsdescription>/m) {
+      $flags = join("\n", split(/(?:\n\r|\n|\r\n|\r)/, $flagsstring, -1));
+      $file =~ s/\.flags\.xml//;
+      $ofh->print(Digest::MD5::md5_hex($flags)."\t$file\n");
+  } elsif ($flagsstring ne '') {
+      warn "\nERROR: A flags file was specified and read, but does not seem to contain\n".
+           "       valid flag description XML.  The file's content will be ignored.\n";
+  }
+}
+$ofh->close();
+
+print "Done!  Processed ".(@files+0)." files!\n";

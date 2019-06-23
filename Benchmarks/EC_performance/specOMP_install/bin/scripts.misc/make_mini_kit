@@ -1,0 +1,191 @@
+#!/bin/sh
+
+# Copyright 2011 Standard Performance Evaluation Corporation
+# All Rights Reserved
+
+# Programmatic encapsulation of the steps listed at
+# https://pro.spec.org/private/wiki/bin/view/CPU/KitCreationHowTo#Making_a_Mini_40tools_45only_41_Release
+
+# It uses Perl a lot and probably should've just been written in that
+# in the first place, but... lazy.
+
+# No support is provided for this script or its output
+
+# $Id: make_mini_kit 1395 2011-11-23 16:48:00Z CloyceS $
+
+usage() {
+  echo "Usage: $0 <benchset> <benchmark> [benchmark...]"
+  echo "  The benchmark name(s) just need to be enough to uniquely ID the"
+  echo "  benchmark.  It does not (and should not) be the full nnn.name."
+}
+
+if [ "x$SPEC" = "x" ]; then
+  echo Source the shrc
+  exit 1
+fi
+
+if [ "x$1" = "x" ]; then
+  usage
+  echo
+  echo ERROR: No benchset or benchmarks specified
+  exit 1
+fi
+BSET=$1
+shift
+if [ "x$1" = "x" ]; then
+  usage
+  echo
+  echo ERROR: No benchmarks specified
+  exit 1
+fi
+FOUND=0
+for dir in benchspec/*; do
+  if [ -f $dir/$BSET.bset ]; then
+    BSET_FILE=$dir/$BSET.bset
+    BSET_DIR=$dir
+    FOUND=1
+  fi
+done
+if [ $FOUND -le 0 ]; then
+  usage
+  echo
+  echo "ERROR: Benchset '$BSET' does not exist"
+  exit 1
+fi
+echo "Benchset dir is '$BSET_DIR'"
+echo "Benchset file is '$BSET_FILE'"
+
+cd $SPEC
+
+FAIL=0
+for bmark in $*; do
+  BMARKS=`ls -d $BSET_DIR/*$bmark* 2>/dev/null | grep -v '\.bset$' | wc -l`
+  if [ $BMARKS -le 0 ]; then
+    echo "'$bmark' does not identify one or more benchmarks"
+    FAIL=1
+  else
+    echo "$bmark matches $BMARKS benchmarks"
+  fi
+done
+[ $FAIL -gt 0 ] && exit 1
+
+echo
+echo "Updating the benchmark tree"
+svn update
+
+REVERTLIST=
+. ./shrc
+
+if [ "$1" = "specrand" ]; then
+  TMPTAG=slim
+else
+  TMPTAG=$(echo "$*" | tr ' ' _)
+fi
+TAG=$(printf "%03d%s" $(cat version.txt | tr -cd 0-9 | sed 's/^0*//') $TMPTAG)
+echo $TAG > version.txt
+REVERTLIST="$REVERTLIST version.txt"
+echo "Version string for this kit is '$TAG'"
+
+echo Fixing up benchset file
+perl -i -e '
+  BEGIN {
+    $bmre = join("|", splice(@ARGV,1));
+    $looking = 0;
+  }
+  while (<>) {
+    if (/\@benchmarks/) {
+      $looking = 1;
+    } elsif ($looking && /\)/) {
+      $looking = 0;
+    } elsif ($looking && !/$bmre/) {
+      next;
+    } elsif (/\$no_output.*};/) {
+      next;
+    } elsif (/\$no_output/) {
+      $looking = 2;
+      next;
+    } elsif ($looking == 2) {
+      $looking = 0 if /};/;
+      next;
+    }
+    print;
+  }
+  ' $BSET_FILE $*
+REVERTLIST="$REVERTLIST $BSET_FILE"
+
+echo Fixing up formatter benchmark list
+perl -i -e '
+  BEGIN {
+    $bmre = join("|", splice(@ARGV,1));
+    $looking = 0;
+  }
+  while (<>) {
+    s/(check_version.*=>)(\s*)1,/$1 0,/;
+    if (/^.fm::bmarklist/) {
+      $looking = 1;
+    } elsif ($looking == 1 && /benchmarklist/) {
+      $looking = 2;
+    } elsif ($looking == 2 && /^\s*\],\s*$/) {
+      $looking = 1;
+    } elsif ($looking == 2 && /\[/ && !/$bmre/) {
+      next;
+    } elsif ($looking == 1 && /no_output/) {
+      if (!/},/) {
+        $looking = 3;
+      }
+      next;
+    } elsif ($looking == 3) {
+      $looking = 1 if /},/;
+      next;
+    } elsif ($looking == 1 && /\);/) {
+      $looking = 0;
+    }
+    print;
+  }
+  ' bin/vars_common.pl $*
+REVERTLIST="$REVERTLIST bin/vars_common.pl"
+
+echo Running cleanuptree
+SVN_NOCHECK=1 bin/scripts.misc/cleanuptree 2>&1 | tee /tmp/cut.out
+SVNFILES=`cat /tmp/cut.out | sed -n '/^Uncommitted changes/,/MANIFEST/p' | grep '^[M\?A] ' | wc -l`
+rm /tmp/cut.out
+if [ $SVNFILES -gt 3 ]; then
+  echo "Too many changed or unknown files ($SVNFILES, expected 3)"
+  [ "x$REVERTLIST" != "x" ] && svn revert $REVERTLIST
+  exit 1
+fi
+
+echo Making the tarball
+mkdir -p ../src
+bin/scripts.misc/maketars -a --notools_src --comp=bzip2 --benchsets=$BSET 2>&1 | tee /tmp/maketars.out
+TARBALL=`awk '/all tarball name:/ {print $4}' /tmp/maketars.out`
+
+if [ "x$REVERTLIST" != "x" ]; then
+  echo Reverting changes
+  svn revert $REVERTLIST
+fi
+
+if [ ! -f ../src/$TARBALL ]; then
+  echo
+  echo "Can't locate '$TARBALL' in $SPEC/src"
+  echo BAD END
+  exit 1
+fi
+
+echo Unpacking generated tarball
+mkdir t
+cd t
+tar xjf ../../src/$TARBALL
+echo Running the installer
+unset SPEC
+sh install.sh -f
+cd ..
+if [ ! -f t/bin/specperl -a ! -f t/bin/specperl.exe ]; then
+  echo "Installation of $TARBALL failed; see 't' for details"
+  exit 1
+fi
+echo Removing test installation
+rm -rf t
+
+echo
+echo "Done!"

@@ -1,0 +1,405 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<!-- $Id: Example-pn42-flags.xml 2011-07-07 13:22:19Z carol $ -->
+
+<!-- ... You'll want a nice wide window when reading or editing this .................................................... -->
+
+<!-- This flags file is an example ($SPEC/config/Example-pn242-flags.xml) flags file for the Parallel Navi 2.4.2 compiler.
+It was created from $SPEC/Docs/flags/flags-advanced.xml  -->
+
+<flagsdescription>
+
+<filename>Example-pn242-flags.xml</filename>
+
+<title>Parallel Navi 4.2 CPU2006 Flags</title>
+
+<!-- 
+  *********************************************************************************************************************
+  Explanations of submit commands used
+  ********************************************************************************************************************* 
+-->
+
+<submit_command>
+<![CDATA[
+
+<p>No submit command was used.</p>
+
+]]>
+</submit_command>
+
+
+<!-- 
+  *********************************************************************************************************************
+  Explanations of software environment, such as boot time settings
+  ********************************************************************************************************************* 
+-->
+
+<sw_environment>
+<![CDATA[
+
+<p><b>Platform settings</b></p>
+
+<p>One or more of the following settings may have been applied to the testbed.  If so, the "Platform Notes" section of the
+report will say so; and you can read below to find out more about what these settings mean.</p>
+
+<p><b><kbd>autoup=&lt;n&gt;</kbd></b> (Unix)
+<br />When the file system flush daemon <tt>fsflush</tt> runs, it writes to disk all modified file buffers that are more
+than <kbd>n</kbd> seconds old.  </p>
+
+<p><b><kbd>cpu_bringup_set=&lt;n&gt;</kbd></b> (Unix /etc/system)
+<br /> Specifies which processors are enabled at boot time.  <kbd><b>&lt;n&gt;</b></kbd> represents a bitmap of the
+processors to be brought online.  </p>
+
+<p><b><kbd>disablecomponent</kbd></b> (System Management Services)
+<br />This command can be used prior to booting the system for a 1-cpu test.  The tester uses <kbd>disablecomponent</kbd> to
+add all other CPUs to the "blacklist", which is a list of components that cannot be used at boot time.  </p>
+
+<p><b><kbd>LD_LIBRARY_PATH=&lt;directories&gt;</kbd></b> (linker)
+<br />LD_LIBRARY_PATH controls the search order for both the compile-time and run-time linkers.  Usually, it can be
+defaulted; but testers may sometimes choose to explicitly set it (as documented in the notes in the submission), in order to
+ensure that the correct versions of libraries are picked up.  </p>
+
+<p><b><kbd>PARALLEL=&lt;n&gt;</kbd></b> (Unix)
+<br />If programs have been compiled with <kbd>-xautopar</kbd>, this environment variable can be set to the number of
+processors that programs should use.
+</p>
+
+<p><b><kbd>STACKSIZE=&lt;n&gt;</kbd></b> (Unix)
+<br /> Set the size of the stack (temporary storage area) for each slave thread of a multithreaded program.  </p>
+
+<p><b><kbd>tune_t_fsflushr=&lt;n&gt;</kbd></b> (Unix)
+<br /> Controls the number of seconds between runs of the file system flush daemon, <tt>fsflush</tt>.  </p>
+
+<p><b><kbd>ulimit -s &lt;n&gt;</kbd></b> (Unix)
+<br /> Sets the stack size to <kbd>n</kbd> kbytes, or "<kbd>unlimited</kbd>" to allow the stack size to grow without limit.
+</p>
+]]>
+</sw_environment>
+
+<!-- 
+  *********************************************************************************************************************
+  Preface for flags dump and per-result flag report
+  ********************************************************************************************************************* 
+-->
+<header>
+<![CDATA[
+<p>Compilers: Parallel Navi 2.4.2</p>
+<p>Operating systems: Solaris 10</p>
+<p>Last updated: 07-Jul-2011 cal </p>
+
+<p>The text for many of the descriptions below was taken from the Parallel Navi Compiler Documentation, which is
+copyright &copy; 2006 Fujitsu Limited.  The original documentation can be found on your installation media.</p>
+]]>
+</header>
+
+<!-- 
+  ********************************************************************************************************************
+  Compilers
+  ********************************************************************************************************************* 
+-->
+
+<!-- If there is any chance that your compiler will be used by any third party in conjunction with another compiler, it is
+   _strongly_ recommended that the flag names be chosen in such a way as to facilitate flag file merging.
+
+  The regexp below allows a path, as in /opt/FSUNf90/.  The "(?:pattern)" notation groups the pattern inside the
+  parentheses so that the "?" operator that immediately follows the closing parentheses applies to the pattern, thus allowing
+  0 or 1 instances of the whole thing.  
+-->
+
+<flag name="FCC"
+      class="compiler"
+      regexp="(?:/\S+/)?FCC\b">
+<example>FCC</example>
+Invoke the Parallel Navi C++ Compiler
+</flag>
+
+<flag name="fcc"
+      class="compiler"
+      regexp="(?:/\S+/)?fcc\b">
+<example>fcc</example>
+Invoke the Parallel Navi C Compiler.
+</flag>
+
+<flag name="c99"
+      class="compiler"
+      regexp="(?:/\S+/)?c99\b">
+<example>c99</example>
+Invoke the Parallel Navi C99 Compiler.
+</flag>
+
+<flag name="frt"
+      class="compiler"
+      regexp="(?:/\S+/)?frt\b">
+<example>frt</example>
+Invoke the Parallel Navi Fortran Compiler
+</flag>
+
+<!-- 
+  ********************************************************************************************************************
+  Compiler Component Splitters
+  ********************************************************************************************************************* 
+-->
+
+<!-- 
+  The Parallel Navi compilation system allows comma-delimited flags to be sent to different components, as in
+      -Kfast_GP2=3,prefetch_infer,GREG_SYSTEM
+  which sends 3 switches to the optimizer
+
+  The flags in this section are "splitters": they break up flags such as the above into their component parts.  If the above
+  string were used with this flags file, the rule that follows would separate it into:
+
+      -Kfast_GP2=3 -Kprefetch_infer -KGREG_SYSTEM
+
+  In the regexp that follows, 
+   $1   ([^,\s]+)           matches "string"; to be more precise:
+                                [^class] says match characters that are NOT described by the class between brackets
+                                So, we'll accept anything but ",\s" which means comma or whitespace 
+                                + says match one or more times
+   $2   (\S+)               matches one or more characters that are not whitespace
+   $3   (?=\s|$)             matches whitespace or end of string (see flag-description.html section 3.3.4) 
+--> 
+
+<flag name="Koption_splitter" 
+      class="optimization" 
+      regexp="-K([^,\s]+),(\S+)(?=\s|$)">
+<example>Splitter rule for Koptions: -Kswitch[,switch...] </example>
+<include text="-K$1" />
+<include text="-K$2" />
+<display enable="0" />
+</flag>
+
+<!--
+  *************************************************************************************************************************
+  Flags
+
+  Actual flag descriptions at last begin here.  The order is more or less alphabetical.
+
+  *************************************************************************************************************************
+-->
+
+<flag name="F-Am"
+      class="other"
+      compilers="frt">
+<![CDATA[
+<p> 
+The -Am option indicates the manner of saving compiled module information. The -Am option is required
+for all program units that contain modules. For information about this function, see Chapter 10 "Fortran
+Modules" in your Fortran compiler documentation.
+</p>
+]]>
+</flag>
+
+<flag name="F-Kdalign"
+      class="optimization">
+Assume data is naturally aligned. 
+</flag>
+
+<flag name="mixedmain"
+      class="portability"
+      regexp="-Dmain\=MAIN\_\_\b">
+<example>-Dmain=MAIN__</example>
+For benchmarks that have both C and Fortran source files, tells the C
+compiler (and linker) what the name of the main program is.
+</flag>
+
+<flag name="F-Keval"
+      class="optimization">
+Specifies the optimization by changing the method of operator evaluation.
+</flag>
+
+<flag name="fast_GP2_FCC"
+      class="optimization"
+      regexp="-Kfast_GP2\=2\b" compilers="FCC">
+<example>-Kfast_GP2=2</example>
+A convenience option, this switch selects several other options that are described in this file.  
+<include flag="F-O5" />
+<include flag="F-Kdalign" />
+<include flag="F-KSPARC64_GP2" />
+<include flag="F-KVIS1" />
+<include flag="F-Keval" />
+<include flag="F-x-" />
+</flag>
+
+<flag name="fast_GP2_fcc"
+      class="optimization"
+      regexp="-Kfast_GP2\=2\b" compilers="fcc,c99">
+<example>-fast</example>
+A convenience option, this switch selects several other options that are described in this file.  
+<include flag="F-O5" />
+<include flag="F-Kdalign" />
+<include flag="F-Klib" />
+<include flag="F-KSPARC64_GP2" />
+<include flag="F-KVIS1" />
+<include flag="F-Keval" />
+<include flag="F-x-" />
+</flag>
+
+<flag name="fast_GP2_frt"
+      class="optimization"
+      regexp="-Kfast_GP2\=3\b" compilers="frt">
+<example>-Kfast_GP2=3</example>
+A convenience option, this switch selects the following switches that are described in this file:
+<include flag="F-O5" />
+<include flag="F-Kfsimple" />
+<include flag="F-Kdalign" />
+<include flag="F-Kns" />
+<include flag="F-Kfuse" />
+<include flag="F-Kmfunc" />
+<include flag="Kprefetch" />
+<include flag="F-KSPARC64_GP2" />
+<include flag="F-KVIS1" />
+<include flag="F-Keval" />
+<include flag="F-x-" />
+</flag>
+
+<flag name="F-Kfsimple"
+      class="optimization"  compilers="frt">
+Simplify floating-point operations.
+</flag>
+
+<flag name="F-Kfuse"
+      class="optimization"  compilers="frt">
+Fuses neigboring loops.
+</flag>
+
+<flag name="F-KGREG_SYSTEM"
+      class="optimization">
+This specifies the global registers g5 through g6(when -KV9 is available, g6 is used) are subject to
+register allocation in the compile stage. These registers are reserved by the system.
+</flag>
+
+<flag name="F-Klib"
+      class="optimization"  compilers="fcc,c99">
+Replaces standard functions with faster, inline expanded standard functions.
+</flag>
+
+<flag name="F-Kmfunc"
+      class="optimization"  compilers="frt">
+It directs to perform the optimization which changes an intrinsic function or an operation into a
+multi-operation function. A multi-operation function is a function which raised a execution performance by
+performing plurality intrinsic function or operations of the same kind by one call. But, the accuracy error
+margin because of the difference of the algorithm might be caused.
+</flag>
+
+<flag name="F-Kns"
+      class="optimization"  compilers="frt">
+Initializes a nonstandard mode of operation in the FPU.
+</flag>
+
+<flag name="F-Kpg"
+      class="optimization">
+This option generates an instruction sequence used to generate profile information referred by the compiler in order to perform optimization. This option is effective only if -O option is also specified.
+</flag>
+
+<flag name="Kprefetch"
+      class="optimization"
+      compilers="frt">
+Generate prefetch instructions for array data in loops.
+</flag>
+
+<flag name="F-Kprefetch_infer"
+      class="optimization"
+      regexp="-Kprefetch\_infer\b"
+      compilers="frt">
+This option is specified to be omitted of address calculation for prefetch while is prefetch by distance is
+guessed from existing information.
+</flag>
+
+<flag name="F-Kpu"
+      class="optimization">
+This option performs optimization using program runtime profile information obtained by specifying -Kpg option.
+ Among the execution with -Kpg and -Kpu options, CPU number and maximum thread number cannot be changed.
+ This option is effective only if -O option is also specified.
+</flag>
+
+<flag name="F-KSPARC64_GP2"
+      class="optimization">
+Optimization for SPARC64 V is applied.
+</flag>
+
+<flag name="F-KV9"
+      class="optimization">
+Specifies the memory model for the compiled binary object as 64-bit.'
+</flag>
+
+<flag name="F-KVIS1"
+      class="optimization">
+Output Visual Instruction Set (VIS) version 1.0.
+</flag>
+
+<flag name="O_fcc" regexp="-O\b"
+      class="optimization"
+      compilers="fcc,c99">
+<![CDATA[
+<p> 
+Specifies the optimization level.  If no level is specified, no optimization
+is performed.  This is also the default if no -O flag is specified.
+</p>
+]]>
+</flag>
+
+<flag name="O_FCC" regexp="-O\b"
+      class="optimization"
+      compilers="FCC">
+<![CDATA[
+<p> 
+Specifies the optimization level.  If no level is specified, -O3 is assumed.
+If no -O option is specified, no optimization is performed.
+</p>
+]]>
+</flag>
+
+<flag name="O_frt" regexp="-O\b"
+      class="optimization"
+      compilers="frt">
+<![CDATA[
+<p> 
+The system provides four optimization levels: 0, 1, 2, 3, 4, and 5. If the argument is omitted from the -O
+option, level 3 is used. If the -O option is not specified, level 2 is used.
+</p>
+]]>
+</flag>
+
+<flag name="F-O5" 
+      class="optimization"
+      compilers="fcc,c99,frt,FCC">
+<![CDATA[
+<p> 
+The -O5 option creates an object program by applying further optimizations of register allocation and
+software pipelining in addition to -O4 option. Although compiling time increases further more than -O4,
+this option can be used to obtain better execution performance.
+</p>
+]]>
+</flag>
+
+<flag name="runlib"
+      class="other"
+      regexp="-R(\S+)\b">
+<example>-R$1</example>
+<![CDATA[
+<p> 
+Sets the path to the compiler's runtime libraries in the executable.
+</p>
+]]>
+</flag>
+
+<flag name="F-x-"
+      class="optimization">
+Inline expansion of functions defined in the source code.
+</flag>
+
+<flag name="F-X9"
+      class="portability"
+      compilers="frt">
+<![CDATA[
+<p> 
+The 9 argument of the -X option compiles Fortran source programs as Fortran 95 or Fortran 90 source.
+</p>
+]]>
+</flag>
+
+
+</flagsdescription>

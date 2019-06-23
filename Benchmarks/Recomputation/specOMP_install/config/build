@@ -1,0 +1,3 @@
+rm -rf ../benchspec/OMP2012/359.botsspar/exe/bots-sparselu_base.0406 
+runspec --config=dave.cfg --action=clean --tune=base 359.botsspar
+runspec --config=dave.cfg --action=build --tune=base 359.botsspar

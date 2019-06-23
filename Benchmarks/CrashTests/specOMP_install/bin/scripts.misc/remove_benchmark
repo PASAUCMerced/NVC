@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Remove an old benchmark
+# $Id: remove_benchmark 1530 2012-03-06 15:51:11Z CloyceS $
+
+if [ "x$SPEC" = x ]; then
+  SPEC=`pwd`
+fi
+
+cd $SPEC
+
+if [ ! -f bin/runspec -o ! -d benchspec ]; then
+    echo "Error: \$SPEC must be set, or $0 must be run in the top of the benchmark tree"
+    exit 1
+fi
+
+if [ "x$1" = x ]; then
+  echo "Usage: $0 <nnn.name>"
+  exit 1
+fi
+
+BMARK=$1
+
+BMARKPATH=
+BSET=
+for i in benchspec/[A-Z]*; do
+  if [ -d $i/$BMARK ]; then
+    BMARKPATH=$i/$BMARK
+    BSET=$i
+  fi
+done
+
+if [ "x$BSET" = x -o "x$BMARKPATH" = x ]; then
+  echo "Error: $BMARK cannot be found."
+  echo "Usage: $0 <nnn.name>"
+  exit 1
+fi
+
+echo "Found $BMARK in $BSET at $BMARKPATH"
+
+# Remove the benchmark itself
+echo Removing benchmark...
+svn rm $BMARKPATH
+if [ $? -ne 0 ]; then
+  echo "Error removing benchmark"
+  exit 1
+fi
+
+echo Removing benchmark from benchsets...
+BSETLIST=`perl -ni -e 'if (m#^\s*\Q'$BMARK'\E#) { $counts{$ARGV}++ } else { print }; END { print join("\n", sort keys %counts)."\n" }' $BSET/*bset`
+echo $BSETLIST
+echo
+
+echo Removing benchmark from formatter list
+perl -ni -e "print unless m#'\Q$BMARK\E'#" bin/vars_common.pl
+echo
+
+echo 'Noting in Revisions (you clean it up before check-in)...'
+(echo "   *) $BMARK: Removed"; echo; cat Revisions) > Revisions.new.$$
+cat Revisions.new.$$ > Revisions
+rm Revisions.new.$$
+echo
+
+echo Done\! Fix up the revisions file and commit everything with the following command:
+echo
+echo svn commit -m "'$BMARK: Removed'" Revisions bin/vars_common.pl $BMARKPATH $BSETLIST
+echo
+

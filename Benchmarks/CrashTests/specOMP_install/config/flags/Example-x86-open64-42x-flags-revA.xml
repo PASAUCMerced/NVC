@@ -1,0 +1,1685 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+   SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<flagsdescription>
+   <filename>Example-x86-open64-42x-flags-revA</filename>
+   <title>Example x86 Open64 Compiler Suite SPEC CPU2006 Flag Description</title>
+
+   <style>
+      <![CDATA[
+         body { background: white; }
+      ]]>
+   </style>
+	
+<!-- HEADERs -->
+
+   <header>
+      <![CDATA[
+         <h2>Compilers: x86 Open64 Compiler Suite </h2>
+         <hr />
+      ]]>
+   </header>
+
+<!-- /HEADERs -->
+
+<!-- OPTIMIZATION -->
+
+   <flag name="F-Odefault" class="optimization" regexp="-O\b">
+      <example>-O</example>
+      <![CDATA[
+         <p>Set the optimization level to -O2.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2".</p>
+      ]]>
+      <include flag="F-O2" />
+   </flag>
+
+   <flag name="F-O0" class="optimization" regexp="-O0\b">
+      <example>-O0</example>
+      <![CDATA[
+         <p>No optimizations are performed.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-O1" class="optimization" regexp="-O1\b">
+      <example>-O1</example>
+      <![CDATA[
+         <p>Perform minimal local optimizations on sections of straight-line
+            code (basic blocks) only.  Examples of such optimizations are
+            instruction scheduling and some peephole optimizations.  These
+            optimizations do not usually have any noticeable impact on compilation
+            time.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-O2" class="optimization" regexp="-O2\b">
+      <example>-O2</example>
+      <![CDATA[
+         <p>Perform extensive global optimizations.  Examples of such optimizations
+            are control flow optimizations, partial redundancy elimination, and
+            strength reduction.  These optimizations can very often reduce the execution
+            time of the compiled program significantly, but they may do so at the expense
+            of increased compilation time.  This is the default level of optimization.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2".</p>
+      ]]>
+   <include flag="F-O1" />
+   </flag>
+ 
+   <flag name="F-O3" class="optimization" regexp="-O3\b">
+      <example>-O3</example>
+      <![CDATA[
+         <p>Perform all the optimizations at the -O2 level as well as many more aggressive
+            optimizations.  Examples of such aggressive optimizations are loop nest
+            optimizations and generation of prefetch instructions.  Although these more
+            aggressive optimizations can significantly speed up the run time execution of
+            the compiled program, in rare cases they may not be profitable and may instead
+            lead to a slow down.  Also, some of these more aggressive optimizations may
+            affect the accuracy of some floating point computations.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2".</p>
+      ]]>
+   <include flag="F-O2" />
+   </flag>
+
+   <flag name="F-Os" class="optimization" regexp="-Os\b">
+      <example>-Os</example>
+      <![CDATA[
+         <p>Optimize for size. "-Os" enables all "-O2" optimizations that do not
+            typically increase code size. It also performs further optimizations
+            designed to reduce code size.</p>
+
+         <p>If multiple "O" options are used, with or without level numbers, the last such
+         option is the one that is effective. Level 2 is assumed if no value is specified
+         (i.e. "-O". The default is "-O2").</p>
+      ]]>
+      <include flag="F-O2" />
+   </flag>
+
+   <flag name="F-Ofast" class="optimization" regexp="-Ofast">
+      <example>-Ofast</example>
+      <![CDATA[
+         <p>Uses a selection of optimizations in order to maximize performance.<br />
+         Specifying "-Ofast" is equivalent to -O3 -ipa -OPT:Ofast -fno-math-errno -ffast-math.<br />
+         These optimization options are generally safe. Floating-point accuracy may
+         be affected due to the transformation of the computational code. Note the
+         interprocedural analysis option, -ipa, specifies limitations on how libraries
+         and object files (.o files) are built.</p>
+      ]]>
+      <include flag="F-O3" />
+      <include flag="F-ipa" />
+      <include flag="F-OPT:Ofast" />
+      <include flag="F-fno-math-errno" />
+      <include flag="F-ffast-math" />
+      <display enable="1" />
+   </flag>
+
+   <flag name="F-apo" class="optimization"
+         regexp="-apo"
+         parallel="1">
+      <example>-apo</example>
+      <![CDATA[
+         <p>Instructs the compiler to automatically transform sequential code into parallel
+         code. The compiler will only transform blocks of code that will demonstrate a
+         speed-up to the runtime (i.e. execute faster) on a multiprocessor target.
+         </p>
+         <p>The default number of threads used at run-time is either the number of processors 
+         in the machine or is determined by the value of the OMP_NUM_THREADS 
+         environment variable.
+         </p>
+      ]]>
+   </flag>
+
+   <flag name="F-mso" class="optimization" regexp="-mso">
+      <example>-mso</example>
+      <![CDATA[
+         <p>Instructs the compiler to perform aggressive optimizations that are likely to
+	   improve the scalability of an application running on a system with multi-core
+	   processors. In particular, these optimizations may target machine resources
+	   that are shared among the multiple cores of a processor, e.g. memory bandwidth, 
+           shared L3 cache, etc.
+         </p>
+      ]]>
+   </flag>
+
+   <flag name="F-fb_create_filename" class="optimization"
+         regexp="-fb_create fbdata">
+      <example>-fb_create fbdata</example>
+      <![CDATA[
+         <p>Instructs the compiler to generate an instrumented executable program from
+         the source code under development. The instrumented executable produces
+         feedback data files at runtime using an example dataset. filename specifies the
+         name of the feedback data file generated by the instrumented executable.<br />
+         opencc -O2 -ipa -fb_create fbdata -o foo foo.c <br />
+         "fbdata" will contain the instrumented feedback data from the instrumented
+         executable "foo". The default is "-fb_create" is disabled. </p>
+         <p>When feedback directed optimization (FDO) is used, an instrumented executable
+         is used for a training run that produces information regarding execution paths
+         and data values.  Hardware performance counters are not used.  This information
+         is then provided to the optimizer during a second compilation pass to produce an
+         optimized executable.  FDO enables the optimizer to perform some optimizations
+         which are not available without feedback data.  The safety level of optimizations
+         is unchanged with FDO, i.e. the safety level is the same as determined by the
+         other (non-FDO) optimization flags specified on the compile and link lines. </p>
+      ]]>
+   </flag>
+
+   <flag name="F-fb_opt_filename" class="optimization"
+         regexp="-fb_opt fbdata">
+      <example>-fb_opt fbdata</example>
+      <![CDATA[
+         <p>Instructs the compiler to perform a feedback directed compilation using the
+         instrumented feedback data produced by the -fb_create option.<br />
+         opencc -O2 -ipa -fb-opt fbdata -o foo foo.c <br />
+         The new executable, foo, will be optimized to execute faster, and will not
+         include any instrumentation library calls. Note the same optimization flags
+         specified when creating the instrumented data file with the -fb_create must
+         be specified when invoking the compiler with the -fb_opt option. Otherwise,
+         the compiler will emit checksum errors. The default is "-fb_opt" disabled.</p>
+      ]]>
+   </flag>
+
+
+   <flag name="F-mno-sse2" class="optimization"
+         regexp="-mno-sse2">
+      <example>-mno-sse2</example>
+      <![CDATA[
+         <p>Disables the use of SSE2 instructions.  Note disabling SSE2
+            instructions when specifying -m64 will emit a warning message.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-m3dnow" class="optimization"
+         regexp="-m3dnow">
+      <example>-m3dnow</example>
+      <![CDATA[
+         <p>Enables the use of 3DNow instructions.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-march" class="optimization"
+         regexp="-march=(barcelona|opteron|k8|athlon64|athlon-xp|athlon-mp|athlon|em64t|core|xeon|pentium4|i686|i586|i486|i386|anyx86|auto)">
+      <![CDATA[
+         <p>Compiler will generate instructions and schedule them appropriately for the 
+         selected processor type.  The default value, auto, means to optimize for the 
+         platform on which the compiler is running, as determined by reading /proc/cpuinfo.  
+         anyx86 means a generic 32-bit x86 processor without SSE2 support.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-fexceptions" class="optimization"
+         regexp="(-Wf,|)-f(no-|)exceptions">
+      <example>-fno-exceptions</example>
+      <![CDATA[
+         <p>(For C++ only) -fexceptions enables exception handling and 
+         thus generates extra code needed to propagate exceptions.
+         -fno-exceptions disables exception handling.
+         Exception handling is enabled by default.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-fno-emit-exceptions" class="optimization"
+         regexp="-fno-emit-exceptions">
+      <example>-fno-emit-exceptions</example>
+      <![CDATA[
+         <p>(For C++ only) Enables exception handling, but does not generate code needed to raise/catch
+		exceptions. This option allows the compiler to accept exceptions as part of the
+		C++ dialect but in effect asserts that these exceptions will not actually be raised
+		at runtime.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-ffast-math" class="optimization"
+         regexp="-f(no-|)fast-math">
+      <example>-ffast-math</example>
+      <![CDATA[
+         <p>"-fast-math" instructs the compiler to relax ANSI/ISO or IEEE 
+            rules/specifications for math functions in order to optimize 
+            floating-point computations to improve runtime.
+            "-fno-fast-math" instructs the compiler to conform to ANSI and 
+            IEEE math rules.  This option causes the preprocessor macro 
+            __FAST_MATH__ to be defined.<br />
+            Note: <br />
+            "-Ofast" implies "-ffast-math".<br />
+            "-ffast-math" sets options "-fno-math-errno" and "-OPT:IEEE_arithmetic=2".<br />
+            "-fno-fast-math" sets options "-fmath-errno" and "-OPT:IEEE arithmetic=1".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-fno-math-errno" class="optimization">
+      <example>-fno-math-errno</example>
+      <![CDATA[
+         <p>Do not set ERRNO after calling math functions that are executed
+         with a single instruction, e.g. sqrt. A program that relies on IEEE
+         exceptions for math error handling may want to use this flag for speed
+         while maintaining IEEE arithmetic compatibility. Note specifying 
+         "-Ofast" implies "-fno-math-errno".  The default is "-fmath-errno".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-ipa" class="optimization"
+         regexp="-ipa">
+      <example>-ipa</example>
+      <![CDATA[
+         <p>Instructs the compiler to invoke inter-procedural analysis.
+            Specifying "-ipa" is equivalent to "-IPA" and "-IPA:" with no
+            suboptions, thus the default settings for the individual IPA 
+            suboptions are used.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-HUGEPAGE" class="optimization" regexp="-(HUGEPAGE|HP)(:bdt=2m)?(:heap=2m)?(,limit=\d+)?">
+      <example>-HP:bdt=2m:heap=2m,limit=850</example>
+      <![CDATA[
+         <p>Instructs the compiler to use 2MB hugepages for bss, data and text 
+            segments (i.e. bdt), and/or for heap allocation.  Mixed usage
+            of huge and small pages is not supported for bdt, but is supported
+            for heap allocation.  The limit option specifies a combined limit on 
+            the number of hugepages that may be used by the compiled program.  If
+            no limit is set, the number of hugepages that can be used by the program
+            is effectively limited by the system configuration.</p>
+      ]]>
+   </flag> 
+
+   <flag name="F-splitting:all" class="optimization"
+         regexp="-(CG|IPA|LNO|OPT|WOPT|GRA|LANG|TENV):([^:\s]+):(\S+)(?=\s|$)">
+      <include text="-$1:$2" />
+      <include text="-$1:$3" />
+      <display enable="0" />
+    This rule is used to split a flag group containing sub-options into multiple flag descriptions.  
+    Please refer to the flag file rule of the various sub-options for the actual flag description.
+   </flag>
+
+   <!-- Sub-flags of the -CG: group -->
+
+   <flag name="F-CG:cflow" class="optimization"
+         regexp="-CG:cflow=(on|off|0|1)">
+      <example>-CG:cflow</example>
+      <![CDATA[
+         <p>The Code Generation option group -CG: controls the optimizations
+         and transformations of the instruction-level code generator.</p>
+
+         <p>-CG:cflow=(on|off|0|1): Specifying OFF disables control flow optimization in code
+         generation. The default is ON.</p>
+      ]]>
+   </flag>
+
+  <flag name="F-CG:cmp_peep" class="optimization"
+         regexp="-CG:cmp_peep=(on|off|0|1)">
+      <example>-CG:cmp_peep</example>
+      <![CDATA[
+         <p>-CG:cmp_peep=(on|off|0|1):  Instructs the compiler to perform aggressive peephole
+         optimization on compare operations involving memory operands.  The default is
+         "CG:cmp_peep=OFF".</p>
+      ]]>
+   </flag>
+
+  <flag name="F-CG:compute_to" class="optimization"
+         regexp="-CG:compute_to=(on|off|0|1)">
+      <example>-CG:compute_to</example>
+      <![CDATA[
+         <p>-CG:compute_to=(on|off|0|1): Instructs the compiler to allow local
+                 code motion to take advantage of pipeline optimizations.  For example: specify in
+                 conjunction with option "-march=barcelona", i.e.when targeting versions
+                 of the Quad-Core AMD Opteron and greater.  The default is "CG:compute_to=OFF"
+             </p>
+      ]]>
+   </flag>
+
+  <flag name="F-CG:cse_regs" class="optimization"
+         regexp="-CG:cse_regs=\d+">
+      <example>-CG:cse_regs</example>
+      <![CDATA[
+         <p>-CG:cse_regs=N: When performing common subexpression elimination, 
+            the compiler code generator assumes that there are N extra integer registers
+            available (i.e. in excess of the number provided by the processor). N
+            can be positive, negative, or zero. The default is positive infinity.
+            See also -CG:sse_cse_regs=N.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:gcm" class="optimization"
+         regexp="-CG:gcm=(on|off|0|1)">
+      <example>-CG:gcm</example>
+      <![CDATA[
+         <p>-CG:gcm=(on|off|0|1): "-CG:gcm=OFF" instructs the compiler to disable the instruction
+             level global code motion optimization phase. The default is
+             "-CG:gcm=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:load_exe" class="optimization"
+         regexp="-CG:load_exe=\d+">
+      <example>-CG:load_exe</example>
+      <![CDATA[
+         <p>-CG:load_exe=N : The parameter N must be a non-negative integer which
+            specifies the threshold for the compiler to consider folding a memory
+            load operation directly into its subsequent use in an arithmetic instruction
+            (thereby eliminating the memory load operation).  If N=0 this folding
+            optimization is not performed (in other words, the optimization is turned
+            off).  If the number of times the result of the memory load is used exceeds
+            the value of N, then the folding optimization is not performed.  For example,
+            if N=1 this optimization is performed only when the result of the memory load
+            has only one use.  The default value of N varies with target processor and
+            source language.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:local_sched_alg" class="optimization"
+         regexp="-CG:local_sched_alg=(0|1|2)">
+      <example>-CG:local_sched_alg</example>
+      <![CDATA[
+         <p>-CG:local_sched_alg=(0|1|2): This option selects the basic block instruction scheduling algorithm.<br />
+             To perform backward scheduling (i.e. where instructions are
+             scheduled from the bottom to the top of the basic block) select 0.<br />
+             To perform forward scheduling select 1.<br />
+             To schedule the instruction twice (i.e. once in the forward
+             direction and once in the backward direction) and take the
+             optimal of the two schedules select 2.<br />
+             The default value for this option is determined by the Open64 compiler
+             during compilation.</p>
+      ]]>
+   </flag>
+ 
+   <flag name="F-CG:locs_shallow_depth" class="optimization"
+         regexp="-CG:locs_shallow_depth=(on|off|0|1)">
+      <example>-CG:locs_shallow_depth</example>
+      <![CDATA[
+         <p>-CG:locs_shallow_depth=(on|off|0|1): ON instructs the compiler to 
+             give priority to instructions that have shallow depths in the 
+             dependence graph when performing local instruction scheduling to 
+             reduce register usage. The default is "-CG:locs_shallow_depth=OFF".</p>
+      ]]>
+   </flag>
+ 
+   <flag name="F-CG:movnti" class="optimization"
+         regexp="-CG:movnti=\d+">
+      <example>-CG:movnti</example>
+      <![CDATA[
+         <p>-CG:movnti=N : When writing memory blocks of size larger than N KB ordinary
+             stores will be transformed into non-temporal stores. The default is
+             N=1000.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:p2align" class="optimization"
+         regexp="-CG:p2align=(on|off|0|1)">
+      <example>-CG:p2align</example>
+      <![CDATA[
+         <p>-CG:p2align=(on|off|0|1): When ON instructs the compiler to align loop heads to 64-byte
+                boundaries. The default is "-CG:p2align=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:post_local_sched" class="optimization"
+         regexp="-CG:post_local_sched=(on|off|0|1)">
+      <example>-CG:post_local_sched</example>
+      <![CDATA[
+         <p>-CG:post_local_sched=(on|off|0|1): When ON, enables the local scheduler phase after 
+             register allocation.  The default is "-CG:post_local_sched=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:prefetch" class="optimization"
+         regexp="-CG:prefetch=(on|off|0|1)">
+      <example>-CG:prefetch</example>
+      <![CDATA[
+         <p>-CG:prefetch=(on|off|0|1): With "-CG:prefetch=ON", prefetch instructions are generated
+             in the code generator. Note both "-CG:prefetch=OFF" and
+             "-LNO:prefetch=0" disable the generation of prefetch instructions.
+             "-LNO:prefetch=0" only affects loop-nesting optimizations that
+             rely on prefetch. The default is "-CG:prefetch=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:prefer_legacy_regs" class="optimization"
+         regexp="-CG:prefer_legacy_regs=(on|off|0|1)">
+      <example>-CG:prefer_legacy_regs</example>
+      <![CDATA[
+         <p>-CG:prefer_legacy_regs=(on|off|0|1): When enabled the compiler register allocator is instructed to use
+                the first 8 integer and SSE registers when possible (i.e. %rax-%rbp, %xmm0-%xmm7). Starting with
+                the last assigned register and work upward in most recently assigned
+                fashion where available. Note instructions which use these
+                registers have smaller instruction sizes. For example, the lower
+                8 registers on x86-64 do not use the rex byte. The default is
+                "-CG:prefer_legacy_regs=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:ptr_load_use" class="optimization"
+         regexp="-CG:ptr_load_use=\d+">
+      <example>-CG:ptr_load_use</example>
+      <![CDATA[
+         <p>-CG:ptr_load_use=N: The code generator increases the modeled latency between an instruction
+             that loads a pointer and an instruction that uses the pointer by
+             N cycles. Ordinarily, it is advantageous to load pointers as fast as
+             possible so the dependent memory instructions can begin execution.
+             However, the additional latency will force the instruction scheduler
+             to schedule the load pointer even earlier. Note the load pointer instructions
+             include load-execute instructions which compute pointer results.
+             The default is "-CG:ptr_load_use=4".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:push_pop_int_saved_regs" class="optimization"
+         regexp="-CG:push_pop_int_saved_regs=(on|off|1|0)">
+      <example>-CG:push_pop_int_saved_regs</example>
+      <![CDATA[
+         <p>-CG:push_pop_int_saved_regs=(on|off|0|1): When ON, the compiler generates push and pop instructions
+             to save integer callee-saved registers at function prologues and
+             epilogues. The push and pop instructions replace mov instructions
+             to and from memory locations based off the stack pointer. The
+             default is "-CG:push_pop_int_saved_regs=OFF". When the
+             specified target is barcelona, default is
+             "-CG:push_pop_int_saved_regs=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-CG:sse_cse_regs" class="optimization"
+         regexp="-CG:sse_cse_regs=\d+">
+      <example>-CG:sse_cse_regs</example>
+      <![CDATA[
+         <p>-CG:sse_cse_regs=N: When performing common subexpression elimination, instructs the
+            compiler code generator that there are N extra SSE registers available
+            (i.e. in excess of the number provided by the processor). N can
+            be positive, negative, or zero. The default is positive infinity. See also
+            -CG:cse_regs=N.</p>
+      ]]>
+   </flag>
+
+  <flag name="F-CG:use_prefetchnta" class="optimization"
+         regexp="-CG:use_prefetchnta=(on|off|0|1)">
+      <example>-CG:use_prefetchnta</example>
+      <![CDATA[
+         <p>-CG:use_prefetchnta=(on|off|0|1): When enabled, prefetching is performed on non-temporal data at
+            all levels of the cache hierarchy.  Note this option is for data streaming situations
+            when the data will not need to be reused soon. The default is
+            "-CG:use_prefetchnta=OFF".</p>
+      ]]>
+   </flag>
+
+  <flag name="F-CG:unroll_fb_req" class="optimization"
+         regexp="-CG:unroll_fb_req=(on|off|0|1)">
+      <example>-CG:unroll_fb_req</example>
+      <![CDATA[
+         <p>-CG:unroll_fb_req=(on|off|0|1): The compiler is instructed to 
+		 override cold code motion to keep the code generator from adding control 
+		 flow in unrolled loops. The default is "-CG:unroll_fb_req=OFF".</p>
+      ]]>
+   </flag>
+
+<flag name="F-INLINE:aggressive" class="optimization"
+      regexp="-INLINE:aggressive=(on|off|0|1)">
+   <example>-INLINE:aggressive</example>
+   <![CDATA[
+      <p>-INLINE:aggressive=(on|off|0|1): Instructs the compiler to be very aggressive when performing inlining.
+         The default is "-INLINE:aggressive=OFF".</p>
+   ]]>
+</flag>
+
+   <!-- Sub-flags of the -IPA: group -->
+
+   <flag name="F-IPA:callee_limit" class="optimization"
+         regexp="-IPA:callee_limit=\d+">
+      <example>-IPA:callee_limit</example>
+      <![CDATA[
+         <p>The inter-procedural analyzer option group -IPA: controls
+         application of inter-procedural analysis and optimization.</p>
+
+         <p>-IPA:callee_limit=N: The compiler is instructed not to allow inlining of functions
+             with a code size larger the limit set by N. The default is
+             "-IPA:callee_limit=500."</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:inline" class="optimization"
+         regexp="-IPA:inline=(on|off)">
+      <example>-IPA:inline</example>
+      <![CDATA[
+         <p>-IPA:inline=(on|off): Turns off the IPA's inliner. Since IPA is invoked, the 
+         lightweight inliner is also suppressed. The default is ON.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:linear" class="optimization"
+         regexp="-IPA:linear=(on|off|0|1)">
+      <example>-IPA:linear</example>
+      <![CDATA[
+         <p>-IPA:linear=(on|off|0|1): The compiler is instructed perform linearization of array references.
+         The compiler transforms a multi-dimensional array to a linear array
+         (i.e. single dimensional)which is mapped to the same memory
+         block. The compiler attempts to map formal array parameters to
+         the shape of the actual parameter when inlining Fortran subroutines.
+         This mapping process may not always be successful, therefore
+         when the compiler is unable to map the parameter it linearizes
+         the array reference. Note the compiler will not attempt to inline
+         such callsites due to possible performance problems. The default is
+         "-IPA:linear=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:min_hotness" class="optimization"
+         regexp="-IPA:min_hotness=\d+">
+      <example>-IPA:min_hotness</example>
+      <![CDATA[
+         <p>-IPA:min_hotness=N: The compiler is instructed not 
+		 to inline a function to a call site (i.e. caller) unless the 
+		 callee is invoked more than N times. The compiler examines the 
+		 interprocedural feedback to determine if the threshold set by 
+		 N is surpassed by a call site to a procedure and then proceeds 
+		 to inline the procedure if the limit is exceeded. 
+		 The default is "-IPA:min_hotness=10".
+          </p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:plimit" class="optimization"
+         regexp="-IPA:plimit=\d+">
+      <example>-IPA:plimit</example>
+      <![CDATA[
+         <p>-IPA:plimit=N: The compiler is instructed to halt inlining within a program once
+          the intermediate representation indicates that the code size of
+          the program has surpassed the limit set by N. The default is
+          "-IPA:plimit=2500".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:pu_reorder" class="optimization"
+         regexp="-IPA:pu_reorder=(0|1|2)">
+      <example>-IPA:pu_reorder</example>
+      <![CDATA[
+         <p>-IPA:pu_reorder=(0|1|2): The compiler is instructed to examine compilation feedback for
+         invocation patterns to determine the process of reordering the layout
+         of program procedures in order to minimize instruction cache
+         misses. Possible settings are:</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+            0&nbsp;&nbsp;&nbsp; Suppress reordering of program procedures.</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+            1&nbsp;&nbsp;&nbsp; Use the frequent occurrence of procedure invocation to
+            determine reordering.</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+            2&nbsp;&nbsp;&nbsp; Use the relationship between caller and callee to determine
+            reordering.</p>
+
+         <p>The default is "-IPA:pu_reorder=1" for C++ programs and
+         "-IPA:pu_reorder=0" for non-C++ programs.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:small_pu" class="optimization"
+         regexp="-IPA:small_pu=\d+">
+      <example>-IPA:small_pu</example>
+      <![CDATA[
+         <p>-IPA:small_pu=N: The compiler is instructed not to restrict a procedure from inlining
+		with a code size smaller than N when invoking the "-IPA:plimit"
+		flag.  The default is "-IPA:small_pu=30".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-IPA:space" class="optimization"
+         regexp="-IPA:space=\d+">
+      <example>-IPA:space</example>
+      <![CDATA[
+         <p>-IPA:space=N: The compiler is instructed to perform inlining until the program
+         code size expands by percentage specified by N. Therefore, to
+         limit program code size growth to ~20%, due to inlining, specify
+         "-IPA:space=20". The default is "-IPA:space=infinity".</p>
+      ]]>
+   </flag>
+
+   <!-- Sub-flags of the -LNO group -->
+
+   <flag name="F-LNO:apo_use_feedback" class="optimization"
+         regexp="-LNO:apo_use_feedback=(on|off)\b">
+      <example>-LNO:apo_use_feedback</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:apo_use_feedback=(on|off): Instructs the auto-parallelizer to use the 
+         feedback data of the loops in deciding if each loop should be parallelized. This 
+         option will only be invoked if "-apo" under feedback-directed compilation has
+         been enabled. The compiler creates a serial and parallel version of a parallelized 
+         loop and if the loop trip count is small the serial version is used during 
+         execution. When "-LNO:apo_use_feedback=ON" and the feedback data validates that 
+         the loop trip count is small the auto-parallelizer will not create the parallel 
+         version (i.e. optimizing the runtime by eliminating the conditional code required 
+         to determine the use of the serial or parallel version). The default is 
+         "-LNO:apo_use_feedback=OFF"</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:blocking" class="optimization"
+         regexp="-LNO:blocking=(on|off|0|1)\b">
+      <example>-LNO:blocking</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:blocking=(on|off|0|1): Instructs the compiler to perform cache blocking transformation.
+         The default is "-LNO:blocking=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:full_unroll" class="optimization"
+         regexp="-LNO:(full_unroll|fu)=\d+\b">
+      <example>-LNO:full_unroll</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:full_unroll,fu=N: The compiler is instructed to fully unroll loops after examining the
+         loop, within the loop nest optimizer, to determine if the loop can be
+         fully unrolled in N or less iterations. Argument "fu=N" specifies the
+         maximum number of unrolls that can be performed to fully unroll
+         the loop. Note that setting N=0 suppresses full unrolling of loops inside
+         the loop nest optimizer. The default is "-LNO:full_unroll=5".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:full_unroll_size" class="optimization"
+         regexp="-LNO:full_unroll_size=\d+\b">
+      <example>-LNO:full_unroll_size</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:full_unroll_size=N: The compiler is instructed to fully unroll loops after examining the
+         loop, within the loop nest optimizer, to determine if the unrolled
+         loop size is less than or equal to N. Specify N as an integer between
+         0 and 10000. Note limits set by -LNO:full_unroll,fu=N and
+         -LNO:full_unroll_size=N must be satisfied before the loop is
+         fully unrolled. The default is "-LNO:full_unroll_size=2000."</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:full_unroll_outer" class="optimization"
+         regexp="-LNO:full_unroll_outer=(on|off|0|1)\b">
+      <example>-LNO:full_unroll_outer</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:full_unroll_outer=(on|off|0|1): The compiler is instructed to fully unroll loops that do
+         not incorporate inner loops or is incorporated by an outer
+         loop. Note limits set by both "-LNO:full_unroll,fu=N" and
+         "-LNO:full_unroll_size=N" must be satisfied before the loop is
+         fully unrolled. The default is "-LNO:full_unroll_outer=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:fission" class="optimization"
+         regexp="-LNO:fission=[0|1|2]\b">
+      <example>-LNO:fission</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:fission=N: Instructs the compiler to perform loop fission. This option can be
+         set to:<br />
+         0 Suppress loop fission.<br />
+         1 The compiler performs normal loop fission as necessary.<br />
+         2 The compiler performs loop fission prior to loop fusion.<br />
+         Note loop fusion is usually applied before loop fission, therefore
+         if "-LNO:fission=ON" and "-LNO:fusion=ON" when the compiler is
+         invoked a reverse effect may be induced. To counter this effect
+         specify "-LNO:fission=2" to instruct the compiler to perform loop
+         fission prior to loop fusion. The default is "-LNO:fission=0".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:fusion" class="optimization"
+         regexp="-LNO:fusion=[0-2]\b">
+      <example>-LNO:fusion</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:fusion=N: The compiler is instructed to perform loop fusion. The flag can be
+         set to:<br />
+         0 Suppress loop fusion.<br />
+         1 The compiler performs traditional loop fusion.<br />
+         2 The compiler performs aggressive loop fusion.<br />
+         The default is "-LNO:fusion=0".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:fusion_peeling_limit" class="optimization"
+         regexp="-LNO:fusion_peeling_limit=\d+\b">
+      <example>-LNO:fusion_peeling_limit</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:fusion_peeling_limit=N: Controls the limit for the number of iterations 
+         allowed to be peeled during fusion. The default is N=5, but N can be any 
+         non-negative integer.  The compiler performs peeling when the iteration count in 
+         consecutive loops is close, but different, and when the loop counts are the same 
+         because several iterations are replicated outside the loop body.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:ignore_feedback" class="optimization"
+         regexp="-LNO:ignore_feedback=(on|off|0|1)\b">
+      <example>-LNO:ignore_feedback</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:ignore_feedback=(on|off|0|1): The compiler is instructed to ignore feedback information generated
+         by loop annotations during loop nest optimizations. The default is
+         "-LNO:ignore_feedback=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:interchange" class="optimization"
+         regexp="-LNO:interchange=(on|off|0|1)\b">
+      <example>-LNO:interchange</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:interchange=(on|off|0|1): The compiler is instructed to perform loop interchange optimizations.
+         The default is "-LNO:interchange=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:minvariant" class="optimization"
+         regexp="-LNO:(minvariant|minvar)=(on|off|0|1)\b">
+      <example>-LNO:minvariant</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:minvariant,minvar=(on|off|0|1): The compiler is instructed to move loop-invariant expressions outside
+         of loops. The default is "-LNO:minvariant,minvar=ON".</p>
+      ]]>
+   </flag>
+
+<flag name="F-LNO:opt" class="optimization"
+      regexp="-LNO:opt=(0|1)\b">
+   <example>-LNO:opt</example>
+   <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:opt=(0|1): Instructs the compiler at which level to perform loop nest optimizations.
+         The flag can be set to:<br />
+           0 The compiler is restricted to suppress nearly all loop nest optimizations.<br />
+           1 The compiler performs full loop nest optimizations.<br />
+         The default is "-LNO:opt=1"</p>
+   ]]>
+</flag>
+
+  <flag name="F-LNO:outer_unroll_max" class="optimization"
+         regexp="-LNO:(outer_unroll_max|ou_max)=\d+\b">
+      <example>-LNO:outer_unroll_max</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:outer_unroll_max,ou_max=N: Instructs the compiler to perform the unrolling of outer loops in a
+         loop nest. The unrolling of the outer loop is limited to N unrolls per
+         outer loop. The default is "-LNO:outer_unroll_max,ou_max=5".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:ou_prod_max" class="optimization"
+         regexp="-LNO:ou_prod_max=\d+\b">
+      <example>-LNO:ou_prod_max</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:ou_prod_max=N: The compiler is instructed to unroll several outer loops of a given
+         loop nest. The product is limited to N outer loops. N
+         is a positive number. The default is "-LNO:ou_prod_max=16".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:parallel_overhead" class="optimization"
+         regexp="-LNO:parallel_overhead=\d+\b">
+      <example>-LNO:parallel_overhead</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:parallel_overhead=N : Specifying the auto-parallelizing option, "-apo", 
+         instructs the compiler to generate a serial and parallel instance of a loop. 
+         Specifying -LNO:parallel_overhead. in conjunction with "-apo" instructs the 
+         compiler to estimate the overhead involved when invoking the parallel instance 
+         of the loop taking into account the number of processors and loop iterations. 
+         The loop nest optimizer then uses N to determine if the overhead exceeds the 
+         performance benefit during execution time. Note using this flag with 
+         auto-parallelizer can be used to tune parallel performance across various 
+         platforms and programs. The default is "-LNO:parallel_overhead=4096"</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:prefetch_ahead" class="optimization"
+         regexp="-LNO:prefetch_ahead=\d+\b">
+      <example>-LNO:prefetch_ahead</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:prefetch_ahead=N : The compiler is instructed to prefetch ahead N cache line(s). The
+         default is "-LNO:prefetch_ahead=2".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:prefetch" class="optimization"
+         regexp="-LNO:prefetch=[0-3]\b">
+      <example>-LNO:prefetch</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:prefetch=(0|1|2|3) : Instructs the compiler to perform prefetching optimizations at a
+         specified level. The flag can be set to:<br />
+
+         0 Instructs the compiler to suppress prefetching.<br />
+
+         1 The compiler is instructed to allow prefetching only for
+           arrays that are always referenced in every loop iteration.<br />
+
+         2 The compiler is instructed to implement prefetching
+           disregarding the restrictions in the above setting.<br />
+
+         3 The compiler is instructed to implement aggressive prefetching.<br />
+
+         The default is "-LNO:prefetch=2". </p>
+
+          ]]>
+   </flag>
+
+   <flag name="F-LNO:pf2" class="optimization"
+         regexp="-LNO:pf2=(on|off|0|1)\b">
+      <example>-LNO:pf2</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:pf2=(on|off|0|1): The compiler is instructed to turn ON/OFF prefetching for specified
+             cache levels.  "pf2" specifies the level 2 cache.</p>
+      ]]>         
+   </flag>
+
+<flag name="F-LNO:sclrze" class="optimization"
+      regexp="-LNO:sclrze=(on|off)\b">
+   <example>-LNO:sclrze</example>
+   <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:sclrze=(on|off): The compiler is instructed to substitute a scalar variable for an array.
+         The default is "-LNO:sclrze=ON".</p>
+   ]]>
+</flag>
+
+   <flag name="F-LNO:simd" class="optimization"
+         regexp="-LNO:simd=[0|1|2]\b">
+      <example>-LNO:simd</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:simd=(0|1|2) : The compiler is instructed to use single instruction multiple data
+         (SIMD) instructions, supported by the target processor, when vectorizing
+         the inner loop. The flag can be set to:<br />
+
+         0 The compiler is instructed to suppress vectorization.<br />
+
+         1 The compiler is instructed to vectorize only if there is
+           no performance degradation due to sub-optimal alignment
+           and does not induce floating-point operation inaccuracies.<br />
+
+         2 Instructs the compiler to aggressively vectorize with no
+           constraints in place.<br />
+         
+         The default is "LNO:simd=1".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:trip_count" class="optimization"
+         regexp="-LNO:(trip_count|trip_count_assumed_when_unknown)=\d+\b">
+      <example>-LNO:trip_count</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:trip_count,trip_count_assumed_when_unknown=N : The compiler is 
+         instructed to use the value in N for a
+         presumed loop trip-count if at compile time a loop trip-count is not
+         known. The loop trip-count, N, is used for loop transformations and
+         prefetch optimizations and must be a positive integer. The default
+         is "-LNO:trip_count_assumed_when_unknown,trip_count=1000".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-LNO:vintr" class="optimization"
+         regexp="-LNO:vintr=[0|1|2]\b">
+      <example>-LNO:vintr</example>
+      <![CDATA[
+         <p>This option group commands the compiler loop nest optimizer to perform nested
+         loop analysis and transformations. Note an optimization level of "-O3" or higher
+         must be specified in order to enable the "-LNO:" options.
+         To verify the LNO options that were invoked during compilation use the option
+         "-LIST:all_options=ON".</p>
+
+         <p>-LNO:vintr=(0|1|2): The compiler is instructed to use vector intrinsic functions when
+         vectorizing loops. Where a vector function is called once to compute
+         a math intrinsic for the entire vector. The flag can be set to:<br />
+         0 Instructs the compiler to suppress vector intrinsic function optimizations.<br />
+         1 The compiler is instructed to perform normal vector intrinsic function optimizations.<br />
+         2 The compiler is instructed to aggressively implement all vector intrinsic function optimizations. Note specifying
+           this option could cause some of the vector intrinsic functions to produce floating-point accuracy errors.<br />
+         The default is "-LNO:vintr=1".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-m32" class="optimization"
+         regexp="-m32">
+      <example>-m32</example>
+      <![CDATA[
+         <p>Generate code for a 32-bit environment. The 32-bit environment sets
+         int, long and pointer to 32 bits and generates code that runs on any i386 system.
+         The compiler generates x86 or IA32 32-bit ABI. The default on a 32-bit host is 32-bit ABI. 
+		 The default on a 64-bit host is 64-bit ABI if the target platform specified is 64-bit, 
+		 otherwise the default is 32-bit.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-m64" class="optimization"
+         regexp="-m64">
+      <example>-m64</example>
+      <![CDATA[
+         <p>Generate code for a 64-bit environment. The 64-bit environment sets
+         int to 32 bits and long and pointer to 64 bits and generates code for AMD's
+         x86-64 architecture. The compiler generates AMD64, INTEL64, x86-64 64-bit
+         ABI. The default on a 32-bit host is 32-bit ABI. The default on a 64-bit host
+         is 64-bit ABI if the target platform specified is 64-bit, otherwise the default is
+         32-bit.</p>
+      ]]>
+   </flag>
+
+   <!-- Individual subflags of the -OPT: class -->
+
+   <flag name="F-OPT:alias" class="optimization"
+         regexp="-OPT:alias=(typed|restricted|restrict|disjoint|no_f90_pointer_alias)\b">
+       <example>-OPT:alias</example>
+      <![CDATA[
+         <p>The "-OPT:" option group controls various optimizations. The "-OPT:" options
+            supersede the defaults that are based on the main optimization level.</p>
+
+         <p>-OPT:alias=&lt;model&gt;<br />
+         Identify which pointer aliasing model to use. The compiler will
+         make assumptions during compilation when one or more of the
+         following &lt;model&gt; is specified:</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+         typed<br />
+            Assumes that two pointers of different types will not
+            point to the same location in memory (i.e. the code
+            adheres to the ANSI/ISO C standards). Note when
+            specifying "-OPT:Ofast" turns this option ON.</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+         (restricted|restrict)<br />
+            Assumes that distinct pointers are pointing to distinct
+            non-overlapping objects. The default is that this optimization
+            is disabled.</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+         disjoint<br />
+            Assumes that any two pointer expressions are pointing
+            to distinct non-overlapping objects. This default is that this
+            optimization is disabled.</p>
+
+         <p style="text-indent: -25px; margin-left: 25px">
+         no_f90_pointer_alias<br />
+            Assumes that any two different Fortran 90 pointers are
+            pointing to distinct non-overlapping objects. The default
+            is that this optimization is disabled.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:div_split" class="optimization"
+         regexp="-OPT:div_split=(on|off|0|1)\b">
+       <example>-OPT:div_split</example>
+      <![CDATA[
+         <p>-OPT:div_split=(on|off|0|1)<br />
+         Instruct the compiler to transform x/y into x*(recip(y)). Flags 
+         -OPT:Ofast or -OPT:IEEE_arithmetic=3 will enable this optimization. 
+         Note this transform generates fairly accurate code. The default
+         is "-OPT:div_split=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:fast_complex" class="optimization"
+         regexp="-OPT:fast_complex=(on|off|0|1)\b">
+       <example>-OPT:fast_complex</example>
+      <![CDATA[
+         <p>-OPT:fast_complex=(on|off|0|1)<br />
+         Specifies fast calculations for values declared to be of the type
+         complex. Fast algorithms are used for complex absolute value
+         and complex division. The algorithm will overflow for an
+         operand (e.g., the divisor in the case of division) that has an
+         absolute value that is larger than the square root of the largest
+         representable floating-point number. Also, the algorithm will
+         underflow for a value that is smaller than the square root of the
+         smallest representable floating point number. Note, specifying
+         "-OPT:roundoff=3" will also invoked "-OPT:fast_complex=ON".
+         The default is "-OPT:fast_complex=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:fold_unsigned_relops" class="optimization"
+         regexp="-OPT:fold_unsigned_relops=(on|off|0|1)\b">
+       <example>-OPT:fold_unsigned_relops</example>
+      <![CDATA[
+         <p>-OPT:fold_unsigned_relops=(on|off|0|1)<br />
+            Instructs the compiler to fold relational operators involving
+            unsigned integers that may be simplified at compile time, which
+            may cause fewer overflows to be seen at run time.  The default is
+         "-OPT:fold_unsigned_relops=ON".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:goto" class="optimization"
+         regexp="-OPT:goto=(on|off|0|1)\b">
+       <example>-OPT:goto</example>
+      <![CDATA[
+         <p>-OPT:goto=(on|off|0|1)<br />
+         Transforms GOTO into higher level structures e.g., FOR loops. Note if
+         "-O2" is specified "-OPT:goto=ON". The default is "-OPT:goto=OFF".
+         </p>
+      ]]>
+   </flag>
+
+
+   <flag name="F-OPT:IEEE_arith" class="optimization"
+         regexp="-OPT:(IEEE_arithmetic|IEEE_arith|IEEE_a)=[1|2|3]\b">
+       <example>-OPT:IEEE_arithmetic</example>
+      <![CDATA[
+         <p>-OPT:IEEE_arithmetic,IEEE_arith,IEEE_a=(1|2|3)<br />
+         This flag regulates the level of conformance to ANSI/IEEE 754-
+         1985 floating point roundoff and overflow. The levels of conformance:<br />
+
+         1 Adhere to IEEE 754 accuracy. Specifying "-O0", "-O1",
+           and "-O2" will set "-OPT:IEEE_arithmetic=1".<br />
+
+         2 Inexact results that do not conform to IEEE 754 may be calculated.
+	   Specifying "-O3" will set "-OPT:IEEE_arithmetic=2".<br />
+
+         3 All mathematically valid transformations (possibly non-IEEE standard ones) are allowed.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:IEEE_NaN_Inf" class="optimization"
+         regexp="-OPT:IEEE_NaN_Inf=(on|off|0|1)\b">
+       <example>-OPT:IEEE_NaN_Inf</example>
+      <![CDATA[
+         <p>-OPT:IEEE_NaN_Inf=(on|off|0|1)<br />
+         -OPT:IEEE_NaN_inf=ON instructs the compiler to conform to ANSI/IEEE 754-1985 for all
+          operations which produce a NaN or infinity result. Note NaN and
+          infinity are typically handled as special cases in floating-point representations
+          of real numbers and are defined by the IEEE 754 Standards for Binary Floating-point 
+          Arithmetic. The default is "-OPT:IEEE_NaN_Inf=ON".<br />
+ 
+         -OPT:IEEE_NaN_inf=OFF instructs the compiler to calculate various operations that do not
+          produce IEEE-754 results. For example, x/x is set to the value 1
+          without performing a divide operation and x=x is set to TRUE with
+          out executing a test operation. "-OPT:IEEE_NaN_inf=OFF"
+          specifies multiple optimizations that increase performance.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:keep_ext" class="optimization"
+         regexp="-OPT:keep_ext=(on|off|0|1)\b">
+       <example>-OPT:keep_ext</example>
+      <![CDATA[
+         <p>-OPT:keep_ext=(on|off|0|1)<br /> Instructs the compiler 
+		 to preserve external symbolic information.  The default is "-OPT:keep_ext=OFF".
+         </p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:malloc_algorithm" class="optimization"
+         regexp="-OPT:(malloc_algorithm|malloc_alg)=[0|1|2]\b">
+       <example>-OPT:malloc_alg</example>
+      <![CDATA[
+         <p>-OPT:malloc_algorithm,malloc_alg=(0|1|2)<br />
+         To improve runtime speed the compiler will select an optimal malloc
+         algorithm. To enable the selected algorithm, setup code is included
+         in the C/C++ and Fortran main function.
+         </p>
+         <ul>
+         <li> n=0: Default, no changes to the malloc options. No call to mallopt() is made. </li>
+         <li> n=1: M_MMAP_MAX=2 and M_TRIM_THRESHOLD=0x10000000. Call mallopt with the two settings. </li>
+         <li> n=2: M_MMAP_MAX=2 and M_TRIM_THRESHOLD=0x40000000. Call mallopt with the two settings. </li>
+         </ul>
+         <p>The two parameters, M_MMAP_MAX and M_TRIM_THRESHOLD, are described below.</p>
+
+         <p>Function: int mallopt (int param, int value) When calling mallopt, the param argument
+         specifies the parameter to be set, and value the new value to be set. Possible choices
+         for param, as defined in malloc.h, are:</p>
+         <ul>
+         <li> M_MMAP_MAX The maximum number of chunks to allocate with mmap. Setting this to
+         zero disables all use of mmap. </li>
+         <li> M_TRIM_THRESHOLD This is the minimum size (in bytes) of the top-most, releasable chunk
+         that will cause sbrk to be called with a negative argument in order to return memory
+         to the system. </li>
+         </ul>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:Ofast" class="optimization" 
+       regexp="-OPT:Ofast\b">
+       <example>-OPT:Ofast</example>
+      <![CDATA[
+         <p>-OPT:Ofast<br />
+         Maximizes performance for a given platform using the selected optimizations.
+         "-OPT:Ofast" specifies four optimizations; "-OPT:ro=2",
+         "-OPT:Olimit=0", "-OPT:div_split=ON", and "-OPT:alias=typed".
+         Note the specified optimizations are ordinarily safe but floating
+         point accuracy due to transformations may be diminished.</p>
+      ]]>
+      <include flag="F-OPT:ro"/>
+      <include flag="F-OPT:Olimit"/>
+      <include flag="F-OPT:div_split"/>
+      <include flag="F-OPT:alias"/>
+   </flag>
+
+   <flag name="F-OPT:Olimit" class="optimization" regexp="-OPT:Olimit=(\d+)">
+       <example>-OPT:Olimit</example>
+      <![CDATA[
+         <p>-OPT:Olimit=N<br />
+         Controls the size of procedures to be optimized. Procedures above
+         the specified cutoff limit, N, are not optimized. N=0 means
+         "infinite Olimit", which causes all procedures to be optimized
+         with no consideration regarding compilation times. Note if
+         "-OPT:Ofast" is enabled then "-OPT:Olimit=0" or when "-O3" is
+         enabled "-OPT:Olimit=9000". The default is "-OPT:Olimit=6000".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:ro" class="optimization"
+         regexp="-OPT:(roundoff|ro)=[0-3]">
+       <example>-OPT:ro</example>
+      <![CDATA[
+         <p>-OPT:roundoff,ro=(0|1|2|3)<br />
+         "-OPT:roundoff" specifies acceptable levels of divergence for both
+         accuracy and overflow/underflow behavior of floating-point results
+         relative to the source language rules. The roundoff value is
+         in the range 0-3 with each value described as follows:<br />
+
+         0 Do no transformations which could affect floating-point
+              results. The default for optimization levels "-O0", "-O1",
+              and "-O2".<br />
+
+         1 Allow all transformations which have a limited affect
+              on floating-point results. For roundoff, limited is defined
+              as only the last bit or two of the mantissa is affected.
+              For overflow or underflow, limited is defined as
+              intermediate results of the transformed calculation may
+              overflow or underflow within a factor of two of where
+              the original expression may have overflowed or underflowed.
+              Note that effects may be less limited when
+              compounded by multiple transformations. This is the
+              default when "-O3" is specified.<br />
+
+         2 Specifies transformations with extensive effects on
+              floating-point results. For example, allow associative
+              rearrangement (i.e. even across loop iterations) and the 
+              distribution of multiplication over addition or
+              subtraction. Do not specify transformations known to
+              cause: a. cumulative roundoff errors, or b. overflow/underflow 
+              of operands in a large range of valid floating-point values.
+              This is the default when specifying "-OPT:Ofast".<br />
+
+         3 Specify any mathematically valid transformation of
+              floating-point expressions. For example, floating point
+              induction variables in loops are permitted (even if
+              known to cause cumulative roundoff errors). Also
+              permitted are fast algorithms for complex absolute
+              value and divide (which will overflow/underflow for
+              operands beyond the square root of the representable extremes).</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:rsqrt" class="optimization"
+         regexp="-OPT:rsqrt=[0-2]\b">
+       <example>-OPT:rsqrt</example>
+      <![CDATA[
+         <p>-OPT:rsqrt=(0|1|2)<br />
+         Instructs the compiler to use the reciprocal square root instruction
+         when calculating the square root. This transformation may vary
+         the accuracy slightly.<br />
+         0 Restrain from using the reciprocal square root instruction.<br />
+         1 Use the reciprocal square root instruction followed by
+           operations that will improve the accuracy of the results.<br />
+         2 Use the reciprocal square root instruction without improving
+           the result accuracy.<br />
+         Note "-OPT:rsqrt=1" if "-OPT:roundoff=2" or "-OPT:roundoff=3".
+         The default is "-OPT:rsqrt=0".</p>
+      ]]>
+   </flag>
+
+  <flag name="F-OPT:treeheight" class="optimization"
+         regexp="-OPT:treeheight=((on|off|0|1)\b)">
+       <example>-OPT:treeheight</example>
+      <![CDATA[
+         <p>-OPT:treeheight=(on|off|0|1)<br />
+         Instructs the compiler to perform a global reassociation of expressions
+         which reduces the tree height of the expressions. The reassociation
+         process determines the optimum order of combining terms
+         in a sum so as to produce loop invariant subcomputations
+         or to refine common subexpressions among several essential computations.
+         The default is "-OPT:treeheight=OFF".</p>
+      ]]>
+   </flag>
+
+  <flag name="F-OPT:unroll_level" class="optimization"
+         regexp="-OPT:unroll_level=(1|2)\b">
+       <example>-OPT:unroll_level</example>
+      <![CDATA[
+         <p>-OPT:unroll_level=(1|2)<br /> Controls the level at which 
+		 the compiler will perform unrolling optimizations. When "-OPT:unroll_level=2" 
+		 the compiler is instructed to aggressively unroll loops in the 
+		 presence of control flow.  The default is "-OPT:unroll_level=1".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:unroll_size" class="optimization"
+         regexp="-OPT:unroll_size=(\d+)">
+       <example>-OPT:unroll_size</example>
+      <![CDATA[
+         <p>-OPT:unroll_size=N<br />
+         Instructs the compiler to limit the number of instructions produced
+         when unrolling inner loops. When N=0 the ceiling is disregarded.
+         Note by specifying "-O3" sets "-OPT:unroll_size=128". The default
+         is "-OPT:unroll_size=40".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-OPT:unroll_times_max" class="optimization"
+         regexp="-OPT:(unroll_times_max|unroll_times)=(\d+)">
+       <example>-OPT:unroll_times_max</example>
+      <![CDATA[
+         <p>-OPT:unroll_times_max=N<br />
+         Instructs the compiler to limit the unrolling of inner loops to the
+         value specified by N. The default is "-OPT:unroll_times_max=4".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-L_lib_directory_lsmartheap" class="optimization"
+        regexp="-L\S+ -lsmartheap">
+       <example>-L/opt/sh8/lib -lsmartheap</example>
+      <![CDATA[
+         <p>-L&lt;library directory&gt; -lsmartheap ,<br />
+         when used as an EXTRA_CXXLIB variable, 
+         results in linking with MicroQuill's SmartHeap 8 (32-bit) library 
+         for Linux.  This is a library that optimizes calls to new, delete, malloc and free.</p>
+      ]]>
+   </flag>
+
+   <flag name="F-static" class="optimization"
+         regexp="-static">
+       <example>-static</example>
+      <![CDATA[
+         <p>-static<br />
+         On systems that support dynamic linking, this prevents linking with shared
+         libraries. On other systems, this option has no effect.</p>
+      ]]>
+   </flag>
+
+   <!-- Individual subflags of the -WOPT: class -->
+
+   <flag name="F-WOPT:aggstr" class="optimization"
+         regexp="-WOPT:aggstr=\d+">
+      <example>-WOPT:aggstr</example>
+      <![CDATA[
+         <p> This group of options controls the affect the global optimizer has on the program.
+             "-WOPT:" only influences global optimizations specified by "-O2" or above.</p>
+
+         <p>-WOPT:aggstr=N<br />
+         -WOPT:aggstr regulates the aggressiveness of the compilers
+          scalar optimizer when performing strength reduction optimizations.
+          Strength reduction is the substitution of induction expressions
+          within a loop with temporaries that are incremented together
+          with the loop variable. The value N specifies the maximum
+          number of induction expressions being replaced. Select positive
+          integers only for variable N. Setting N=0 tells the scalar optimizer
+          to use strength reduction for non-trivial induction expressions.
+          Note specifying very aggressive strength reductions may prompt
+          additional temporaries increasing register pressure and resulting
+          in excessive register spills that decrease performance. The default
+          is "-WOPT:aggstr=11".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-WOPT:if_conv" class="optimization"
+         regexp="-WOPT:if_conv=(0|1|2)">
+      <example>-WOPT:if_conv</example>
+      <![CDATA[
+         <p>-WOPT:if_conv=(0|1|2):<br />
+         "-WOPT:if_conv" instructs the compiler to transform simple IF
+         statements to conditional move instructions. "-WOPT:if_conv" has
+         three settings:<br />
+	0 Disables this optimization.<br />
+	1 Specifies conservative IF statement transformations.
+        The context surrounding the IF statement is used in
+        the transformation decision.<br />
+	2 Use aggressive IF statement transformations. Perform
+        the IF statement transformation regardless of the surrounding
+        context.<br />
+      The default is "-WOPT:if_conv=1".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-WOPT:mem_opnds" class="optimization"
+         regexp="-WOPT:mem_opnds=(on|off|0|1)\b">
+      <example>-WOPT:mem_opnds</example>
+      <![CDATA[
+         <p>-WOPT:mem_opnds=(on|off|0|1)<br />
+         The compilers scalar optimizer is instructed to use automated reasoning
+         to protect all memory operands of arithmetic operations.
+         The process attempts to incorporate memory loads as part of the
+         operands of arithmetic operations (e.g., the compiler tries to combine
+         a memory load and an arithmetic instruction into one instruction).
+         The default is "WOPT:mem_opnds=OFF".</p>
+      ]]>
+   </flag>
+
+   <flag name="F-WOPT:unroll" class="optimization"
+         regexp="-WOPT:unroll=(0|1|2)\b">
+      <example>-WOPT:unroll</example>
+      <![CDATA[
+         <p>-WOPT:unroll=(0|1|2) : Specifying "WOPT:unroll" helps regulate the compiler's scalar optimizer
+          when unrolling of innermost loops. The available settings
+          are:<br />
+	0 Innermost loop unrolling is suppressed.<br />
+	1 Instructs the compilers scalar optimizer to unroll the
+        innermost loops which contain IF statements. Selecting
+        this setting compliments the loop unrolling performed
+        in the code generator.<br />
+	2 Instructs the compiler's scalar optimized to unroll the
+        innermost loops which contain straight line code plus
+        the loops containing IF statements. Selecting this setting
+        duplicates the unrolling performed in the code generator
+        (i.e. unrolling straight line code in the body of
+         a loop).<br />
+	Note "-WOPT:unroll" and the unrolling options in the "-OPT" group
+      are mutually exclusive. The default is "-WOPT:unroll=1".</p>
+      ]]>
+   </flag>
+
+     <!-- Individual subflags of the -GRA: class -->
+
+     <flag name="F-GRA:optimize_boundary" class="optimization"
+         regexp="-GRA:optimize_boundary=(on|off|0|1)\b">
+      <example>-GRA:optimize_boundary</example>
+      <![CDATA[
+       <p> Global register allocation (GRA) is the process of multiplexing a large number
+           of target program variables onto a small number of CPU registers. The code
+           generator implements global register allocation when certain optimization levels
+           are specified.</p>
+
+       <p> -GRA:optimize_boundary=(on|off|0|1)<br />
+           Instructs the compiler to permit the register allocator to assign the
+           same register to different variables in the same basic-block. The
+           default is "-GRA:optimize_boundary=OFF".</p>
+      ]]>
+   </flag>
+
+     <flag name="F-GRA:prioritize_by_density" class="optimization"
+         regexp="-GRA:prioritize_by_density=(on|off|0|1)\b">
+      <example>-GRA:prioritize_by_density</example>
+      <![CDATA[
+        <p>-GRA:prioritize_by_density=(on|off|0|1)<br />
+	Instructs the compiler's Global Register Allocator (GRA) to prioritize
+	register assignments to variables based on the variables' reference count
+	density (number of times the variables are referenced in a local region of
+	interest) and not on their global reference count.  
+        The default is "-GRA:prioritize_by_density=OFF".</p>
+      ]]>
+   </flag>
+
+     <flag name="F-GRA:unspill" class="optimization"
+         regexp="-GRA:unspill=(on|off|0|1)\b">
+      <example>-GRA:unspill</example>
+      <![CDATA[
+        <p>-GRA:unspill=(on|off|0|1)<br />
+		Instructs the compiler's Global Register Allocator (GRA) to aggressively
+		remove redundant register spills that occur in the boundary region between
+		GRA and LRA (Local Register Allocator).  The default is "-GRA:unspill=off".
+        </p>
+      ]]>
+   </flag>
+
+    <!-- Individual subflags of the -LANG: class -->
+
+    <flag name="F-LANG:copyinout" class="optimization"
+         regexp="-LANG:copyinout=(on|off)">
+      <example>-LANG:copyinout</example>
+      <![CDATA[
+         <p> Options in the -LANG: group can be used to control the set of features that
+             are supported. For example, to compile code that does not conform with the
+             standard in one way or another. Note it may not always be possible, however,
+             to link together object files, some of which have been compiled with a feature
+             enabled and others with it disabled.</p>
+
+         <p>-LANG:copyinout=(on|off)<br />
+            If an array section is passed as an argument in a call, the compiler
+            is instructed to copy the array section into a temporary array that
+            will be passed as the argument in the call. -LANG:copyinout
+            optimizes the accessing of array arguments by improving argument
+            locality. Note the flag helps regulate the aggressiveness of this
+            optimization and is mainly suited to Fortran code. When specifying
+            global optimization -O2 or higher -LANG:copyinout=ON. The
+            default is "-LANG:copyinout=OFF".</p>
+	]]>
+   </flag>
+
+    <flag name="F-LANG:heap_allocation_threshold" class="optimization"
+         regexp="-LANG:heap_allocation_threshold=\d+">
+      <example>-LANG:heap_allocation_threshold</example>
+      <![CDATA[
+	   <p>-LANG:heap_allocation_threshold=N<br />
+            Specifies the threshold when determining whether to allocate an automatic 
+		array or compiler temporary on the heap rather than on
+		the stack. Parameter size is in bytes and sets the threshold. Setting 
+		size to -1 implies all objects are placed on the stack. Setting
+		size to 0 implies all objects are placed on the heap. The default
+		is "-LANG:heap_allocation_threshold=-1" for maximum performance.</p>
+      ]]>
+   </flag>
+
+   <!-- Individual subflags of the -TENV: class -->
+
+   <flag name="F-TENV:frame_pointer" class="optimization"
+         regexp="-TENV:frame_pointer=(on|off)">
+      <example>-TENV:frame_pointer</example>
+      <![CDATA[
+         <p> These -TENV: options control the target environment assumed and/or produced by the
+             compiler.</p>
+
+         <p>-TENV:frame_pointer=(on|off)<br />
+         Setting this option to ON tells the compiler to use the frame pointer
+         register to address local variables in the function stack frame. Generally,
+         if the compiler determines that the stack pointer is fixed it
+         will use the stack pointer to address local variables throughout the
+         function invocation in place of the frame pointer. This frees up the
+         frame pointer for other purposes.
+         The default is ON for C/C++ and OFF for Fortran. This flag defaults
+         to ON for C/C++ because the exception handling mechanism
+         relies on the frame pointer register being used to address local variables.
+         This flag can be turned OFF for C/C++ programs that do
+         not generate exceptions.</p>
+      ]]>
+   </flag>
+
+   <!-- End of description of flag groups -->
+
+   <!-- End of description of optimization flags -->
+	
+<!-- /OPTIMIZATION -->
+
+<!-- PORTABILITY -->
+
+   <flag name="F-fno-second-underscore" class="portability">
+      <example>-fno-second-underscore</example>
+      <![CDATA[
+         <p><b>CFP2006:</b></p>
+         <p>If -funderscoring is in effect, and the original Fortran external 
+         identifier contained an underscore, -fsecond-underscore appends 
+         a second underscore to  the one added  by  -funderscoring.   
+         -fno-second-underscore  does  not append a second underscore.  
+         The default is both -funderscoring and -fsecond-underscore, the
+         same defaults as g77 uses.  -fno-second-underscore corresponds
+         to the default policies of PGI Fortran and Intel Fortran.
+         </p>
+      ]]>
+   </flag>
+
+<!-- /PORTABILITY -->
+
+<!-- COMPILER -->
+
+   <flag name="Fopencc" class="compiler" regexp="opencc">
+      <example>opencc</example>
+      <![CDATA[
+         <p>Invoke the Open64 C compiler.<br />
+         Also used to invoke linker for C programs.</p>
+      ]]>
+   </flag>
+
+   <flag name="FopenCC" class="compiler" regexp="openCC">
+      <example>openCC</example>
+      <![CDATA[
+         <p>Invoke the Open64 C++ compiler.<br />
+         Also used to invoke linker for C++ programs.</p>
+      ]]>
+   </flag>
+
+   <flag name="Fopenf95" class="compiler" regexp="openf95">
+      <example>openf95</example>
+      <![CDATA[
+         <p>Invoke the Open64 Fortran 77, 90 and 95 compilers. <br />
+         Also used to invoke linker for Fortran programs and
+         for mixed C / Fortran.  openf90 and openf95 are synonymous.</p>
+      ]]>
+   </flag>
+
+<!-- /COMPILER -->
+
+<!-- OTHER -->
+
+   <flag name="F-IPA:max_jobs" class="other"
+         regexp="-IPA:max_jobs=(\d+)">
+      <example>-IPA:max_jobs</example>
+      <![CDATA[
+         <p>-IPA:max_jobs=N: The compiler is instructed to limit the number of compilations running
+           at once to N. After interprocedural analysis is performed the
+           compiler is invoked with -IPA:max_jobs set to the maximum level
+           of parallelism. N can be set to:<br />
+
+         0 The maximum level of parallelism is limited to the greatest number of CPUs (or processor
+           sockets), processor cores, or hyperthreading units in the system.<br />
+
+         1 Suppress parallelization during compilation.<br />
+
+         >=2 Sets the desired level of parallelism.<br />
+
+	The default is "-IPA:max_jobs=1".</p>
+
+      ]]>
+   </flag>
+
+
+<!-- /OTHER -->
+
+</flagsdescription>

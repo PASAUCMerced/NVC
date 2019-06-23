@@ -1,0 +1,1248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Unix Install SPEC OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+body { background: white; color: black; }
+</style>
+</head>
+<body>
+
+<h1>Installing SPEC OMP2012 Under Unix, Linux, and Mac&nbsp;OS&nbsp;X</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-11 15:40:23 -0400 (Thu, 11 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a> )</p> 
+
+<p class="contents">Contents</p>
+
+<p class="contentsl1"><a href="#steps">Installation Steps</a></p>
+<p class="contentsl2"><a href="#s1">1.</a> Review Pre-requisites</p>
+<p class="contentsl2"><a href="#s2">2.</a> Create destination.  Have enough space; avoid space.</p>
+<p class="contentsl2"><a href="#s3">3.</a> Mount the Benchmark ISO</p>
+<p class="contentsl2"><a href="#s4">4.</a> Set your directory to the Benchmark ISO</p>
+<p class="contentsl2"><a href="#s5">5.</a> Use install.sh</p>
+<p class="contentsl3"><a href="#s5a">5.a.</a> Destination selection</p>
+<p class="contentsl3"><a href="#s5b">5.b.</a> Toolset selection</p>
+<p class="contentsl3"><a href="#s5c">5.c.</a> The files are unpacked and tested</p>
+<p class="contentsl2"><a href="#s6">6.</a> Source shrc or cshrc</p>
+<p class="contentsl2"><a href="#s7">7.</a> Try to build one benchmark</p>
+<p class="contentsl2"><a href="#s8">8.</a> Try running one benchmark with the test dataset</p>
+<p class="contentsl2"><a href="#s9">9.</a> Try a real dataset</p>
+<p class="contentsl2"><a href="#s10">10.</a> Try a full (reportable) run</p>
+
+<p class="contentsl1"><a href="#example">Example Installation</a></p>
+
+<p class="contentsl1"><a href="#appendix1">Appendix 1:</a> the DVD drive is on system A, but I want to install on system B.
+What do I do?</p>
+<p class="contentsl2"><a href="#network">A1.</a> Network mount</p>
+<p class="contentsl2"><a href="#tarball">A2.</a> Tar file</p>
+
+<p class="contentsl1last"><a href="#appendix2">Appendix 2:</a> Uninstalling SPEC OMP2012</p>
+
+
+      <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+      assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+      some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+      documents at one of the following locations:</p>
+      <ul class="commentaryul">
+      <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li> 
+      <li class="commentaryli">The <span class="ttnobr">$SPEC/Docs/</span> (Unix) or <span class="ttnobr">%SPEC%\Docs\</span>
+      (Windows) directory on a system where SPEC OMP2012 has been installed.</li>
+      <li class="commentaryli">The <span class="tt">Docs/</span> directory on your SPEC OMP2012 distribution.</li>
+      </ul>
+      <p class="commentaryend"></p>
+
+
+<h2 id="steps">Installation Steps</h2>
+
+<p>The SPEC OMP2012 suite has been tested under Unix and Linux. The
+benchmark environment should work with Mac OS X 
+and Windows systems but has not been tested.  Your benchmark can be installed
+under many operating systems.  </p>
+
+   <p class="l1"><span class="alarm">Reminder: the SPEC license allows you to install on multiple systems as you may wish
+   within your institution; but you may not share the software with the public.</span></p>
+
+<p>The installation procedure for Unix, Linux, and Mac OS X is as follows:</p>
+
+<h3 id="s1">1. Review Pre-requisites</h3>
+
+<p> Review the hardware and software requirements, in <a class="external"
+href="system-requirements.html">system-requirements.html</a></p> 
+
+
+<h3 id="s2">2. Create destination.  Have enough space, avoid space.</h3>
+
+<p> Create a directory on the destination disk.  You should make sure that you have a disk that has at least 8GB free.  (For more
+information on disk usage, see <a class="external" href="system-requirements.html">system-requirements.html</a>.)</p> 
+
+<p id="nospaces"><span class="alarm">Don't put spaces in the path:</span> even if you make it through the installation
+(doubtful), you are just asking for trouble, because there may be multiple programs from both SPEC and from your compiler
+that expect space to be an argument delimiter, not part of a path name.  (This being the *<span
+style="text-decoration:underline;">Unix</span>* install guide, you wouldn't have thought of using spaces in in the first
+place, would you?)</p>
+
+<h3 id="s3">3. <span id="mount">Mount</span> the Benchmark ISO</h3>
+
+<p>You can either burn a DVD of the benchmark ISO file, or you can just directly mount
+the benchmark ISO file you have downloaded.
+If you choose to mount the benchmark ISO file, the following examples may
+help you get it mounted.  The examples assume the benchmark has been save in the file omp2012-1.0.iso.
+The target location listed in these examples is <tt>/mnt</tt> but could be anything you have created.
+</p>
+
+<table border="1" cellspacing="0" cellpadding="0" style="border-color:#d0d0d0; margin:.5em 3em;"> 
+<tr>
+    <td valign="top"><b>AIX:</b></td>
+     <td><kbd>        <b>loopmount -i omp2012-1.0.iso -o "-V cdrfs -o ro" -m /mnt</b> </kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>Linux:</b></td>
+     <td><kbd>        <b>mount -t iso9660 -o ro,loop omp2012-1.0.iso /mnt</b>
+     </kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>Solaris:</b></td>
+
+     <td>             
+             <kbd> <b>
+             mount -F hsfs -o ro `lofiadm -a omp2012-1.0.iso` /mnt</b>
+     </kbd></td>
+</tr>
+</table>
+<p>
+After you are done installing, you may want to unmount the benchmark ISO.
+This can be done by making sure you are no longer in the install mount
+point and then issue the comman <tt>umount /mnt</tt>.  This will unmount
+the filesystem.  If you are on Solaris, you may also want to remove
+the lofi device that was created with <tt>lofiadm</tt> command.  See
+the man page for further instructions.</p>
+
+<p>If you have created a DVD, insert the the DVD, and, if necessary, issue a <tt>mount</tt> command for it.  For many operating systems, the DVD will be
+automatically mounted.  If not, you may have to enter an explicit <span class="ttnobr">mount</span> command.  If your
+operating system supports the Rock Ridge Interchange Protocol extensions to ISO 9660, be sure to select them, unless they are
+the default.  The following examples are not intended to be comprehensive, but may get you started or at least give you clues
+which manpages to read:</p>
+
+<table border="1" cellspacing="0" cellpadding="0" style="border-color:#d0d0d0; margin:.5em 3em;"> 
+<tr>
+    <td valign="top"><b>AIX:</b></td>
+     <td><kbd>        <b>mount -v cdrfs -r /dev/cd0 /cdrom</b> </kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>HP-UX:</b></td>
+     <td><kbd> mount -o cdcase /dev/disk/disk5 /mnt/cdrom/</kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>Linux:</b></td>
+     <td><kbd>        <b>mount -t iso9660 -o ro,exec /dev/cdrom /mnt</b>
+     </kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>Solaris:</b></td>
+
+     <td>             If Volume Management is running, you should find that the DVD is automatically mounted, as
+                     <tt>/cdrom/label_of_volume/  </tt> If not, you should be able to mount it with commands similar to this:
+             <br /><kbd> <b>mkdir /mnt1
+             <br />mount -F hsfs -o ro /dev/dsk/c0t6d0s0 /mnt1</b>
+     </kbd></td>
+</tr>
+<tr>
+    <td valign="top"><b>Virtual Machines</b></td>
+    <td>If you are running in a virtual machine, you will need to convince the host operating system to allow your guest OS
+    to have access to the DVD.  The means of accomplishing this will vary.  For reference, the following worked with a Linux
+    guest running under Virtual Box V4.0.6, with Windows 7 as the host: (1)&nbsp;Shut down the virtual machine (don't just
+    pause it; tell it to run its shutdown procedure). (2)&nbsp;The Settings dialog should now be visible (it's grayed out if
+    the machine state is not shut down).  (3)&nbsp;Use Settings to configure the DVD drive as both available to the guest OS
+    and as "passthrough".  (4)&nbsp;Boot the virtual machine. (5)&nbsp;Log in.  (6)&nbsp;Insert the DVD. (7)&nbsp;At this
+    point, the DVD was automatically mounted as <tt>/media/SPEC_OMP2012</tt>.</td>
+</tr>
+</table>
+
+   <p>Note that you may need root privileges to mount the DVD or benchmark ISO.</p>
+
+<p class="commentary"><b>The following paragraphs assume that your DVD drive is on the same system as where you wish to
+install.  If it is on a different system, please see <a href="#appendix1">Appendix 1</a>.</b></p>
+
+<h3 id="s4">4. Set your directory to the Benchmark ISO</h3>
+
+<p class="snugbot">If you haven't already done so by now, start a Terminal window (aka "command window", "shell", "console",
+"terminal emulator", "character cell window", "xterm", etc.) and issue a <span class="ttnobr">cd</span> command to set your
+current working directory to the directory where the DVD is mounted.   The exact command will vary depending on the label on
+the media, the operating system, and the devices configured.  It might look something like one of these:</p>
+
+<pre>
+$ <b>cd /Volumes/SPEC_OMP2012</b>
+$ <b>cd /media/SPEC_OMP2012</b>
+$ <b>cd /dvdrom/spec_omp2012</b> 
+$ <b>cd /mnt</b>
+</pre>
+
+<h3 id="s5"><span id="doinstall">5.</span> Use install.sh</h3>
+
+<p class="snugbot"> Type:</p> 
+
+    <pre><b>./install.sh</b></pre>
+
+<div class="commentary">
+<p id="rootnot" class="snugbot"><b>q. Do you have to be root?</b> Occasionally, users of Unix systems have asked whether it
+is necessary to elevate privileges, or to become <tt>'root'</tt>, prior to entering the above command.  SPEC
+recommends&nbsp;(*) that you do <span class="u">not</span> become <tt>root</tt>, because: (1)&nbsp;To the best of SPEC's
+knowledge, no component of SPEC OMP needs to modify system directories, nor does any component need to call privileged system
+interfaces.  (2)&nbsp;Therefore, if you find that it appears that there is some reason why you need to be <tt>root</tt>, the
+cause is likely to be outside the SPEC toolset - for example, disk protections, or quota limits.  (3)&nbsp;<span
+class="u">For safe benchmarking</span>, it is better to avoid being <tt>root</tt>, for the same reason that it is a good idea
+to wear seat belts in a car: accidents happen, humans make mistakes.  For example, if you accidentally type:</p>
+<div style="margin-left:3em"><span class="ttnobr">kill 1</span></div> 
+<p class="snug">when you meant to say:</p>
+<div style="margin-left:3em"><span class="ttnobr">kill %1</span></div> 
+<p class="snugtop">then you will very grateful if you are <span class="u">not</span> privileged at that moment.
+</p>
+
+<p class="example">(*) This is only a recommendation, not a requirement nor a rule.  </p>
+</div>
+
+<h4 id="s5a">5.a. Destination selection</h4>
+
+<p class="snug">Depending on your installation type, you may be prompted for a destination directory:</p>
+<pre>
+SPEC OMP2012 Installation
+Top of the OMP2012 tree is '/Volumes/SPEC_OMP2012'
+Enter the directory you wish to install to (e.g. /usr/omp2012)
+<b>/Users/kgoel/omp2012</b>
+
+</pre>
+
+<p class="snugtop">When answering the above question, note that you will have to use syntax acceptable to <tt>sh</tt> (so you
+might need to say something like "<span class="ttnobr">$HOME/mydir</span>" instead of "<span class="ttnobr">~/mydir</span>").
+As mentioned <a href="#nospaces">above</a>, don't use spaces.</p>
+
+<p class="commentary" style="margin-top:.5em"> <i>Note:</i> You can also specify the destination directory in the command
+line, using the <span class="ttnobr">-d</span> flag, for example, like this: <br /><span class="ttnobr"> <b>./install.sh -d
+/Users/kgoel/omp2012</b></span></p>
+
+<p>The installation procedure will show you the directories that will be used to install from and to.  You will see a message
+such as this one:</p>
+
+<pre>
+Installing FROM /Volumes/SPEC_OMP2012
+Installing TO /Users/kgoel/omp2012
+
+Is this correct? (Please enter 'yes' or 'no') 
+<b>yes</b>
+</pre>
+
+<p>Enter "<span class="ttnobr">yes</span>" if the directories match your expectations.  If there is an error, enter
+"<span class="ttnobr">no</span>", and the procedure will exit, and you can try again, possibly using the <span class="ttnobr">-d</span>
+flag mentioned in the note above.  </p>
+
+<h4 id="s5b">5.b. Toolset selection</h4>
+
+<p>The installation procedure will attempt to automatically determine your current platform type (hardware architecture,
+operating system, etc.)  In some cases, the tools may identify several candidate matches for your architecture.</p>
+
+<p>You typically do not have to worry about whether the toolset is an exact match to your current environment, because the
+toolset selection <b>does not affect your benchmark scores</b>, and because the installation procedure does a series of tests
+to ensure that the selected tools work on your system.</p>
+
+   <p class="example">Examples: (1)&nbsp;the installation procedure may determine that SPEC tools built on version "N" of
+   your operating system are entirely functional on version "N+3".   (2)&nbsp;Tools built on one Linux distribution often
+   work correctly on another: notably, certain versions of SuSE are compatible, from a tools point of view, with certain
+   versions of RedHat.  (3)&nbsp;Tools built on AMD chips with 64-bit instructions ("amd64") are compatible with Intel chips
+   that implement the same instruction set under the names "EM64T" or "Intel 64" (but not compatibie with chips that
+   implement the Itanium instruction set, abbreviated "ia64").   (4) Often, though not always, 32-bit toolsets work correctly
+   on 64-bit operating systems.  <br /><br />Mostly, you don't need to worry about all this, because the installation
+   procedure does a comprehensive set of tests to verify compatibility.</p>
+
+<p>If at least one candidate match is found, you will see a message such as:</p>
+
+<pre>
+The following toolset is expected to work on your platform.  If the
+automatically installed one does not work, please re-run install.sh and
+exclude that toolset using the '-e' switch.
+
+The toolset selected will not affect your benchmark scores.
+
+macosx                        For MacOS X 10.4+ on Intel systems.
+                              Built on MacOS X 10.6.6 with GCC 4.0.1, using
+                              the 10.4u SDK.
+</pre>
+
+<p>If the installation procedure is unable to determine your system architecture, you will see a message such as:</p> 
+
+<pre>
+We do not appear to have vendor supplied binaries for your
+architecture.  You will have to compile the tool binaries by
+yourself.  Please read the file
+
+    /Volumes/SPEC_OMP2012/Docs/tools_build.html
+
+for instructions on how you might be able to build them.
+</pre>
+
+<p>If you see that message, please stop here, and examine the file <a class="external"
+href="tools-build.html">tools-build.html</a>.</p> 
+
+      <p class="commentarystart"> <i>Note:</i> If the tools that are automatically installed on your
+      system do not work, but you know that another set of tools that is in the list will work, you can exclude the ones that
+      do not work. You may be instructed to do this during the first installation.  Use the <b>-e</b> flag for install.sh,
+      for example:</p>
+
+      <p class="commentarycont" style="padding:.3em 5em;"><kbd><b>./install.sh -e linux-redhat72-ia32</b></kbd></p>
+
+      <p class="commentarycont">The above will cause the tools for <span class="ttnobr">linux-redhat72-ia32</span> to be
+      excluded from consideration.  </p>
+
+      <p class="commentarycont" style="padding-bottom:.3em;">Alternatively, you can explicitly direct which toolset is to be
+      used with the <b><span class="ttnobr">-u</span></b> flag for install.sh, for example:</p>
+
+      <p class="commentarycont" style="padding:.3em 5em;"><kbd><b>./install.sh -u linux-suse10-amd64</b></kbd> </p>
+
+      <p class="commentaryend">The above will cause the tools for <span class="ttnobr">linux-suse10-amd64</span> to be
+      installed, even if another toolset would have been chosen automatically.  If you specify tools that do not work on your
+      system, the installation procedure will stop without installing any tools.  </p>
+
+<h4 id="s5c">5.c. The files are unpacked and tested</h4>
+
+<p> Thousands of files will be unpacked from the distribution media, and quietly installed on your destination disk.  (If you
+would prefer to see them all named you can set <span class="ttnobr">VERBOSE=1</span> in your environment before installing
+the kit.)  Various tests will be performed to verify that the files have been correctly installed, and that the tools work
+correctly.  You should see summary messages such as these:</p>
+
+<pre>
+=================================================================
+Attempting to install the the macosx toolset... <span class="annotation">&lt;&lt;-- or whatever toolset was selected</span>
+
+Checking the integrity of your source tree...
+
+
+Checksums are all okay.
+
+Unpacking binary tools for <b>macosx</b>...       <span class="annotation">&lt;&lt;-- your toolset </span>
+
+Checking the integrity of your binary tools...
+
+Checksums are all okay.
+Testing the tools installation (this may take a minute)
+
+........................................................................o.......
+................................................................................
+..........................................................
+
+
+Installation successful.  Source the shrc or cshrc in
+<b>/Users/kgoel/omp2012</b>                          <span class="annotation">&lt;&lt;-- your directory</span>
+to set up your environment for the benchmark.
+
+</pre>
+
+   <p>At this point, you will have consumed about 1.5GB of disk space on the destination drive.  </p>
+
+<h3 id="s6">6. Source shrc or cshrc</h3>
+
+<p>Change your current directory to the top-level SPEC directory and source 
+   either <span class="tt">shrc</span> or <span class="tt">cshrc</span>:</p>
+
+      <ul>
+
+      <li class="l1"><p>For example, if you are using a Bourne-compatible shell (such as ash, bash, ksh, zsh), you could
+      type:</p>
+      <div class="l1ex">Users$ <b>cd /Users/kgoel/omp2012/</b><br />
+      omp2012$ <b>. ./shrc</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="annotation">&lt;-- that's dot-space-dot-slash-shrc</span></div></li>
+
+      <li class="l1"><p>If you are using a csh-compatible shell, you could type: </p>
+      <div class="l1ex"><span class="ttnobr">Users%
+      <b>cd /Users/kgoel/omp2012</b><br />
+      omp2012% <b>source cshrc</b></span></div>
+      </ul>
+
+   <p>The effect of the above commands is to set up environment variables and paths for SPEC. </p>
+
+<div class="commentary">
+    <p>From this point forward, we are testing basic abilities of the SPEC OMP2012 kit, including compiling benchmarks and
+    running them.  You may skip the remaining steps if all of the following are true:</p>
+
+    <ol>
+    <li>You are confident that the previous steps have gone smoothly.</li>
+    <li>You will not be compiling the benchmarks.</li>
+    <li>Someone else has given you pre-compiled binaries.</li>
+    </ol>
+
+    <p><span class="alarm">Warning:</span> even if someone else supplies binaries, you remain responsible for compliance with
+    SPEC's <a class="external" href="http://www.spec.org/fairuse.html">Fair Use</a> rule and the <a class="external"
+    href="http://www.spec.org/omp2012/Docs/runrules.html">OMP2012 run rules</a>.</p> 
+</div>
+
+<h3 id="s7">7. Try to build one benchmark</h3>
+
+<p>Change to the <tt>config</tt> directory, and test that you can build a benchmark using a config file supplied for your
+system.  For example:</p>
+
+<pre>
+$ <b>cd $SPEC/config</b>
+$ <b>cp Example-macosx-gcc421.cfg Khushboo-macosx.cfg</b>
+$ <b>runspec --config=Khushboo-macosx.cfg --action=build --tune=base md</b>
+</pre>
+
+<p>The above command assumes that you can identify a config file (in the directory <span class="ttnobr">$SPEC/config</span>)
+that is appropriate for you.  In this case, the user started with <span class="ttnobr">Example-macosx-gcc421.cfg</span>.
+Your starting point will probably differ; here are some resources to help:</p>
+<ul>
+<li>Hints about picking Linux config files are included in the long example <a href="#exstep6">below</a>.</li>
+<li>For a quick introduction to config files, see <a class="external" href="runspec.html#about_config">"About Config Files" in
+runspec.html</a></li> 
+<li>You may need to copy one of the supplied config files, and edit it for your system.</li>  
+<li>For example, you may need to edit it to have the correct path to your compiler!</li>  
+</ul>
+
+<p>The "<span class="ttnobr">--tune=base</span>" above indicates that we want to use only the simple tuning, if more than one
+kind of tuning is supplied in the config file.</p>
+
+<h3 id="s8">8. Try running one benchmark with the test dataset</h3>
+
+<p> Test that you can run a benchmark, using the minimal input set - the "test" workload.  For example:</p>
+
+<pre>$ <b>runspec --config=Khushboo-macosx.cfg --size=test --noreportable --tune=base \
+--iterations=1 --threads=12 md</b></pre>
+
+<p>The "\" above indicates that the command is continued on the next line.  The "<span class="ttnobr">--noreportable</span>"
+ensures that the tools will allow us to run just a single benchmark instead of the whole suite, "<span
+class="ttnobr">--iterations=1</span>" says just run the benchmark once, and 
+"<span
+class="ttnobr">--threads=12</span>" says to use twelve OpenMP threads .</p>
+
+<p>Check the results in <span class="ttnobr">$SPEC/result</span> </p>
+
+<h3 id="s9">9. Try a real dataset</h3>
+
+<p> Test that you can run a benchmark using the real input set - the "reference" workload.  For example:</p>
+
+<pre>$ <b>runspec --config=Khushboo-macosx.cfg --size=ref \
+     --noreportable --tune=base --iterations=1 --threads=12 md</b></pre>
+
+<p>Check the results in <span class="ttnobr">$SPEC/result</span>.</p>
+
+<h3 id="s10">10. Try a full (reportable) run</h3>
+
+<p id="resources">If everything has worked up to this point, you may wish to start a full run, perhaps leaving your computer to
+run overnight.  The extended test will demand significant resources from your machine, including computational power and memory of
+several types.  In order to avoid surprises, before starting the reportable run, you should review the section <a class="external"
+href="system-requirements.html#resources">About Resources</a>, in system-requirements.html.</p> 
+
+<p> Have a look at <a class="external" href="runspec.html">runspec.html</a> to learn how to do a full run of the suite.  </p> 
+
+<p>The command <span class="ttnobr"><b>runspec -h</b></span> will give you a brief summary of the many options for
+<tt>runspec</tt>.</p>
+
+<p>To run a reportable run of the benchmark with simple (baseline) tuning:</p>
+
+    <p class="ex">
+       C:\omp2012&gt; <b>runspec --tune=base --config=Khushboo-macosx.cfg --threads=12 gross</b> </p>
+
+
+<h2 id="example">Example Installation </h2>
+
+<p>Here is a complete Linux installation, with interspersed commentary.  This example follows the steps listed above.  We
+assume that Steps 1 through 3 are already complete (the pre-requisites are met, we have enough space, the benchmark ISO is
+mounted).</p>
+
+<p id="exstep4" class="commentary">Step 4: Set the current working directory to the benchmark mount location:</p>
+
+<pre>
+$ <b>cd /media/SPEC_OMP2012</b>
+
+</pre> <p id="exstep5" class="commentary"> Step 5: Invoke install.sh.  When prompted, we enter the destination directory:</p>
+
+<pre>
+$ <b>./install.sh </b>
+
+SPEC OMP2012 Installation
+
+Top of the OMP2012 tree is '/media/SPEC_OMP2012'
+Enter the directory you wish to install to (e.g. /usr/omp2012)
+<b>/omp2012</b>
+
+Installing FROM /media/SPEC_OMP2012
+Installing TO /omp2012
+
+Is this correct? (Please enter 'yes' or 'no') 
+<b>yes</b>
+
+The following toolset is expected to work on your platform.  If the
+automatically installed one does not work, please re-run install.sh and
+exclude that toolset using the '-e' switch.
+
+The toolset selected will not affect your benchmark scores.
+
+linux-suse10-amd64            For 64-bit AMD64/EM64T Linux systems running
+                              SuSE Linux 10 or later, and other
+                              compatible Linux distributions, including
+                              some versions of RedHat Enterprise Linux
+                              and Oracle Linux Server.
+
+                              Built on SuSE Linux 10 with 
+                              GCC v4.1.0 (SUSE Linux)
+
+linux-redhat72-ia32           For x86, IA-64, EM64T, and AMD64-based Linux
+                              systems with GLIBC 2.2.4+.
+                              Built on RedHat 7.2 (x86) with gcc 3.1.1
+
+
+
+=================================================================
+Attempting to install the linux-suse10-amd64 toolset...
+
+
+Checking the integrity of your source tree...
+
+
+Checksums are all okay.
+
+Unpacking binary tools for linux-suse10-amd64...
+
+Checking the integrity of your binary tools...
+
+Checksums are all okay.
+
+Testing the tools installation (this may take a minute)
+
+........................................................................o.....................................
+............................................................................................................
+
+Installation successful.  Source the shrc or cshrc in
+/omp2012
+to set up your environment for the benchmark.
+
+</pre>
+<p id="exstep6" class="commentarystart">Step 6: Now, we change the current working directory from the install media to the
+location of the new SPEC OMP2012 tree.  Since this user has a a Bourne compatible shell, <tt>shrc</tt> is sourced (for
+<tt>csh</tt> compatible shells, use <tt>cshrc</tt>).</p>
+
+<p class="commentarycont">Next, the config file <span class="ttnobr">Example-linux64-amd64-gcc43+.cfg</span> has been picked
+as a starting point for this system.  The gcc compiler might not provide the best possible score for this particular SUT
+(System Under Test), a server with two Intel XEon X5690 processors, 
+but this config file provides a reasonable start in order to
+demonstrate that the SPEC tree is functional.</p>
+
+<p class="commentaryend">(Note that the term "amd64" in the config file name does not designate a chip from a particular
+manufacturer; rather, it designates an instruction set, variously known as "amd64", "EM64T", and "x86_64".  The config file
+is an OK starting point for this SUT.)</p>
+
+
+<pre>
+$ <b>cd /omp2012/</b>
+$ <b>. ./shrc</b>
+$ <b>cd config</b>
+$ <b>cp Example-linux64-amd64-gcc43+.cfg mytest.cfg</b>
+$ <b>runspec --config=mytest.cfg --action=build --tune=base md</b>
+runspec v1763 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12938 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/omp2012/config/mytest.cfg'
+Running "specperl /omp2012/Docs/sysinfo" to gather system information.
+Loading "http://www.spec.org/auto/omp2012/current_version" for version check: OK
+
+Retrieving flags file (/omp2012/config/flags/Example-gcc4x-flags-revA.xml)...
+Retrieving flags file (/omp2012/config/flags/Example-linux-platform-revA.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Building 350.md base gcc43-64bit default: (build_base_gcc43-64bit.0000)
+specmake clean 2> make.clean.err | tee make.clean.out
+Executing commands:
+  specmake clean
+-----------------------------
+rm -rf *.o  md.log.01228004000
+find . \( -name \*.o -o -name '*.fppized.f*' -o -name '*.i' -o -name '*.mod' \) -print | xargs rm -rf
+rm -rf md_omp
+rm -rf md_omp.exe
+rm -rf core
+rm -rf 
+specmake build 2> make.err | tee make.out
+Executing commands:
+  specmake build
+-----------------------------
+/usr/bin/gfortran -c -o md_types.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check md_types.f
+/usr/bin/gfortran -c -o md_globals.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check md_globals.f
+md_globals.f:91.33:
+
+      type(species),save :: gspec    ! particle species to calculate g(r) for
+                                 1
+Warning: Duplicate SAVE attribute specified at (1)
+md_globals.f:44.41:
+
+      type(species),save :: spec(MAXSPEC) ! list of particle species
+                                         1
+Warning: Duplicate SAVE attribute specified at (1)
+/usr/bin/gfortran -c -o md_comm_ser.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check md_comm_ser.f
+specperl /omp2012/bin/specpp   -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG   md.F -o md.fppized.f
+/usr/bin/gfortran -c -o md.fppized.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check md.fppized.f
+specperl /omp2012/bin/specpp   -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG   input1.F -o input1.fppized.f
+/usr/bin/gfortran -c -o input1.fppized.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check input1.fppized.f
+/usr/bin/gfortran -c -o inital.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check inital.f
+/usr/bin/gfortran -c -o randnums.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check randnums.f
+/usr/bin/gfortran -c -o int_control.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check int_control.f
+/usr/bin/gfortran -c -o g.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check g.f
+/usr/bin/gfortran -c -o s.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check s.f
+/usr/bin/gfortran -c -o perf_stubs.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check perf_stubs.f
+/usr/bin/gfortran -c -o dwallclock00.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check dwallclock00.f
+/usr/bin/gfortran -c -o int_nn_direct.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check int_nn_direct.f
+/usr/bin/gfortran -c -o int_ion_pure_direct.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check int_ion_pure_direct.f
+/usr/bin/gfortran -c -o int_ion_mix_direct.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check int_ion_mix_direct.f
+/usr/bin/gfortran   -O2 -fno-strict-aliasing -fopenmp   -ffree-form -fno-range-check       md_types.o md_globals.o md_comm_ser.o 
+md.fppized.o input1.fppized.o inital.o randnums.o int_control.o g.o s.o perf_stubs.o dwallclock00.o int_nn_direct.o 
+int_ion_pure_direct.o int_ion_mix_direct.o                     -o md_omp
+specmake options 2> options.err | tee options.out
+Executing commands:
+  specmake options
+-----------------------------
+-----------------------------
+FPP: specpp   -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG   <source> -o <source>.fppized.f9x
+P: CPUFLAGS="-DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG"
+P: FPORTABILITY=""
+COMP: /usr/bin/gfortran -c -o options.o -O2 -fno-strict-aliasing -fopenmp -ffree-form -fno-range-check <source>
+C: FC="/usr/bin/gfortran"
+C: FOBJOPT="-c -o options"
+P: CPUFLAGS="-DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG"
+P: BENCH_FLAGS=""
+P: BENCH_FFLAGS=""
+O: OPTIMIZE=""
+O: FOPTIMIZE="-O2 -fno-strict-aliasing -fopenmp"
+P: PORTABILITY=""
+P: FPORTABILITY="-ffree-form -fno-range-check"
+O: EXTRA_FFLAGS=""
+O: EXTRA_OPTIMIZE=""
+O: EXTRA_FOPTIMIZE=""
+P: EXTRA_PORTABILITY=""
+P: EXTRA_FPORTABILITY=""
+LINK: /usr/bin/gfortran   -O2 -fno-strict-aliasing -fopenmp   -ffree-form -fno-range-check <objects> -o options
+C: LD="/usr/bin/gfortran"
+O: FOPTIMIZE="-O2 -fno-strict-aliasing -fopenmp"
+P: FPORTABILITY="-ffree-form -fno-range-check"
+C: LDOUT="-o options"
+
+Build successes: 350.md(base)                    <span class="annotation">&lt;&lt;-- what we want to see</span>
+
+Build Complete
+
+The log for this run is in /omp2012/result/OMP2012.001.log
+
+runspec finished at Fri Aug 17 09:55:57 2012; 30 total seconds elapsed
+
+</pre>
+
+<p class="commentary">Just above, various compile and link commands may or may not be echoed to your screen, depending on the
+settings in your config file.  At this point, we've accomplished a lot.  The SPEC tree is installed, and we have verified
+that a benchmark can be compiled using the Fortran compiler. (The sharp-eyed reader may notice some warnings above about casts of
+pointers.  These warnings from the compiler have been reviewed by SPEC's project leader for 350.md, who has determined
+that they will not affect operation of the benchmark.) </p>
+
+
+<p id="exstep8" class="commentary">Step 8: Now try running a benchmark, using the minimal test workload.  The test workload
+runs in a tiny amount of time and does a minimal verification that the benchmark executable can at least start up:</p>
+<pre>
+$ <b>runspec --config=mytest.cfg --size=test --noreportable --tune=base --iterations=1 --threads=12 md</b>
+runspec v1763 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12938 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/omp2012/config/mytest.cfg'
+Running "specperl /omp2012/Docs/sysinfo" to gather system information.
+Retrieving flags file (/omp2012/config/flags/Example-gcc4x-flags-revA.xml)...
+Retrieving flags file (/omp2012/config/flags/Example-linux-platform-revA.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Up to date 350.md base gcc43-64bit default
+
+
+Setting Up Run Directories
+  Setting up 350.md test base gcc43-64bit default: created (run_base_test_gcc43-64bit.0000)
+Running Benchmarks
+  Running 350.md test base gcc43-64bit default threads:12
+/omp2012/bin/specinvoke -d /omp2012/benchspec/OMP2012/350.md/run/run_base_test_gcc43-64bit.0000 
+-e speccmds.err -o speccmds.stdout -f speccmds.cmd -C -q
+/omp2012/bin/specinvoke -E -d /omp2012/benchspec/OMP2012/350.md/run/run_base_test_gcc43-64bit.0000 
+-c 1 -e compare.err -o compare.stdout -f compare.cmd -k
+Success: 1x350.md                              <span class="annotation">&lt;&lt;-- what we want to see</span>
+Producing Raw Reports
+mach: default
+  ext: gcc43-64bit
+    size: test
+      set: gross
+        format: raw -> /omp2012/result/OMPG2012.002.test.rsf
+Parsing flags for 350.md base: done
+Doing flag reduction: done
+        format: flags -> /omp2012/result/OMPG2012.002.test.flags.html
+        format: ASCII -> /omp2012/result/OMPG2012.002.test.txt
+        format: CSV -> /omp2012/result/OMPG2012.002.test.csv
+        format: HTML -> /omp2012/result/OMPG2012.002.test.html, /omp2012/result/OMPG2012.002.test.gif
+
+The log for this run is in /omp2012/result/OMP2012.002.log
+
+runspec finished at Fri Aug 17 10:04:49 2012; 81 total seconds elapsed
+
+</pre>
+<p class="commentary">Notice about 20 lines up the notation "<tt>Success: 1x350.md</tt>".  That is what we want to
+see.</p>
+
+<p id="exstep9" class="commentary" style="margin-top:1cm;">Step 9: let's try running md with the real workload.  This will
+take a while on the tested server running Linux.</p>
+
+<pre>
+$ <b>runspec --config=mytest.cfg --size=ref --noreportable --tune=base --iterations=1 --threads=12 md</b>
+runspec v1763 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12938 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/omp2012/config/mytest.cfg'
+Running "specperl /omp2012/Docs/sysinfo" to gather system information.
+Retrieving flags file (/omp2012/config/flags/Example-gcc4x-flags-revA.xml)...
+Retrieving flags file (/omp2012/config/flags/Example-linux-platform-revA.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Up to date 350.md base gcc43-64bit default
+
+
+Setting Up Run Directories
+  Setting up 350.md ref base gcc43-64bit default: created (run_base_ref_gcc43-64bit.0000)
+Running Benchmarks
+  Running 350.md ref base gcc43-64bit default threads:12
+/omp2012/bin/specinvoke -d /omp2012/benchspec/OMP2012/350.md/run/run_base_ref_gcc43-64bit.0000 
+-e speccmds.err -o speccmds.stdout -f speccmds.cmd -C -q
+/omp2012/bin/specinvoke -E -d /omp2012/benchspec/OMP2012/350.md/run/run_base_ref_gcc43-64bit.0000 
+-c 1 -e compare.err -o compare.stdout -f compare.cmd -k
+Success: 1x350.md                              <span class="annotation">&lt;&lt;-- what we want to see</span>
+Producing Raw Reports
+mach: default
+  ext: gcc43-64bit
+    size: ref
+      set: gross
+        format: raw -> /omp2012/result/OMPG2012.003.ref.rsf
+Parsing flags for 350.md base: done
+Doing flag reduction: done
+        format: flags -> /omp2012/OMPG2012.003.ref.flags.html
+        format: ASCII -> /omp2012/result/OMPG2012.003.ref.txt
+        format: CSV -> /omp2012/result/OMPG2012.003.ref.csv
+        format: HTML -> /omp2012/result/OMPG2012.003.ref.html, /omp2012/result/OMPG2012.003.ref.gif
+
+The log for this run is in /omp2012/result/OMP2012.003.log
+
+runspec finished at Fri Aug 17 12:10:34 2012; 7253 total seconds elapsed
+</pre>
+<p class="commentary">Success with the real workload!  So now let's look in the result directory and see what we find:</p>
+<pre>
+$ <b>cd result</b>
+$ <b>ls</b>
+OMPG2012.002.test.csv         OMPG2012.003.ref.csv         OMP2012.001.log
+OMPG2012.002.test.flags.html  OMPG2012.003.ref.flags.html  OMP2012.002.log
+OMPG2012.002.test.gif         OMPG2012.003.ref.gif         OMP2012.003.log
+OMPG2012.002.test.html        OMPG2012.003.ref.html        invalid.gif
+OMPG2012.002.test.rsf         OMPG2012.003.ref.rsf         lock.OMP2012
+OMPG2012.002.test.txt         OMPG2012.003.ref.txt
+$ <b>grep runspec: *log</b>
+OMP2012.001.log:runspec: runspec --config=mytest.cfg --action=build --tune=base md
+OMP2012.002.log:runspec: runspec --config=mytest.cfg --size=test --noreportable --tune=base --iterations=1 --threads=12 md
+OMP2012.003.log:runspec: runspec --config=mytest.cfg --size=ref --noreportable --tune=base --iterations=1 --threads=12 md
+$ 
+</pre>
+
+<p class="commentarystart">Notice the three separate sets of files:  .001, .002, and .003</p>
+
+<p class="commentarycont"><tt>OMP2012.001.log</tt> has the log from the compile.</p>
+
+<p class="commentarycont"><tt>OMP2012.002.log</tt> has the log from running <tt>350.md</tt> with the "test" input.  The
+various outputs (<tt>.csv, .html, .rsf, .txt</tt>), and a compiler flags report (<tt>.flags.html</tt>), 
+are all preceded by "<tt>OMPG2012</tt>", because <tt>350.md</tt> is one of the gross benchmarks.  The
+tools also distinguish whether the input was a "test" input by putting that in the file name as well.</p>
+
+<p class="commentarycont"><tt>OMP2012.003.log</tt> has the log from running <tt>350.md</tt> with the "ref" input.  Once
+again, the various outputs and the configuration file (<tt>.cfg</tt>) all start with OMPG2012. </p>
+
+<p id="exampleoutput" class="commentaryend">Here is the complete <tt>.txt</tt> report from running 350.md ref:</p>
+<pre> 
+$ <b>cat OMPG2012.003.ref.txt </b>
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 372.smithwa (base) did not have enough runs!                               #
+# 360.ilbdc (base) did not have enough runs!                                 #
+# 359.botsspar (base) did not have enough runs!                              #
+# 358.botsalgn (base) did not have enough runs!                              #
+# 376.kdtree (base) did not have enough runs!                                #
+# 362.fma3d (base) did not have enough runs!                                 #
+# 351.bwaves (base) did not have enough runs!                                #
+# 357.bt331 (base) did not have enough runs!                                 #
+# 370.mgrid331 (base) did not have enough runs!                              #
+# 363.swim (base) did not have enough runs!                                  #
+# 371.applu331 (base) did not have enough runs!                              #
+# 367.imagick (base) did not have enough runs!                               #
+# 350.md (base) did not have enough runs!                                    #
+# 352.nab (base) did not have enough runs!                                   #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) OMPG2012 Summary
+                       System Vendor System Model Name
+         Test Sponsor: Test Sponsor (Optional, defaults to hw_vendor)
+                           Thu Jul  7 09:33:29 2011
+
+OMP2012 License: 0                                         Test date: Aug-2012
+Test sponsor: Test Sponsor (Optional, defaults to hw_vendor)  Hardware availability: Dec-9999
+Tested by:    (Optional, defaults to hw_vendor)  Software availability: Dec-9999
+
+                       Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks      Thrds  Run Time     Ratio       Thrds  Run Time     Ratio
+-------------- ------  ---------  ---------    ------  ---------  ---------   
+350.md             12       7242      0.639  *                                 
+351.bwaves                                  NR                                 
+352.nab                                     NR                                 
+357.bt331                                   NR                                 
+358.botsalgn                                NR                                 
+359.botsspar                                NR                                 
+360.ilbdc                                   NR                                 
+362.fma3d                                   NR                                 
+363.swim                                    NR                                 
+367.imagick                                 NR                                 
+370.mgrid331                                NR                                 
+371.applu331                                NR                                 
+372.smithwa                                 NR                                 
+376.kdtree                                  NR                                 
+==============================================================================
+350.md             12       7242      0.639  *                                 
+351.bwaves                                  NR                                 
+352.nab                                     NR                                 
+357.bt331                                   NR                                 
+358.botsalgn                                NR                                 
+359.botsspar                                NR                                 
+360.ilbdc                                   NR                                 
+362.fma3d                                   NR                                 
+363.swim                                    NR                                 
+367.imagick                                 NR                                 
+370.mgrid331                                NR                                 
+371.applu331                                NR                                 
+372.smithwa                                 NR                                 
+376.kdtree                                  NR                                 
+ Est. SPECompG_base2012                  --
+ Est. SPECompG_peak2012                                             Not Run
+
+
+                                   HARDWARE
+                                   --------
+            CPU Name: Intel Core i5 M 520
+ CPU Characteristics:  
+             CPU MHz: 9999
+                 FPU: Integrated
+      CPU(s) enabled: 2 cores, 1 chip, 2 cores/chip, 2 threads/core
+    CPU(s) orderable: 1,2 chips
+       Primary Cache: 9999 KB I + 9999 KB D on chip per core
+     Secondary Cache: 9999 KB I+D on chip per core
+            L3 Cache: 9999 MB I+D on chip per chip
+         Other Cache: None
+              Memory: 47.253 GB fixme: If using DDR3, format is:
+                      'N GB (M x N GB nRxn PCn-nnnnnR-n, ECC)'
+      Disk Subsystem: 273 GB  add more disk info here
+      Other Hardware: None
+    Base Threads Run: 12
+Minimum Peak Threads: --
+Maximum Peak Threads: --
+
+
+
+                                   SOFTWARE
+                                   --------
+    Operating System: Oracle Linux Server release 6.1
+                      2.6.32-100.33.1.el6uek.x86_64
+            Compiler: gcc, g++ & gfortran 4.4.5
+       Auto Parallel: No
+         File System: ext3
+        System State: Run level 3 (add definition here)
+       Base Pointers: 64-bit
+       Peak Pointers: 64-bit
+      Other Software: None
+
+
+                            Operating System Notes
+                            ----------------------
+    'ulimit -s unlimited' was used to set environment stack size
+
+                                Platform Notes
+                                --------------
+     Sysinfo program /omp2012/Docs/sysinfo
+     $Rev: 512 $ $Date:: 2012-10-11 #$ 8f8c0fe9e19c658963a1e67685e50647
+     running on x4270-008 Fri Aug 17 10:09:42 2012
+    
+     This section contains SUT (System Under Test) info as seen by
+     some common utilities.  To remove or add to this section, see:
+       http://www.spec.org/omp2012/Docs/config.html#sysinfo
+    
+     From /proc/cpuinfo
+        model name : Intel(R) Xeon(R) CPU X5690 @ 3.47GHz
+           2 "physical id"s (chips)
+           24 "processors"
+        cores, siblings (Caution: counting these is hw and system dependent.  The
+        following excerpts from /proc/cpuinfo might not be reliable.  Use with
+        caution.)
+           cpu cores : 6
+           siblings  : 12
+           physical 0: cores 0 1 2 8 9 10
+           physical 1: cores 0 1 2 8 9 10
+        cache size : 12288 KB
+    
+     From /proc/meminfo
+        MemTotal:       49548136 kB
+        HugePages_Total:       0
+        Hugepagesize:       2048 kB
+    
+     /usr/bin/lsb_release -d
+        Oracle Linux Server release 6.1
+    
+     From /etc/*release* /etc/*version*
+        oracle-release: Oracle Linux Server release 6.1
+        redhat-release: Red Hat Enterprise Linux Server release 6.1 (Santiago)
+        system-release: Oracle Linux Server release 6.1
+        system-release-cpe: cpe:/o:oracle:oracle_linux:6server:ga:server
+    
+     uname -a:
+        Linux x4270-008 2.6.32-100.33.1.el6uek.x86_64 #1 SMP Tue May 24 18:17:23 EDT
+        2011 x86_64 x86_64 x86_64 GNU/Linux
+    
+     run-level 3 Aug 17 08:00
+    
+     SPEC is set to: /omp2012
+        Filesystem    Type    Size  Used Avail Use% Mounted on
+        /dev/sda3     ext3    273G   78G  181G  30% /
+    
+     Cannot run dmidecode; consider saying 'chmod +s /usr/sbin/dmidecode'
+    
+     (End of data from sysinfo program)
+
+
+                           Base Compiler Invocation
+                           ------------------------
+Fortran benchmarks:
+
+ 350.md: /usr/bin/gfortran
+
+                            Base Portability Flags
+                            ----------------------
+ 350.md: -ffree-form -fno-range-check
+
+                           Base Optimization Flags
+                           -----------------------
+Fortran benchmarks:
+
+ 350.md: -O2 -fno-strict-aliasing -fopenmp
+
+                               Base Other Flags
+                               ----------------
+Fortran benchmarks:
+
+ 350.md: No flags used
+
+
+    SPEC is a registered trademark of the Standard Performance Evaluation
+    Corporation.  All other brand and product names appearing in this
+    result are trademarks or registered trademarks of their respective
+    holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 372.smithwa (base) did not have enough runs!                               #
+# 360.ilbdc (base) did not have enough runs!                                 #
+# 359.botsspar (base) did not have enough runs!                              #
+# 358.botsalgn (base) did not have enough runs!                              #
+# 376.kdtree (base) did not have enough runs!                                #
+# 362.fma3d (base) did not have enough runs!                                 #
+# 351.bwaves (base) did not have enough runs!                                #
+# 357.bt331 (base) did not have enough runs!                                 #
+# 370.mgrid331 (base) did not have enough runs!                              #
+# 363.swim (base) did not have enough runs!                                  #
+# 371.applu331 (base) did not have enough runs!                              #
+# 367.imagick (base) did not have enough runs!                               #
+# 350.md (base) did not have enough runs!                                    #
+# 352.nab (base) did not have enough runs! 
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+-----------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact webmaster@spec.org.
+Copyright 2012 Standard Performance Evaluation Corporation
+Tested with SPEC OMP2012 v21.
+Report generated on Fri Aug 17 12:10:34 2012 by OMP2012 ASCII formatter v1765.
+
+</pre>
+
+<p class="commentary">Done.  The suite is installed, and we can run at least one benchmark for real (see the report of the
+time spent in 350.md above). </p> 
+
+<hr />
+
+<h2 id="appendix1">Appendix 1: the DVD drive is on system A, but I want to install on system B.  What do I do?</h2>
+
+<p>If the title of this section describes your situation, you basically have two choices.</p>
+<ol>
+   <li><a href="#network">Network mount</a>: You can mount the device over the network and do the installation remotely.</li>
+   <li><a href="#tarball">Tar file</a>: You can install from the tar file</li>
+</ol>
+
+<h3 id="network">1. Network mount</h3>
+
+<p>You might be able to mount the DVD on one system and use network services to make it available on other systems.</p>
+
+   <p class="l1"><span class="alarm">Please note that the SPEC OMP2012 license agreement does not allow you to post the DVD
+   on any public server.</span>  If your institution has a SPEC OMP2012 license, then it's fine to post it on an internal
+   server that is accessible only to members of your institution.</p>
+
+<p class="snugbot">Whether you attempt a network mount will probably depend on:</p>
+<ul>
+<li>available network hardware,</li>
+<li>the networking services provided by your operating system, and </li>
+<li>the security policies of your IT department (if any).</li>
+</ul>
+
+<p class="snugtop">If your network environment allows easy cross-system mounting, or if you feel brave about reading
+manpages, you can use a network mount for the installation.  Otherwise, you can fall back on <a style="white-space:nowrap;"
+href="#tarball">the tar file</a>.</p>
+
+<p><b>Network mount, easy:  <br />for example, System A Solaris/Opteron &nbsp;+&nbsp; System B Solaris/SPARC</b> </p>
+<p class="l1snugbot">Your operating system may be configured to automatically mount the drive and automatically make it visible to
+other network systems, or may make it visible with minimal user intervention.  During one set of testing, system A (with the
+DVD drive) was an Opteron-based system running Solaris 10.  The SPEC OMP2012 DVD was inserted.  The operating system mounted
+it automatically, and from a terminal window, a (non-privileged) user entered the Solaris</p>
+<div class="codeexample">share</div> 
+<p class="l1snugtop">command to make it visible to other hosts.  </p>
+
+<p class="l1">On System B, a Solaris SPARC system, a non-privileged user typed:</p>
+
+<pre class="l2">cd /net/systemA/cdrom/spec_omp2012
+./install.sh</pre>
+
+<p class="l1">and the installation proceeded normally, picking up from <a href="#doinstall">step 5</a>, above.</p>
+
+<p><b>Network mount, medium difficulty: <br />for example, System A Solaris/Opteron &nbsp;+&nbsp; System B Tru64 Unix/Alpha</b></p>
+
+<p class="l1">Subsequent to the tests of the previous paragraphs, the DVD drive on System A (Solaris/Opteron) was also
+visible to a system running Compaq Tru64 UNIX V5.1A.  But in this case, a little assistance was needed from the privileged
+(root) account on system B:</p>
+<pre class="l2">echo "systemA.domain.com:/cdrom/spec_omp2012 /systemA nfs ro,bg,soft 0 0" &gt;&gt; /etc/fstab
+mkdir /systemA
+/usr/sbin/mount /systemA
+</pre>
+<p class="l1">Then, the non-privileged user was able to say:</p>
+<pre class="l2">cd /systemA
+./install.sh</pre>
+<p class="l1">and once again the installation proceeded normally, picking up from <a href="#doinstall">step 5</a>, above.</p>
+
+<p><b>Network mount, a bit harder: <br />for example, System A SuSE/x86 &nbsp;+&nbsp; System B Mac OS X/PowerPC</b></p>
+
+<p class="l1">The SPEC OMP2012 DVD was also inserted into a system running SuSE Linux 9.0, and used from a Mac OS X PowerBook.
+On both these systems, there are probably automatic tools that would have accomplished the following more quickly, but the
+tester happened to read the manpages in the particular order that he happened to read them in.  The following succeeded:</p>
+
+<p class="l1">On System A, root added</p>
+<pre class="l2">/dev/cdrom  /cd  iso9660  ro,user,noauto,unhide
+</pre>
+<p class="l1">to <tt>/etc/fstab</tt> as suggested by <span class="ttnobr">man mount</span>; the DVD was inserted; and the user typed
+<tt>mount /cd</tt>.  On System A, root also added: </p>
+<pre class="l2">/cd  192.168.0.0/24(ro,insecure,no_root_squash,sync)
+</pre>
+<p class="l1">to <tt>/etc/exports</tt>, and then typed:</p>
+<pre class="l2">exportfs -r
+rpc.nfsd -p 8
+rpc.mountd
+cat /var/lib/nfs/etab
+</pre>
+<p class="l1">On System B, root typed:</p>
+<pre class="l2">mkdir /remote
+mount -t nfs 192.168.0.106:/cd /remote
+</pre>
+<p class="l1">Finally, the user typed</p>
+<pre class="l2">cd /remote
+./install.sh
+</pre>
+<p class="l1">and installation continued as normal, with <a href="#doinstall">step 5</a>.</p>
+
+
+<h3 id="tarball">2. Tar file</h3>
+
+<p>If the DVD drive is on a system other than the one where you wish to do the installation, and if you do not wish to try to
+get a <a href="#network">network mount</a> working, then the final fallback is to use the compressed tarfile.  If you choose
+this option, please carefully observe the <span class="alarm">warnings</span>.</p>
+
+<ol style="list-style-type:lower-alpha">
+<li><p>Go to the system with the DVD drive ("System A").  Insert the SPEC OMP2012 DVD, and, if required, issue a <a
+href="#mount">mount</a> command.</p></li>
+
+<li><p>From a terminal window (aka command window), <tt>cd</tt> to the top level directory on
+the DVD.</p></li>
+
+<li><p>You are going to retrieve five things from the DVD.  First, find the large tarfile and its corresponding md5 file:</p>
+
+<pre class="l2">cd install_archives
+ls -l omp2012.tar.xz*
+</pre>
+
+<p>or, if System A is a Windows system, then:</p>
+
+<pre class="l2">cd install_archives
+dir omp2012.tar.xz*
+</pre>
+
+<p>In either case, you should see one moderately large file &gt; 500MB, <tt>omp2012.tar.xz</tt>, and a small file associated
+with it that contains a checksum, <tt>omp2012.tar.xz.md5</tt>.  </p>
+
+<p class="commentary">If you don't see the above files, try looking for <tt>cpu*tar*</tt>.  The name might change if, for
+example, a maintenance update of SPEC OMP2012 changes the name slightly to indicate an updated version.</p>
+
+<p> Do whatever is required in order to transfer both files intact to the system where you wish to do the installation
+("System B").  If you use <tt>ftp</tt>, <span class="alarm">do not forget to use image (binary) mode</span>.  For
+example:</p>
+
+<pre class="l2">
+$ ftp
+ftp&gt; <b>op systemB</b>
+Name: <b>imauser</b>
+Password:
+ftp&gt; <b>cd /kits</b>
+ftp&gt; <b>bin</b>   <span style="font-family:sans;" class="alarm">&lt;-------- important</span>
+200 Type set to I.
+ftp&gt; <b>put omp2012.tar.xz</b>
+ftp&gt; <b>put omp2012.tar.xz.md5</b>
+</pre>
+
+<p><span class="alarm">Please note that the SPEC OMP2012 license agreement does not allow you to post the above file on any
+public ftp server.</span>  If your institution has a SPEC OMP2012 license, then it's fine to post it on an internal server
+that is accessible only to members of your institution.</p></li>
+
+<li><p>Next, you are going to look on the DVD for versions of <tt>specxz</tt>, <tt>specmd5sum</tt>, and <tt>spectar</tt>
+that are compatible with system B.  <span class="alarm">Please do not use the <tt>tar</tt> supplied by your operating
+system</span> unless you are sure that it can handle long path names.  Many commonly-supplied <tt>tar</tt> utilities cannnot.
+</p>
+
+<p><span class="alarm">Please do not use Windows Zip utilities</span>, as these will not preserve line endings.</p>
+
+<p>If you have GNU tar and the genuine xz, then you can use those; otherwise, please hunt around on the DVD to find
+prebuilt versions that are compatible with your environment, like so:</p>
+
+<pre>$ <b>cd /media/SPEC_OMP2012/</b>
+$ <b>cd tools/bin</b>
+$ <b>ls</b>
+aix5L-ppc64          linux-redhat72-ia32  macosx         solaris10-sparc
+hpux11iv3-ipf        linux-rhas4r4-ia64   solaris-sparc  solaris10-x86
+linux-debian6-armv6  linux-suse10-amd64   solaris-x86    windows-i386
+$ <b>cd aix5L-ppc64</b>
+$ <b>cat description </b>
+For PowerPC systems running AIX 5L V5.3 or later
+                              Built on AIX 5L 5300-02 with the
+                              IBM XL C/C++ for AIX V9.0.0.25 compiler
+$ <b>ls -g spec*</b>
+-r-xr-xr-x. 1 imauser  52635 Aug 19  2011 specmd5sum
+-r-xr-xr-x. 1 imauser 594483 Aug 19  2011 spectar
+-r-xr-xr-x. 1 imauser 250543 Aug 19  2011 specxz
+$ 
+</pre>
+
+<p>Once you've found the right versions of <tt>specxz</tt>, <tt>specmd5sum</tt>,  and <tt>spectar</tt> for the system
+where you intend to install (system B), transfer them to system B using the same methods that you used for the big
+tarfile.</p></li>
+
+<li><p>On system B, use <tt>specmd5sum</tt> to check that the file transfer worked correctly.  In this example, we assume that
+you have placed all 5 of the files mentioned above in the <tt>/kits</tt> directory:</p> 
+<pre>$ <b>cd /kits</b>
+$ <b>chmod +x spec*</b>
+$ <b>specmd5sum -c omp2012.tar.xz.md5</b>
+omp2012.tar.xz: OK
+</pre></li>
+
+<li><p>Unpack the tarfile, like so:</p>
+<pre>$ <b>cd /mybigdisk</b>
+$ <b>mkdir omp2012</b>
+$ <b>cd omp2012</b>
+$ <b>/kits/specxz -dc /kits/omp2012.tar.xz | /kits/spectar -xf -</b>
+</pre>
+
+<p>Be patient: it will take a bit of time to unpack!  It might take 15 minutes, depending on the speed of your processor and
+disks.  Go for a coffee break.</p></li>
+
+<li><p>Now, at last, type <tt>./install.sh</tt> and pick up with <a href="#doinstall">step 5</a>, above.  Your output will
+be similar, but not identical, to the output shown in step 5 above: you won't see the "Unpacking xxxx" messages, because you
+already did the unpacking.</p>
+
+<p>Note that the directory where you unpack the tarfile will be the directory you install FROM and also the directory you
+install TO.   <b>This is normal, and expected, for a tarfile installation.</b></p>
+
+<p>You will see a question similar to this:</p>
+
+<pre>
+Installing FROM /mybigdisk/omp2012
+Installing TO /mybigdisk/omp2012
+
+Is this correct? (Please enter 'yes' or 'no') 
+<b>yes</b>
+</pre>
+
+<p> If you enter "no", installation will stop.  If you try to install TO another directory, using the <span
+class="ttnobr">-d</span> flag, the installation will <b>not</b> succeed when using the tar file method.
+</p>
+</li>
+
+
+</ol>
+
+
+<h2 id="appendix2">Appendix 2: <a name="uninstall"> </a>Uninstalling SPEC OMP2012</h2>
+
+   <p>At this time, SPEC does not provide an uninstall utility for SPEC OMP2012.  Confusingly, there <span
+   class="u">is</span> a file named <tt>uninstall.sh</tt> in the top directory, but it does not remove the whole product; it
+   only removes the SPEC tool set, and does not affect the benchmarks (which consume the bulk of the disk space).  </p>
+
+   <p>To remove SPEC OMP2012 on Windows systems, select the top directory in Windows Explorer and delete it.</p>
+
+   <p>To remove SPEC OMP2012 on Unix systems, use <span class="ttnobr">rm -Rf</span> on the directory where you installed the
+   suite, for example:</p>  
+
+       <pre>  rm -Rf /home/cs3000/saturos/spec/omp2012</pre>
+
+   <p>If you have been using the <a class="external" href="runspec.html#output_root">output_root</a> feature, you
+   will have to track those down separately.  <span class="alarm">Therefore, prior to removing the tree,</span>, you might
+   want to look for mentions of output root, for example:</p> 
+<pre>
+Windows:
+    cd %SPEC%\config
+    findstr output_root *cfg
+
+Unix:
+    cd $SPEC/config
+    grep output_root *cfg
+</pre>
+
+   <p>Note: instead of deleting the entire directory tree, some users find it useful to keep the
+   <tt>config</tt> and <tt>result</tt> subdirectories, while deleting everything else.  </p>
+
+
+
+<hr />
+<p>Copyright 2001-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:900px;">&nbsp;</p>
+
+
+
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Readme 1st OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+.newterm {font-style:italic; font-weight:bold;}
+body { background: white; color: black; font-family: serif;}
+</style>
+</head>
+<body>
+
+
+<h1>SPEC OMP2012: Read Me First</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-11 13:43:55 -0400 (Thu, 11 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+
+<h4 id="intro">Introduction </h4>
+
+<p class="l1">This document provides background information about the SPEC OMP2012 benchmark suite.  SPEC hopes that this
+material will help you understand what the benchmark suite can, and cannot, provide; and that it will help you make efficient
+use of the product.</p>
+
+<p class="l1">Overall, SPEC designed SPEC OMP2012 to provide a comparative measure of compute intensive performance across
+the widest practical range of hardware.  The product consists of source code benchmarks that are developed from real user
+applications.  These benchmarks depend on the processor, memory and compiler on the tested system.</p>
+
+<p class="l1">This document is organized as a series of questions and answers.</p>
+
+<p class="l1snugbot">Background</p>
+<p class="contentsl2"><a href="#Q1" >    Q1.</a> What is SPEC?                         </p>
+<p class="contentsl2"><a href="#Q2" >    Q2.</a> What is a benchmark?                  </p>
+<p class="contentsl2"><a href="#Q3" >    Q3.</a> Should I benchmark my own application?</p>
+<p class="contentsl2"><a href="#Q4" >    Q4.</a> If not my own application, then what?</p>
+<p class="l1snugbot">Scope</p>
+<p class="contentsl2"><a href="#Q5" >    Q5.</a> What does SPEC OMP2012 measure?       </p>
+<p class="contentsl2"><a href="#Q6" >    Q6.</a> Why use SPEC OMP2012?                 </p>
+<p class="contentsl2"><a href="#Q7" >    Q7.</a> What are the limitations of SPEC OMP2012?                          </p>
+<p class="l1snugbot">Overview of usage</p>
+<p class="contentsl2"><a href="#Q8" >    Q8.</a> What is included in the SPEC OMP2012 package?                      </p>
+<p class="contentsl2"><a href="#Q9" >    Q9.</a> What does the user of the SPEC OMP2012 suite have to provide?      </p>
+<p class="contentsl2"><a href="#Q10">    Q10.</a> What are the basic steps in running the benchmarks?               </p>
+<p class="contentsl2"><a href="#Q11">    Q11.</a> What source code is provided?  What exactly makes up these suites?</p>
+<p class="l1snugbot">Metrics</p>
+<p class="contentsl2"><a href="#Q12">    Q12.</a> Some of the benchmark names sound familiar; are these comparable to other
+programs?  </p>
+<p class="contentsl2"><a href="#Q13">    Q13.</a> What metrics can be measured?                                       </p>
+<p class="contentsl2"><a href="#Q14">    Q14.</a> What is the difference between a "base" metric and a "peak" metric? </p>
+<p class="contentsl2"><a href="#Q15">    Q15.</a> What is the power metric?       </p>
+<p class="contentsl2"><a href="#Q16">    Q16.</a> Which SPEC OMP2012 metric should be used to compare performance?    </p>
+<p class="l1snugbot">OMP2012 vs. OMP2001</p>
+<p class="contentsl2"><a href="#Q17">    Q17.</a> SPEC OMP2001 is already available. Why create SPEC OMP2012? Will it show
+anything different?</p>
+<p class="contentsl2"><a href="#Q18">Q18.</a> What happens to SPEC OMP2001 after SPEC OMP2012 is released?</p>
+<p class="contentsl2"><a href="#Q19">Q19.</a> Is there a way to translate SPEC OMP2001 results to SPEC OMP2012 results or vice versa?</p>
+<p class="l1snugbot">Benchmark selection</p>
+<p class="contentsl2"><a href="#Q20"> Q20.</a> What criteria were used to select the benchmarks?</p>
+<p class="contentsl2"><a href="#Q21">Q21.</a> Weren&#39;t some of the SPEC OMP2012 benchmarks in SPEC OMP2001? How are they
+different?</p>
+<p class="contentsl2"><a href="#Q22">Q22.</a> Why were some of the benchmarks not carried over from OMP2001?</p>
+<p class="l1snugbot">Miscellaneous</p>
+<p class="contentsl2"><a href="#Q23">Q23.</a> Why does SPEC use a reference machine? What machine is used for SPEC OMP2012?</p>
+<p class="contentsl2"><a href="#Q24"> Q24.</a> How long does it take to run the SPEC OMP2012 benchmark suites?</p>
+<p class="contentsl2"><a href="#Q25"> Q25.</a> What if the tools cannot be run or built on a system? Can the benchmarks be run manually?</p>
+<p class="contentsl2"><a href="#Q26">Q26.</a> Where are SPEC OMP2012 results available?</p>
+<p class="contentsl2"><a href="#Q27">Q27.</a> Can SPEC OMP2012 results be published outside of the SPEC web site?  Do the
+rules still apply?</p>
+<p class="contentsl2"><a href="#Q28">Q28.</a> How do I contact SPEC for more information or for technical support?</p>
+<p class="contentsl2last"><a href="#Q29">Q29.</a> Now that I have read this document, what should I do next?</p>
+
+   <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+   assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+   some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+   documents at one of the following locations:</p>
+   <ul class="commentaryul">
+   <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li> 
+   <li class="commentaryli">The <span class="ttnobr">$SPEC/Docs/</span> (Unix) or <span class="ttnobr">%SPEC%\Docs\</span>
+   (Windows) directory on a system where SPEC OMP2012 has been installed.</li>
+   <li class="commentaryli">The <span class="tt">Docs/</span> directory on your SPEC OMP2012 distribution media.</li>
+   </ul>
+   <p class="commentaryend"> </p>
+
+
+
+
+
+<h4 id="Q1">Q1. What is SPEC?</h4>
+
+   <p class="l1">SPEC is the <span class="newterm">S</span>tandard <span 
+   class="newterm">P</span>erformance <span class="newterm">E</span>valuation
+   <span class="newterm">C</span>orporation.  SPEC is a non-profit 
+   organization whose members include computer hardware vendors, software
+   companies, universities, research organizations, systems integrators, publishers and consultants.  SPEC's goal is to
+   establish, maintain and endorse a standardized set of relevant benchmarks for computer systems.  Although no one set of
+   tests can fully characterize overall system performance, SPEC believes that the user community benefits from objective
+   tests which can serve as a common reference point.</p>
+
+
+<h4 id="Q2">Q2. What is a benchmark?</h4>
+
+   <p class="l1"> A <span class="newterm">benchmark</span> is "a standard of measurement or evaluation"
+   (Webster&rsquo;s II Dictionary).  A computer benchmark is typically a computer program that performs a strictly defined
+   set of operations - a <span class="newterm">workload</span> - and returns some form of result - a <span
+   class="newterm">metric</span> - describing how the tested computer performed.  Computer benchmark metrics usually measure
+   <span class="newterm">speed</span>: how fast was the workload completed; or <span class="newterm">throughput</span>: how
+   many workload units per unit time were completed.  Running the same computer benchmark on multiple computers allows a
+   comparison to be made.</p>
+
+
+<h4 id="Q3">Q3. Should I benchmark my own application?</h4>
+
+   <p class="l1">Ideally, the best comparison test for systems would be your own application with your own workload.
+   Unfortunately, it is often impractical to get a wide base of reliable, repeatable and comparable measurements for
+   different systems using your own application with your own workload.  Problems might include generation of a good test
+   case, confidentiality concerns, difficulty ensuring comparable conditions, time, money, or other constraints.  </p>
+
+<h4 id="Q4">Q4. If not my own application, then what?</h4>
+
+   <p class="l1">You may wish to consider using standardized benchmarks as a reference point.  Ideally, a standardized
+   benchmark will be portable, and may already have been run on the platforms that you are interested in.  However,  before
+   you consider the results you need to be sure that you understand the correlation between your application/computing needs
+   and what the benchmark is measuring.  Are the benchmarks similar to the kinds of applications you run?  Do the workloads
+   have similar characteristics?  Based on your answers to these questions, you can begin to see how the benchmark may
+   approximate your reality. </p>
+
+   <p class="l1">Note: A standardized benchmark can serve as reference point.  Nevertheless, when you are doing vendor or
+   product selection, SPEC does not claim that any standardized benchmark can replace benchmarking your own actual
+   application.</p>
+
+
+<h4 id="Q5">Q5. What does SPEC OMP2012 measure?</h4>
+
+   <p class="l1">SPEC OMP2012 focuses on compute intensive performance, which means these benchmarks emphasize the
+   performance of:</p>
+
+    <ul class="l1">
+       <li> the computer processor (CPU), </li>
+       <li> the memory architecture, </li>
+       <li> the parallel support libraries, and </li>
+       <li> the compilers. </li>
+    </ul>
+
+   <p class="l1">It is important to remember the contribution of the latter three components.  SPEC OMP performance
+   intentionally depends on more than just the processor.</p>
+
+   <p class="l1">SPEC OMP2012 contains a suite that focuses on parallel 
+computing performance using the OpenMP parallelism standard.</p>
+
+   <p class="l1">The suite can be used to measure along the following vector:</p>
+
+    <ul class="l1">
+      <li><p><b>Compilation method:</b> Consistent compiler options across all programs of a given language (the base
+      metrics) and, optionally, compiler options tuned to each program (the peak metrics).  See <a href="#Q14">Q14</a>,
+      below, for more information.</p></li>
+    </ul>
+
+   <p class="l1">SPEC OMP2012 is not intended to stress other computer components such as networking, the operating system,
+   graphics, or the I/O system.  
+   Note that there are <a class="external"
+   href="http://www.spec.org/benchmarks.html">many other SPEC benchmarks</a>, including benchmarks that specifically focus on
+   graphics, distributed Java computing, webservers, and network file systems.</p> 
+
+
+<h4 id="Q6">Q6. Why use SPEC OMP2012?</h4>
+
+   <p class="l1">SPEC OMP2012 provides a comparative measure of parallel performance using OpenMP.
+   If this matches with the type of workloads you are interested in, SPEC OMP2012 provides a good reference point.</p>
+
+   <p class="l1">Other advantages to using SPEC OMP2012 include:</p>
+
+    <ul class="l1">
+      <li> The benchmark programs are developed from actual end-user applications, as opposed to being synthetic
+      benchmarks.</li>
+      <li> Multiple vendors use the suite and support it.</li>
+      <li> SPEC OMP2012 is highly portable.</li>
+      <li> A wide range of results are available at <a class="external" href="http://www.spec.org/">http://www.spec.org</a></li> 
+      <li> The benchmarks are required to be run and reported according to a set of rules to ensure comparability and
+      repeatability.</li>
+    </ul>
+
+
+<h4 id="Q7">Q7. What are the limitations of SPEC OMP2012?</h4>
+
+   <p class="l1">As <a href="#Q3">described above</a>, the ideal benchmark for vendor or product selection would be your own
+   workload on your own application.  Please bear in mind that no standardized benchmark can provide a perfect model of the
+   realities of your particular system and user community.</p>
+
+
+<h4 id="Q8">Q8. What is included in the SPEC OMP2012 package?</h4>
+
+   <p class="l1">SPEC provides the following on the SPEC OMP2012 image:</p>
+
+    <ul class="l1">
+      <li> Source code for the OMPG2012 benchmarks</li>
+      <li> A tool set for compiling, running, validating and reporting on the benchmarks </li>
+      <li> Pre-compiled tools for a variety of operating systems</li>
+      <li> Source code for the SPEC OMP2012 tools, for systems not covered by the pre-compiled tools</li>
+      <li> Run and reporting rules defining how the benchmarks should be used to produce SPEC OMP2012 results.</li>
+      <li> Documentation</li>
+    </ul>
+
+
+<h4 id="Q9">Q9. What does the user of the SPEC OMP2012 suite have to provide?</h4>
+
+   <p class="l1">Briefly, you need a Unix, Linux, Mac OS X,  or Microsoft Windows system with compilers; 8GB of free disk space;
+   and a minimum of 32GB of free memory - although more may be required, as described in <a class="external"
+   href="system-requirements.html">system-requirements.html</a></p> 
+
+
+<h4 id="Q10">Q10. What are the basic steps in running the benchmarks?</h4>
+
+   <p class="l1">Installation and use are covered in detail in the SPEC OMP2012 User Documentation.  The basic steps are:</p> 
+
+     <ul class="l1">
+        <li> Ensure that you meet the <a class="external" href="system-requirements.html">system requirements</a>.</li> 
+        <li> Install SPEC OMP2012 from the image on <a class="external" href="install-guide-unix.html">Unix, Linux, Mac OS X</a> (Mac OS has not been tested, but may work), or
+        <a class="external" href="install-guide-windows.html">Microsoft Windows</a> (Windows is not supported by may work). </li> 
+        <li> Determine which metric you wish to run. </li>
+        <li> Learn about <a class="external" href="runspec.html">runspec</a>, which is the primary SPEC-provided tool.</li> 
+        <li> Locate a configuration file as a starting point.  Hints about where to find one are in <a class="external"
+        href="runspec.html#about_config">runspec.html</a>.</li> 
+        <li> Use <tt>runspec</tt> to build (compile) the benchmarks.</li>
+        <li> If the above steps are successful, use <tt>runspec</tt> to run, validate, and create a report on the performance
+        of the benchmarks. </li>
+     </ul>
+
+   <p class="l1">If you wish to generate results suitable for quoting in public, you will need to carefully study and adhere to
+   the <a class="external" href="runrules.html">run rules</a>.</p> 
+
+
+<h4 id="Q11">Q11. What source code is provided?  What exactly makes up these suites?</h4>
+
+   <p class="l1">OMPG2012 is based on compute-intensive applications provided as source code.  OMPG2012 contains
+   14 benchmarks: 8 use Fortran, 5 use C, and 1 use C++.  The benchmarks are:</p>
+
+	<table class="l2">
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/350.md.html"><tt>350.md</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Molecular Dynamics     </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/351.bwaves.html"><tt>351.bwaves</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)     </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/352.nab.html"><tt>352.nab</tt></a></td>
+	   <td>C</td>
+	   <td>Molecular Modeling      </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/357.bt331.html"><tt>357.bt331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/358.botsalgn.html"><tt>358.botsalgn</tt></a></td>
+	   <td>C</td>
+	   <td>Protein Alignment</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/359.botsspar.html"><tt>359.botsspar</tt></a></td>
+	   <td>C</td>
+	   <td>Sparse LU</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/360.ilbdc.html"><tt>360.ilbdc</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Lattic Boltzmann</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/362.fma3d.html"><tt>362.fma3d</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Mechanical Response Simulation </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/363.swim.html"><tt>363.swim</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Weather Prediction</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/367.imagick.html"><tt>367.imagick</tt></a></td>
+	   <td>C</td>
+	   <td>Image Processing</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/370.mgrid331.html"><tt>370.mgrid331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/371.applu331.html"><tt>371.applu331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/372.smithwa.html"><tt>372.smithwa</tt></a></td>
+	   <td>C</td>
+	   <td>Optimal Pattern Matching</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/376.kdtree.html"><tt>376.kdtree</tt></a></td>
+	   <td>C++</td>
+	   <td>Sorting and Searching</td>
+	</tr>
+	</table>
+
+   <p class="l1">Descriptions of the benchmarks, with reference to papers, web sites, and so forth, can be found in the
+   individual benchmark descriptions (click the links above).  Some of the benchmarks also provide additional details, such
+   as documentation from the original program, in the nnn.benchmark/Docs directories in the SPEC benchmark tree. </p>
+
+   <p class="l1">The numbers used as part of the benchmark names provide an identifier to help distinguish programs from one
+   another.  </p> 
+
+<h4 id="Q12">Q12. Some of the benchmark names sound familiar; are these comparable to other programs?</h4>
+
+   <p class="l1">Many of the SPEC benchmarks have been derived from publicly available application programs.
+   The individual benchmarks in this suite may be similar, but are NOT identical to benchmarks or programs
+   with similar names which may be available from sources other than SPEC.   In particular, SPEC has 
+   invested significant effort to improve portability and to minimize hardware dependencies, 
+   to avoid unfairly favoring one hardware platform over another.  For this reason, the application programs in
+   this distribution may perform differently from commercially available versions of the
+   same application.  </p>
+
+   <p class="l1">Therefore, it is not valid to compare SPEC OMP2012 benchmark results with anything other than other SPEC
+   OMP2012 benchmark results.  </p>
+
+
+<h4 id="Q13">Q13. What metrics can be measured?</h4>
+
+   <p class="l1">After the benchmarks are run on the system under test (SUT), a ratio for each of them is calculated using
+   the run time on the SUT and a SPEC-determined <a href="#Q23">reference time</a>.  From these ratios, the following metrics
+   are calculated:</p>
+
+   <p class="l1">OMPG2012 (for OpenMP compute intensive parallel performance comparisons): </p>
+
+    <ul class="l1">
+     <li><p><b>Compute Performance metrics:</b></p>
+        <ul>
+        <li> <span class="newterm">SPECompG_base2012</span>: The geometric mean of fourteen normalized ratios when the benchmarks are compiled with <a href="#Q14">base</a> tuning.</li>
+        <li> <span class="newterm">SPECompG_peak2012</span>: The geometric mean of fourteen normalized ratios when the benchmarks are compiled with <a href="#Q14">peak</a> tuning.</li>
+        </ul>
+     </li>
+     <li><p><b>Energy Consumption metrics:</b></p>
+        <ul>
+        <li> <span class="newterm">SPECompG_energy_base2012</span>: The geometric mean of fourteen normalized ratios of the energy used with <a href="#Q14">base</a> tuning.</li>
+        <li> <span class="newterm">SPECompG_energy_peak2012</span>: The geometric mean of fourteen normalized ratios of the energy used with <a href="#Q14">peak</a> tuning.</li>
+        </ul>
+     </li>
+    </ul>
+
+
+   <p class="l1">In all cases, a higher score means "better performance" on the given workload.</p>
+
+
+<h4 id="Q14">Q14. What is the difference between a "base" metric and a "peak" metric?</h4>
+
+   <p class="l1">In order to provide comparisons across different computer hardware, SPEC provides the benchmarks as source
+   code.  Thus, in order to run the benchmarks, they must be compiled.  There is agreement that the benchmarks should be
+   compiled the way users compile programs.  But how do users compile programs? </p>
+
+   <ul class="l1">
+      <li><p>Some users might experiment with many different compilers and compiler flags to achieve the best performance,
+      and may be willing to develop multi-step make processes and "training" workloads.</p></li> 
+
+      <li><p>Other users might prefer the relative simplicity of using a single set of switches and a single-step make
+      process. </p></li>
+   </ul>
+
+   <p class="l1">In addition to the above, a wide range of other types of usage models could also be imagined, ranging in a
+   continuum from <tt>-Odebug</tt> at the low end, to inserting directives and/or re-writing the source code at the high end.
+   Which points on this continuum should SPEC OMP2012 allow?</p>
+
+   <p class="l1">SPEC recognizes that any point chosen from that continuum might seem arbitrary to those whose interests lie
+   at a different point.  Nevertheless, choices must be made.</p>
+
+   <p class="l1">For OMP2012, SPEC has chosen to allow two types of compilation:</p>
+
+   <ul class="l1">
+        <li><p> The <span class="newterm">base</span> metrics (e.g. SPECompG_base2012) are required for all reported results
+        and have stricter guidelines for compilation.  For example, the same flags must be used in the same order for all
+        benchmarks of a given language.  This is the point closer to those who might prefer a relatively simple build
+        process.</p></li>
+
+        <li><p> The <span class="newterm">peak</span> metrics (e.g. SPECompG_peak2012) are optional and have less strict
+        requirements.  For example, different compiler options may be used on each benchmark, and feedback-directed
+        optimization is allowed.  This point is closer to those who may be willing to invest more time and effort in
+        development of build procedures.</p></li>
+    </ul>
+
+   <p class="l1">Note that options allowed under the base metric rules are a subset of those allowed under the peak metric
+   rules.  A legal base result is also legal under the peak rules but a legal peak result is NOT necessarily legal under the
+   base rules.</p>
+
+   <p class="l1">A full description of the distinctions and required guidelines can be found in the <a class="external"
+   href="runrules.html">SPEC OMP2012 Run and Reporting Rules</a>.</p> 
+
+
+<h4 id="Q15">Q15. What is the power metric?</h4>
+
+   <p class="l1">With OMP2012, SPEC is providing a way to measure the 
+power consumed during the benchmark run.
+   </p>
+
+    <ul class="l1">
+        <li> The SPECompG_energy_base metric is the normalized power
+        performance during the base run.
+        <li> The SPECompG_energy_peak2012 metric is the normalized power
+        performance during the peak run.
+        </li>
+    </ul>
+
+   <p class="l1">The benchmark reports lists many other power measure data.
+   </p>
+
+<h4 id="Q16">Q16. Which SPEC OMP2012 metric should be used to compare performance?</h4>
+
+   <p class="l1">It depends on your needs. SPEC provides the benchmarks and results as tools for you to use.  You need to
+   determine how you use a computer or what your performance requirements are and then choose the appropriate SPEC benchmark
+   or metrics.  </p>
+
+
+<h4 id="Q17">Q17: SPEC OMP2001 is already available. Why create SPEC OMP2012? Will it show anything different?</h4>
+
+   <p class="l1">Technology is always improving. As the technology improves, the benchmarks should improve as well. SPEC
+   needed to address the following issues:</p> 
+
+   <div class="l2">
+
+      <p> <b>Scaling:</b>
+      <br /> As of summer, 2012, many of the OMP2001 benchmarks are finishing in less than a minute on large parallel system.
+      SPEC has attempted to address this with new benchmarks and data sets
+to have good scaling to 512 OpenMP threads while running in a non-trivial
+amount of time.
+      </p> 
+
+     <p> <b>OpenMP new features:</b>
+     <br /> As the OpenMP standard has changed, additional features have been
+added.  OMP2012 attempts to include many of these features.</p>
+
+     <p> <b>Moving target:</b>
+     <br /> OMP2001 has been available for eleven years and much improvement in hardware and software has occurred during this
+     time. Benchmarks need to evolve to keep pace with improvements.  </p>
+
+     <p> <b>Power measurement:</b>
+     <br /> OMP2012 includes the optional ability to measure power
+consumpution during the benchmark run. 
+     </p>
+
+  </div>
+
+<h4 id="Q18">Q18: What happens to SPEC OMP2001 after SPEC OMP2012 is released?</h4>
+
+   <p class="l1">SPEC will begin the process of retiring OMP2001. Three months after the announcement of OMP2012, SPEC
+   will require all OMP2001 results submitted for publication on SPEC's web site to be accompanied by OMP2012 results. Six
+   months after announcement, SPEC will stop accepting OMP2001 results for publication on its web site. </p>
+
+<h4 id="Q19">Q19: Is there a way to translate SPEC OMP2001 results to SPEC OMP2012 results or vice versa?</h4>
+
+   <p class="l1">There is no formula for converting OMP2001 results to OMP2012 results and vice versa; they are
+   different products. There probably will be some correlation between OMP2001 and OMP2012 results (i.e., machines with
+   higher OMP2001 results often will have higher OMP2012 results), but there is no universal formula for all systems.</p> 
+
+   <p class="l1"> SPEC encourages SPEC licensees to publish OMP2012 numbers on older platforms to provide a historical
+   perspective on performance.  </p>
+
+<h4 id="Q20"> Q20: What criteria were used to select the benchmarks?</h4>
+
+   <p class="l1">In the process of selecting applications to use as benchmarks, SPEC considered the following
+   criteria:</p> 
+        <ul class="l1">
+          <li> portability to a variety of CPU architectures (32- and 64-bit including AMD64, Intel IA32, Power, SPARC, etc.) </li>
+          <li> portability to various operating systems </li>
+          <li> nearly all of the time is spent compute bound </li>
+          <li> little time spent in IO and system services</li>
+          <li> benchmarks should run in about 32GB RAM without swapping or paging </li>
+          <li> no more than five percent of benchmarking time should be spent processing code not provided by SPEC</li>
+        </ul>
+
+<h4 id="Q21">Q21: Weren&#39;t some of the SPEC OMP2012 benchmarks in SPEC OMP2001? How are they different?</h4>
+
+   <p class="l1">Although some of the benchmarks from OMP2001 are included in OMP2012, they all have been given different
+   workloads and/or modified to use newer versions of the source code.  Therefore, for example, results with the OMP2001
+   benchmark 312.swim_m may be strikingly different from results with the OMP2012 benchmark 363.swim.</p>
+
+<h4 id="Q22">Q22: Why were some of the benchmarks not carried over from OMP2001?</h4>
+
+   <p class="l1">Some benchmarks were not retained because it was not possible to create a longer-running or more robust
+   workload. Others were left out because SPEC felt that they did not add significant performance information compared to the
+   other benchmarks under consideration.</p>
+
+<h4 id="Q23">Q23: Why does SPEC use a reference machine? What machine is used for SPEC OMP2012?</h4>
+
+   <p class="l1">SPEC uses a reference machine to normalize the performance metrics used in the OMP2012 suites. Each
+   benchmark is run and measured on this machine to establish a reference time for that benchmark. These times are then used
+   in the SPEC calculations.</p> 
+
+   <p class="l1">SPEC uses a historical Sun system, the "Sun Fire X4140" which was introduced in 2008, as the reference
+   machine.  The reference machine uses two quad-core 2.7 GHz AMD Opteron 2384 processors with 32GB of memory.
+   </p>
+   
+   <p class="l1">It takes about two days to do a rule-conforming run of the base metrics on the
+   reference machine.  </p>
+
+   <p class="l1"> Note that when comparing any two systems measured with the OMP2012, their performance relative to each
+   other would remain the same even if a different reference machine was used. This is a consequence of the mathematics
+   involved in calculating the individual and overall (geometric mean) metrics.  </p>
+
+<h4 id="Q24"> Q24: How long does it take to run the SPEC OMP2012 benchmark suites?</h4>
+
+   <p class="l1">This depends on the suite and the machine that is running the benchmarks. As mentioned above, the reference
+   (historical) machine takes on the order of 2 days; contemporary machines might take less.
+   Again, though, it depends on which metrics are run.</p>
+
+<h4 id="Q25"> Q25: What if the tools cannot be run or built on a system? Can the benchmarks be run manually?</h4>
+
+   <p class="l1">To generate rule-compliant results, an approved toolset must be used.  If several attempts at using the
+   SPEC-provided tools are not successful, you should <a href="#Q28">contact SPEC for technical support</a>. SPEC may be able
+   to help you, but this is not always possible -- for example, if you are attempting to build the tools on a platform that
+   is not available to SPEC.</p>
+
+   <p class="l1">If you just want to work with the benchmarks and do not care to generate publishable results, SPEC provides
+   information about <a class="external" href="runspec-avoidance.html">how to do so</a>.</p> 
+
+
+<h4 id="Q26">Q26: Where are SPEC OMP2012 results available?</h4>
+
+   <p class="l1">Results for measurements submitted to SPEC are available at <a class="external"
+   href="http://www.spec.org/omp2012/">http://www.spec.org/omp2012</a>.</p> 
+
+
+<h4 id="Q27">Q27: Can SPEC OMP2012 results be published outside of the SPEC web site?  Do the rules still apply?</h4>
+
+   <p class="l1">Yes, SPEC OMP2012 results can be freely published if all the run and reporting rules have been followed. The
+   OMP2012 license agreement binds every purchaser of the suite to the run and reporting rules if results are quoted in
+   public. A full disclosure of the details of a performance measurement must be provided on request. </p> 
+
+   <p class="l1"> SPEC strongly encourages that results be submitted for publication on <a class="external"
+   href="http://www.spec.org/omp2012/">SPEC's web site</a>, since it ensures a peer review process and uniform presentation of all
+   results.  </p> 
+
+   <p class="l1"> The run and reporting <a class="external" href="runrules.html#section4.5">rules for research and and academic
+   contexts</a> recognize that it may not be practical to comply with the full set of rules in some contexts.  It is always
+   required, however, that non-compliant results must be clearly distinguished from rule-compliant results.</p> 
+
+
+<h4 id="Q28">Q28. How do I contact SPEC for more information or for technical support?</h4>
+
+   <p class="l1">SPEC can be contacted in several ways. For general information, including other means of contacting SPEC,
+   please see SPEC's Web Site at:</p>
+
+   <p class="l2"><a class="external" href="http://www.spec.org/"><b>http://www.spec.org/</b></a></p> 
+    <p class="l1">General questions can be emailed to: <a class="external"
+          href="&#109;ailto&#58;info&#64;spec.&#111;rg">info&#64;spec.&#111;rg</a> 
+    <br />OMP2012 Technical Support Questions can be sent to: <a class="external"
+          href="&#109;ailto&#58;omp2012support&#64;spec.&#111;rg">omp2012support&#64;spec.&#111;rg</a></p> 
+
+<h4 id="Q29">Q29. Now that I have read this document, what should I do next?</h4>
+   
+   <p class="l1">If you haven't bought OMP2012, it is hoped that you will consider doing so.  If you are ready to get started
+   using the suite, then you should pick a system that meets the requirements as described in </p>
+
+   <p class="l2"><a class="external" href="system-requirements.html">system-requirements.html</a></p> 
+   <p class="l1">and install the suite, following the instructions in</p>
+       
+   <p class="l2"><a class="external" href="install-guide-unix.html">install-guide-unix.html</a> or <br /><a class="external"
+   href="install-guide-windows.html">install-guide-windows.html</a></p> 
+
+<p>Questions and answers were originally 
+prepared by <a class="external" href="http://www.spec.org/spec/kaivalya/">Kaivalya Dixit</a> of IBM,
+Jeff Reilly of Intel Corp, and John Henning of Oracle. Dixit was the long-time President of SPEC, Reilly is Chair of the
+SPEC CPU Subcommittee, and Henning is Vice-Chair/Secretary of the SPEC CPU Subcommittee.  </p> 
+
+<hr />
+<p>Copyright 1995-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:1900px;">&nbsp;</p>
+
+
+
+</body>
+</html>
+

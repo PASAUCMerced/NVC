@@ -1,0 +1,1737 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                         SPEC OMP2012 Utility Programs
+
+   Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by
+   $Author: BrianWhitney $
+
+   (To check for possible updates to this document, please see
+   http://www.spec.org/omp2012/Docs/ )
+
+   Contents
+
+   Introduction
+
+   configpp
+
+   convert_to_development
+
+   dumpsrcalt
+
+   extract_config
+
+   extract_flags
+
+   extract_raw
+
+   flag_dump
+
+   go (Unix only)
+
+   index (UNSUPPORTED)
+
+   makesrcalt
+
+   ogo (Unix only)
+
+   port_progress
+
+   printkids.pl
+
+   printpath.pl
+
+   rawformat
+
+   Editing result description fields
+
+   About continuation fields
+
+   Fields allowed only in rawfiles
+
+   sw_parallel_defeat
+
+   test_date
+
+   relocate (Unix only)
+
+   specdiff
+
+   specinvoke
+
+   specmake
+
+   specrxp
+
+   spectar
+
+   specxz
+
+   toolsver
+
+   Note: links to SPEC OMP2012 documents on this web page assume that you are
+   reading the page from a directory that also contains the other SPEC
+   OMP2012 documents. If by some chance you are reading this web page from a
+   location where the links do not work, try accessing the referenced
+   documents at one of the following locations:
+
+     * www.spec.org/omp2012/Docs/
+     * The $SPEC/Docs/ (Unix) or %SPEC%\Docs\ (Windows) directory on a system
+       where SPEC OMP2012 has been installed.
+     * The Docs/ directory on your SPEC OMP2012 distribution media.
+
+Introduction
+
+   This document describes various useful utilities that ship with SPEC
+   OMP2012. It is assumed that you have already read runspec.html and
+   config.html.
+
+    On Windows Systems
+
+   Most of the examples in this document have been written in Unix syntax.
+   That means you'll need to use your imagination just a bit as you read this
+   document:
+
+   If you see:     Just pretend you saw:
+         cat               type
+         cp                copy
+        diff                fc
+        grep              findstr
+         ls                 dir
+          /                  \
+        $SPEC             %spec%
+
+configpp
+
+   "configpp" is a short way to say:
+
+    $ runspec --action configpp
+
+   That switch is mentioned in runspec.html but you'll find much more about
+   the config file preprocessor in config.html. The configuration file is
+   specified using the --config switch, or -c for short, at the command line.
+   For example, the following two command are equivalent:
+
+    $ runspec --action configpp  -c try_utilities.cfg
+    $ configpp -c try_utilities.cfg
+
+   There are a couple of points worth mentioning here:
+
+    1. The preprocessed configuration file will be dumped to stdout. But the
+       normal progress output from runspec also goes to stdout, so the config
+       file output will be delimited by two lines of hyphens.
+    2. There's no need to specify benchmarks to run.
+    3. As always, if you don't explicitly specify a config file via '-c
+       <filename>', then the file default.cfg will be used.
+
+   The configpp utility is a good way to check your configuration file for
+   fatal errors, as the config file is completely parsed before it's output.
+
+convert_to_development
+
+   The "convert_to_development" utility removes various safety checks that
+   ensure that benchmark code, data, and tools haven't been modified. This
+   utility is useful if you are pursuing experimental changes that you would
+   like to try out while still continuing to use the SPEC tool harness. For
+   example, you might want to add your own performance instrumentation code,
+   add some debugging code, or try out a modified workload.
+
+   To use it, type:
+
+      convert_to_development                  <--- Unix
+      specperl bin\convert_to_development     <--- Windows
+
+   A development tree cannnot be used for reportable runs.
+
+   Benchmark binaries built in one type of tree (reportable or development)
+   cannot be used in the other type unless you set check_md5=0. Note that
+   even in a development tree, the default for check_md5 remains 1.
+
+   Warning 1: If you use this utility, you will permanently render the
+   current SPEC directory tree incapable of doing reportable runs. If you are
+   doing both development work and reportable runs, install the suite twice
+   in two different directory trees (for example, on different disks).
+
+   Warning 2: Because benchmark binaries built in a reportable tree cannot be
+   used in a development tree (unless you set check_md5=0), care should be
+   taken to avoid accidental deletion and rebuilding of benchmark binaries.
+   Consider the following scenario, where the user only wanted to try
+   changing input files from the workload of 360.ilbdc:
+
+   Probably not what you meant:
+
+   $ runspec --config myconfig --action build 360.ilbdc
+   $ convert_to_development
+      Modify the workload for 360.ilbdc to try out some idea,
+      changing files in 360.ilbdc/data/ref/input
+   $ runspec --config myconfig --action validate 360.ilbdc
+   ...
+   Building 360.ilbdc base
+
+   Unless myconfig.cfg contains check_md5=0, the effect of the above command
+   will be to immediately rebuild 360.ilbdc, which probably isn't your intent
+   if you are only studying the effects of workload modifications for
+   360.ilbdc.
+
+dumpsrcalt
+
+   SPEC distributes approved source changes in packages referred to as
+   src.alts, which are applied using the config file src.alt option. In
+   config.html, you will also find an example showing what happens when one
+   is applied.
+
+   The dumpsrcalt tool allows you to find out what's in a src.alt without
+   necessarily having to apply it.
+
+   dumpsrcalt takes a packaged src.alt, an installed src.alt, or just the
+   src.alt description file (srcalt.pm) and outputs the source changes as a
+   unified diff file, which shows "-" for lines that are removed and "+" for
+   lines that are added.
+
+   A src.alt package may also contain whole new files. In fact, all will
+   contain at least one, as the presence of a "README" file is enforced by
+   makesrcalt. The new files will also be printed, if they are available.
+
+   dumpsrcalt's command-line options control which parts of the src.alt are
+   output. By default all information known about a src.alt is printed. This
+   includes a summary with the name of the src.alt, the benchmark to which it
+   applies, the versions of OMP2012 with which it may be used, and a count of
+   new and changed files.
+
+   Here are the contents of the src.alt created in the example for
+   makesrcalt:
+
+ $ dumpsrcalt 360.ilbdc.no_line.omp2012.v1.0.tar.xz
+ This is src.alt "no_line" for 360.ilbdc.
+ It is usable with version 1.0 of the benchmark.
+ It contains 1 new file and changes to 1 existing file.
+ ------------------------------------------------------------------------------
+ Index: README
+ ===================================================================
+ --- original/README     1970-01-01 01:00:00.000000000 +0100
+ +++ no_line/README      2011-07-20 16:40:47.000000000 +0100
+ @@ -0,0 +1,1 @@
+ +Remove some of those pesky #line directives.
+ Index: mod_relax.F90
+ ===================================================================
+ --- original/mod_relax.F90  1970-01-01 01:00:00.000000000 +0100
+ +++ no_line/mod_relax.F90   2011-07-20 16:40:47.000000000 +0100
+ @@ -71,8 +71,6 @@
+  #define        CLASS   321
+  #define        ALIAS   322
+
+ -/* #line 34 "mod_relax.F90" */
+ -
+  #include "config.h"
+  #include "system.h"
+  #include "tree.h"
+ @@ -102,10 +100,8 @@
+  /* Rename the "yyparse" function so that we can override it elsewhere.  */
+  #define yyparse yyparse_1
+
+ -/* #line 67 "mod_relax.F90" */
+  typedef union {long itype; tree ttype; enum tree_code code;
+   const char *filename; int lineno; } YYSTYPE;
+ -/* #line 200 "mod_relax.F90" */
+
+  /* Number of statements (loosely speaking) and compound statements
+     seen so far.  */
+ $
+
+   Notice above that dumpsrcalt was applied to the packaged (.xz) src.alt.
+   The dumpsrcalt utility can also be applied to an installed src.alt,
+   producing the same output:
+
+ $ . ./shrc
+ $ specxz -dc 360.ilbdc.no_line.omp2012.v1.0.tar.xz | spectar -xvf -
+ README.360.ilbdc.src.alt.no_line.txt
+ benchspec/OMP2012/360.ilbdc/src/src.alt/no_line/srcalt.pm
+ benchspec/OMP2012/360.ilbdc/src/src.alt/no_line/README
+ $ dumpsrcalt 360.ilbdc no_line
+ This is src.alt "no_line" for 360.ilbdc.
+ It is usable with version 1.0 of the benchmark.
+ It contains 1 new file and changes to 1 existing file.
+ ------------------------------------------------------------------------------
+ Index: README
+ ===================================================================
+ --- original/README     1970-01-01 01:00:00.000000000 +0100
+ +++ no_line/README      2011-07-20 16:44:27.000000000 +0100
+ @@ -0,0 +1,1 @@
+ +Remove some of those pesky #line directives.
+ Index: c-parse.c
+ ===================================================================
+ --- original/mod_relax.F90  1970-01-01 01:00:00.000000000 +0100
+ +++ no_line/mod_relax.F90   2011-07-20 16:44:27.000000000 +0100
+ @@ -71,8 +71,6 @@
+  #define        CLASS   321
+  #define        ALIAS   322
+
+ -/* #line 34 "mod_relax.F90" */
+ -
+  #include "config.h"
+  #include "system.h"
+  #include "tree.h"
+ @@ -102,10 +100,8 @@
+  /* Rename the "yyparse" function so that we can override it elsewhere.  */
+  #define yyparse yyparse_1
+
+ -/* #line 67 "mod_relax.F90" */
+  typedef union {long itype; tree ttype; enum tree_code code;
+   const char *filename; int lineno; } YYSTYPE;
+ -/* #line 200 "mod_relax.F90" */
+
+  /* Number of statements (loosely speaking) and compound statements
+     seen so far.  */
+ $
+
+   Finally, you can apply dumpsrcalt just to srcalt.pm. In that case, the
+   README file is not displayed, since srcalt.pm contains only differences:
+
+ $ dumpsrcalt benchspec/OMP2012/360.ilbdc/src/src.alt/no_line/srcalt.pm
+ This is src.alt "no_line" for 360.ilbdc.
+ It is usable with version 1.2 of the benchmark.
+ It contains 1 new file and changes to 1 existing file.
+ ------------------------------------------------------------------------------
+ New file "README" isn't present, and can't be dumped.
+ Index: mod_relax.F90
+ ===================================================================
+ --- original/mod_relax.F90  1970-01-01 01:00:00.000000000 +0100
+ +++ no_line/mod_relax.F90   2011-07-20 16:46:43.000000000 +0100
+ @@ -71,8 +71,6 @@
+  #define        CLASS   321
+  #define        ALIAS   322
+
+ -/* #line 34 "mod_relax.F90" */
+ -
+  #include "config.h"
+  #include "system.h"
+  #include "tree.h"
+ @@ -102,10 +100,8 @@
+  /* Rename the "yyparse" function so that we can override it elsewhere.  */
+  #define yyparse yyparse_1
+
+ -/* #line 67 "mod_release.F90" */
+  typedef union {long itype; tree ttype; enum tree_code code;
+   const char *filename; int lineno; } YYSTYPE;
+ -/* #line 200 "mod_release.F90" */
+
+  /* Number of statements (loosely speaking) and compound statements
+     seen so far.  */
+ $
+
+   Notice that the output from dumpsrcalt is suitable for use as input to
+   many patch (1) programs, available on Unix systems and in some add-on
+   packages for Windows (e.g. Cygwin). If you try to apply the output of
+   dumpsrcalt yourself, take care to notice how paths are handled by your
+   patch program, especially if the src.alt is for a benchmark that has a
+   complicated source tree. Many patch programs will pay attention to the
+   filename but not the path listed on the "Index:" lines, so it may be best
+   to apply them using the "-p1" option, to cause patch to ignore "Index:"
+   lines and use the full paths of the files as listed in the diff.
+
+   dumpsrcalt's command-line options are intended to be self-explanatory:
+
+ $ dumpsrcalt --help
+ Usage: bin/dumpsrcalt [options] <benchmark> <srcaltname>
+        bin/dumpsrcalt [options] <path to srcalt tarball>
+        bin/dumpsrcalt [options] <path to srcalt.pm>
+ Options:
+    --skip-changed         -- Do not output diffs of files that have changed
+    --skip-new             -- Do not output diffs for new files
+    --summarize            -- Do not output any diffs at all
+    --no-summary           -- Do not output the summary for the src.alt
+
+ <benchmark> must be the full nnn.name form
+ <srcaltname> must match the name of the subdirectory in the benchmark's
+   src.alt directory
+
+extract_config
+
+   If you have a rawfile, you can extract the config file that was used with
+   it. To do so, use the extract_config utility.
+
+   For example, starting with a freshly-installed SPEC OMP2012 directory
+   tree:
+
+  % runspec --config=Example-simple --size=test --iterations=1 \
+    --tuning=base --output_format=text,raw botsspar > /dev/null
+  % cd result
+  % ls
+  OMPG2012.001.test.rsf OMPG2012.001.test.txt OMP2012.001.log       lock.OMP2012
+
+   Note that we have just the single result. Let's make a temporary directory
+   and copy the rawfile there:
+
+  % mkdir tmp
+  % cd tmp
+  % cp ../OMPG2012.001.test.rsf .
+  % ls
+  OMPG2012.001.test.rsf
+
+   (On Windows, that ls command would be spelt dir. You'll find some more
+   Windows notes in the introduction.)
+
+   Now, attempt to extract the config file:
+
+  % extract_config --stdout OMPG2012.001.test.rsf > tmp.cfg
+
+   Does the extracted file match the original?
+
+  % diff -u ../../config/try_utilities.cfg tmp.cfg
+  --- ../../config/try_utilities.cfg      2006-05-22 14:41:42.000000000 -0700
+  +++ tmp.cfg     2006-05-22 14:43:16.000000000 -0700
+  @@ -1,3 +1,6 @@
+  +# Invocation command line:
+  +# /Volumes/storage/WorkRelated/SPEC/OMP2012/Kits/omp2012-kit91/bin/runspec
+      --config=try_utilities --size=test --iterations=1 --tuning=base
+      --output_format=asc,raw botsspar
+  +############################################################################
+   # This is a sample config file. It was tested with:
+   #
+   #      Compiler name/version:       Apple GCC v4.0.1 build 5245
+  @@ -128,15 +131,8 @@
+   sw_state         = Default
+   sw_other         = None
+
+  -__MD5__
+  -359.botsspar=base=try_utilities=default:
+  -# Last updated Mon May 22 14:41:42 2006
+  -optmd5=0666e60587f33e2aa13eb6ba0917aa60
+  -baggage=
+  -compile_options=\
+  -@eNqNj00LgkAQhu/7K4a9b5duoUKuJpa6C+qlS9QmYqAjaYf+faMF2cfBYQ8Dsy/P80oV6xWUxoCg\
+  -h4BtX2HTLRCEl2pfHqTOaU08380DoBFqCaI+35tjXRnRoGgrCpbwNVaHt6spHCZXIKXNicDHXblb\
+  -pTObf+A4IwkibaJ1kNLtF82ZGsI6C+Nw79OX/xqcRWGyexaa4Wrh6VKYvnMm5m+rwTfyXu4z8WNE\
+  -5UPBSbsHPPNh9Q==
+  -exemd5=d828496b92983e96408f680b55393225
+
+  %
+
+   Yes. The only differences are:
+
+     * The copy in the rawfile adds a comment to tell you how the config file
+       was invoked.
+     * The original copy (in $SPEC/config) has the MD5 information for
+       359.botsspar. (The config file is tucked away into the rawfile without
+       the MD5 section.)
+
+   The config file can also be extracted directly to a file:
+
+  % extract_config --nostdout OMPG2012.001.test.rsf
+ Wrote "OMPG2012.001.test.cfg"
+
+   or
+
+  % extract_config OMPG2012.001.test.rsf
+ Wrote "OMPG2012.001.test.cfg"
+
+   Lastly, you can choose the filename if you're piping files in via stdin:
+
+  % extract_config --basename=SampleFilename < OMPG2012.001.test.rsf
+ Wrote "SampleFilename.cfg"
+
+    On Windows systems
+
+   Instead of saying diff just above, you would say fc (and, as already
+   mentioned, dir is the Windows spelling for what Unix calls ls.)
+
+extract_flags
+
+   If you have a rawfile, you can extract the XML flags description file that
+   the result uses. To do so, use extract_flags. Usage is similar to
+   extract_raw, but unlike extract_raw, the extract_flags utility might not
+   produce a flags description file identical to the original flags file.
+   This is because EOLs (end-of-line) characters are normalized to Unix-style
+   LF (line feed) only.
+
+   Note: If you have used a flags description file to format your result, the
+   entire flags file is stored in the raw file (not just the part needed for
+   result).
+
+   For example, continuing the example from extract_raw, you can extract the
+   flags file using the following command:
+
+ $ extract_flags --stdout new.rsf > extracted.flags.xml
+ $ diff ../myflags.xml ./extracted.flags.xml
+ $
+
+   We see no difference between the extracted flags description file and the
+   original. Notice that the above command asked for the flags to be written
+   to standard out; without that switch, they would have been written to
+   whatever filename was suggested.
+
+   If you'd like for the filename of the extracted flags file to match the
+   rawfile, use the --nofilename option. This will cause extract_flags to
+   ignore the flag file's "suggested filename":
+
+     % ls *rsf
+     omp2012-20060901-00074.rsf  omp2012-20060904-00080.rsf
+     omp2012-20060901-00075.rsf  omp2012-20060904-00081.rsf
+     omp2012-20060903-00076.rsf  omp2012-20060904-00082.rsf
+     omp2012-20060903-00077.rsf  omp2012-20060904-00083.rsf
+     omp2012-20060904-00078.rsf  omp2012-20060904-00084.rsf
+     omp2012-20060904-00079.rsf  omp2012-20060904-00085.rsf
+     % extract_flags --nofilename omp2012-20060904-00085.rsf
+     Reading "omp2012-20060904-00085.rsf"
+     Wrote "omp2012-20060904-00085.xml"
+     %
+
+   (History: as of SPEC OMP2012 V1.1) You can format a result with multiple
+   flags files. If you used multiple flags files as input to runspec then you
+   will get multiple flags files when running extract_flags.
+
+
+ # extract_flags OMPG2012.001.ref.rsf
+ Reading "OMPG2012.001.ref.rsf"
+ Wrote "platform-setup.xml"
+ Wrote "pathscale-flags.xml"
+
+ # extract_flags --nofilename OMPG2012.001.ref.rsf
+ Reading "OMPG2012.001.ref.rsf"
+ Wrote "OMPG2012.001.ref.xml"
+ Wrote "OMPG2012.001.ref-1.xml"
+
+   In the examples above, result 001 used two flags files. One has
+   information about the platform (which might contain items such as BIOS
+   settings), and the other describes the compiler.
+
+   Note: If a raw file has not been formatted with a flags description file,
+   extract_flags does nothing.
+
+extract_raw
+
+   If you have a PDF, HTML, or PostScript output file, you can extract the
+   rawfile that was used to generate it. To do so, use extract_raw. For
+   example:
+
+ $ cp -p OMPG2012.267.ref.rsf new
+ $ ls -g new
+ -rw-rw-r--   1 ptg       186202 Mar 13 22:57 new
+ $ rawformat -o html,raw --flagsurl ./myflags.xml new 2>&1 > /dev/null
+ $ ls -g new.html new.rsf
+ -rw-rw-r--   1 ptg       109390 Mar 20 12:48 new.html
+ -rw-rw-r--   1 ptg       194193 Mar 20 12:48 new.rsf
+ $ mkdir AppleFrancisco
+ $ cd AppleFrancisco/
+ $ cp ../new.html .
+ $ ls -g
+ -rw-rw-r--   1 ptg       109390 Mar 20 12:51 new.html
+ $ extract_raw new.html
+ new.html: Wrote "new.rsf"
+ $ ls -g
+ -rw-rw-r--   1 ptg       109390 Mar 20 12:51 new.html
+ -rw-rw-r--   1 ptg       194193 Mar 20 12:51 new.rsf
+ $ diff ../new.rsf new.rsf
+ $
+
+   In the above example, we begin by copying the original rawfile (always
+   recommended anytime you use commands that create new rawfiles). The
+   rawformat command takes new as input and produces as output both new.html
+   and new.rsf. We copy only new.html to a newly created directory, where we
+   demonstrate that extract_raw can create a copy of new.rsf that is
+   identical to the copy in the parent directory.
+
+    On Windows systems
+
+   Note that the file you extract from can be PDF, PostScript, or HTML, just
+   as on Unix systems, with one important exception: if you are using a
+   browser that attempts to add value to the HTML when you save it, that
+   browser may break the embedded rawfile. For example, with Internet
+   Explorer Version 5.00.3103.1000, if you are viewing a SPEC OMP2012 html
+   file and you select File -> Save As, the default for "Save as type" is
+   shown as
+
+      "Web Page, complete (*.htm,*.html)"
+
+   Do not accept that default if you want to be able to retrieve the rawfile
+   later on. If you take the default, your saved file will be incomplete. To
+   save the web page INCLUDING the embedded rawfile, you must change "Save as
+   type" to
+
+      "Web Page, HTML only (*.htm,*.html)"
+
+flag_dump
+
+   (You can also invoke this utility with the spelling: 'flags_dump')
+
+   If you have an XML flag description file, such as one extracted using
+   extract_flags, or one downloaded from SPEC, flag_dump will create a more
+   human-readable HTML version from it. The flag_dump utility will also
+   handle more than one XML flag description at a time.
+
+   For example:
+
+ $ cd /tmp
+ $ mkdir myflags
+ $ cd myflags/
+ $ cp $SPEC/Docs/flags/*xml .
+ $ ls
+ example-medium-cfg-flags.xml    flags-advanced.xml              flags-simple.xml
+ $ cp flags-advanced.xml flags-for-willi.xml
+ $ flag_dump flags-advanced.xml flags-for-willi.xml flags-simple.xml
+ Processing flags-advanced.xml...wrote flags-advanced.html
+ Processing flags-for-willi.xml...wrote flags-for-willi.html
+ Processing flags-simple.xml...wrote flags-simple.html
+ $
+
+   If you are writing a flags file, you should validate that the dump is
+   valid HTML. If it isn't, you probably made a mistake in the HTML text that
+   you have included inside your XML flags file. A handy HTML validator can
+   be found at http://validator.w3.org/.
+
+   Note that flag_dump utility assumes that you are formatting flags files
+   written by users. These files are not allowed to contain mandatory flags.
+   If you attempt to use the flag_dump utility to format any of the
+   suite-provided flag files such as flags_mandatory.xml or the benchmark
+   flag files that reside in $SPEC/benchspec/OMP2012/*/Spec/ directory, the
+   utility will exit with an error message such as the one below.
+
+     % cd $SPEC/benchspec
+     % flag_dump flags_mandatory.xml
+     Processing flags_mandatory.xml...
+     ERROR: The flag file at
+            flags_mandatory.xml
+          contains one or more flags in the class "mandatory", which is not
+          allowed.
+     %
+
+go (Unix only)
+
+   When you source the shrc, as described in runspec.html, the 'go' shell
+   alias is created. go is a handy utility to navigate the directory
+   structure of a SPEC source tree. Here are the various things it
+   understands and the places they will take you:
+
+ If you say          You'll end up in
+         go          $SPEC
+       go top
+       go bin        $SPEC/bin (where the tools live)
+      go config      $SPEC/config
+      go result      $SPEC/result
+     go results
+       go doc        $SPEC/Docs
+       go docs
+       go cpu        $SPEC/benchspec/OMP2012
+    go benchmark     The top level directory for the named benchmark, if it can
+                     be found. (Examples follow)
+       go 350        $SPEC/benchspec/OMP2012/350.md
+                     $SPEC/benchspec/OMP2012/351.bwaves Notice that abbreviated
+                     names are accepted. But if the abbreviation is ambiguous,
+                     the command will pick the first match, so pay attention to
+                     the reply:
+      go bwaves
+                     $ go g
+                     /spec/omp2012/kit91/benchspec/OMP2012/351.bwaves
+                     $ go bt
+                     /spec/omp2012/kit91/benchspec/OMP2012/357.bt331
+                     $
+       go nada       no change: there's no benchmark named nada*
+                     The named subdirectory of the directory tree for the
+ go benchmark subdir referenced benchmark, for example "go swim run". You can
+                     also name more than one level of subdirectory: "go 372 data
+                     train".
+                     If you are already in a benchmark subtree, then you can
+                     move to a different branch of the same benchmark, by naming
+                     the branch and not mentioning a benchmark. For example:
+
+      go subdir      $ pwd
+                     /rahul/benchspec/OMP2012/367.imagick/run/build_base_a3.0000
+                     $ go exe
+                     /rahul/benchspec/OMP2012/367.imagick/exe
+                     $
+
+   go also understands -h and --help, and will output a short usage message
+   in response to either of those arguments.
+
+   Note: If you leave the shell where you sourced shrc, the alias is no
+   longer available! So if you want to use this alias, do not start a
+   sub-shell.
+
+   Note: 'go' does not know about your settings for output_root or expid, and
+   will not be able to take you to your run, exe, or result directories if
+   you use those features. See ogo for something that can help.
+
+    Users of shells compatible with csh
+
+   (History: since the release of SPEC OMP2012 V1.0,) If you use a csh-like
+   shell, please note that after you say source cshrc, there is a go alias
+   that is set up for you, which implements the same features as described
+   above.
+
+    Windows Users
+
+   Sorry, the go feature does not exist for Windows systems.
+
+index (UNSUPPORTED)
+
+   As you are preparing sets of results, you might find it handy to use
+   scripts.misc/index. This script is NOT supported - please do not submit
+   bug reports for it. But you're welcome to try it out, like so:
+
+ $ ls
+ omp16rate.rsf          omp32rate.rsf
+ $ rawformat -o html *rsf > /dev/null
+ $ ls
+ omp16rate.flags.html   omp16rate.rsf          omp32rate.html
+ omp16rate.gif          omp32rate.flags.html   omp32rate.rsf
+ omp16rate.html         omp32rate.gif
+ $ $SPEC/bin/scripts.misc/index
+ $ ls
+ omp16rate.flags.html   omp16rate.rsf          omp32rate.gif
+ omp16rate.gif          index.html             omp32rate.html
+ omp16rate.html         omp32rate.flags.html   omp32rate.rsf
+ $
+
+   In the above example, we have a couple rawfiles in a directory, generate
+   html reports for them, and then add an index.
+
+makesrcalt
+
+   SPEC distributes approved source changes in packages referred to as
+   src.alts, which are applied using the config file src.alt option. (The
+   file config.html also has an example showing what happens when one is
+   applied.)
+
+   A src.alt is a specialized difference file, and can't be made by hand.
+   When you need to package some source changes, makesrcalt is the tool you
+   need.
+
+   If you are a developer and you believe that changes are needed to the SPEC
+   source code, it will probably be convenient to work in a sandbox,
+   temporarily abandoning the tools during your development phase. (Or, you
+   can use convert_to_development to make the whole installation into one big
+   sandbox.) Once you have a pretty good idea of the changes that you want:
+
+    1. Create a subdirectory under the benchmark's src/ directory named
+       "src.alt/".
+
+    2. Decide on a name for your src.alt. The src.alt name may contain only
+       letters, digits, and underscores. For convenience, it should be short.
+       Create a subdirectory under src/src.alt/ using the name you have
+       chosen.
+
+    3. In that subdirectory, deposit any modified or new source files for the
+       benchmark.
+
+    4. You must also put a file named "README" in that subdirectory. Its
+       contents are up to you; to see examples of the kind of information
+       that is usually placed in README files, see
+       www.spec.org/omp2012/src.alt. In your draft, kindly do NOT claim that
+       it is approved; the release manager will do that at the last minute.
+
+    5. Once the directory structure is set up, creation of the src.alt
+       package is simple: just type makesrcalt followed by the name of the
+       benchmark and the src.alt name.
+
+    6. Contact SPEC to get the src.alt approved.
+
+   Example: We've made source changes to 360.ilbdc to remove preprocessor
+   #line directives from the mod_relax.F90 source file. This src.alt will be
+   called 'no_line':
+
+ $ makesrcalt 360.ilbdc no_line
+
+ Making 'no_line' src.alt for 360.ilbdc
+ This will be usable with version 1.0 of the suite.
+
+ Making differences and computing checksums...
+ Writing control file...
+ Gathering files...
+ Wrote /spec/omp2012/360.ilbdc.no_line.omp2012.v1.0.tar.xz
+
+ Finished making 'no_line' src.alt for 360.ilbdc.  Elapsed time: 0 seconds
+ $
+
+   If you use --help, you'll get an up-to-date list of options. Usually, you
+   won't need any of these:
+
+ $ makesrcalt --help
+ Usage: bin/makesrcalt [options] <benchmark> <srcaltname>
+ Options:
+    --usewith <min>:<max>  -- Set the versions of the suite that will accept
+                              this src.alt (defaults to 1.1)
+    --notarball            -- Skip packaging the src.alt as a tarball (created
+                              by default)
+    --context <lines>      -- Set lines of context for the diff.  This defaults
+                              to 3 and should not be changed.
+    --help                 -- Print this message
+
+ <benchmark> must be the full nnn.name form
+ <srcaltname> must match the name of the subdirectory in the benchmark's
+   src.alt directory
+ $
+
+   (History: the makesrcalt utility was improved in, and was documented for
+   the first time with, SPEC OMP2012 V1.1.)
+
+ogo (Unix only)
+
+   When you source shrc, as described in runspec.html, the 'ogo' shell alias
+   is created. Its function is similar to the go alias with one important
+   difference: if you use the output_root setting in your config file (also
+   discussed in runspec.html) you can use ogo as a shorthand for moving
+   around both the original installed benchmark tree and your output tree.
+
+   To do so, simply set the GO environment variable to the same value as your
+   output_root. Then, 'ogo' will use the contents of that variable as the top
+   level of the benchmark tree when looking for run directories and results.
+
+   For example, you could say something like this:
+
+ $ go config
+ /spec/config
+ $ grep output_root cds.cfg
+ output_root = /cds_stuff
+ $ GO=/cds_stuff
+ $ ogo run perl
+ Using value in GO for output_root: /cds_stuff
+ /cds_stuff/benchspec/OMP2012/363.swim/run
+ $
+
+   Note the helpful message that tells you which directory you have landed
+   in. (If you define the environment variable OGO_NO_WARN the message will
+   be shorter - the first line "Using value in GO..." will not be output.)
+
+   In this example, the benchmarks are installed in "/spec", and output_root
+   is set to "/cds_stuff" in the config file. Any runs using that config file
+   will write their results, executables, and run directories under
+   "/cds_stuff". Continuing with other examples:
+
+   If you say  You'll end up in
+       ogo     /cds_stuff
+     ogo top   Your own private output tree
+   ogo result  /cds_stuff/result
+               Your own private result directory
+   ogo 363 run /cds_stuff/benchspec/OMP2012/363.swim/run
+               Your own private run directories
+   ogo nab exe /cds_stuff/benchspec/OMP2012/352.nab/exe
+               Your own private executables
+               /spec/Docs
+     ogo doc   There's only one Docs directory, on the original installed
+               $SPEC tree
+               /spec/config
+   ogo config  The config directory is always on the original installed tree;
+               set its protections as described in runspec.html
+               /spec/benchspec/OMP2012/351.bwaves/src
+   ogo 351 src Run directories are under output_root, but the benchmark src
+               directory is still in the original installed $SPEC tree.
+
+   ogo also understands -h and --help, and will output a short usage message
+   in response to either of those arguments.
+
+   Saying ogo top or just ogo takes you to $GO. It used to take you to $SPEC.
+
+   Note: It's not necessary to export the "GO" variable. Declaring this
+   variable at the command-prompt is sufficient.
+
+     $ GO=/tmp/cds
+     $ echo $GO
+     /tmp/cds
+
+    Users of shells compatible with csh
+
+   ogo has also been implemented for cshrc. There is one restriction: to get
+   the full feature set above, you must set OGO to the actual directory, not
+   to a symbolic link.
+
+    Windows Users
+
+   Sorry, the ogo feature does not exist for Windows systems.
+
+port_progress
+
+   The port_progress utility analyzes log files and summarizes errors. It was
+   primarily used during the benchmark porting phase for SPEC OMP2012, but
+   can still come in handy, for example when trying the benchmarks with a new
+   compiler. To use it:
+
+   cd $SPEC/result  (or on Windows, cd %SPEC%\result)
+   port_progress logfile...
+
+   Optionally, you can limit output by saying:
+
+   -c config    only report logs that match the named config file
+
+   In the example below:
+
+     * User john has asked for a summary of logs that used config files that
+       match "dec2".
+     * Te, Tr, and Ref indicate the Test, Train, and Ref workloads.
+     * In the first line of the table, the benchmark 350.md is reported as
+       successful ("S") for all 6 tests (base tuning/peak tuning,
+       test/train/ref).
+     * A line down, 351.bwaves succeeded for the test workload with base
+       tuning, but no information is available about the other 5 tests. The
+       code "b?" indicates that there was at least one build attempt for a
+       benchmark, but it was not recorded as Successful, nor was it recorded
+       as having a run-time error.
+     * The next line, 352.nab, is blank because that benchmark was not
+       attempted at all with config file dec22a.cfg.
+     * Benchmark 367.imagick has a code "VE" for all workloads, indicating
+       validation errors. Additional information about that failure is at the
+       bottom of the report (not shown below).
+
+ $ port_progress -c dec2  *.log
+ SPEC OMP2012 mydir
+ Tester: john
+
+                dec22a
+                Base      Peak
+                Te Tr Ref Te Tr Ref
+
+ 350.md         S  S  S   S  S  S
+ 351.bwaves     S  b? b?  b? b? b?
+ 352.nab
+ 357.bt331      S  S  S   S  S  S
+ 358.botsalgn   S  S  S   S  S  S
+ 359.botsspar   S  S  S   S  S  S
+ 360.ilbdc      S  S  S   S  S  S
+ 362.fma3d
+ 363.swim
+ 367.imagick    VE VE VE  VE VE VE
+ 370.mgrid331   S  S  S   S  S  S
+ 371.applu331   S  S  S   S  S  S
+ 372.smithwa    S  S  S   S  S  S
+ 376.kdtree
+ 377.DROPS2     RE RE RE
+
+   You can remove reporting on base runs with --nobase or remove peak with
+   --nopeak. This option may be convenient if, at a particular moment, you
+   are only debugging one type of output.
+
+printkids.pl
+
+   Some benchmark executables are invoked multiple times. If you'd like to
+   know how much time was spent on each invocation, it may not be easy to
+   tell. You could examine "speccmds.out", but that file is not easy to
+   interpret:
+
+ $ runspec --config=try_utilities --size=test --iterations=1 \
+      --tuning=base --output_format=ps  367
+ $ go 367 run
+ $ cd run_base_test_try_utilities.0000/
+ $
+ $ cat speccmds.out | fold -s
+ running commands in speccmds.cmd 1 times
+ runs started at 1334348742, 710969000, Fri Apr 13 13:25:42 2012
+ run 1 started at 1334348742, 711160000, Fri Apr 13 13:25:42 2012
+ child started: 0, 1334348742, 711176000, pid=22658,
+ '../run_base_ref_12.3.0000/convert_base.12.3 input2.tga -shear 31 -resize
+ 12000x9000 -negate -edge 14 -implode 1.2 -flop -convolve 1,2,1,4,3,4,1,2,1
+ -edge 100 -resize 800x600 output2.tga'
+ child finished: 0, 1334349014, 585308000, sec=271, nsec=874132000, pid=22658,
+ rc=0
+ child started: 0, 1334349014, 585461000, pid=22660,
+ '../run_base_ref_12.3.0000/convert_base.12.3 checks.tga -shear 31x14 -negate
+ -edge 14 -resize 12288x12288 -implode 1.2 -flop -convolve 1,2,1,4,3,4,1,2,1
+ -edge 100 -resize 900x900 output9.tga'
+ child finished: 0, 1334349274, 318772000, sec=259, nsec=733311000, pid=22660,
+ rc=0
+ child started: 0, 1334349274, 318928000, pid=22662,
+ '../run_base_ref_12.3.0000/convert_base.12.3 checks.tga -resize 12000x12000
+ -morphology Convolve '5x5: 1.0,1.0,1.0,1.0,1.0 1.0,0.0,0.0,0.0,1.0
+ 1.0,0.0,0.0,0.0,1.0 1.0,0.0,0.0,0.0,1.0 1.0,1.0,1.0,1.0,1.0 ' -edge 60
+ -morphology Convolve Log:0x2 -negate -morphology Convolve Laplacian:7 -sharpen
+ 10x0.2-32 -resize 600x600 output11.tga'
+ child finished: 0, 1334349512, 823929000, sec=238, nsec=505001000, pid=22662,
+ rc=0
+ child started: 0, 1334349512, 824087000, pid=22665,
+ '../run_base_ref_12.3.0000/ImageValidator_base.12.3 expected2.tga output2.tga'
+ child finished: 0, 1334349513, 354615000, sec=0, nsec=530528000, pid=22665, rc=0
+ child started: 0, 1334349513, 354650000, pid=22667,
+ '../run_base_ref_12.3.0000/ImageValidator_base.12.3 expected9.tga output9.tga'
+ child finished: 0, 1334349513, 901268000, sec=0, nsec=546618000, pid=22667, rc=0
+ child started: 0, 1334349513, 901300000, pid=22669,
+ '../run_base_ref_12.3.0000/ImageValidator_base.12.3 expected11.tga output11.tga'
+ child finished: 0, 1334349514, 261427000, sec=0, nsec=360127000, pid=22669, rc=0
+ run 1 finished at: 1334349514, 261432000, Fri Apr 13 13:38:34 2012
+ run 1 elapsed time: 771, 550272000, 771.550272000
+ runs finished at 1334349514, 261485000, Fri Apr 13 13:38:34 2012
+ runs elapsed time: 771, 550516000, 771.550516000
+ $
+
+   Fortunately, SPEC has provided a tool to interpret the above for you:
+
+ $ printkids.pl
+   Seconds  Command
+   Seconds  Command
+    271.87 ref_12.3.0000/convert_base.12.3 input2.tga -shear 31 -resize 12000x90
+    259.73 ref_12.3.0000/convert_base.12.3 checks.tga -shear 31x14 -negate -edge
+    238.51 ref_12.3.0000/convert_base.12.3 checks.tga -resize 12000x12000 -morph
+      0.53 ref_12.3.0000/ImageValidator_base.12.3 expected2.tga output2.tga
+      0.55 ref_12.3.0000/ImageValidator_base.12.3 expected9.tga output9.tga
+      0.36 ref_12.3.0000/ImageValidator_base.12.3 expected11.tga output11.tga
+ =========
+    771.55 Total by adding children
+    771.55 Total according to speccmds.out
+ $
+
+printpath.pl
+
+   As a convenience for Windows users, you can use printpath.pl to print your
+   path in an easier to read form. You can send the output to a file, which
+   can then be easily edited.
+
+   In the example below, printpath.pl makes it easy to notice that cygwin (a
+   Windows/Unix compatibility product) is in the path. SPEC recommends that
+   your %PATH% should not include Windows/Unix compatibility products,
+   because these have sometimes contributed to hard-to-diagnose errors.
+
+ C:\omp2012>echo %PATH%
+ C:\omp2012\bin\windows;C:\omp2012\bin;C:\Program Files\Microsoft Visual Studio 9
+ .0\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;C:\Program Fi
+ les\Microsoft Visual Studio 9.0\Common7\Tools;C:\WINDOWS\Microsoft.NET\Framework
+ \v3.5;C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727;C:\Program Files\Microsoft V
+ isual Studio 9.0\VC\VCPackages;C:\Program Files\Microsoft SDKs\Windows\v6.0A\bin
+ ;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;c:\cygwin\bin;C:\WINDOW
+ S\system32\WindowsPowerShell\v1.0
+
+ C:\omp2012>specperl bin\printpath.pl
+
+ PATH=^
+ C:\omp2012\bin\windows;^
+ C:\omp2012\bin;^
+ C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE;^
+ C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;^
+ C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools;^
+ C:\WINDOWS\Microsoft.NET\Framework\v3.5;^
+ C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727;^
+ C:\Program Files\Microsoft Visual Studio 9.0\VC\VCPackages;^
+ C:\Program Files\Microsoft SDKs\Windows\v6.0A\bin;^
+ C:\WINDOWS\system32;^
+ C:\WINDOWS;^
+ C:\WINDOWS\System32\Wbem;^
+ c:\cygwin\bin;^                           <-- not recommended
+ C:\WINDOWS\system32\WindowsPowerShell\v1.0
+
+ C:\omp2012>specperl bin\printpath.pl > my-easy-to-edit-pathset.bat
+ C:\omp2012>notepad my-easy-to-edit-pathset.bat
+
+ C:\omp2012>my-easy-to-edit-pathset.bat
+
+   In the example above, to remove cygwin, the user just uses notepad to
+   remove the second last line of the file my-easy-to-edit-pathset.bat
+
+rawformat
+
+   "rawformat" is the result formatter. It can be invoked directly, by typing
+   rawformat, or equivalently by typing runspec --rawformat. These two
+   commands achieve the same effect because, saying runspec --rawformat just
+   causes runspec to exit, invoking rawformat in its stead, and passing the
+   formatter whatever other options you mentioned on the command line.
+
+   The rawformat utility is also automatically invoked by runspec at the end
+   of a run, to generate the reports from your run.
+
+   For convenience, most rawformat options are documented in runspec.html,
+   which see for basic information on using this command. You can also say
+   rawformat --help to get a list of switches that are used by the formatter.
+
+   Note that when runnng rawformat, you will always get format "Submission
+   Check", which encourages consistent formatting for various result fields
+   when preparing final (submittable) reports. In addition, you will get the
+   formats that you mention on the command line, or, if none are mentioned
+   there, then you will get the defaults documented under output_format.
+
+   A few additional points are worth mentioning, in the following sections.
+
+  Editing result description fields
+
+   A result rawfile may be edited to update reader fields, such as the system
+   description. Rawfile syntax is similar to the syntax in config files, with
+   a few exceptions:
+
+     * config files use equal signs; rawfiles use colons
+     * the benchmark name is prepended to field names
+     * rawfiles may not be edited beyond a certain point
+     * rawfiles have stricter rules for field continuation
+     * rawfiles allow two fields, sw_parallel_defeat and test_date, which are
+       not allowed in config files
+
+   These points are described in this section.
+
+   WARNING: Before you do anything, make a backup copy of the rawfile first!
+
+   Example: What do you do when Marketing decides to change the name from
+   "SuperHero 4" to "SuperHero IV" just before you publish the results, or
+   just before you're ready to submit them to SPEC? In your config file, you
+   had
+
+  hw_model = SuperHero 4
+
+   which has caused the rawfile to contain the line
+
+ spec.omp2012.hw_model: SuperHero 4
+
+   and you've just been told that the name is wrong. You don't have time to
+   re-run your test. It's too late to change the config file.
+
+   SPEC does allow you to edit the rawfile to make corrections. Just make
+   sure that you only edit the fields located before the "fence":
+
+   # =============== do not edit below this point ===================
+
+
+   WARNING: Make a backup copy of the rawfile first!
+
+   For example:
+
+ $ cd $SPEC/result
+ $ cp OMPG2012.001.ref.rsf new.rsf
+       edit new.rsf to make your changes
+ $ diff OMPG2012.001.ref.rsf new.rsf
+ 9c9
+ < spec.omp2012.hw_model: SuperHero 4
+ ---
+ > spec.omp2012.hw_model: SuperHero IV
+ $
+ $ rawformat -o ps new.rsf
+ rawformat v1198 - Copyright 1999-2011 Standard Performance Evaluation Corporation
+ Using 'solaris10-sparc' tools
+ Reading MANIFEST... 3164 files
+ Loading rawformat modules............
+ Locating benchmarks...found 15 benchmarks in 1 benchset.
+ Locating output formats: ASCII, config, CSV, flags, HTML, mail, PDF, PostScript, raw, Screen, Submission Check
+ Formatting new.rsf
+ This result was produced by a NON-RELEASE version of the OMP2012 suite.
+ Parsing flags for 350.md base: done
+ Parsing flags for 351.bwaves base: done
+ Parsing flags for 352.nab base: done
+ Parsing flags for 357.bt331 base: done
+ Parsing flags for 358.botsalgn base: done
+ Parsing flags for 359.botsspar base: done
+ Parsing flags for 360.ilbdc base: done
+ Parsing flags for 362.fma3d base: done
+ Parsing flags for 363.swim base: done
+ Parsing flags for 367.imagick base: done
+ Parsing flags for 370.mgrid331 base: done
+ Parsing flags for 371.applu331 base: done
+ Parsing flags for 372.smithwa base: done
+ Parsing flags for 376.kdtree base: done
+ Parsing flags for 377.DROPS2 base: done
+ Doing flag reduction: done
+         format: PostScript -> new.ps
+
+ There is no log file for this run.
+
+ rawformat finished at Fri May 18 09:09:19 2012; 11 total seconds elapsed
+ $
+
+  About continuation fields in rawfiles
+
+   Notice when editing fields that have more than one line that you need to
+   construct the numbers with correct syntax. The syntax in the rawfile is a
+   bit more picky than in config files (compare the following vs. the
+   config.html section on "Field scoping and continuation". You cannot say
+   something like this:
+
+   WRONG: spec.omp2012.sw_compiler: Intel C Compiler 9.1 for Windows XP
+          spec.omp2012.sw_compiler1: Visual Studio 2005 (for libraries)
+
+   because the tools are not prepared at this point for a mixture of numbered
+   and un-numbered fields. If you need to have continued fields, say instead:
+
+   RIGHT: spec.omp2012.sw_compiler0: Intel C Compiler 9.1 for Windows XP
+          spec.omp2012.sw_compiler1: Visual Studio 2005 (for libraries)
+
+  Fields allowed only in rawfiles
+
+   One testbed description field is allowed in raw files that is not allowed
+   in config files:
+
+             When the tests were run. This field is populated automatically
+             based on the clock in the system under test. Setting this in the
+   test_date config file will generate a warning and the setting will be
+             ignored. If your system clock is incorrect, then the value may
+             be edited in the raw file. It's better to avoid the necessity to
+             edit, by setting your system clock properly.
+
+    On Windows systems
+
+   You may find that --output_format will only accept one argument at a time.
+   If so, first create the rawfile with --output_format raw, then use the new
+   rawfile to create the other reports.
+
+relocate (Unix only)
+
+   If you rearrange mount points or rename your SPEC root directory, you will
+   probably find confusing problems like the one in the example that follows.
+   We used to have a working SPEC tree under /omp2012/omp2012-kit91, but
+   we're going to change that:
+
+ $ cd /omp2012
+ $ mv omp2012-kit91 jamesbond
+ $ cd jamesbond
+ $ . ./shrc
+ $ runspec -h
+ -bash: /omp2012/jamesbond/bin/runspec: /omp2012/omp2012-kit91/bin/specperl:
+   bad interpreter: No such file or directory
+
+   The problem is that the first line of runspec points to a path that no
+   longer exists:
+
+ $ head -1 bin/runspec
+ #!/omp2012/omp2012-kit91/bin/specperl
+ $
+
+   Fortunately, SPEC has provided a tool to relocate the tools in the new
+   tree:
+
+ $ cd /omp2012/jamesbond
+ $ . ./shrc
+ $ relocate
+ Top of SPEC benchmark tree is '/omp2012/jamesbond'
+ $ runspec -h | head -3
+ runspec v1571 - Copyright 1999-2011 Standard Performance Evaluation Corporation
+ Using 'solaris10-sparc' tools
+ Reading MANIFEST... 13574 files
+
+   Limitations: There are some limitations to this tool. Most notably, it
+   uses perl, so if the tree has been re-arranged in such a way that perl has
+   an identity crisis and can't find itself, you'll be in trouble. Make sure
+   that you have sourced shrc, as in the next example; if it still fails, you
+   may need to reinstall the OMP2012 kit.
+
+ $ cd /omp2012
+ $ mv jamesbond dr_evil
+ $ cd dr_evil
+ $ bin/relocate
+ Your $SPEC variable is not set correctly!
+ Top of SPEC benchmark tree is '/omp2012/dr_evil'
+ Can't locate strict.pm in @INC (@INC contains: /omp2012/jamesbond/bin
+     /omp2012/jamesbond/bin/lib .) at bin/relocate line 3.
+ BEGIN failed--compilation aborted at bin/relocate line 3.
+ $ . ./shrc
+ $ bin/relocate
+ Top of SPEC benchmark tree is '/omp2012/dr_evil'
+ $ runspec -h | head -3
+ runspec v1571 - Copyright 1999-2011 Standard Performance Evaluation Corporation
+ Using 'solaris10-sparc' tools
+ Reading MANIFEST... 13574 files
+ $
+
+   Important: delete the old run and build directories. When setting up run
+   directories, the tools read benchspec/OMP2012/nnn.benchmark/run/list to
+   see what directories already exist. (A similar method is used for build
+   directories.) If the list contains references to directories that are not
+   underneath the current top, the intended behavior is that such directories
+   should cause a warning, and should not be used. For example:
+
+   Notice: Unusable path detected in run directory list file.
+       /brian/liberator/omp2012/benchspec/OMP2012/350.md/run/list
+   references one or more paths which will be ignored, because they are
+   not subdirectories of this run directory.  This condition may be a
+   result of having moved your SPEC benchmark tree.  If that's what happened,
+   and if you don't need the old run directories, you can just remove
+   them, along with the list file.  (Usually it's safe to delete old
+   run directories, as they are automatically re-created when needed.)
+
+
+   Unfortunately, it is sometimes possible to confuse the tools when the list
+   contains directories that are not underneath $SPEC. Although the above
+   message is printed, the tools can actually end up using a mixture of old
+   and new directory paths, and nothing good can come of such mixtures. To
+   avoid the confusion, you should delete the old run directories right after
+   the relocate. Old build directories should be deleted (perhaps after
+   backing them up if you wish to save them for reference). For example:
+
+   mkdir newdir
+   mv $SPEC/* newdir
+   cd newdir
+   bin/relocate
+   cd benchspec/OMP2012
+   spectar cf - */build | specxz > ~/mybuilds.backup.tar.xz
+   rm -Rf */run */build
+
+
+specdiff
+
+   In order to decide whether your system got the correct answer for a
+   benchmark, runspec writes a file called compare.cmd in the run directory,
+   and then calls specinvoke, which calls specdiff. (The specinvoke utility
+   is described below.)
+
+   Suppose that your results are flagged as incorrect, but you'd like to have
+   more detail. You could ask for more than 10 lines of detail by changing
+   the config file's default for difflines from 10 to something else, and
+   re-running the experiment. But, you might save a lot of time and avoid the
+   re-run of the experiment, by calling specdiff directly, with a different
+   number of lines for its switch -l.
+
+   For example, a file chock-full of wrong answers for 444.namd has been
+   created by hand. First, let's see how specdiff would normally be run (line
+   wraps added for readability):
+
+ $ go nab run
+ $ cd run_base_test_try_utilities.0000/
+ $ specinvoke -c 1 -f compare.cmd -n
+ # Use another -n on the command line to see chdir commands
+ # Starting run for copy #0
+ specperl /omp2012/dr_evil/bin/specdiff -m -l 10  --reltol 0.04 \
+ /omp2012/dr_evil/benchspec/OMP2012/352.nab/data/test/output/1ea0.out 1ea0.out > 1ea0.out.cmp
+
+   The above says that normally we test for correct answers by comparing the
+   file $SPEC/benchspec/OMP2012/352.nab/data/test/output/1ea0.out versus the
+   file 1ea0.out in the current directory. Normally, 10 lines of detail are
+   printed. Let's change that to 15 lines, and compare versus our
+   intentionally wrong file instead:
+
+ $ specdiff -m -l 15  --reltol 0.04  \
+      /omp2012/dr_evil/benchspec/OMP2012/352.nab/data/test/output/1ea0.out 1ea0_wrong.out
+ 0008:  ff:     0 10355014136.71 743143.85 10354390559.11 -94699.78      0.00 -24866.48  2.22e+09
+        ff:     0 19355014136.70 743143.85 10354390559.10 -94699.78      0.00 -24866.48  2.22e+09
+                               ^
+ 0013:  ff:     0 10355014136.71 743143.85 10354390559.11 -94699.78      0.00 -24866.48  2.22e+09
+        ff:     0 18355014136.70 743143.85 10354390559.10 -94699.78      0.00 -24866.48  2.22e+09
+                               ^
+ 0018:  md:         200      0.200   68532.98  -59800.52    8732.46     513.27
+        md:         250      0.200   68532.98  -59800.52    8732.46     513.27
+                      ^
+ 0024:  md:         500      0.500   36970.84  -87019.39  -50048.55     276.89
+        md:         500      0.550   36970.83  -87019.38  -50048.55     276.89
+                                 ^
+ 0032:  md:         900      0.900   22134.29 -102318.72  -80184.44     165.77
+        md:         900      0.900   22126.20 -102310.07  -80183.87     365.71
+                                                                             ^
+ 0034:  md:        1000      1.000   20306.58 -104409.91  -84103.33     152.08
+        md:        1100      1.000   20308.26 -104410.90  -84102.65     152.10
+                      ^
+ 0038:  ff:     0 -77675.49  36800.27 -15151.38 -99324.37      0.00      0.00  1.30e+01
+        ff:     0 -87699.60  36799.67 -15155.90 -99343.37      0.00      0.00  1.30e+01
+                          ^
+ 0043:  ff:     0 -77675.49  36800.27 -15151.38 -99324.37      0.00      0.00  1.30e+01
+        ff:     0 -97699.60  56799.67 -15155.90 -99343.37      0.00      0.00  1.30e+01
+                          ^
+ 0045:  ff:   100 -86407.22  32980.10 -14250.59 -105136.73      0.00      0.00  1.11e+01
+        ff:   100 -86580.39  22988.16 -14254.52 -105314.04      0.00      0.00  1.11e+01
+                                    ^
+ 0047:  ff:   200 -85914.86  33610.69 -13733.82 -105791.73      0.00      0.00  1.07e+01
+        ff:   200 -89744.73  33599.29 -13727.93 -105616.09      0.00      0.00  1.07e+01
+                          ^
+ 0048:  md:         200      1.200   16856.19  -85914.86  -69058.67     126.24
+        md:         200      1.300   16854.36  -85744.73  -68890.38     126.23
+                                 ^
+ 0050:  md:         300      1.300   16919.05  -81066.81  -64147.76     126.71
+        md:         300      1.350   17917.36  -81139.65  -64222.29     126.70
+                                            ^
+ 0053:  ff:   500 -80199.18  33543.46 -13634.81 -100107.83      0.00      0.00  1.02e+01
+        ff:   500 -90464.60  33563.63 -13627.84 -100400.38      0.00      0.00  1.02e+01
+                          ^
+ 0054:  md:         500      1.500   16431.69  -80199.18  -63767.49     123.06
+        md:         500      1.500   26411.89  -80464.60  -64052.70     122.92
+                                            ^
+ 0057:  ff:   700 -80523.47  33228.78 -13766.25 -99986.01      0.00      0.00  9.90e+00
+        ff:   730 -81309.61  33235.34 -13759.40 -100785.55      0.00      0.00  9.93e+00
+                ^
+ specdiff run completed
+ $
+
+   Here are the switches supported by specdiff:
+
+ $ specdiff -h
+ Usage: /spec/omp2012/bin/specdiff <options> file1 [file2]
+       -l,--lines         # of lines of differences to print (-1 for all)
+       -q,--quiet         don't print lines just set return code
+       -a,--abstol        absolute tolerance (for floating point compares)
+       -r,--reltol        relative tolerance (for floating point compares)
+       -o,--obiwan        allow off-by-one errors
+       -O,--OBIWAN        *don't* allow off-by-one errors
+       -s,--skiptol       # of differences to ignore
+          --skipabstol    # of abstol differences to ignore
+          --skipreltol    # of reltol differences to ignore
+          --skipobiwan    # of off-by-one differences to ignore
+       -t,--calctol       calculate required tolerances
+       -H,--histogram     show a histogram of differences
+       -f,--floatcompare  Do comparison for floating-point values even if no
+                          tolerances are specified.  (Normally this is
+                          automatic.)
+       -m,--mis           write file2.mis with miscompares
+       -c,--cw            collapse whitespace (probably doesn't do what you
+                          think it does)
+       -C,--CW            *don't* collapse whitespace
+       -b,--binary        Do byte-wise comparison for binary outputs
+       -i,--ignorecase    Ignore case for string comparisons
+       -d,--datadir       Compare against file(s) in data directory
+          --os            Set the operating system type (this is unnecessary)
+       -v,--verbose       Set the level of noisiness for the output
+       -h,--help          Print this message
+ $
+
+specinvoke
+
+   In order to run a benchmark, runspec writes a series of commands in the
+   run directory, in the file speccmds.cmd. These commands are then
+   interpreted by specinvoke.
+
+   When something goes wrong, it is often useful to try the commands by hand.
+   Ask specinvoke what it did, by using the "-n" switch:
+
+ $ go nab run
+ /omp2012/dr_evil/benchspec/OMP2012/352.nab/run
+ $ cd run_base_ref_try_utilities.0000
+ $ ls
+ 1afs             1ea0.out.mis     control          speccmds.cmd
+ 1akd             aminos           gcn4             speccmds.err
+ 1ea0             compare.cmd      gcn4dna          speccmds.out
+ 1ea0.err         compare.err      gcn4p1           speccmds.stdout
+ 1ea0.out         compare.out      hkrdenq
+ 1ea0.out.cmp     compare.stdout   nabmd_base.12.3
+ $ specinvoke -n
+ # specinvoke r6392
+ #  Invoked as: specinvoke -n
+ # timer ticks over every 1000 ns
+ # Use another -n on the command line to see chdir commands and env dump
+ # Starting run for copy #0
+ ../run_base_ref_try_utilities.0000/nabmd_base.12.3 1ea0 281910391 > 1ea0.out 2>> 1ea0.err
+ $
+
+   In the above example, we see how nab is invoked (line wraps added for
+   readability). If you wanted to try out your own variations on the above
+   command by hand, you could do so.
+
+   Here are the switches supported by specinvoke:
+
+ $ specinvoke -h
+ Usage: specinvoke [options] [instructionfile]
+            -i <n>          iterations
+            -c <n>          concurrent processes (overrides -C in command file)
+                               Do not attempt to use this flag for rate runs.
+            -E              return non-zero exit code if child does
+            -s shell        shell to invoke
+            -f file         instruction file
+            -o file         output file
+            -e file         error file
+            -d dir          change to dir first
+            -n[n]           print a 'dry_run' of commands
+            -A              return 0 error code
+            -S msecs        sleep between spawning copies (in milliseconds)
+            -r              don't do I/O redirection ($command already has it)
+            -N              open null device when no input file is specified
+            -Z              use zero-length file when no input file is specified
+            -C              (default) close stdin when no input file is specified
+            -D <n>          Turn on debugging at level <n>
+            -q              Stop issuing commands as soon as one fails (default)
+            -k              Continue issuing commands even if one fails
+            -h              this message
+
+   The -q and -k switches may be useful if specinvoke is being used
+   separately as part of a benchmark development or debug effort (see
+   runspec-avoidance.html.)
+
+  specinvoke -nn prints (but does not set) the environment
+
+   The output of specinvoke -nn is expanded. It now includes information
+   about environment variables that were set by the tools prior to the
+   invocation, which may come in very handy if you want to run a benchmark
+   outside the SPEC harness, for example, during a debugging or tuning
+   effort.
+
+   Consider the following example, where OMP_NUM_THREADS is set prior to
+   doing a (fake) invocation of runspec:
+
+    $ cd $SPEC/config
+    $ export OMP_NUM_THREADS=1024
+    $ cp Example-linux64-amd64-gcc43+.cfg jeff.cfg
+    $ runspec --config=jeff --fake --loose --size=test bwaves > /dev/null
+    $
+
+    $ go bwaves run
+    /home/jeff/omp2012/benchspec/OMP2012/351.bwaves/run
+    $ cd run_base_test_gcc43-64bit.0000/
+    $ grep OMP speccmds.cmd
+    -E OMP_NUM_THREADS 1024
+    $
+
+    $ specinvoke -nn | grep OMP
+    OMP_NUM_THREADS=1024
+    export OMP_NUM_THREADS PATH REPLYTO SHELL SPEC SPECDB_PWD SPECPERLLIB SSH_ASKPASS
+    $
+
+   In the example above, an environment variable is set to request 1024
+   threads, and the setting is recorded in speccmds.cmd. When specinvoke -nn
+   is used, the setting is printed, along with an export command that would
+   put the setting into the environment (along with various other variables
+   that the tools noticed in the original environment).
+
+   It is important to understand that specinvoke does not actually set any
+   environment variables for you. Consider this simplified test case:
+
+    $ cat tmp.cmd
+    -E MY_IMPORTANT_ENV_SETTING enabled
+    echo "important setting: '$MY_IMPORTANT_ENV_SETTING'"
+    $ specinvoke tmp.cmd
+    important setting: ''
+    $
+
+   In the example above, the echo command prints nothing for the environment
+   variable, despite the presence of -E MY_IMPORTANT_ENV_SETTING enabled in
+   the command file. So, one might ask, what good is the feature? Well, it's
+   very useful, if you just redirect the output of specinvoke -nn to a file,
+   as is commonly done:
+
+    $ specinvoke -nn tmp.cmd > doit.sh
+    $ sh doit.sh
+    important setting: 'enabled'
+    $
+
+specmake
+
+   To build a benchmark, runspec uses specmake, which is simply GNU make
+   under a unique name to avoid possible conflicts with other versions of
+   make on your system.
+
+   If a benchmark build fails, one of the most massively useful things you
+   can do is to ask specmake what it did, by using the "-n" switch, which
+   means "dry run".
+
+   For example, let's create a config file that is unlikely to work:
+
+ $ go config
+ $ cat > tmp.cfg
+ ext = silly
+ FC  = f66
+ $
+
+   and try it out:
+
+ $ runspec --config=tmp --tuning=base --action=build bt331
+ runspec v4256 - Copyright 1999-2006 Standard Performance Evaluation Corporation
+ Using 'macosx-ppc' tools
+ Reading MANIFEST... 2565 files
+ Loading runspec modules...............
+ Locating benchmarks...found 31 benchmarks in 13 benchsets.
+ Locating output formats: ASCII, config, CSV, flags, html, mail, PDF,
+      PostScript, raw, Screen, Submission Check
+ Reading config file '/omp2012/dr_evil/config/tmp.cfg'
+ Benchmarks selected: 357.bt331
+ Compiling Binaries
+   Building 357.bt331 ref base silly default: (build_base_silly.0000)
+ Error with make 'specmake build': check file
+ '/omp2012/dr_evil/benchspec/OMP2012/357.bt331/build/build_base_silly.0000/make.err'
+   Error with make!
+ *** Error building 357.bt331
+ If you wish to ignore this error, please use '-I' or ignore errors.
+
+ The log for this run is in /omp2012/dr_evil/result/OMP2012.009.log
+
+ runspec finished at Thu May 18 10:01:54 2012; 8 total seconds elapsed
+ $
+
+   Sure enough, it failed. Let's find the appropriate run directory where our
+   silly build was attempted:
+
+ $ go bt331 build
+ /omp2012/dr_evil/benchspec/OMP2012/357.bt331/build
+ $ ls
+ build_base_silly.0000 list
+ $ cd build_base_silly.0000
+
+   And ask specmake just exactly what it generated:
+
+ $ specmake -n
+ f66 -c -o add.o                    add.f
+ f66             tml.o                     -o leslie3d
+
+   OK, let's enter the command by hand:
+
+ $ f66 -c -o add.o                    add.f
+ -bash: f66: command not found
+ $
+
+   A great convenience of the OMP2012 suite is the fact that you can now
+   proceed to play with all the files in this run directory, to prototype
+   different changes and try out ideas, without fear that you will break
+   anything. As long as you confine your edits to (in this example)
+   $SPEC/benchspec/OMP2012/357.bt331/build/build_base_silly.0000, you are in
+   a private sandbox and will not harm the original sources.
+
+   Here are the switches supported by specmake:
+
+ $ specmake -h
+ Usage: specmake [options] [target] ...
+ Options:
+   -b, -m                      Ignored for compatibility.
+   -B, --always-make           Unconditionally make all targets.
+   -C DIRECTORY, --directory=DIRECTORY
+                               Change to DIRECTORY before doing anything.
+   -d                          Print lots of debugging information.
+   --debug[=FLAGS]             Print various types of debugging information.
+   -e, --environment-overrides
+                               Environment variables override makefiles.
+   -f FILE, --file=FILE, --makefile=FILE
+                               Read FILE as a makefile.
+   -h, --help                  Print this message and exit.
+   -i, --ignore-errors         Ignore errors from commands.
+   -I DIRECTORY, --include-dir=DIRECTORY
+                               Search DIRECTORY for included makefiles.
+   -j [N], --jobs[=N]          Allow N jobs at once; infinite jobs with no arg.
+   -k, --keep-going            Keep going when some targets can't be made.
+   -l [N], --load-average[=N], --max-load[=N]
+                               Don't start multiple jobs unless load is below N.
+   -n, --just-print, --dry-run, --recon
+                               Don't actually run any commands; just print them.
+   -o FILE, --old-file=FILE, --assume-old=FILE
+                               Consider FILE to be very old and don't remake it.
+   -p, --print-data-base       Print make's internal database.
+   -q, --question              Run no commands; exit status says if up to date.
+   -r, --no-builtin-rules      Disable the built-in implicit rules.
+   -R, --no-builtin-variables  Disable the built-in variable settings.
+   -s, --silent, --quiet       Don't echo commands.
+   -S, --no-keep-going, --stop
+                               Turns off -k.
+   -t, --touch                 Touch targets instead of remaking them.
+   -v, --version               Print the version number of make and exit.
+   -w, --print-directory       Print the current directory.
+   --no-print-directory        Turn off -w, even if it was turned on implicitly.
+   -W FILE, --what-if=FILE, --new-file=FILE, --assume-new=FILE
+                               Consider FILE to be infinitely new.
+   --warn-undefined-variables  Warn when an undefined variable is referenced.
+
+ This program built for powerpc-apple-darwin6.8
+ Report bugs to <bug-make@gnu.org>
+
+specrxp
+
+   To check XML flags files, runspec uses specrxp, which is simply RXP under
+   a unique name to ensure no possible conflicts with other versions of rxp
+   on your system. RXP is a validating XML parser. If your flags file passes
+   RXP's tests, that doesn't mean that the flags file makes sense, but it's a
+   start.
+
+   You don't have to know anything abour specrxp, as it is called
+   automatically. But if you want to, you can call it directly, for example:
+
+ specrxp -V -s myflags.xml
+
+   The -V switch requests validation, and -s requests that all output be
+   suppressed except error messages.
+
+   A manpage for rxp is available.
+
+   Once you have your flags file passing specrxp validation, you should do a
+   flag_dump, and validate that the dump is valid HTML.
+
+   If specrxp seems to hang:
+
+   If specrxp seems to hang when you run it, it may because this line in your
+   flags file requires internet access, but your system is behind a firewall:
+
+    SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+
+   To resolve the problem, copy the flags file to a system that does have
+   access; or define proxy environment variable(s) to allow internet access
+   for programs on your system; or *temporarily* change the line to point to
+   a local copy, like so:
+
+    SYSTEM "file:///Arques/Site/Lab/carol/omp2012/Docs/flags/cpuflags2.dtd" <-- temporary only!
+
+   Warning: Be sure to change it back to the correct location prior to
+   attempting to submit a result to SPEC, because SPEC probably does not have
+   access to /Arques/Site/Lab/, and the submission handler will probably
+   bounce your submission.
+
+   If you get unexpected errors from specrxp:
+
+   If you get unexpected messages such as:
+
+    Warning: Start tag for undeclared element
+
+   check that you have correctly set the dtd version.
+
+spectar
+
+   The utility spectar is simply GNU tar, built under a known set of
+   circumstances at the same time as other tools in the SPEC toolset, and
+   renamed to avoid conflicts with any other versions of the program on your
+   path. GNU tar, unlike some other archiving programs, correctly handles
+   very long path names.
+
+specxz
+
+   The utility specxz is XZ Utils, built under a known set of circumstances
+   at the same time as other tools in the SPEC toolset, and renamed to avoid
+   conflicts with any other versions of the program on your path.
+
+   Commonly-used switches work analogously to those in other compression
+   utilities, such as -d to decompress. For details, say specxz --help
+
+   Warning: this idiom, commonly used on Unix systems, has been observed to
+   fail on some tested Windows systems:
+
+ specxz -dc mumble.tar.xz | spectar -xf -  <-- may fail on Windows
+
+   If you see failures, break it into two commands.
+
+ specxz -d mumble.tar.xz                   <-- an alternative
+ spectar -xf mumble.tar
+
+toolsver
+
+   If you have a rawfile, you can get information about the binary toolset
+   and the versions of all of the system-independent tools files. To do so,
+   use the toolsver utility.
+
+   For example, starting with a freshly-installed SPEC OMP2012 directory
+   tree:
+
+ % runspec --config=try_utilities --size=test --iterations=1 \
+   --tuning=base --output_format=ps > /dev/null
+ % cd $SPEC/result
+ % ls
+ OMPG2012.001.test.ps  OMPG2012.001.test.rsf OMP2012.001.log       lock.OMP2012
+
+   Note that we have just the single result file. Now, attempt to extract the
+   version information:
+
+ % toolsver OMPG2012.001.test.rsf
+ OMPG2012.001.test.rsf:
+  Binary toolset used was 'solaris10-sparc'
+  Versions of Perl-based tools:
+     1571 runspec
+     1164 CPUFlagsParser.pm
+     1530 benchmark.pm
+     1444 benchset.pm
+     1541 benchset_common.pl
+     1164 compare.pl
+     1476 config.pl
+     1198 config_common.pl
+     1164 flagutils.pl
+     1198 flagutils_common.pl
+     1164 format.pm
+     1164 listfile.pm
+     1395 locate.pl
+     1164 log.pl
+     1198 log_common.pl
+     1198 monitor.pl
+     1164 os.pl
+     1164 os_common.pl
+     1444 output_raw.pl
+     1522 parse.pl
+     1198 setup.pl
+     1568 util.pl
+     1465 util_common.pl
+     1549 vars_common.pl
+
+   --------------------------------------------------------------------------
+
+   Copyright 1999-2012 Standard Performance Evaluation Corporation
+   All Rights Reserved
+
+

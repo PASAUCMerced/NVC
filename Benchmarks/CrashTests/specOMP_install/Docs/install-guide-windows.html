@@ -1,0 +1,1241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Windows Install SPEC OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<style type="text/css">
+@import url(css/omp2012docs.css);
+</style>
+
+</head>
+<body> 
+
+
+<h1>Installing SPEC OMP2012 Under Microsoft Windows </h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+<p class="contents">Contents</p>
+
+<p class="contentsl1"><a href="#steps">Installation Steps</a></p>
+<p class="contentsl2"><a href="#s1">1.</a> Review Pre-Requisities </p>
+<p class="contentsl2"><a href="#s2">2.</a> Open a command prompt window</p>
+<p class="contentsl2"><a href="#s3">3.</a> Pick destination.  Have enough space, avoid space.</p>
+<p class="contentsl2"><a href="#s4">4.</a> Insert the DVD </p>
+<p class="contentsl2"><a href="#s5">5.</a> Run install.bat </p>
+<p class="contentsl2"><a href="#s6">6.</a> Edit shrc.bat </p>
+<p class="contentsl2"><a href="#s7">7.</a> Use your shrc.bat </p>
+<p class="contentsl2"><a href="#s8">8.</a> Pick a config file to start with.  Modify as needed. </p>
+<p class="contentsl2"><a href="#s9">9.</a> Build a benchmark </p>
+<p class="contentsl2"><a href="#s10">10.</a> Run one benchmark with the test dataset </p>
+<p class="contentsl2"><a href="#s11">11.</a> Try a real dataset </p>
+<p class="contentsl2"><a href="#s12">12.</a> Try a full (reportable) run </p>
+<p class="contentsl2"><a href="#s13">13.</a> Learn more</p>
+
+<p class="contentsl1"><a href="#example">Complete Example Installation</a></p>
+
+<p class="contentsl1"><a href="#appendix1">Appendix 1:</a> the DVD drive is on system A, but I want to install 
+                                                       on system B.  What do I do?</p>
+<p class="contentsl2"><a href="#network">a.</a> Network mount</p>
+<p class="contentsl2"><a href="#tarball">b.</a> Tar file</p>
+
+<p class="contentsl1"><a href="#appendix2">Appendix 2:</a> Uninstalling SPEC OMP2012</p>
+
+<p class="contentsl1"><a href="#appendix3">Appendix 3:</a> Useful Tips and Techniques</p>
+<p class="contentsl2"><a href="#temp">a.</a> About Temporary Space (<tt>%temp%</tt>)</p>
+<p class="contentsl2last"><a href="#text">b.</a> About Text Files and Windows/Unix Compatibility</p>
+
+
+      <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+      assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+      some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+      documents at one of the following locations:</p>
+      <ul class="commentaryul">
+      <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li> 
+      <li class="commentaryli">The <tt><b>%SPEC%\Docs\</b></tt> directory on a system where SPEC OMP2012 has been
+      installed.</li>
+      <li class="commentaryli">The <tt><b>\Docs</b></tt> directory on your SPEC OMP2012 distribution DVD.</li>
+      </ul>
+      <p class="commentaryend"></p>
+
+<h2>Introduction</h2>
+
+<p>The SPEC OMP2012 suite has been tested under Unix and Linux. It has 
+not been tested on Mac OS X and Windows systems.  Because of shared
+tools with SPEC CPU benchmarks, it should be possible to 
+install the benchmark on Mac OS X and Windows systems.
+Your DVD can be
+installed under many operating systems.  </p>
+
+   <p class="l1"><span class="alarm">Reminder: the SPEC license allows you to install on multiple systems as you may wish
+   within your institution; but you may not share the software with the public.</span></p>
+
+<p style="margin-bottom:.1cm">This document covers the installation procedure for SPEC OMP2012 under Microsoft Windows.
+Many of the benchmarks require than 4 GB of memory, so you
+need to use an operating system which allows more than 32-bits of address
+space.</p>
+
+<p class="commentary" style="margin-top:.3cm" >Note: Unless otherwise specified, refererences to "Windows" in this document
+apply to Windows XP or later. </p>
+
+<h2 id="steps">Installation Steps</h2>
+
+<p>This section describes the installing OMP2012 under Microsoft Windows step-by-step.  The steps are described in some
+detail here, with brief examples.  A longer example, from a complete installation, is in the <a href="#example">next</a>
+section.</p>
+
+
+<h3 id="s1">1. Review Pre-Requisities </h3>
+<p>Review the hardware and software requirements, in <a class="external"
+     href="system-requirements.html">system-requirements.html</a></p> 
+
+<p>In particular, <a class="external" href="system-requirements.html#winunix">please notice in the requirements document</a> that
+SPEC does not recommend installation under Windows/Unix compatibility environments.  SPEC recommends that such products be removed
+from your path.</p> 
+
+<p><b>The steps that follow assume that your DVD drive is on the same system as where you wish to install.  If it is on
+a different system, please see <a href="#appendix1">Appendix 1</a>.</b></p>
+
+<h3 id="s2">2. Open a Command Prompt Window</h3>
+
+<p id="openwin">Open a Command Prompt window (formerly known as an "MSDOS Window").  Typically, this is done by
+selecting: <br />Start--&gt;All Programs--&gt;Accessories--&gt;Command Prompt.   </p>
+
+   <p>Adjust the properties to allow you to see plenty of lines scrolled off the top (for example, 9000).  Click the upper
+   left corner of the Command Prompt window, scroll down to "Properties", click the "Layout" tab, and in the section labeled
+   "Screen Buffer Size" enter a new value for "Height".
+</p>
+
+<h3 id="s3">3. Pick destination.  Have enough space, avoid space.</h3>
+<p>Decide where you want to install the OMP2012 suite.  You should make sure that your chosen destination disk has at least 8GB
+free.  (For more information on disk usage, see <a class="external" href="system-requirements.html">system-requirements.html</a>.)
+For the following examples, we will assume that your destination is on drive <tt>C:</tt>, in the directory <tt>\omp2012</tt>. </p> 
+
+<p id="nospaces"><span class="alarm">Please make sure that there are no spaces in the path.</span> Installing to a location that
+includes a directory or subdirectory named something like <span class="ttnobr">"My Benchmarks"</span> is <a class="external"
+href="faq.html#Install.03">asking for trouble.</a> Even if you make it through the installation, there may be other programs from
+SPEC (or from your compiler) that expect space to be an argument delimiter, not part of a path name, and which therefore fail with
+odd and hard to understand error messges.</p> 
+
+
+<h3 id="s4">4. Insert the DVD </h3>
+<p>If you haven't already done so, insert the DVD, and observe where it is mounted.  (For example, on Windows 7, if you
+press Start -&gt; Computer, a window comes up that includes "Devices with Removable Storage", where you can see the assigned
+drive letter.)  Change your directory to the DVD. For the following examples, we'll assume that your DVD is mounted on drive
+<tt>D:</tt>, so entering just the letter and a colon gets us to that drive:</p>
+
+<pre>C:\&gt; <b>D: </b> 
+D:\&gt; </pre>
+
+
+<h3 id="s5">5. Run install.bat </h3>
+<p>You're now ready to run the installer.  The format for this command is</p>
+
+   <p class="ex">install.bat  destination_drive:\destination_directory </p>
+   
+   <p>For example, if your DVD is in drive D:, and you  want to install OMP2012 on drive C: in a folder named omp2012, 
+   you could type:</p>
+
+
+   <p class="ex"> D:\&gt; <b>install.bat&nbsp;&nbsp;C:\omp2012 </b></p>
+
+   <p>You should see a message similar to the following:</p>
+
+<pre>D:\&gt;install.bat c:\omp2012
+Installing FROM source: D:\
+
+  If the source is NOT correct, hit Control-C and
+  run install.bat from the correct benchmark tree.
+
+Press any key to continue . . . </pre>
+
+   <p>If you see a message similar to the above, just press return.  If you see error messages, check to be sure that you are in
+   the correct directory and that <kbd>%temp%</kbd> is defined (see <a href="#tempset">below</a>).  </p>
+
+   <p>Next, the install procedure will ask you to confirm the destination folder.</p>
+
+   <p>You should see a message similar to the following:</p>
+
+<pre>Installing TO destination: "c:\omp2012"
+
+   If the destination is NOT correct, hit Control-C and
+   specify the desired installation path as a parameter.
+   For example:
+
+   D:\install.bat  D:\SPEC\omp2012
+
+Press any key to continue . . . </pre>
+
+   <p>If you see a message similar to the above, just press return, and the installation begins.</p>  
+
+   <p>As it proceeds, the install procedure will inform you that the benchmarks are being unpacked.  Please be patient -
+   although only a few messages are printed, thousands of files are installed:</p>
+
+   <pre>
+Installing from "D:\"
+Installing to "c:\omp2012\"
+
+
+
+ Depending on the speed of the drive holding your installation media
+ and the speed of your destination disk, this may take more than 5 minutes.
+ Please be patient.
+
+Unpacking OMP2012 base files (129.8 MB)
+Unpacking 400.perlbench benchmark and data files (61.5 MB)
+.
+.     <span class="annotation">(lines omitted) </span>
+.
+Testing the tools installation (this may take a minute)
+
+Runspec tests completed successfully!
+Installation completed!
+
+c:\omp2012&gt;
+</pre>
+   <p> The installation will consume around 1.5GB on your destination disk.</p>
+
+   <p>After this step completes, you will find yourself in the destination directory that you selected.
+</p>
+
+<h3 id="s6">6. Edit shrc.bat </h3>
+<p> Read the comments in the file</p>
+
+   <p class="ex">shrc.bat </p>
+
+   <p>and make the appropriate edits for your compiler paths. </p> 
+
+   <p><span class="alarm">Caution:</span> you may find that the lines are not correctly formatted (the text appears to be all
+   run together) when you edit this file.  If so, see the section below: <a href="#text">About Text Files and Windows/Unix
+   Compatibility</a>.</p>
+
+   <p class="snugbot"> You will have to uncomment one of two lines: </p>
+   <pre>rem set SHRC_PRECOMPILED=yes  </pre>
+   <p class="snug">or</p>
+   <pre>rem set SHRC_COMPILER_PATH_SET=yes </pre> 
+   <p class="snugtop">by removing "<span class="ttnobr">rem</span>" from the beginning of the desired line. </p>
+
+   <p> If you uncomment the first line, you must have pre-compiled binaries for the benchmarks </p>
+
+   <p> If you uncomment the second line, you will have to follow the instructions (a few lines below further along in
+   <tt>shrc.bat</tt>) to set up the environment for your compiler, either (A)&nbsp;by calling a vendor-supplied batch setup
+   file or (B)&nbsp;by entering the path yourself:</p>
+
+  <ol style="list-style-type:upper-alpha">
+     <li><p>It is usually better to call a vendor-supplied batch setup file, because the file may set additional needed
+     variables, such as <tt>INCLUDE</tt> and <tt>LIB</tt>.  Examples of vendor files, such as <tt>iclvars</tt>,
+     <tt>vcvars</tt>, and <tt>vsvars</tt>, are in the comments within <tt>shrc.bat</tt>.  Do not assume that any of those
+     examples will work on your system: you need to check first.  The names and locations of these files change from compiler
+     to compiler, from version to version, and even from system to system (if you choose a non-default installation
+     directory).  </p></li>
+
+     <li><p class="snugbot">If you enter a path directly:</p>
+     <ul>
+        <li>Be sure to set all needed variables.  Check your compiler documentation.</li>  
+        <li>Be sure that you do not have any semi-colons (;) inside of quotes, as that may cause <a class="external"
+        href="faq.html#Build.02"> mysterious errors</a>.</li> 
+      </ul></li>
+   </ol>
+
+  <p>No matter how your path gets set, in general it is a good idea to understand what is in your path, and that you have
+  only what you truly need.  If you have non-standard versions of commonly used utilities in your path, you may avoid
+  unpleasant surprises by taking them out.  By default, <tt>shrc.bat</tt> will print the path after it is done.   If you
+  would prefer that it not do so, you can set <span class="ttnobr">SHRC_QUIET=yes</span> in your environment.</p>
+
+
+<h3 id="s7">7. Use your shrc.bat </h3>
+<p>Set the environment, using your edited shrc.  For example:</p>
+
+   <p class="ex"> C:\omp2012&gt; <b>shrc.bat</b></p>
+
+
+<div class="commentary">
+    <p>From this point forward, we are testing basic abilities of the OMP2012 kit, including compiling benchmarks and
+    running them.  You may skip the remaining steps if all of the following are true:</p>
+
+    <ol>
+    <li>You are confident that the previous steps have gone smoothly.</li>
+    <li>You will not be compiling the benchmarks.</li>
+    <li>Someone else has given you pre-compiled binaries.</li>
+    </ol>
+
+    <p><span class="alarm">Warning:</span> even if someone else supplies binaries, you remain responsible for compliance with
+    SPEC's <a class="external" href="http://www.spec.org/fairuse.html">Fair Use</a> rule and the <a class="external"
+    href="http://www.spec.org/omp2012/Docs/runrules.html">OMP2012 run rules</a>.</p> 
+</div>
+
+<h3 id="s8">8. Pick a config file to start with.  Modify as needed. </h3>
+
+    <p>SPEC benchmarks are supplied as source code.  They need to be compiled, under the control of a "config file".  Example
+    config files can be found in <span class="ttnobr">%SPEC%\config</span>.  For an introduction to config files, see <a
+    class="external" href="runspec.html#section1.2">"About Config Files" in runspec.html</a>.  </p> 
+
+    <p> For example, on a Windows system with the Intel C++ compiler installed, a user might do something similar to the
+    following:</p>
+
+    <p class="ex">
+       C:\omp2012&gt; <b>cd %SPEC%\config</b><br />
+       C:\omp2012&gt; <b>copy Example-windows-x64-icl.cfg mine.cfg</b>
+    </p>
+
+    <p>Although an Example config file on the kit can help you get started, you still need to look at it and understand at
+    least the basics of what it is doing for you.  The following paragraphs walk through using the above config file on a
+    particular System Under Test (SUT).
+    <i>Your SUT will probably differ</i>, but a similar config file analysis will be useful.</p>
+
+    <p>This example config file says at the top: </p>
+<pre>
+#      Operating system version:    Windows 7 (64-bit)                                                               
+#      Compiler name/version:       Intel Compiler 12  , MS VS 2008                                                         
+#      Other software:              SmartHeap library
+</pre>
+
+    <p>The user notices that the example SUT has only two of the four software items mentioned above:</p>
+    <ul>
+    <li>The example SUT does have Windows 7 (64-bit).  If the example config file were used on other versions of Windows, it
+    might or might not work.</li>  
+    <li>The example SUT has Intel Compiler 12.  Therefore, the syntax for compiler switches in this example should be useful
+    on this system.</li>
+    <li>The example SUT does not have Microsoft Visual Studio 2008 (abbreviated MS VS 2008 above).  It has Visual Studio 10.
+    Therefore, after looking up the compiler documentation, the tester edits the config file to change: <br />
+    <span class="ttnobr">&nbsp;&nbsp;&nbsp;&nbsp;-Qvc9</span> <br />
+    to <br />
+    <span class="ttnobr">&nbsp;&nbsp;&nbsp;&nbsp;-Qvc10</span></li> 
+    <li>The example SUT does not have SmartHeap.  Therefore, following the instructions in the example config file, the user
+    removes the reference to: <br />  
+    <span class="ttnobr">&nbsp;&nbsp;&nbsp;&nbsp;shlW32M.lib</span> </li>
+    </ul>
+
+<h3 id="s9">9. Build a benchmark </h3>
+
+<p>Now that you have edited your config file, try building a benchmark:</p>
+    <p class="ex">
+       C:\omp2012&gt; <b>runspec --action=build --tune=base ^</b><br />
+       More? <b>--config=mine.cfg 350.md</b> </p>
+
+    <p>(In the examples, "^" (often called "hat" or "carat") indicates line continuation.)</p>
+
+    <p>The <kbd>--tune=base</kbd> indicates that we want to use only the simple tuning, if the config file contains more than
+    one kind of tuning.  </p>
+
+
+<h3 id="s10">10. Run one benchmark with the test dataset </h3>
+<p>Test that you can run a benchmark, using the minimal input set - the "test" workload. </p> 
+
+    <p class="ex">
+      C:\omp2012&gt; <b>runspec --size=test --iterations=1 --noreportable ^</b><br />
+      More? <b>--tune=base --config=mine.cfg 350.md</b> </p>
+
+    <p>The <kbd>--noreportable</kbd> ensures that the tools will allow us to run just a single benchmark instead of the whole
+    suite.</p>
+
+<h3 id="s11">11. Try a real dataset </h3>
+<p>Test that you can run a benchmark using the real input set - the "reference" workload.  For example:</p>
+
+    <p class="ex">
+       C:\omp2012&gt; <b>runspec --size=ref --iterations=1 --noreportable ^</b><br />
+       More? <b>--tune=base --config=mine.cfg 350.md</b> </p>
+
+
+<h3 id="s12">12. Try a full (reportable) run </h3>
+
+<p id="resources">If everything has worked up to this point, you may wish to start a full run, perhaps leaving your computer to
+run overnight.  The extended test will demand significant resources from your machine, including computational power and memory of
+several types.  In order to avoid surprises, before starting the reportable run, you should review the section <a class="external"
+href="system-requirements.html#resources">About Resources</a>, in system-requirements.html.</p> 
+
+<p>To run a reportable test  with simple (baseline) tuning:</p>
+
+    <p class="ex">
+       C:\omp2012&gt; <b>runspec --tune=base --threads=12 --config=mine.cfg gross</b> </p>
+
+
+<h3 id="s13">13. Learn more</h3>
+<p>Please have a look at <a class="external" href="runspec.html">runspec.html</a> to learn more about using runspec. </p> 
+<hr />
+
+
+<h2 id="example">Complete Example Installation </h2>
+
+<p>Here is a complete SPEC OMP2012 Windows installation, with commentary.  We assume that Steps 1 through 4 are already done:
+pre-requisites have been reviewed, a command window is open, we have enough space, and the DVD is mounted - this time, on
+drive <span class="ttnobr">F:</span>.</p>
+
+<p id="exstep5" class="commentarysnugbot">Step 5: change to the drive where the DVD is mounted, and start the installation</p>
+<pre>
+
+C:\&gt;<b>f:</b>
+
+F:\&gt; <b>install.bat C:\omp2012</b>
+Installing FROM source: F:\
+
+  If the source is NOT correct, hit Control-C and
+  run install.bat from the correct benchmark tree.
+
+Press any key to continue . . .
+
+Installing TO destination: "C:\omp2012"
+
+   If the destination is NOT correct, hit Control-C and
+   specify the desired installation path as a parameter.
+   For example:
+
+   F:\install.bat  D:\SPEC\omp2012
+
+Press any key to continue . . .
+
+
+Installing from "F:\"
+Installing to "C:\omp2012\"
+
+
+
+ Depending on the speed of the drive holding your installation media
+ and the speed of your destination disk, this may take more than 5 minutes.
+ Please be patient.
+
+Unpacking OMP2012 base files (129.8 MB)
+Unpacking 400.perlbench benchmark and data files (61.5 MB)
+Unpacking 401.bzip2 benchmark and data files (110.7 MB)
+Unpacking 403.gcc benchmark and data files (43 MB)
+Unpacking 410.bwaves benchmark and data files (0.1 MB)
+Unpacking 416.gamess benchmark and data files (16.8 MB)
+Unpacking 429.mcf benchmark and data files (6.9 MB)
+Unpacking 433.milc benchmark and data files (0.6 MB)
+Unpacking 434.zeusmp benchmark and data files (1.1 MB)
+Unpacking 435.gromacs benchmark and data files (13 MB)
+Unpacking 436.cactusADM benchmark and data files (3.3 MB)
+Unpacking 437.leslie3d benchmark and data files (0.3 MB)
+Unpacking 444.namd benchmark and data files (7.6 MB)
+Unpacking 445.gobmk benchmark and data files (9.2 MB)
+Unpacking 447.dealII benchmark and data files (70.2 MB)
+Unpacking 450.soplex benchmark and data files (321 MB)
+Unpacking 453.povray benchmark and data files (10.3 MB)
+Unpacking 454.calculix benchmark and data files (26 MB)
+Unpacking 456.hmmer benchmark and data files (57 MB)
+Unpacking 458.sjeng benchmark and data files (0.4 MB)
+Unpacking 459.GemsFDTD benchmark and data files (2.6 MB)
+Unpacking 462.libquantum benchmark and data files (0.2 MB)
+Unpacking 464.h264ref benchmark and data files (52.9 MB)
+Unpacking 465.tonto benchmark and data files (6.9 MB)
+Unpacking 470.lbm benchmark and data files (4.7 MB)
+Unpacking 471.omnetpp benchmark and data files (2.8 MB)
+Unpacking 473.astar benchmark and data files (5.8 MB)
+Unpacking 481.wrf benchmark and data files (67.1 MB)
+Unpacking 482.sphinx3 benchmark and data files (51.7 MB)
+Unpacking 483.xalancbmk benchmark and data files (213.7 MB)
+Unpacking 998.specrand benchmark and data files (4.1 MB)
+Unpacking 999.specrand benchmark and data files (4.1 MB)
+Unpacking tools source files (161.7 MB)
+
+Checking the integrity of your source tree...
+
+ Depending on the amount of memory in your system, and the speed of your
+ destination disk, this may take more than 10 minutes.
+ Please be patient.
+
+Unpacking tools binaries
+Setting SPEC environment variable to C:\omp2012\
+Checking the integrity of your binary tools...
+Testing the tools installation (this may take a minute)
+
+Runspec tests completed successfully!
+Installation completed!
+</pre>
+
+<p id="exstep6" class="commentarysnugbot">Step 6: Edit shrc.bat.  This was done in with <a href="#text">notepad</a>, which is
+not shown, but the <tt>fc</tt> command is used below to compare the original shrc.bat to our modified copy:</p>
+
+<pre>
+C:\omp2012&gt; <b>copy shrc.bat shrc.bat.orig</b>
+        1 file(s) copied.
+
+C:\omp2012&gt; <b>notepad shrc.bat</b>
+
+C:\omp2012&gt; <b>fc shrc.bat.orig shrc.bat</b>
+Comparing files shrc.bat.orig and SHRC.BAT
+***** shrc.bat.orig
+
+rem set SHRC_COMPILER_PATH_SET=yes
+
+***** SHRC.BAT
+
+set SHRC_COMPILER_PATH_SET=yes
+
+*****
+
+***** shrc.bat.orig
+rem XXXXXXXX BEGIN EDIT HERE XXXXXXXXXXX
+rem   Call .bat or set PATH here.  Warning: no semicolons inside quotes!
+***** SHRC.BAT
+rem XXXXXXXX BEGIN EDIT HERE XXXXXXXXXXX
+
+call "C:\Program Files (x86)\Intel\ComposerXE-2011\bin\compilervars.bat" ia32
+
+rem   Call .bat or set PATH here.  Warning: no semicolons inside quotes!
+*****
+
+
+C:\omp2012&gt;
+</pre>
+<p id="exstep7" class="commentarysnugbot">Step 7: Use shrc to set the environment</p>    
+<pre>
+C:\omp2012&gt; <b>shrc.bat</b>
+Intel(R) Parallel Studio XE 2011 Update 1
+Copyright 1985-2011 Intel Corporation. All rights reserved.
+Intel(R) Composer XE 2011 Update 4 (package 196)
+Setting environment for using Microsoft Visual Studio 2010 x86 tools.
+
+
+PATH=^
+C:\Program Files (x86)\Intel\ComposerXE-2011\bin\ia32;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\redist\ia32\compiler;^
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\;^
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN;^
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools;^
+C:\windows\Microsoft.NET\Framework\v4.0.30319;^
+C:\windows\Microsoft.NET\Framework\v3.5;^
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\VCPackages;^
+C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\NETFX 4.0 Tools;^
+C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\ipp\..\redist\ia32\ipp;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\ipp\..\redist\ia32\compiler;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\redist\ia32\mkl;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\redist\ia32\compiler;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\tbb\bin\..\..\redist\ia32\tbb\vc_mt;^
+C:\omp2012\bin\windows;^
+C:\omp2012\bin;^
+C:\windows\system32;^
+C:\windows;^
+;^
+C:\Program Files (x86)\Intel\ComposerXE-2011\redist\ia32\mpirt
+
+C:\omp2012&gt; 
+</pre>
+
+<p id="exstep8" class="commentarysnugbot">Step 8.  Modify a config file.  Below, the tester has made similar edits to the ones
+described <a href="#s8">above</a>, with the addition that the line <span class="ttnobr">ext =</span> has been modified. The <a
+class="external" href="config.html#ext">ext</a> line tags the binary with an extension.  If you change this line when you change
+tuning, you can keep multiple binaries around, perhaps to compare them and analyze them.</p> 
+
+<pre>
+C:\omp2012&gt; <b>cd %SPEC%\config</b>
+
+C:\omp2012\config&gt; <b>copy Example-windows-ia32-icl.cfg jul13a.cfg</b>
+        1 file(s) copied.
+
+C:\omp2012\config&gt; <b>notepad jul13a.cfg</b>
+
+C:\omp2012\config&gt; <b>fc Example-windows-ia32-icl.cfg jul13a.cfg</b>
+Comparing files Example-windows-ia32-icl.cfg and JUL13A.CFG
+***** Example-windows-ia32-icl.cfg
+tune        = base
+ext         = example.win32.icl.exe
+flagsurl    = $[top]/config/flags/Intel-ic12-win32-revD.xml
+***** JUL13A.CFG
+tune        = base
+ext         = jul13a
+flagsurl    = $[top]/config/flags/Intel-ic12-win32-revD.xml
+*****
+
+***** Example-windows-ia32-icl.cfg
+################################################################
+CC  = icl -Qvc9 -Qstd=c99
+CXX = icl -Qvc9
+FC  = ifort
+***** JUL13A.CFG
+################################################################
+CC  = icl -Qvc10 -Qstd=c99
+CXX = icl -Qvc10
+FC  = ifort
+*****
+
+***** Example-windows-ia32-icl.cfg
+all_cpp=default:
+EXTRA_LIBS=     shlW32M.lib
+LDOUT=          -Fe$@ -link /FORCE:MULTIPLE
+***** JUL13A.CFG
+all_cpp=default:
+#EXTRA_LIBS=     shlW32M.lib
+LDOUT=          -Fe$@ -link /FORCE:MULTIPLE
+*****
+</pre>
+
+
+<p id="exstep9" class="commentarysnugbot">Step 9.  Use runspec to build one benchmark:</p>
+
+<pre>
+C:\omp2012\config&gt; <b>runspec --action=build --tune=base --config=jul13a 350.md</b>
+runspec v6624 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'windows-i386 ' tools
+Reading MANIFEST... 22353 files
+Loading runspec modules................
+Locating benchmarks...found 31 benchmarks in 6 benchsets.
+Reading config file 'C:/omp2012/config/jul13a.cfg'
+Running "specperl C:\omp2012/Docs/sysinfo" to gather system information.
+Loading "http://www.spec.org/auto/omp2012/current_version" for version check: OK
+
+Retrieving flags file (C:\omp2012/config/flags/Intel-ic12-win32-revD.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Building 350.md base jul13a default: (build_base_jul13a.0000)
+
+Build successes: 350.md(base)
+
+Build Complete
+
+The log for this run is in C:\omp2012/result/OMP2012.001.log
+
+runspec finished at Wed Sep 12 16:43:06 2012; 51 total seconds elapsed
+
+C:\omp2012&gt; 
+
+</pre>
+<p class="commentarysnugtop">At this point, we have demonstrated basic correct installation of both the benchmark and the
+compiler, by verifying that a benchmark can be compiled under the control of <tt>runspec</tt>.</p>
+
+
+<p id="exstep10" class="commentarysnugbot">Step 10. Now try running that benchmark, using the minimal test workload.  The
+test workload runs in a tiny amount of time and does a minimal verification that the benchmark executable can at least start
+up: </p>
+
+<pre>
+C:\omp2012\config&gt; <b>runspec --size=test --iterations=1 --threads=12 --loose --tune=base --config=jul13a 350.md</b>
+runspec v6624 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'windows-i386 ' tools
+Reading MANIFEST... 22353 files
+Loading runspec modules................
+Locating benchmarks...found 31 benchmarks in 6 benchsets.
+Reading config file 'C:/omp2012/config/jul13a.cfg'
+Running "specperl C:\omp2012/Docs/sysinfo" to gather system information.
+Retrieving flags file (C:\omp2012/config/flags/Intel-ic12-win32-revD.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Up to date 350.md base jul13a default
+
+
+Setting Up Run Directories
+  Setting up 350.md test base jul13a default: created (run_base_test_jul13a.0000)
+Running Benchmarks
+  Running 350.md test base jul13a default threads:12
+Success: 1x350.md
+Producing Raw Reports
+mach: default
+  ext: jul13a
+    size: test
+      set: gross
+        format: raw -&gt; C:/omp2012/result/OMPG2012.002.test.rsf
+Parsing flags for 350.md base: done
+Doing flag reduction: done
+        format: flags -&gt; C:/omp2012/result/OMPG2012.002.test.flags.html
+        format: ASCII -&gt; C:/omp2012/result/OMPG2012.002.test.txt
+        format: HTML -&gt; C:/omp2012/result/OMPG2012.002.test.html, 
+                      C:/omp2012/result/OMPG2012.002.test.gif
+
+The log for this run is in C:\omp2012/result/OMP2012.002.log
+
+runspec finished at Wed Sep 12 16:44:26 2012; 42 total seconds elapsed
+</pre>
+
+<p class="commentarysnugtop">Notice about 19 lines up where it says "<tt>Success: 1x350.md</tt>".  That is
+what we want to see.</p>
+
+<p id="exstep11" class="commentarysnugbot">Step 11.  Let's try running 350.md with the real ("ref") workload.  
+This is going to take a while.</p>
+<pre>
+C:\omp2012\config&gt; <b>runspec --size=ref --iterations=1 --threads=12 --loose --tune=base --config=jul13a 350.md</b>
+runspec v6624 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'windows-i386 ' tools
+Reading MANIFEST... 22353 files
+Loading runspec modules................
+Locating benchmarks...found 31 benchmarks in 6 benchsets.
+Reading config file 'C:/omp2012/config/jul13a.cfg'
+Running "specperl C:\omp2012/Docs/sysinfo" to gather system information.
+Retrieving flags file (C:\omp2012/config/flags/Intel-ic12-win32-revD.xml)...
+Benchmarks selected: 350.md
+Compiling Binaries
+  Up to date 350.md base jul13a default
+
+
+Setting Up Run Directories
+  Setting up 350.md ref base jul13a default: created (run_base_ref_jul13a.0000)
+Running Benchmarks
+  Running 350.md ref base jul13a default threads:12
+Success: 1x350.md
+Producing Raw Reports
+mach: default
+  ext: jul13a
+    size: ref
+      set: gross
+        format: raw -&gt; C:/omp2012/result/OMPG2012.003.ref.rsf
+Parsing flags for 350.md base: done
+Doing flag reduction: done
+        format: flags -&gt; C:/omp2012/result/OMPG2012.003.ref.flags.html
+        format: ASCII -&gt; C:/omp2012/result/OMPG2012.003.ref.txt
+        format: HTML -&gt; C:/omp2012/result/OMPG2012.003.ref.html, 
+                      C:/omp2012/result/OMPG2012.003.ref.gif
+
+The log for this run is in C:\omp2012/result/OMP2012.003.log
+
+runspec finished at Wed Sep 12 17:00:20 2012; 923 total seconds elapsed
+</pre>
+
+<p class="commentary">Success with the real workload!  So now let's look in the result directory and see what we find:</p>
+<pre>
+C:\omp2012\config&gt; <b>cd ..\result</b>
+C:\omp2012\result&gt; <b>dir</b>
+ Volume in drive C is System
+ Volume Serial Number is 3EFE-11B4
+
+ Directory of C:\omp2012\result
+
+09/12/2012  05:00 PM    &lt;DIR&gt;          .
+09/12/2012  05:00 PM    &lt;DIR&gt;          ..
+09/12/2012  04:44 PM            42,466 OMPG2012.002.test.flags.html
+09/12/2012  04:44 PM             3,815 OMPG2012.002.test.gif
+09/12/2012  04:44 PM            64,577 OMPG2012.002.test.html
+09/12/2012  04:44 PM            27,100 OMPG2012.002.test.rsf
+09/12/2012  04:44 PM             9,727 OMPG2012.002.test.txt
+09/12/2012  05:00 PM            42,466 OMPG2012.003.ref.flags.html
+09/12/2012  05:00 PM             5,149 OMPG2012.003.ref.gif
+09/12/2012  05:00 PM            64,548 OMPG2012.003.ref.html
+09/12/2012  05:00 PM            27,012 OMPG2012.003.ref.rsf
+09/12/2012  05:00 PM             9,567 OMPG2012.003.ref.txt
+09/12/2012  04:43 PM            15,222 OMP2012.001.log
+09/12/2012  04:44 PM             4,024 OMP2012.002.log
+09/12/2012  05:00 PM             5,319 OMP2012.003.log
+09/12/2012  04:14 PM             8,846 invalid.gif
+09/12/2012  04:45 PM                 5 lock.OMP2012
+              15 File(s)        329,843 bytes
+               2 Dir(s)  21,859,667,968 bytes free
+</pre>
+
+<p class="commentarysnug">Notice the log files from our <tt>runspec</tt> commands.  Those runspec commands are easily
+extracted with <tt>findstr</tt></p>
+
+<pre>
+C:\omp2012\result&gt; <b>findstr runspec: *log</b>
+OMP2012.001.log:runspec: runspec --action=build --tune=base --config=jul13a 350.md
+OMP2012.002.log:runspec: runspec --size=test --iterations=1 --threads=12 --loose --tune=base --config=jul13a 350.md
+OMP2012.003.log:runspec: runspec --size=ref --iterations=1 --threads=12 --loose --tune=base --config=jul13a 350.md
+C:\omp2012\result&gt; <b>findstr runspec: *log</b>
+
+</pre>
+
+<p class="commentary">Here are the results, in the ".txt" file:</p>
+<pre>
+C:\omp2012\result&gt; <b>type OMPG2012.003.ref.txt</b>
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 372.smithwa (base) did not have enough runs!                               #
+# 360.ilbdc (base) did not have enough runs!                                 #
+# 359.botsspar (base) did not have enough runs!                              #
+# 358.botsalgn (base) did not have enough runs!                              #
+# 376.kdtree (base) did not have enough runs!                                #
+# 362.fma3d (base) did not have enough runs!                                 #
+# 351.bwaves (base) did not have enough runs!                                #
+# 357.bt331 (base) did not have enough runs!                                 #
+# 370.mgrid331 (base) did not have enough runs!                              #
+# 363.swim (base) did not have enough runs!                                  #
+# 371.applu331 (base) did not have enough runs!                              #
+# 367.imagick (base) did not have enough runs!                               #
+# 350.md (base) did not have enough runs!                                    #
+# 352.nab (base) did not have enough runs!                                   #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) OMPG2012 Summary
+                                LENOVO 2537LB8
+                Test Sponsor: sponsor (defaults to hw_vendor)
+                           Wed Sep 12 19:37:50 2012
+
+OMP2012 License:                                             Test date: Sep-2012
+Test sponsor: sponsor (defaults to hw_vendor)    Hardware availability: Sep-2012
+Tested by:    tester (defaults to test_sponsor)  Software availability: Sep-2012
+
+                       Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks      Thrds  Run Time     Ratio       Thrds  Run Time     Ratio
+-------------- ------  ---------  ---------    ------  ---------  ---------   
+350.md             12       2201       2.10  *                                 
+351.bwaves                                  NR                                 
+352.nab                                     NR                                 
+357.bt331                                   NR                                 
+358.botsalgn                                NR                                 
+359.botsspar                                NR                                 
+360.ilbdc                                   NR                                 
+362.fma3d                                   NR                                 
+363.swim                                    NR                                 
+367.imagick                                 NR                                 
+370.mgrid331                                NR                                 
+371.applu331                                NR                                 
+372.smithwa                                 NR                                 
+376.kdtree                                  NR                   
+==============================================================================
+350.md             12       2201       2.10  *                                 
+351.bwaves                                  NR                                 
+352.nab                                     NR                                 
+357.bt331                                   NR                                 
+358.botsalgn                                NR                                 
+359.botsspar                                NR                                 
+360.ilbdc                                   NR                                 
+362.fma3d                                   NR                                 
+363.swim                                    NR                                 
+367.imagick                                 NR                                 
+370.mgrid331                                NR                                 
+371.applu331                                NR                                 
+372.smithwa                                 NR                                 
+376.kdtree                                  NR                   
+ Est. SPECompG_base2012                  --
+ Est. SPECompG_peak2012                                             Not Run
+
+
+</pre>
+
+<p class="commentarystart">In the table above, most of the results are blank, because we only ran 1 of the 14 
+benchmarks.  </p>
+
+<p class="commentarycont">Notice that the values for SPECompG_base2006 and SPECompG_peak2006 are "--" and "Not Run"; these would be
+filled in if we did a "reportable" run; for information, please see "--reportable" in <a class="external"
+href="runspec.html#strict">runspec.html</a></p> 
+
+<p class="commentaryend">There are also dashes or dummy values for several parts of the system description, both at the top of the
+page and in the section that follows.  These dashes indicate that we have not filled in the fields that describe the hardware and
+software that we are testing.  For information about these fields, please see <a class="external"
+href="config.html">config.html</a>.  Some fields have automatically been filled in, by <a class="external"
+href="config.html#sysinfo">sysinfo</a>. <br /> <br /> The report continues:</p> 
+
+<pre>
+
+                                   HARDWARE
+                                   --------
+            CPU Name: Intel Core i5 M 520
+ CPU Characteristics: ____
+             CPU MHz: 2400
+                 FPU: Integrated
+      CPU(s) enabled: 2 cores, 1 chip, 2 cores/chip, 2 threads/core
+    CPU(s) orderable: ____ chip
+       Primary Cache: 32 KB I + 32 KB D on chip per core
+     Secondary Cache: 256 KB I+D on/off chip per ____
+            L3 Cache: 3072 KB I+D on/off chip per ____
+         Other Cache: None
+              Memory: 3,892 MB   fixme: format is:
+                      'n GB (n x n GB nRxn PCn-nnnnnR-n, ECC)'
+      Disk Subsystem: ____ GB SATA, ____RPM
+      Other Hardware: None
+    Base Threads Run: 12
+Minimum Peak Threads: --
+Maximum Peak Threads: --
+
+
+                                   SOFTWARE
+                                   --------
+    Operating System: Microsoft Windows 7 Professional
+                      6.1.7600 N/A Build 7600
+            Compiler: Intel C++ Compiler XE for IA32
+                      Version 12.0.3.163 Build 20110217
+                      Microsoft Visual Studio 2008 Professional SP1
+                      (for libraries)
+       Auto Parallel: Yes
+         File System: NTFS
+        System State: Default
+       Base Pointers: 64-bit
+       Peak Pointers: --
+      Other Software: SmartHeap Library Version 9.01 from
+                      http://www.microquill.com/
+
+
+                                Platform Notes
+                                --------------
+     Sysinfo program (C:\omp2012/Docs/sysinfo)
+     on imaUser-t410 Wed Sep 12 16:44:59 2012
+
+     This section contains SUT (System Under Test) info as seen by
+     some common utilities.  To remove or add to this section, see:
+       http://www.spec.org/omp2012/Docs/config.html#sysinfo
+
+     Trying 'systeminfo'
+     OS Name       : Microsoft Windows 7 Professional
+     OS Version    : 6.1.7600 N/A Build 7600
+     System Manufacturer: LENOVO
+     System Model  : 2537LB8
+     Processor(s)  : 1 Processor(s) Installed.
+                                [01]: Intel64 Family 6 Model 37 Stepping 5
+                                GenuineIntel ~1320 Mhz
+     BIOS Version  : LENOVO 6IET75WW (1.35 ), 2/1/2011
+     Total Physical Memory: 3,892 MB
+
+     Trying 'wmic cpu get /value'
+     DeviceID      : CPU0
+     L2CacheSize   : 256
+     L3CacheSize   : 3072
+     MaxClockSpeed : 2400
+     Name          : Intel(R) Core(TM) i5 CPU M 520 @ 2.40GHz
+     NumberOfCores : 2
+     NumberOfLogicalProcessors: 4
+
+                           Base Compiler Invocation
+                           ------------------------
+C benchmarks:
+
+ 350.md: icl -Qvc10 -Qstd=c99
+
+
+                           Base Optimization Flags
+                           -----------------------
+C benchmarks:
+
+ 350.md: -QxHOST -Qipo -O3 -Qprec-div- -Qopt-prefetch -Qparallel
+            -Qauto-ilp32 /F512000000
+
+
+                               Base Other Flags
+                               ----------------
+C benchmarks:
+
+ 350.md: No flags used
+
+
+    SPEC is a registered trademarks of the Standard Performance Evaluation
+    Corporation.  All other brand and product names appearing in this 
+    result are trademarks or registered trademarks of their respective 
+    holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# 'reportable' flag not set during run                                       #
+# 372.smithwa (base) did not have enough runs!                               #
+# 360.ilbdc (base) did not have enough runs!                                 #
+# 359.botsspar (base) did not have enough runs!                              #
+# 358.botsalgn (base) did not have enough runs!                              #
+# 376.kdtree (base) did not have enough runs!                                #
+# 362.fma3d (base) did not have enough runs!                                 #
+# 351.bwaves (base) did not have enough runs!                                #
+# 357.bt331 (base) did not have enough runs!                                 #
+# 370.mgrid331 (base) did not have enough runs!                              #
+# 363.swim (base) did not have enough runs!                                  #
+# 371.applu331 (base) did not have enough runs!                              #
+# 367.imagick (base) did not have enough runs!                               #
+# 350.md (base) did not have enough runs!                                    #
+# 352.nab (base) did not have enough runs!                                   #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+-----------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact webmaster@spec.org.
+Copyright 2012 Standard Performance Evaluation Corporation
+Tested with SPEC OMP2012 v22.
+Report generated on Wed Sep 12 17:00:19 2012 by OMP2012 ASCII formatter v1722.
+
+C:\omp2012\result&gt; 
+
+</pre>
+<p class="commentary">Done.  The suite is installed, and we can run at least one benchmark for real.  </p>
+
+<hr />
+
+<h2 id="appendix1">Appendix 1: the DVD drive is on system A, but I want to install on system B.  What do I do?</h2>
+
+<p>If the title of this section describes your situation, you basically have two choices.</p>
+<ol>
+   <li><a href="#network">Network mount</a>: You can mount the device over the network and do the installation remotely.</li>
+   <li><a href="#tarball">Tar file</a>: You can install from the tar file</li>
+</ol>
+
+<h3 id="network">Appendix 1.a. Network mount</h3>
+
+<p>You might be able to mount the DVD on one system and use network services to make it available on other systems.</p>
+
+   <p class="l1"><span class="alarm">Please note that the SPEC OMP2012 license agreement does not allow you to post the DVD
+   on any public server.</span>  If your institution has a SPEC OMP2012 license, then it's fine to post it on an internal
+   server that is accessible only to members of your institution.</p>
+
+<p class="snugbot">Whether you attempt a network mount will probably depend on:</p>
+<ul>
+<li>available network hardware,</li>
+<li>the networking services provided by your operating system, and </li>
+<li>the security policies of your IT department (if any).</li>
+</ul>
+
+<p class="snugtop">If your network environment allows easy cross-system mounting, you can use a network mount for the
+installation.  Otherwise, you can fall back on <a style="white-space:nowrap;" href="#tarball">the tar file</a>.</p>
+
+<p class="commentary">Note: if you insert the DVD on a system running Unix or Linux, you may need to share it using <tt>nfs</tt>
+commands.  This Windows installation guide does not attempt to give hints about how to do Unix <tt>nfs</tt> commands, although you
+will find some hints in the corresponding appendix of <a class="external"
+href="install-guide-unix.html#network">install-guide-unix.html</a>.  Instead, let's assume that you are using two Windows systems.
+ System A is a Windows system with a DVD drive; System B is a Windows system where you would like to do the installation.</p> 
+
+<p>To do the installation:</p>
+<ol style="list-style-type:upper-alpha">
+   <li><p>At System A, insert the DVD.</p></li>  
+   <li><p>Then, bring up a Windows Explorer window (for example, by double clicking on the <span class="ttnobr">My
+   Documents</span> icon).  Click the plus sign next to <span class="ttnobr">My Computer</span> and you should see the DVD
+   drive.  Let's suppose that it is drive <tt>F:</tt>.</p></li>
+   <li><p>Right-click on the DVD drive and select "Sharing and Security..."</p></li>
+   <li><p>In the box that comes up, under the "Sharing" tab, you may see a warning <tt>To protect your computer from unauthorized
+   access, sharing the root of a dive is not recommended.  If you understand the risk but still want to share the root of the
+   drive, click here.</tt>  This most informative warning is displayed for your consideration and you can proceed to consider
+   it.  If you decide that it is safe to share your DVD drive, then click where indicated.</p></li>
+   <li><p>Select "Share this folder"</p></li>
+   <li><p>Now, move to System B.</p></li>
+
+   <li><p>Bring up a Windows Explorer window (for example, by double clicking on the <span class="ttnobr">My Documents</span>
+   icon).  Select <span class="ttnobr">Tools -&gt; Map Network Drive</span>.  The Drive letter may offer a default, such as
+   <tt>Z:</tt>.  In the box for Folder, type two backslashes, the name of system A, a backslash, and its shared drive
+   letter - for example <span class="ttnobr">\\SystemA\F</span></p></li>
+
+   <li><p>Continue with Step 2 <a href="#openwin">above</a>.  When you get to Steps 5 and 6, remember to use the drive letter as it
+   is known on System B - from the dialog box of a moment ago - for example </p>
+<pre>D:\Documents and Settings\Saturos\&gt; <b>Z:</b>
+Z:\&gt; <b>install.bat  C:\omp2012</b>
+   </pre></li>
+</ol>
+
+
+<h3 id="tarball">Appendix 1.b. Tar file</h3>
+
+<p>If the DVD drive is on a system other than the one where you wish to do the installation, and if you do not wish to try to
+get a <a href="#network">network mount</a> working, then the final fallback is to use the compressed tarfile.  If you choose
+this option, please carefully observe the <span class="alarm">warnings</span>.</p>
+
+<ol style="list-style-type:lower-alpha">
+<li><p>Go to the system with the DVD drive ("System A").  Insert the SPEC OMP2012 DVD.</p></li>
+
+<li><p>From a command window (aka terminal window), <tt>cd</tt> to the top level directory on
+the DVD.</p></li>
+
+<li><p>You are going to retrieve five things from the DVD.  First, find the large tarfile and its corresponding md5 file:</p>
+
+<pre class="l2">cd install_archives 
+dir omp2012.tar.xz*
+</pre>
+
+<p>or, if System A is a Unix system, then:</p>
+
+<pre class="l2">cd install_archives 
+ls -l omp2012.tar.xz*
+</pre>
+
+<p>In either case, you should see one moderately large file &gt; 200MB, <tt>omp2012.tar.xz</tt>, and a small file associated
+with it that contains a checksum, <tt>omp2012.tar.xz.md5</tt>.  </p>
+
+<p class="commentary">If you don't see the above files, try looking for <tt>cpu*tar*</tt>.  The name might change if, for
+example, a maintenance update of OMP2012 changes the name slightly to indicate an updated version.</p>
+
+<p> Do whatever is required in order to transfer both files intact to the system where you wish to do the installation
+("System B").  If you use <tt>ftp</tt>, <span class="alarm">do not forget to use image (binary) mode</span>.  For
+example:</p>
+
+<pre class="l2">
+ftp&gt; <b>bin</b>   <span style="font-family:sans;" class="alarm">&lt;-------- important</span>
+200 Type set to I.
+ftp&gt; <b>put omp2012.tar.xz</b>
+ftp&gt; <b>put omp2012.tar.xz.md5</b>
+</pre>
+
+<p><span class="alarm">Please note that the SPEC OMP2012 license agreement does not allow you to post the above file on any
+public ftp server.</span>  If your institution has a SPEC OMP2012 license, then it's fine to post it on an internal server
+that is accessible only to members of your institution.</p></li>
+
+<li><p>Next, you are going to retrieve <tt>specxz.exe</tt>, <tt>specmd5sum.exe</tt>, and <tt>spectar.exe</tt> from the DVD.</p>
+
+<p><span class="alarm">Please do not use Windows Zip utilities</span>, as these will not preserve line endings and will cause
+difficult-to-diagnose benchmark miscompares.</p>
+
+<p><span class="alarm">Please do not use other <tt>tar</tt> utilities, as these may not handle long path names.</span>
+Many commonly-supplied <tt>tar</tt> utilities cannnot.</p>
+
+<p>If you have GNU tar and the genuine xz, then you can use those; otherwise, look around on the DVD to find
+the SPEC-supplied versions, like so:</p>
+
+<pre>
+F:\&gt; <b>cd tools</b>
+
+F:\tools&gt; <b>cd bin</b>
+
+F:\tools\bin&gt; <b>dir</b>
+ Volume in drive F is SPEC_OMP2012
+ Volume Serial Number is 5699-379E
+
+ Directory of F:\tools\bin
+
+05/09/2012  11:23 AM    &lt;DIR&gt;          .
+05/09/2012  12:06 PM    &lt;DIR&gt;          ..
+05/09/2012  11:23 AM    &lt;DIR&gt;          aix5L-ppc64
+05/09/2012  11:23 AM    &lt;DIR&gt;          hpux11iv3-ipf
+05/09/2012  11:23 AM    &lt;DIR&gt;          linux-debian6-armv6
+05/09/2012  11:23 AM    &lt;DIR&gt;          linux-redhat72-ia32
+05/09/2012  11:23 AM    &lt;DIR&gt;          linux-rhas4r4-ia64
+05/09/2012  11:23 AM    &lt;DIR&gt;          linux-suse10-amd64
+05/09/2012  11:23 AM    &lt;DIR&gt;          macosx
+05/09/2012  11:23 AM    &lt;DIR&gt;          solaris-sparc
+05/09/2012  11:23 AM    &lt;DIR&gt;          solaris-x86
+05/09/2012  11:23 AM    &lt;DIR&gt;          solaris10-sparc
+05/09/2012  11:23 AM    &lt;DIR&gt;          solaris10-x86
+05/09/2012  11:23 AM    &lt;DIR&gt;          windows-i386
+               0 File(s)              0 bytes
+              12 Dir(s)               0 bytes free
+
+F:\tools\bin&gt; <b>cd windows-i386</b>
+
+F:\tools\bin\windows-i386&gt; <b>dir</b>
+ Volume in drive F is SPEC_OMP2012
+ Volume Serial Number is 5699-379E
+
+ Directory of F:\tools\bin\windows-i386
+
+05/09/2011  02:12 PM    &lt;DIR&gt;          .
+05/09/2011  09:51 AM    &lt;DIR&gt;          ..
+08/19/2011  02:49 PM               261 description
+08/19/2011  02:49 PM                16 order
+08/19/2011  02:12 PM           104,061 specmd5sum.exe
+08/19/2011  02:12 PM           500,673 spectar.exe
+08/19/2011  02:12 PM           183,822 specxz.exe
+08/19/2011  02:12 PM        11,914,184 tools-windows-i386.tar.xz
+               6 File(s)     12,702,756 bytes
+               2 Dir(s)               0 bytes free
+
+
+</pre>
+
+<p>Once you've found these versions of <tt>specxz.exe</tt>, <tt>specmd5sum.exe</tt>, and <tt>spectar.exe</tt>, transfer them
+to system B using the same methods that you used for the big tarfile.</p></li>
+
+<li><p>On system B, use <tt>specmd5sum</tt> to check that the file transfer worked correctly.  In this example, we assume
+that you have placed all 5 of the files mentioned above in the <tt>\kits\</tt> directory on drive <tt>C:</tt>:</p>
+
+<pre>C:\kits\&gt; <b>specmd5sum -c omp2012.tar.xz.md5</b>
+omp2012.tar.xz: OK
+</pre></li>
+
+<li><p>Pick a disk with 8GB free, go there, and unpack the tarfile, like so:</p>
+<pre>C:\kits\&gt; <b>H:</b>
+H:\&gt; <b>mkdir omp2012</b>
+H:\&gt; <b>cd omp2012</b>
+H:\omp2012\&gt; <b>C:\kits\specxz -d C:\kits\omp2012.tar.xz</b> 
+H:\omp2012\&gt; <b>C:\kits\spectar -xf C:\kits\omp2012.tar</b> 
+</pre>
+
+<p>Be patient: it will take bit of time to unpack!  It might take 15 minutes, depending on the speed of your processor and
+disks.  Go for a coffee break.</p></li>
+
+<li><p>Now, type <tt>install</tt>, without any arguments afterwards.  That is, unlike the instructions in step 6 above, you
+do not need to mention a device or directory if you are installing from the tarfile. You will see output similar, though  not
+identical, to that shown in the <a href="#example">example installation</a> -- the messages about <tt>Unpacking xxxx</tt> are
+not printed, because you already did the unpacking with your <tt>spectar</tt> command.</p></li>
+
+<li><p>Continue with <a href="#s6">step 6</a>, editing the shrc.bat file, above.</p></li>
+
+</ol>
+
+
+<h2 id="appendix2">Appendix 2: <a name="uninstall"> </a>Uninstalling SPEC OMP2012</h2>
+
+   <p>At this time, SPEC does not provide an uninstall utility for SPEC OMP2012.  Confusingly, there <span
+   class="u">is</span> a file named <tt>uninstall.sh</tt> in the top directory, but it does not remove the whole product; it
+   only removes the SPEC tool set, and does not affect the benchmarks (which consume the bulk of the disk space).  </p>
+
+   <p>To remove SPEC OMP2012 on Windows systems, select the top directory in Windows Explorer and delete it.</p>
+
+   <p>To remove SPEC OMP2012 on Unix systems, use <span class="ttnobr">rm -Rf</span> on the directory where you installed the
+   suite, for example:</p>  
+
+       <pre>  rm -Rf /home/cs3000/saturos/spec/omp2012</pre>
+
+   <p>If you have been using the <a class="external" href="runspec.html#output_root">output_root</a> feature, you
+   will have to track those down separately.  <span class="alarm">Therefore, prior to removing the tree,</span>, you might
+   want to look for mentions of output root, for example:</p> 
+<pre>
+Windows:
+    cd %SPEC%\config
+    findstr output_root *cfg
+
+Unix:
+    cd $SPEC/config
+    grep output_root *cfg
+</pre>
+
+   <p>Note: instead of deleting the entire directory tree, some users find it useful to keep the
+   <tt>config</tt> and <tt>result</tt> subdirectories, while deleting everything else.  </p>
+
+
+
+<h2 id="appendix3">Appendix 3: Useful Tips and Techniques</h2>
+
+<h3 id="temp">Appendix 3.a. <a name="tempset"> </a>About Temporary Space (<tt>%temp</tt>)</h3>
+<p>It has occasionally been reported that installation attempts fail if there is not a directory that can be used to hold
+temporary files.  To check this point, print the <tt>%temp%</tt> environment variable, and try writing a small file to it,
+like this:</p>
+
+<pre>C:\Users\kumar&gt; <b>echo %temp%</b>
+C:\Users\kumar\AppData\Local\Temp
+
+C:\Users\kumar&gt; <b>echo "hi" &gt; %temp%\test-hi.txt</b>
+
+C:\Users\kumar&gt; <b>type %temp%\test-hi.txt</b>
+"hi"
+
+C:\Users\kumar&gt; <b>del %temp%\test-hi.txt</b>
+</pre>
+
+   <p>If <tt>%temp%</tt> is not set, the first <tt>echo</tt> command above will just print:
+   <br /><tt>&nbsp;&nbsp;&nbsp;&nbsp;%temp%</tt>   
+   <br />If <tt>%temp%</tt> is set to a directory that is not writeable, the second command will print: 
+   <br /><tt>&nbsp;&nbsp;&nbsp;&nbsp;Access is denied</tt>
+   <br />  If either of these
+   happen, you should set it to the full path (with drive letter) of a directory that can be used as scratch space.  For
+   example, if Kumaran would like to use a temporary directory underneath his directory on drive K:, he could type:</p>
+
+   <p class="ex">C:\&gt; <b>set temp=K:\KUMARAN\TEMP</b> </p>
+
+<h3 id="text">Appendix 3.b. About Text Files and Windows/Unix Compatibility</h3>
+
+   <p>There are many files in the SPEC OMP2012 kit that contain text.  Unfortunately, Unix systems and Windows systems have
+   different conventions for storing text files.  Sometimes, a text file formatted for Windows will appear on Unix as if it
+   has extra Control-M characters.  Sometimes, a text file formatted for Unix will appear on Windows as if all the lines were
+   joined together.</p>
+
+   <p>There are at least three ways for Windows users to correctly view and edit text files that originated on a Unix
+   system:</p>
+
+<ol>
+     <li><p> Use WordPad.  WordPad can commonly be found by <br />
+           Start--&gt;All Programs--&gt;Accessories--&gt;WordPad
+     </p></li>
+
+     <li><p> Use the MS-DOS Editor.  Open a Command Prompt and type "Edit".  This alternative does not work on 64-bit Windows
+     systems.  The program only recognizes files with 8 characters or fewer, a dot, and then 3 characters or fewer.  If you
+     are trying to use it with a longer file name, you can discover that there is an "8 dot 3" synonym for it by typing:
+     "<kbd>dir /x</kbd>".  </p></li>
+
+     <li><p> Use the editor "vi".  Although vi originated on Unix systems, there are also Windows versions.  "UNIX Compatibility"
+     products for Windows often include a version of vi, and there are independently-distributed versions, such as "Vi IMproved"
+     (at <a class="external" href="http://www.vim.org/">http://www.vim.org/</a>).  </p></li> 
+</ol>
+
+     <p>Note that SPEC does not "endorse" any of these solutions, although it is hoped that at least one of them will be
+     useful for you.</p>
+
+
+
+<hr />
+<p class="snug">Copyright 2001-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:900px;">&nbsp;</p>
+
+
+
+</body></html>
+

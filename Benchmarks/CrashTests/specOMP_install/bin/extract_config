@@ -1,0 +1,143 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  extract_config - a tool for extracting encoded config files from raw
+#                   result files
+#  Copyright 1999-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: extract_config 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use Getopt::Long;
+use IO::File;
+require 'vars.pl';
+require 'util.pl';
+
+use vars qw(%config $processed %lastidx $printed $stdin_cur %opts);
+
+$processed = 0;
+$printed   = 0;
+%config = ( 'raw' => [], 'orig' => [], 'name' => undef );
+%lastidx = ( 'raw' => -1, 'orig' => -1);
+
+%opts = (
+          'stdout'   => 0,
+          'basename' => 'extracted_config',
+          'debug'    => 0,
+        );
+my $rc = GetOptions(\%opts, qw(
+                                stdout!
+                                basename=s
+                                help|usage|h|?
+                                debug!
+                              ));
+
+usage(1) unless $rc;
+usage(0) if $opts{'help'};
+
+$stdin_cur = 0;
+
+# We'll use Perl's magic <> so that files can be piped in through stdin
+# or given on the command line.
+
+# This will process any number of files.
+
+while (<>) {
+    tr/\015\012//d;
+    next unless /^(?:spec\.${main::lcsuite}\.)?(orig|raw)config(\d+): (\S+)$/o;
+    my ($tmpidx, $what, $data) = ($2+0, $1, $3);
+    unless (defined($config{'name'})) {
+        $config{'name'} = $ARGV;
+        if ($config{'name'} eq '-') {
+            $config{'name'} = $opts{'basename'};
+            while (-e $config{'name'}.'.cfg' || -e $config{'name'}.'.orig.cfg') {
+                $config{'name'} = $opts{'basename'}.'.'.$stdin_cur;
+                $stdin_cur++;
+            }
+        } else {
+            # Strip the raw extension, if any
+            $config{'name'} =~ s/\.(?:raw|rsf)$//;
+        }
+        print STDERR "Selected new filename \"$config{'name'}\"\n" if $opts{'debug'};
+    }
+    if ($tmpidx < $lastidx{$what}) {
+	# This must be a new config file!
+	foreach my $type (qw(raw orig)) {
+	    if (@{$config{$type}}) {
+		$processed++;
+		# First, kick the old one out
+		output_config(join('', @{$config{$type}}), $type, $config{'name'});
+	    }
+	}
+
+	# Reset state
+	%config = ( 'raw' => [], 'orig' => [], 'name' => undef );
+    }
+    $lastidx{$what} = $tmpidx;
+    $config{$what}->[$lastidx{$what}] = $data;
+}
+
+foreach my $type (qw(raw orig)) {
+    if (@{$config{$type}}) {
+	$processed++;
+	# First, kick the old one out
+	output_config(join('', @{$config{$type}}), $type, $config{'name'});
+    }
+}
+
+sub output_config {
+    my ($encconfig, $what, $name) = @_;
+    if ($what eq 'orig') {
+      $name .= '.orig';
+    }
+    $name .= '.cfg';
+
+    my $cfg = decode_decompress($encconfig);
+    $cfg .= "\n" unless $cfg =~ /\n$/;
+    if (!defined($cfg) || $cfg !~ /\S/) {
+        print STDERR "No config file extracted\n" if $opts{'debug'};
+        return;
+    }
+
+    if ($opts{'stdout'}) {
+        $printed++;
+        if ($printed > 1) {
+          print "#\n# --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE ---\n#\n";
+        }
+
+        if ($what eq 'orig') {
+            print "#\n# Original config file:\n";
+        }
+        print $cfg."\n";
+    } else {
+        # Write to the file specified
+        my $ofh = new IO::File '>'.$name;
+        die "Couldn't open \"$name\" for writing: $!\n" unless defined($ofh);
+        $ofh->print($cfg."\n");
+        $ofh->close();
+        print "Wrote \"$name\"\n";
+    }
+}
+
+sub usage {
+  my ($rc) = @_;
+
+  print "Usage: $0 [options] <files>\n";
+  print "\nOption list (alphabetical order):\n";
+  print "--basename=<name>      Set the base file name for files read from stdin\n";
+  print "-h                     Print this message.\n";
+  print "--help                 Print this message.\n";
+  print "--nostdout             Dump NO files to stdout.  Suggested filenames\n";
+  print "                        will be used if possible, otherwise the value of\n";
+  print "                        --basename (currently \"$opts{'basename'}\")\n";
+  print "                        will be used.  This is the default.\n";
+  print "--stdout               Dump all files to stdout.\n";
+  print "--usage                Print this message.\n";
+
+  exit $rc;
+}
+

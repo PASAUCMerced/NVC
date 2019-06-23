@@ -1,0 +1,2376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>SPEC runspec </title>
+<!-- $Id: runspec.html 494 2012-10-05 15:09:09Z BrianWhitney $ -->
+<!-- You'll want a nice wide screen (132 columns) when editing this ............................................................ -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+body { background: white; color: black; }
+
+</style>
+
+</head>
+<body>
+
+<h1 style="margin-bottom:0">The 'runspec' Command</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+
+<p class="contents">Contents</p>
+<p class="contentsl1" style="margin-top:0.2em;"><a href="#section1"     >1   </a> Introduction              </p>
+<p class="contentsl2"><a href="#section1.1"   >1.1 </a> Who Needs runspec?                </p>
+<p class="contentsl2"><a href="#section1.2"   >1.2 </a> About Config Files                </p>
+<p class="contentsl3"><a href="#section1.2.1" >1.2.1 </a> Finding a config file              </p>
+<p class="contentsl3"><a href="#section1.2.2" >1.2.2 </a> Naming your config file              </p>
+<p class="contentsl3"><a href="#section1.2.3" >1.2.3 </a> If you change only one thing...              </p>
+<p class="contentsl2"><a href="#section1.3"   >1.3 </a> About Defaults                    </p>
+<p class="contentsl2"><a href="#section1.4"   >1.4 </a> About Disk Usage and Support for Multiple Users  </p>
+<p class="contentsl3"><a href="#section1.4.1" >1.4.1 </a> Directory tree              </p>
+<p class="contentsl3"><a href="#section1.4.2" >1.4.2 </a> <span class="alarm">
+                                                     <b><i>Hey! Where did all my disk space go?</i></b></span></p>
+<p class="contentsl2"><a href="#section1.5"   >1.5</a> Multi-user support              </p>
+<p class="contentsl3"><a href="#section1.5.1" >1.5.1</a> Recommended sharing method: output_root</p>
+<p class="contentsl3"><a href="#section1.5.2" >1.5.2</a> Alternative sharing methods</p>
+<p class="contentsl1"><a href="#section2"     >2    </a> Before Using runspec         </p>
+<p class="contentsl2"><a href="#section2.1"   >2.1  </a> Install kit            </p>
+<p class="contentsl2"><a href="#section2.2"   >2.2  </a> Have a config file     </p>
+<p class="contentsl2"><a href="#section2.3"   >2.3  </a> Undefine SPEC  </p>
+<p class="contentsl2"><a href="#section2.4"   >2.4  </a> Set your path: Unix    </p>
+<p class="contentsl2"><a href="#section2.5"   >2.5  </a> Set your path: Windows      </p>
+<p class="contentsl2"><a href="#section2.6"   >2.6  </a> Check your disk space  </p>
+<p class="contentsl1"><a href="#section3"     >3    </a> Using runspec                </p>
+<p class="contentsl2"><a href="#section3.1"   >3.1  </a> Simplest usage                   </p>
+<p class="contentsl3"><a href="#section3.1.1" >3.1.1 </a> Reportable run              </p>
+<p class="contentsl3"><a href="#section3.1.2" >3.1.2 </a> Running selected benchmarks </p>
+<p class="contentsl3"><a href="#section3.1.3" >3.1.3 </a> Output files                </p>
+<p class="contentsl2"><a href="#section3.2"   >3.2  </a> Syntax                           </p>
+<p class="contentsl3"><a href="#section3.2.1">3.2.1 </a>Benchmark names in run lists</p>
+<p class="contentsl3"><a href="#section3.2.2">3.2.2 </a>Run order for reportable runs </p>
+<p class="contentsl3"><a href="#section3.2.3">3.2.3 </a>Run order when more than one tuning is present</p>
+<!-- <p class="contentsl3"><a href="#section3.2.4">3.2.4 </a>Run order when more than one suite is present</p> -->
+<p class="contentsl2"><a href="#section3.3"   >3.3  </a> Actions                          </p>
+<p id="options" class="contentsl2"><a href="#section3.4"   >3.4  </a> Commonly used options         </p>
+<p class="contentsl4">
+          <a href="#action"        class="switch">--action         </a> 
+          <a href="#check_version" class="switch">--check_version  </a> 
+          <a href="#config"        class="switch">--config         </a> 
+<!--          <a href="#copies"        class="switch">--copies         </a>   -->
+          <a href="#flagsurl"      class="switch">--flagsurl       </a> 
+          <a href="#help"          class="switch">--help           </a> 
+          <a href="#I"             class="switch">--ignore_errors  </a> 
+          <a href="#iter"          class="switch">--iterations     </a> 
+          <a href="#loose"         class="switch">--loose          </a> 
+          <a href="#out"           class="switch">--output_format  </a> 
+          <a href="#power"         class="switch">--[no]power      </a> 
+          <a href="#threads"       class="switch">--threads        </a> 
+          <a href="#rawformat"     class="switch">--rawformat      </a> 
+          <a href="#rebuild"       class="switch">--rebuild        </a> 
+          <a href="#strict"        class="switch">--reportable     </a> 
+          <a href="#tune"          class="switch">--tune           </a> 
+</p>
+<p class="contentsl2"><a href="#section3.5">3.5</a> Less commonly used options      </p>
+<p class="contentsl4">
+          <a href="#basepeak"        class="switch">--basepeak         </a> 
+          <a href="#nobuild"         class="switch">--nobuild          </a> 
+          <a href="#comment"         class="switch">--comment          </a> 
+          <a href="#define"          class="switch">--define           </a> 
+          <a href="#delay"           class="switch">--delay            </a> 
+          <a href="#deletework"      class="switch">--deletework       </a> 
+          <a href="#ext"             class="switch">--extension        </a> 
+          <a href="#fake"            class="switch">--fake             </a> 
+          <a href="#fakereport"      class="switch">--fakereport       </a> 
+          <a href="#fakereportable"  class="switch">--fakereportable   </a> 
+          <a href="#feedback"        class="switch">--[no]feedback     </a> 
+          <a href="#graphauto"       class="switch">--[no]graph_auto   </a> 
+          <a href="#graphmax"        class="switch">--graph_max        </a> 
+          <a href="#graphmin"        class="switch">--graph_min        </a> 
+          <a href="#http_proxy"      class="switch">--http_proxy       </a> 
+          <a href="#http_timeout"    class="switch">--http_timeout     </a> 
+          <a href="#infowrap"        class="switch">--info_wrap_column </a> 
+          <a href="#keeptmp"         class="switch">--[no]keeptmp      </a> 
+          <a href="#log_timestamp"   class="switch">--log_timestamp    </a> 
+          <a href="#machine"         class="switch">--machine          </a> 
+          <a href="#noclobber"       class="switch">--make_no_clobber  </a> 
+          <a href="#makebundle"      class="switch">--make_bundle      </a> 
+<!--          <a href="#maxcomp"         class="switch">--maxcompares      </a> -->
+          <a href="#noteswrap"       class="switch">--notes_wrap_column</a> 
+          <a href="#preenv"          class="switch">--[no]preenv       </a> 
+          <a href="#reportonly"      class="switch">--reportonly       </a> 
+          <a href="#review"          class="switch">--[no]review       </a> 
+          <a href="#setpg"           class="switch">--[no]setprocgroup </a> 
+          <a href="#size"            class="switch">--size             </a> 
+          <a href="#speed"           class="switch">--speed            </a> 
+          <a href="#test"            class="switch">--test             </a> 
+          <a href="#table"           class="switch">--[no]table        </a> 
+          <a href="#undef"           class="switch">--undef            </a> 
+          <a href="#newflags"        class="switch">--update           </a> 
+          <a href="#newflags"        class="switch">--update_flags     </a> 
+          <a href="#unpackbundle"    class="switch">--unpack_bundle    </a> 
+          <a href="#usebundle"       class="switch">--use_bundle       </a> 
+          <a href="#username"        class="switch">--username         </a> 
+          <a href="#verbose"         class="switch">--verbose          </a> 
+          <a href="#version"         class="switch">--version          </a> 
+</p>
+<p class="contentsl1last"><a href="#section4" >4</a> Quick reference              </p>
+
+      <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+      assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+      some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+      documents at one of the following locations:</p>
+      <ul class="commentaryul">
+      <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li> 
+      <li class="commentaryli">The <span class="ttnobr">$SPEC/Docs/</span> (Unix) or <span class="ttnobr">%SPEC%\Docs\</span>
+      (Windows) directory on a system where SPEC OMP2012 has been installed.</li>
+      <li class="commentaryli">The <span class="tt">Docs/</span> directory on your SPEC OMP2012 distribution media.</li>
+      </ul>
+      <p class="commentaryend"> </p>
+
+<h2 id="section1">1  Introduction</h2> 
+
+<h3 id="section1.1">1.1 Who Needs runspec?</h3>
+
+<p class="l1">Everyone who uses SPEC OMP2012 needs <span class="tt">runspec</span>.  It is the primary tool in the
+suite.  It is used to build the benchmarks, run them, and report on their results.  All users of OMP2012 should read this
+document.</p>
+
+<p class="commentary">If you are a beginner, please start out by reading from the beginning through section <a
+href="#section3.1">3.1 Simplest Usage</a>.  That will probably be enough to get you started.</p>
+
+<h3 id="section1.2"><a name="about_config"></a>1.2 About Config Files</h3>
+
+<p class="l1">In order to use <span class="tt">runspec</span>, you need a "config file", which contains detailed instructions
+about how to build and run the benchmarks.  You may not have to learn much about config files in order to get started.
+Typically, you start off using a config file that someone else has previously written.</p>
+
+<h4 id="section1.2.1">1.2.1 Finding a config file</h4>
+
+<p class="l1">Where can you find such a config file?  There are various sources:</p>
+
+<ol> 
+   <li class="l1"><p>Look in the directory <span class="ttnobr">$SPEC/config/</span> (Unix) or <span
+   class="ttnobr">%SPEC%\config\</span> (Windows).  You may find that there is a already a config file there with a name that
+   indicates that it is appropriate for your system.  You may even find that <span class="tt">default.cfg</span> already
+   contains settings that would be a good starting place for your system.</p></li>
+
+   <li class="l1"><p>Look at the SPEC web site (<a class="external"
+   href="http://www.spec.org/omp2012/">http://www.spec.org/omp2012/</a>) for a OMP2012 result submission that used your system, or
+   a system similar to yours.  You can download the config file from that submission.</p></li> 
+
+   <li class="l1">You can review the examples in 
+   <div class="l1snugtop"><span class="ttnobr">$SPEC/config/Example*.cfg</span> (Unix) or 
+   <br /><span class="ttnobr">%SPEC%\config\Example*.cfg</span> (Windows).
+   </div></li>
+
+   <li class="l1"><p>Alternatively, you can write your own, using the instructions in <a class="external"
+   href="config.html">config.html</a></p></li> 
+   </ol>
+
+
+<h4 id="section1.2.2">1.2.2 Naming your config file</h4>
+
+<p class="l1">Once you have found a config file that you would like to use as a starting point, you will probably find it
+convenient to copy it and modify it according to your needs.  There are various options:</p>
+<ul>
+   <li class="l1"><p>You can copy the config file to <span class="tt">default.cfg</span>.  Doing so means that you won't even
+   need to mention <span class="ttnobr">--config</span> on your <span class="tt">runspec</span> command line.</p></li>
+
+   <li class="l1"><p>You might find it useful to name config files after the date and the test attempt:
+   <span class="tt">jan07a.cfg</span>, <span class="tt">jan07b.cfg</span>, and so forth.  This is alleged to make it easier
+   to trace the history of an experiment set.</p></li>
+
+   <li class="l1"><p class="snugbot">If you are sharing a testbed with other users, it is probably wise to name the config file
+   after yourself.  For example, if Yusuf is trying out the new Solaris Fortran95 compiler, he might say:</p>
+
+<div class="exsnug">cd $SPEC/config<br />
+cp solaris-sparc-sunstudio.cfg yusuf-newF95.cfg<br />
+vi yusuf-newF95.cfg</div>
+
+   <p class="snugtop">and edit the new config file to add whatever options he wishes to try out in the new compiler.</p></li>
+</ul>
+
+<h4 id="section1.2.3">1.2.3 If you change only one thing...</h4>
+
+<p class="l1">At first, you may hesitate to change settings in config files, until you have a chance to read <a class="external"
+href="config.html">config.html</a>.  But there is one thing that you might want to change right away.  Look for a line that
+says:</p> 
+<div class="l1ex">ext=</div>
+<p class="l1">That line determines what extension will be added to your binaries.  If there are comments next to that line
+giving instructions ("<span class="tt"># set ext to A for this, or to B for that</span>"), then set it accordingly.  But if
+there are no such instructions, then usually you are free to set the extension to whatever you like, which can be very useful
+to ensure that your binaries are not accidentally over-written.  You might add your name in the extension, if you are sharing
+a testbed with others.  Or, you may find it convenient to keep binaries for a series of experiments, to facilitate later
+analysis; if you're naming your config files with names such as <span class="tt">jan07a.cfg</span>, you might choose to
+use "<span class="tt">ext=jan07a</span>" in the config file.</p> 
+
+
+<h3 id="section1.3">1.3 About Defaults</h3>
+
+<p class="l1">The SPEC tools have followed two principles regarding defaults: </p>
+<ol>
+  <li class="l1snug">There should always be a default for everything</li>
+  <li class="l1snug">It should be easy to change the defaults</li>
+</ol>
+
+<p class="l1">This means (the good news) that something sensible will usually happen, even when you are not explicit about
+what you want.  But it also means (the bad news) that if something unexpected happens, you may have to look in several places
+in order to figure out why it behaves differently than you expect.</p>
+
+<p id="precedence-runspec-vs-config" class="l1snugbot">The order of precedence for settings is:</p>
+
+<table border="0" style="margin:.2em 3em">
+<tr><td style="padding-right:.3em">
+         Highest precedence:</td>  <td><span class="tt">runspec</span> command</td></tr>
+<tr><td> Middle:</td>              <td>config file</td></tr>
+<tr><td> Lowest:</td>              <td>the tools as shipped by SPEC</td></tr>
+</table>
+
+<p class="l1snugtop">Therefore, when this document tells you that something is the default, bear in mind that your
+config file may have changed that setting.  With luck, the author of the config file will tell you so (perhaps in the
+comments to the config file).</p>
+
+
+<h3 id="section1.4"><a name="disk_usage">1.4</a> About Disk Usage</h3>
+
+
+<h4 id="section1.4.1">1.4.1 Directory Tree</h4>
+<p class="l1">The structure of the OMP2012 directory tree is:</p>
+
+<pre>$SPEC or %SPEC% - the root directory
+   Docs         - location for html documents concerning the benchmark suite
+   Docs.txt     - location for text versions of the Docs tree
+   benchspec    - some suite-wide files
+      OMP2012   - the benchmarks
+   bin          - tools to run and report on the suite
+   config       - config files
+   result       - log files and reports
+   tools        - sources for the OMP2012 tools
+</pre>
+
+<p class="l1">Within each of the individual benchmarks, the structure is:</p>
+
+<pre>nnn.benchmark - root for this benchmark
+   Docs       - Documentation about the benchmark
+   Spec       - SPEC metadata about the benchmark
+   data        
+      all     - data used by all runs (if needed by the benchmark)
+      ref     - the real data set, required for all result reporting
+      test    - data for a simple test that an executable is functional
+      train   - data for feedback-directed optimization
+   build      - all builds take place here
+   exe        - compiled versions of the benchmark
+   run        - all runs take place here
+   src        - the sources for the benchmark
+</pre>
+
+<h4 id="section1.4.2"> 1.4.2 <span style="font-style:italic;color:red">Hey! Where did all my <a name="diskspace"></a>disk space go?</span></h4>
+
+<p class="l1">When you find yourself wondering "Where did all my disk space go?", the answer is "The run directories." Most
+<a href="#otherspace">(*)</a> activity takes place in automatically created subdirectories of <span
+class="ttnobr">$SPEC/benchspec/OMP2012/*/run/</span> (Unix) or <span class="ttnobr">%SPEC%\benchspec\OMP2012\*\run\</span>
+(Windows).</p>
+
+<p class="l1snugbot">For example, suppose Bob has a config file that he is using to test some new memory optimizations, and
+has set</p>
+<div class="l1exsnug">ext=BobMemoryOpt</div>
+<p class="l1snugtop">in his config file.  In that case, the tools would create directories such as these:</p>
+
+<pre>$ <b>pwd</b>
+/Users/bob/omp2012/benchspec/OMP2012/350.md/run
+$ <b>ls</b>
+list
+run_base_test_BobMemoryOpt.0001
+run_base_train_BobMemoryOpt.0001
+run_base_ref_BobMemoryOpt.0001
+run_peak_test_BobMemoryOpt.0001
+run_peak_train_BobMemoryOpt.0001
+run_peak_ref_BobMemoryOpt.0001
+$ 
+</pre>
+
+<p class="l1snugbot">To get your disk space back, see the documentation of the various <a href="#cleaning">cleaning
+options</a>, below; or issue a command such as the following (on Unix systems; Windows users can select the files with
+Explorer):</p>
+
+<p class="l1ex"><b>rm -Rf $SPEC/benchspec/OMP2012/*/run/run*BobMemory*</b></p>
+
+<p class="l1">The effect of the above command would be to delete all the run directories associated with the benchmarks which
+used extension <span class="ttnobr">*BobMemory*</span>.  Note that the command did not delete the directories where the
+benchmarks were built (<span class="ttnobr">...OMP2012/*/build/*</span>); sometimes it can come in handy to keep the build
+directories, perhaps to assist with debugging.</p>
+
+<p id="otherspace" class="l1snugbot"><b>(*) Other space:</b> In addition to the run directories, other consumers of disk space
+include: (1) temporary files; for a listing of these, see the documentation of <a class="external"
+href="config.html#keeptmp">keeptmp</a>; and (2) the build directories.  For the example above, underneath:</p> 
+<pre>
+/Users/bob/omp2012/benchspec/OMP2012/350.md/build/
+</pre> 
+<p class="l1snug">will be found:</p>
+<pre>$ <b>ls</b>
+build_base_BobMemoryOpt.0001
+build_peak_BobMemoryOpt.0001
+</pre>
+
+<h3 id="section1.5">1.5 Multi-user support</h3>
+
+<p class="commentary">(If you are not sharing a SPEC OMP2012 installation with other users, you can skip ahead to <a
+href="#section2">section 2</a>.)</p>
+
+<p class="l1">The SPEC OMP2012 toolset provides support for multiple users of a single installation, <b>but the tools also
+rely upon users to make appropriate choices regarding setup of operating-system file protections.</b>  This section describes
+the multi-user features and describes ways of organizing protections.  First, to the features that are always enabled:</p>
+
+<ul>
+
+<li class="l1"><p>The SPEC-distributed source directories and data directories are not changed during testing.  Instead,
+working directories are created as needed for builds and runs. </p></li>
+
+<li class="l1"><p>Each user's build and run directories are tagged with the name of the user that they belong to (in the file
+<span class="ttnobr">nnn.benchmark/run/list</span>).  Directories created for one user are not re-used for a different user.
+</p></li>
+
+<li class="l1"><p>Multiple users can run tests at the same time.  (Of course, if the jobs compete with each other for
+resources, it is likely that they will run more slowly.)</p></li>
+
+<li class="l1"><p>Multiple users can even run the "same" test at the same time, and they will automatically be given separate
+run directories.</p></li>
+
+</ul>
+
+<p class="l1">If you have more than one user of SPEC OMP2012, you can use additional features and choose from several different
+ways to organize the on-disk layout to share usage of the product.  The recommended way is described first.
+<a name="output_root"> </a></p>
+
+<h3 id="section1.5.1">1.5.1 Recommended sharing method: output_root</h3>
+
+<p class="l1">The recommended method for sharing a SPEC OMP2012 installation among multiple users has 4 steps:</p>
+
+<table class="l1">
+<tr><td><b>Step</b></td><td><b>Example (Unix)</b></td></tr>
+<tr><td>Protect most of the SPEC tree read-only</td><td><kbd> chmod -R ugo-w $SPEC</kbd></td></tr>
+<tr><td>Allow shared access to the config directory</td><td><kbd>chmod 1777 $SPEC/config</kbd></td></tr>
+<tr><td>Keep your own config files</td><td><kbd>cp config/assignment1.cfg config/alan1.cfg</kbd></td></tr>
+<tr><td>Add an output_root to your config file</td><td><kbd>output_root=/home/${username}/spec</kbd></td></tr>
+</table>
+
+<p>More detail about the steps is below.</p>
+<ol>
+
+<li class="l1"><p>Most of the OMP2012 tree is shared, and can be protected read-only.  For example, on a Unix system,
+you might set protections with:</p>
+<pre class="l1">
+chmod -R ugo-w $SPEC
+</pre></li>
+
+<li class="l1"><p>The one exception is the config directory, <span class="ttnobr">$SPEC/config/</span> (Unix) or <span
+class="ttnobr">%SPEC%\config\</span> (Windows), which needs to be a read/write directory shared by all the users.  It is
+written to by users when they create config files, and by the tools themselves: config files are updated after successful
+builds to associate them with their binaries.</p>
+
+<p>On Unix, the above protection command needs to be supplemented with:</p>
+<pre class="l1">
+chmod 1777 $SPEC/config
+</pre>
+<p>which will have the effect (on most Unix systems) of allowing users to create config files which they can choose to
+protect to allow access only by themselves. </p></li>
+
+<li class="l1"><p>Config files usually would not be shared between users.  For example, students might create their own
+copies of a config file. </p> 
+
+<p class="snugbot">Alan enters:</p>
+<pre class="l1snug">
+cd /cs403
+. ./shrc
+cp config/assignment1.cfg config/alan1.cfg
+chmod u+w config/alan1.cfg
+runspec --config alan1 --action build 351.bwaves
+</pre>
+<p class="snugbot">Wendy enters:</p>
+<pre class="l1snugtop">
+cd /cs403
+. ./shrc
+cp config/assignment1.cfg config/wendy1.cfg
+chmod u+w config/wendy1.cfg
+runspec --config wendy1 --action build 351.bwaves
+</pre></li>
+
+<li class="l1"><p>Set <span class="ttnobr">output_root</span> in the config files to change the destinations of 
+the outputs. </p>
+
+<p>To see the effect of <span class="ttnobr">output_root</span>, consider an example with and without the feature.  If <span
+class="ttnobr">$SPEC</span> is set to <span class="ttnobr">/cs403</span> and if <span class="ttnobr">ext=feb27a</span>, then
+normally the build directory for <span class="ttnobr">351.bwaves</span> with base tuning would be:</p>
+<div class="l1ex">/cs403/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001</div>  
+<p>But if the config files include (near the top, before any occurrence of a <a class="external"
+href="config.html#section_marker">section marker</a>):</p> 
+<pre class="l1ex">
+output_root=/home/${username}/spec
+ext=feb27a
+</pre>
+<p>then Alan's build directory for <span class="ttnobr">351.bwaves</span> will be </p>
+<div class="l1ex">/home/alan/spec/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001</div> 
+<p>and Wendy's will be </p>
+<div class="l1ex">/home/wendy/spec/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001</div>
+
+<p>With the above setting of <span class="ttnobr">output_root</span>, log files and reports that would normally go to <span
+class="ttnobr">/cs403/result</span> instead will go to <span class="ttnobr">/home/alan/spec/result</span> and <span
+class="ttnobr">/home/wendy/spec/result</span>.  Alan will find hmmer executables underneath <span
+class="ttnobr">/home/alan/spec/benchspec/OMP2012/351.bwaves/exe</span>.   And so forth.</p></li>
+
+
+</ol>
+
+<p class="l1">Summary: <span class="ttnobr">output_root</span> is the recommended way to separate users.  Set the protection
+on the original tree to read-only, except for the config directory, which should be set to allow users to write, and protect,
+their own config files.</p>
+
+<h3 id="section1.5.2">1.5.2 Alternative sharing methods</h3>
+
+<p class="l1">An alternative is to keep all the files in a single directory tree.  In this case:</p>
+
+<ul>
+
+<li class="l1"><p>The directory tree must be writable by each of the users, which means that they have to trust each other not to
+modify or delete each others' files.  </p></li>
+
+<li class="l1"><p>Directories such as <span class="tt">result</span>, <span class="ttnobr">nnn.benchmark/exe</span> and <span
+class="ttnobr">nnn.benchmark/run</span> are not segregated by user, so you can only have one version of (for example) 
+<span class="ttnobr">benchspec/OMP2012/363.swim/exe/swim_base.jan07a</span> </p></li>
+
+<li class="l1"><p>Note that user names do not appear in the directory names.  For example, if Lizy, Aashish, and Ajay are
+sharing a directory tree on a Windows system, and each of them runs the ref workload for <span
+class="ttnobr">350.md</span> with base tuning and a
+config file that sets <span class="ttnobr">ext=wwc9</span>, there will be three directories created:</p>
+
+<div class="l1ex">
+%SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0001<br />
+%SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0002<br />
+%SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0003</div>
+
+<p>To discover which <span class="ttnobr">350.md</span> run directories belong to Lizy: </p>
+<p class="l1ex">
+F:\&gt; <b>cd %SPEC%\benchspec\OMP2012\350.md\run</b><br /> 
+F:\omp2012\benchspec\OMP2012\350.md\run&gt; <b>findstr lizy list</b></p>
+
+<p>To discover which result files belong to Aashish: </p>
+<p class="l1ex">
+F:\omp2012&gt; <b>cd %SPEC%\result</b><br />
+F:\omp2012\result&gt; <b>findstr aashish *log</b></p>
+<p>(Of course, on Unix, that would be <span class="tt">grep</span> instead of <span class="tt">findstr</span>).</p></li>
+
+</ul>
+
+<p class="l1" style="text-indent:-3em; margin-left:5em"><b>Name convention:</b>  Users sharing a tree can adopt conventions
+to make their files more readily identifiable.  As mentioned above, you can set your <a href="#section1.2.2">config file
+name</a> to match your own name, and do the same for <a href="#section1.2.3">the extension</a>.</p>
+
+<p class="l1" style="text-indent:-3em; margin-left:5em"><b>Expid convention:</b> Another alternative is to tag directories with
+labels that help to identify them based on an "experiment ID", with the config file feature <span class="tt">expid</span>, as
+described in <a class="external" href="config.html#expid">config.html</a>.  
+</p> 
+
+<p class="l1" style="text-indent:-3em; margin-left:5em"><b>Spend the disk space:</b> A final alternative, of course,  is to
+not share.  You can simply give each user their own copy of the entire SPEC OMP2012 directory tree.  This may be the easiest
+way to ensure that there are no surprises (at the expense of extra disk space.)</p>
+     
+<hr />
+
+
+<h2 id="section2">2  Before Using runspec</h2> 
+
+<p>Before using <span class="tt">runspec</span>, you need to:</p>
+
+
+<h3 id="section2.1">2.1 Install OMP2012</h3>
+
+<p class="l1snugbot">The <span class="tt">runspec</span> tool uses perl version 5.12.3, which is installed as <span
+class="tt">specperl</span> when you install OMP2012.  If you haven't already installed the suite, then please see <a
+class="external" href="system-requirements.html">system-requirements.html</a> followed by:</p> 
+<ul style="margin-top:0em"> 
+<li class="l1snug"><a class="external" href="install-guide-unix.html">install-guide-unix.html</a> or </li> 
+<li class="l1snug"><a class="external" href="install-guide-windows.html">install-guide-windows.html</a></li> 
+</ul>
+
+<h3 id="section2.2">2.2 Find a config file  </h3>
+
+<p class="l1">You won't get far unless you have a config file, but fortunately you can get started by using a pre-existing config
+file. See <a href="#section1.2">About Config Files</a>, above.</p>
+
+<h3 id="section2.3">2.3 Undefine SPEC</h3>
+
+<p class="l1">If the environment variable <span class="tt">SPEC</span> is already defined (e.g. from a run of some other SPEC benchmark
+suite), it may be wise to undefine it first, e.g.  by logging out and logging in, or by using whatever commands your system
+uses for removing definitions (such as <span class="tt">unset</span>). </p>
+
+<p class="l1snugbot">To check whether the variable is already defined, type</p>
+<p class="l2snug"><span class="ttnobr">echo $SPEC</span> (Unix) or <br />
+  <span class="ttnobr">echo %SPEC%</span> (Windows)</p>
+<p class="l1snugtop">On Unix systems, the desired output is nothing at all; on
+Windows systems, the desired output is <span class="tt">%SPEC%</span>.</p>
+
+<p class="l1">Similarly, if your PATH includes tools from some other SPEC suite, it may be wise to remove them from your
+path.</p>
+
+<p class="commentary">Next, you need to
+set your path appropriately for your system type.  
+<br />See section 2.4 for <a href="#section2.4">Unix</a>
+or section 2.5 for <a href="#section2.5">Windows</a>.</p>
+
+
+<h3 id="section2.4">2.4 Setting the path: Unix (and Mac OSX)</h3>
+
+<p class="l1">If you are using a Unix system, change your current directory to the top-level SPEC directory and source 
+either <span class="tt">shrc</span> or <span class="tt">cshrc</span>:</p>
+
+<ul>
+
+<li class="l1">For example, if you are using a Bourne-compatible shell (such as ash, bash, ksh, zsh), you could type:
+<div class="l1ex">users$ <b>cd /bigdisk/myke/omp2012</b><br />
+omp2012$ <b>. ./shrc</b>&nbsp;&nbsp;&nbsp;&nbsp; &lt;-- <i>that's dot-space-dot-slash-shrc</i></div></li>
+
+<li class="l1"> If you are using a csh-compatible shell, you could type:
+<div class="l1ex"><span class="ttnobr">users% <b>cd /bigdisk/bob/omp2012</b><br />
+omp2012% <b>source cshrc</b></span></div>
+</li>
+</ul>
+
+<p class="l1"> <span class="alarm">Note</span> that it is, in general, a good idea to ensure that you understand what is in your path,
+and that you have only what you truly need.  If you have non-standard versions of commonly used utilities in your path, you
+may avoid unpleasant surprises by taking them out. </p> 
+
+<div style="margin:1em 4em;border:thin solid gray;padding:5px;">
+<p class="snug"><b>q. Do you have to be root?</b> Occasionally, users of Unix systems have asked whether it is necessary
+to elevate privileges, or to become <tt>'root'</tt>, prior to entering the above command.  SPEC recommends&nbsp;(*) that you
+do <span class="u">not</span> become <tt>root</tt>, because: (1)&nbsp;To the best of SPEC's knowledge, no component of SPEC
+CPU needs to modify system directories, nor does any component need to call privileged system interfaces.
+(2)&nbsp;Therefore, if you find that it appears that there is some reason why you need to be <tt>root</tt>, the cause is
+likely to be outside the SPEC toolset - for example, disk protections, or quota limits.  (3)&nbsp;<span class="u">For safe
+benchmarking</span>, it is better to avoid being <tt>root</tt>, for the same reason that it is a good idea to wear seat belts
+in a car: accidents happen, humans make mistakes.  For example, if you accidentally type:</p>
+<div style="margin-left:3em"><span class="ttnobr">kill 1</span></div> 
+<p class="snug">when you meant to say:</p>
+<div style="margin-left:3em"><span class="ttnobr">kill %1</span></div> 
+<p class="snugtop">then you will very grateful if you are <span class="u">not</span> privileged at that moment.
+</p>
+
+<p class="example">(*) This is only a recommendation, not a requirement nor a rule.  </p>
+</div>
+
+
+
+
+<h3 id="section2.5">2.5 Setting the path: Windows</h3>
+
+<p class="l1">If you are using a Microsoft Windows system, start a Command Prompt Window (previously known as an "MSDOS
+window").  Change to the directory where you have installed OMP2012, then edit <span class="ttnobr">shrc.bat</span>,
+following the instructions contained therein.  For example:</p>
+
+<p class="l1ex">
+C:\&gt; <b>f:</b> <br />
+F:\&gt; <b>cd diego\omp2012</b> <br />
+F:\diego\omp2012\&gt; <b>copy shrc.bat shrc.bat.orig</b> <br />
+F:\diego\omp2012\&gt; <b>notepad shrc.bat</b> </p>
+
+<p class="l1">and follow the instructions in <span class="ttnobr">shrc.bat</span> to make the appropriate edits for your
+compiler paths.</p>
+
+<p class="l1"> <cite><b>Caution</b>: you may find that the lines are not correctly formatted (the text appears to be all run
+together) when you edit this file.  If so, see the section <a class="external" href="install-guide-windows.html#text">"Using Text
+Files on Windows" in the Windows installation guide</a>.</cite></p> 
+
+<p class="l1snugbot"> You will have to uncomment one of two lines: </p>
+<pre>   rem set SHRC_COMPILER_PATH_SET=yes </pre> 
+<p class="l1snug">or</p>
+<pre>   rem set SHRC_PRECOMPILED=yes  </pre>
+<p class="l1snugtop">by removing "<span class="ttnobr">rem</span>" from the beginning of the desired line. </p>
+
+<p class="l1"> If you uncomment the first line, you will have to follow the instructions a few lines further on, to 
+set up the environment for your compiler.</p>
+
+<p class="l1"> If you uncomment the second line, you must have pre-compiled binaries for the benchmarks </p>
+
+<p class="l1"> <span class="alarm">Note</span> that it is, in general, a good idea to ensure that you understand what is in your path,
+and that you have only what you truly need.  If you have non-standard versions of commonly used utilities in your path, you
+may avoid unpleasant surprises by taking them out.  In order to help you understand your path, <tt>shrc.bat</tt> will print
+it after it is done.</p> 
+
+<p class="l1">When you are done, set the path using your edited <span class="ttnobr">shrc.bat</span>, for example:</p>
+<p class="l1ex"> F:\diego\omp2012&gt; <b>shrc</b></p>
+
+
+
+<h3 id="section2.6">2.6 Make sure that you have enough disk space.  </h3>
+
+<p class="l1">Presumably, you checked to be sure you had enough space when you read <a class="external"
+href="system-requirements.html">system-requirements.html</a>, but now might be a good time to double check that you still have
+enough.  Typically, you will want to have at least 2 GB free disk space at the start of a run.  Windows users can say "<span
+class="tt">dir</span>", and will find the free space at the bottom of the directory listing.  Unix users can say "<span
+class="ttnobr">df -k .</span>" to get a measure of freespace in KB.</p> 
+
+<p class="l1"> If you have done some runs, and you are wondering where your space has gone, see <a
+href="#section1.4.2">section 1.4.2</a>.</p>
+
+<hr />
+
+<h2 id="section3">3 Using runspec</h2> 
+
+<h3 id="section3.1">3.1 Simplest usage</h3> 
+
+<h4 id="section3.1.1">3.1.1 Reportable run</h4> 
+
+<p class="l1">It is easiest to use <span class="tt">runspec</span> when:</p>
+
+<ul>
+<li class="l1"><p>Some kind person has already compiled the benchmarks.</p></li>
+
+<li class="l1"><p>That kind person provides both the compiled images and their corresponding config file (see <a
+href="#section1.2">About Config Files</a> above).</p></li>
+
+<li class="l1"><p>The config file does not change the defaults in surprising or esoteric ways (see <a
+href="#section1.3">About Defaults</a> above).</p></li>
+</ul>
+
+<p class="l1">In this lucky circumstance, all that needs to be done is to name the config file, 
+select the benchmark suite name gross, decide how many threads you want to run, 
+and say <span class="ttnobr">--reportable</span> to attempt a full run. </p>
+
+<p class="l1">For example, suppose that Wilfried wants to give Ryan a config file and compiled binaries with some new 
+optimizations for a Unix system.  Wilfried might type something like this:</p>
+
+<pre>[/usr/wilfried]$ <b>cd $SPEC</b>
+[/bigdisk/omp2012]$ <b>spectar -cvf - be*/C*/*/exe/*newomp* config/newomp.cfg | specxz > newomp.tar.xz</b></pre>
+
+<p class="l1">and then Ryan might type something like this:</p>
+
+<pre>ryan% <b>cd /usr/ryan/omp2012</b>
+omp2012% <b>bash</b>
+bash-2.05$ <b>. ./shrc</b>
+bash-2.05$ <b>specxz -dc newomp.tar.xz | spectar -xf -</b>
+bash-2.05$ <b>runspec --config newomp.cfg --nobuild --threads 32 --reportable gross</b>
+</pre>
+
+<p class="l1">In the example above, the <span class="ttnobr">--nobuild</span> emphasizes that the tools should not attempt to
+build the binaries; instead, the prebuilt binaries should be used.  If there is some reason why the tools don't like that
+idea (for example: the config file does not match the binaries), they will complain and refuse to run, but with <span
+class="ttnobr">--nobuild</span> they won't go off and try to do a build.</p>
+
+<p class="l1">As a another example, suppose that Reinhold has given Kaivalya a Windows config file with changes from 
+12&nbsp;August, and Kaivalya wants to run the suite.  He might say something like this: </p>
+
+<pre>F:\kaivalya\omp2012\&gt; <b>shrc</b>
+F:\kaivalya\omp2012\&gt; <b>specxz -dc reinhold_aug12a.tar.xz | spectar -xf -</b>
+F:\kaivalya\omp2012\&gt; <b>runspec --config reinhold_aug12a --threads 64 --reportable gross</b>
+</pre>
+
+<h4 id="section3.1.2">3.1.2 Running selected benchmarks</h4> 
+
+<p class="l1">If you want to run a subset of the benchmarks, rather than running the whole suite, you can name them.  Since a
+reportable run uses an entire suite, you will need to turn off reportable:</p>
+
+<pre>[/usr/mat/omp2012]$ <b>runspec --config mat_dec25j.cfg --noreportable --threads 128 351.bwaves</b>
+</pre>
+
+
+ <h4 id="section3.1.3">3.1.3 Output files</h4> 
+
+<p class="l1">Look for the output of your <span class="tt">runspec</span> command in the directory <span
+class="ttnobr">$SPEC/result</span> (Unix) or <span class="ttnobr">%SPEC%\result</span> (Windows).  There, you will find log files
+and result files.  More information about log files can be found in <a class="external" href="config.html">config.html</a>.</p> 
+
+<p class="l1">The format of the result files depends on what was selected in your config file, but will typically include at
+least <span class="tt">.txt</span> for ASCII text, and will always include <span class="tt">.rsf</span>, for raw
+(unformatted) run data.  More information about result formats can be found below, under <a href="#out"
+class="ttnobr">--output_format</a>.  Note that you can always re-generate the output, using the <a href="#rawformat"
+class="ttnobr">--rawformat</a> option, also documented below.</p>
+
+<p class="commentary">
+This concludes the section on simplest usage.  <br /> If simple commands such as the above are not enough to meet your needs,
+you can find out about commonly used options by continuing to read the next 3 sections (<a href="#section3.2">3.2</a>, <a
+href="#section3.3">3.3</a>, and <a href="#section3.4">3.4</a>).
+</p>
+
+<h3 id="section3.2">3.2 Syntax</h3> 
+
+<p class="l1">The syntax for the <span class="tt">runspec</span> command is:</p>
+
+<pre>runspec [options] [list of benchmarks to run]
+</pre>
+
+<p class="l1">Options are described in the following sections.  There, you will notice that many options have both long
+and short names.  The long names are invoked using two dashes, and the short names use only a single dash.  For long names
+that take a parameter, you can optionally use an equals sign.  Long names can also be abbreviated, provided that you still
+enter enough letters for uniqueness.  For example, the following commands all do the same thing: </p>
+
+<pre><b>runspec --config=dianne_july25a --debug=99 gross 
+runspec --config dianne_july25a --debug 99 gross 
+runspec --conf dianne_july25a   --deb 99   gross 
+runspec -c dianne_july25a       -v 99      gross 
+</b></pre>
+
+<p class="l1" id="runlist">The list of benchmarks to run can be:</p>
+<ul class="l1">
+<li>one or more individual benchmarks</li>
+<li>an entire suite: <span class="ttnobr">gross</span> for the suite</li>
+<li><span class="ttnobr">all</span> to run the suite.</li>
+</ul>
+<p class="l1"><b>For a <a href="#reportable">reportable</a> run, you must specify <span class="ttnobr">gross</span>, 
+or <span class="ttnobr">all</span>.  </b></p>
+
+<h4 id="section3.2.1">3.2.1 Benchmark names in run lists</h4>
+
+<p class="l1">Individual benchmarks can be named, numbered, or both; and they can be abbreviated, as long as you enter enough
+characters for uniqueness.  For example, each of the following commands does the same thing:</p>
+
+<pre><b>runspec -c jason_july09d --noreportable 350.md 351.bwaves
+runspec -c jason_july09d --noreportable 350 351
+runspec -c jason_july09d --noreportable md bwaves
+runspec -c jason_july09d --noreportable md bw
+</b></pre>
+
+<p class="l1">It is also possible to exclude a benchmark, using a hat (<span class="tt"><b>^</b></span>, also known as carat,
+typically found as shift-6).  For example, suppose your system lacks a C++ compiler, and you therefore cannot run the 
+benchmark <span class="ttnobr">376.kdtree</span>.
+You could run all of the benchmarks except these by entering a command such as
+this one:</p>
+
+<pre><b>runspec --noreportable -c kathy_sep14c gross ^kdtree 
+</b></pre>
+
+<p class="l1">Note that if hat has significance to your shell, you may need to protect it from interpretation by the shell,
+for example by putting it in single quotes.  On Windows, you will need to use both a hat and double quotes for each
+benchmark you want to exclude, like this:</p>
+
+<pre>E:\omp2012&gt; <b>runspec --noreportable -c cathy_apr21b gross  "^kdtree"
+</b></pre>
+
+<h4 id="section3.2.2">3.2.2 <a name="runorder"></a>Run order for reportable runs </h4>
+
+<p class="l1">A <a href="#reportable">reportable</a> run runs all the benchmarks in a suite with the test and train <a
+href="#size">data sets</a> as an additional verification that the benchmark binaries get correct results.  The test and train
+workloads are not timed.  Then, the reference workloads are run three times, so that median run time can be determined for
+each benchmark.  For example, here are the runs for a reportable run of OMP2012:</p>
+
+<pre>
+$ <b>grep runspec: *036.log</b>
+runspec: runspec -c oss13 -T base --threads 12 --reportable gross
+$ <b>grep Running *036.log</b>
+Running Benchmarks
+  Running 350.md test base 13.0b default threads:128
+  Running 351.bwaves test base 13.0b default threads:128
+  Running 352.nab test base 13.0b default threads:128
+  Running 357.bt331 test base 13.0b default threads:128
+  Running 358.botsalgn test base 13.0b default threads:128
+  Running 359.botsspar test base 13.0b default threads:128
+  Running 360.ilbdc test base 13.0b default threads:128
+  Running 362.fma3d test base 13.0b default threads:128
+  Running 363.swim test base 13.0b default threads:128
+  Running 367.imagick test base 13.0b default threads:128
+  Running 370.mgrid331 test base 13.0b default threads:128
+  Running 371.applu331 test base 13.0b default threads:128
+  Running 372.smithwa test base 13.0b default threads:128
+  Running 376.kdtree test base 13.0b default threads:128
+Running Benchmarks
+  Running 350.md train base 13.0b default threads:128
+  Running 351.bwaves train base 13.0b default threads:128
+  Running 352.nab train base 13.0b default threads:128
+  Running 357.bt331 train base 13.0b default threads:128
+  Running 358.botsalgn train base 13.0b default threads:128
+  Running 359.botsspar train base 13.0b default threads:128
+  Running 360.ilbdc train base 13.0b default threads:128
+  Running 362.fma3d train base 13.0b default threads:128
+  Running 363.swim train base 13.0b default threads:128
+  Running 367.imagick train base 13.0b default threads:128
+  Running 370.mgrid331 train base 13.0b default threads:128
+  Running 371.applu331 train base 13.0b default threads:128
+  Running 372.smithwa train base 13.0b default threads:128
+  Running 376.kdtree train base 13.0b default threads:128
+Running Benchmarks
+  Running (#1) 350.md ref base 13.0b default threads:128
+  Running (#1) 351.bwaves ref base 13.0b default threads:128
+  Running (#1) 352.nab ref base 13.0b default threads:128
+  Running (#1) 357.bt331 ref base 13.0b default threads:128
+  Running (#1) 358.botsalgn ref base 13.0b default threads:128
+  Running (#1) 359.botsspar ref base 13.0b default threads:128
+  Running (#1) 360.ilbdc ref base 13.0b default threads:128
+  Running (#1) 362.fma3d ref base 13.0b default threads:128
+  Running (#1) 363.swim ref base 13.0b default threads:128
+  Running (#1) 367.imagick ref base 13.0b default threads:128
+  Running (#1) 370.mgrid331 ref base 13.0b default threads:128
+  Running (#1) 371.applu331 ref base 13.0b default threads:128
+  Running (#1) 372.smithwa ref base 13.0b default threads:128
+  Running (#1) 376.kdtree ref base 13.0b default threads:128
+  Running (#2) 350.md ref base 13.0b default threads:128
+  Running (#2) 351.bwaves ref base 13.0b default threads:128
+  Running (#2) 352.nab ref base 13.0b default threads:128
+  Running (#2) 357.bt331 ref base 13.0b default threads:128
+  Running (#2) 358.botsalgn ref base 13.0b default threads:128
+  Running (#2) 359.botsspar ref base 13.0b default threads:128
+  Running (#2) 360.ilbdc ref base 13.0b default threads:128
+  Running (#2) 362.fma3d ref base 13.0b default threads:128
+  Running (#2) 363.swim ref base 13.0b default threads:128
+  Running (#2) 367.imagick ref base 13.0b default threads:128
+  Running (#2) 370.mgrid331 ref base 13.0b default threads:128
+  Running (#2) 371.applu331 ref base 13.0b default threads:128
+  Running (#2) 372.smithwa ref base 13.0b default threads:128
+  Running (#2) 376.kdtree ref base 13.0b default threads:128
+  Running (#3) 350.md ref base 13.0b default threads:128
+  Running (#3) 351.bwaves ref base 13.0b default threads:128
+  Running (#3) 352.nab ref base 13.0b default threads:128
+  Running (#3) 357.bt331 ref base 13.0b default threads:128
+  Running (#3) 358.botsalgn ref base 13.0b default threads:128
+  Running (#3) 359.botsspar ref base 13.0b default threads:128
+  Running (#3) 360.ilbdc ref base 13.0b default threads:128
+  Running (#3) 362.fma3d ref base 13.0b default threads:128
+  Running (#3) 363.swim ref base 13.0b default threads:128
+  Running (#3) 367.imagick ref base 13.0b default threads:128
+  Running (#3) 370.mgrid331 ref base 13.0b default threads:128
+  Running (#3) 371.applu331 ref base 13.0b default threads:128
+  Running (#3) 372.smithwa ref base 13.0b default threads:128
+  Running (#3) 376.kdtree ref base 13.0b default threads:128
+</pre>
+
+<p class="l1">The above order can be summarized as:</p>
+<pre>test
+train 
+ref1, ref2, ref3</pre>
+
+<p class="l1">Sometimes, it can be useful to understand when directory setup occurs.  So, let's
+expand the list to include setup:</p>
+
+<pre>setup for test
+test 
+setup for train
+train 
+setup for ref
+ref1, ref2, ref3</pre>
+
+<h4 id="section3.2.3">3.2.3 Run order when more than one tuning is present</h4>
+
+<p class="l1">If you run both base and peak tuning, base is always run first.  If you do a reportable run with both base and
+peak, the order is: </p>
+
+<pre>setup for test
+base test, peak test
+setup for train
+base train, peak train
+setup for ref
+base ref1, base ref2, base ref3
+peak ref1, peak ref2, peak ref3</pre>
+
+<!--
+<h4 id="section3.2.4">3.2.4 Run <a name="runorderall"></a>order when more than one suite is present</h4>
+
+<p class="l1">If you use <span class="ttnobr">all</span> in your list of benchmarks to run, integer is run first, followed by
+floating point.  If you use <span class="ttnobr">all</span> in a reportable run, the order is:</p>
+
+<pre>
+setup for test
+int base test, fp base test, int peak test, fp peak test
+setup for train
+int base train, fp base train, int peak train, fp peak train
+setup for ref
+int base ref1, fp base ref1
+int base ref2, fp base ref2
+int base ref3, fp base ref3
+int peak ref1, fp peak ref1
+int peak ref2, fp peak ref2
+int peak ref3, fp peak ref3</pre>
+-->
+
+<h3 id="section3.3">3.3 Actions</h3> 
+
+<p class="l1">When <span class="tt">runspec</span> is used, it normally (*) takes some kind of action for the set of
+benchmarks specified at the end of the command line (or defaulted from the config file).  The default action is <span
+class="tt">validate</span>, which means that the benchmarks will be built if necessary, the run directories will be set up,
+the benchmarks will be run, and reports will be generated.</p>
+
+<p style="font-size:90%;margin-left:8em;">(*) Exception: if you use the <a href="#rawformat">--rawformat</a> switch, then
+<span class="ttnobr">--action</span> is ignored.</p>
+
+<p class="l1">If you want to cause a different action, then you can enter one of the following <span
+class="tt">runspec</span> options:</p>
+   
+<table class="l2" border="0">
+
+<tr><td>
+     <span class="ttnobr">--action build</span></td><td>Compile the benchmarks.  More information about compiling may be found in
+                       <a class="external" href="config.html">config.html</a>, including information about additional files that
+                       are output during a build.</td></tr> 
+<tr><td>
+     <span class="ttnobr">--action buildsetup</span></td><td>Set up build directories for the benchmarks,
+                       but do not attempt to compile them.
+                       </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action configpp</span></td><td> Preprocess the config file and dump it to stdout
+                        </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action onlyrun</span></td><td>Run the benchmarks but do not bother to verify that 
+                       they got the correct answers.  Reports are always marked "invalid", since the correctness checks are
+                       skipped.  Therefore, this option is rarely useful, but it can be selected if, for example, you are
+                       generating a performance trace and wish to avoid tracing some of the tools overhead.  
+                       </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action report</span></td><td> Synonym for <a class="ttnobr" href="#fakereport">--fakereport</a>;
+                       see also <a class="ttnobr" href="#fakereportable">--fakereportable</a>.</td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action run</span></td><td>Synonym for <span class="ttnobr">--action validate</span>.
+                       </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action runsetup</span></td><td>Synonym for <span class="ttnobr">--action setup</span></td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action setup</span></td><td>Set up the run directories.  Copy executables and data 
+                       to work directories.  </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action validate</span></td><td>Build (if needed), run, check for correct answers, and generate
+                          reports.  
+    </td></tr>
+
+</table>
+
+
+<p class="l1snugbot" id="cleaning">In addition, the following cleanup actions are available (in order by level of
+vigor):</p>
+
+<table style="border-width:0" class="l2">
+<tr><td>
+     <span class="ttnobr">--action clean</span></td><td>Empty all run and build directories for the specified benchmark set for the 
+                       current user.  For example, if the current OS username is set to <span class="tt">jeff</span> and this
+                       command is entered:
+
+                       <div class="l1exsnug">D:\omp2012\&gt; <b>runspec --action clean --config may12a gross</b></div>
+
+                       then the tools will remove run directories with username <span class="tt">jeff</span> for 
+                       benchmarks generated by config file <span class="ttnobr">may12a.cfg</span> (in <span
+                       class="ttnobr">nnn.benchmark\run</span> and <span class="ttnobr">nnn.benchmark\build</span>). 
+                       </td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action clobber</span></td><td>  Clean + remove all executables of the current type for the specified benchmark set.</td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action trash</span></td><td>     Same as clean, but do it for all users of this SPEC
+                        directory tree, and all types, regardless of what's in the config file.    </td></tr>
+
+<tr><td style="white-space:nowrap;">
+     <span class="ttnobr">--action realclean</span></td><td> A synonym for --action trash</td></tr>
+
+<tr><td>
+     <span class="ttnobr">--action scrub</span></td><td>    Remove everybody's run and build directories and all 
+                       executables for the specified benchmark set.</td></tr>
+</table>
+
+<p class="l1"><b>Alternative cleaning method:</b></p>
+
+<p class="l2">If you prefer, you can clean disk space by entering commands such as the following (on Unix systems):</p>
+
+<pre>
+      <b>rm -Rf $SPEC/benchspec/O*/*/build</b>
+      <b>rm -Rf $SPEC/benchspec/O*/*/run</b>
+      <b>rm -Rf $SPEC/benchspec/O*/*/exe</b>
+</pre>
+
+<p class="l2">Notes</p>
+<ol> 
+   <li class="l2"><p>The above commands not only empty the contents of the <tt>run</tt> and <tt>exe</tt> directories; they
+   also delete the directories themselves.  That's fine; the tools will re-create the <tt>run</tt> and <tt>exe</tt>
+   directories if they are needed again later on.</p></li>
+   <li class="l2"><p>The above commands do NOT clean the <tt>build</tt> directories (unless you've set <a class="external"
+   href="config.html#build_in_build_dir">build_in_build_dir=0</a>).  Often, it's useful to preserve the <tt>build</tt> directories
+   for debugging purposes, but if you'd like to get rid of them too, just add <span
+   class="ttnobr">$SPEC/benchspec/O*/*/build</span> to your list of directories.</p></li> 
+</ol>
+
+<p class="l1"><b>Windows users:</b></p>
+<p class="l2">Windows users can achieve a similar effect using Windows Explorer.  </p>
+
+<p class="l1"><b>I have so much disk space, I'll never use all of it:</b></p>
+<p class="l2">Run directories are automatically re-used for subsequent runs.  If you prefer, you can ask the tools to
+never touch a used run directory.  Do this by setting the environment variable:</p>
+<pre>     SPEC_OMP2012_NO_RUNDIR_DEL</pre> 
+<p class="l2">In this case, you should be prepared to do frequent cleaning, perhaps after reviewing the results of
+each run. </p>
+
+<h3 id="section3.4">3.4 Commonly used options</h3> 
+
+   <p>Most users of <span class="tt">runspec</span> will want to become familiar with the following options. </p>
+
+<h4 id="action">--action <i>action</i></h4> 
+<ul>
+<li>          Synonym:  <span class="ttnobr">-a <i>action</i></span></li>
+<li>          Default:  <span class="tt">validate</span></li>
+<li>          Meaning:  One of the following actions that runspec can do for you: &nbsp; 
+               <span class="tt">build</span>,  
+               <span class="tt">buildsetup</span>,  
+               <span class="tt">clean</span>,  
+               <span class="tt">clobber</span>,  
+               <span class="tt">configpp</span>,  
+               <span class="tt">onlyrun</span>,  
+               <span class="tt">realclean</span>, 
+               <span class="tt">report</span>, 
+               <span class="tt">run</span>,  
+               <span class="tt">runsetup</span>,  
+               <span class="tt">scrub</span>,  
+               <span class="tt">setup</span>,  
+               <span class="tt">trash</span>, or
+               <span class="tt">validate</span>.
+               For more information, see <a href="#section3.3" >Actions</a>, above</li>
+</ul>
+
+<h4 id="check_version">--check_version</h4> 
+<ul>
+<li>          Default:  check only when doing <span class="tt">reportable</span> runs</li>
+<li>          Meaning:  From time to time, SPEC may update the OMP2012 suite.  Typically, SPEC will not publish results at <a
+                        class="external" href="http://www.spec.org/omp2012/">www.spec.org/omp2012</a> unless they have been run
+                        using the most recent update.  Prior to investing substantial time running your tests, it is recommended
+                        that you check whether your version is up to date, either by saying <span class="ttnobr">runspec
+                        --check_version</span>, or by adding the switch to whatever else you were doing on your <span
+                        class="ttnobr">runspec</span> command.   Note that if you are running within a firewall, you may need to
+                        add a <a href="#http_proxy">proxy server</a> to the command line.  For example: 
+
+<pre>   runspec --check_version --http_proxy http://webcache.tom.spokewrenchdad.com:8080 
+</pre>
+                        or, equivalently, for those who prefer to abbreviate to the shortest possible amount of typing:
+
+<pre>   runspec --ch --http_p http://webcache.tom.spokewrenchdad.com:8080 
+</pre>
+
+                        The command downloads a small file (~15 bytes) from www.spec.org which contains information about the
+                        most recent release, and compares that to your release.  If your version is out of date, a warning
+                        will be printed.  
+                        </li>
+</ul>
+
+<h4 id="config">--config <i>name</i></h4> 
+<ul>
+<li>          Synonym:  <span class="ttnobr">-c <i>name</i></span></li>
+<li>          Default:  <span class="tt">default.cfg</span></li>
+<li>          Meaning:  Use config file <span class="ttnobr">$SPEC/config/<i>name</i>.cfg</span> (Unix) or 
+                        <span class="ttnobr">%SPEC%\config\<i>name</i>.cfg</span> (Windows).  If not specified, the
+                        tools will try <span class="ttnobr">default.cfg</span>   </li>
+</ul>
+
+<!--
+<h4 id="copies">--copies <i>number</i></h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-C <i>number</i></span></li>
+<li>          Default:  <span class="tt">1</span></li>
+<li>          <p class="snugtop">Meaning:  Use <span class="tt"><i>number</i></span> copies for a SPECrate run.  
+                        See also <a href="#rate">--rate</a>.</p>
+
+                        <p><span class="alarm">Note 1:</span> Specifying just <span class="ttnobr">--copies N</span> is not alone
+                        enough to cause the run to be in SPECrate mode.  You need to <b>also</b> specify the command line option
+                        <a href="#rate">--rate</a> or the config file option <a class="external" href="config.html#rate">rate</a>.
+                        </p> 
+
+                        <p><span class="alarm">Note 2:</span> specifying the number of copies on the command line will
+                        override a config file setting of <span class="tt">copies</span> for base; but it will not override
+                        any per-benchmark peak settings for <span class="tt">copies</span>.</p>
+                        
+                        </li>
+</ul>
+-->
+
+<h4 id="flagsurl">--flagsurl <i>URL[,URL...]</i></h4> 
+<ul>
+<li>          Synonym:  <span class="ttnobr">-F <i>URL</i></span></li>
+<li>          Default:  <span class="tt">none</span></li>
+<li>          <p class="snugtop">Meaning:  A "flags file" provides information about how to interpret and report on the flags 
+                        (e.g. <span class="ttnobr">-O5</span>, <span class="ttnobr">-fast</span>, etc.) that are used in a
+                        config file. 
+                        </p>
+
+                        <p>The <span class="ttnobr">--flagsurl</span> switch says that a flags file may be found at the specified
+                        URL (such as <span class="ttnobr">http://myflags.com/flags.xml</span>).  URL schemes supported are http,
+                        ftp, and file.  A URL without a scheme is assumed to be a file or path name.  If you need to specify an
+                        http proxy, you can do so in your <a class="external" href="config.html#http_proxy">config file</a>, by
+                        using the <a href="#http_proxy">--http_proxy</a> command line switch, or via the environment variable
+                        <span class="tt">http_proxy</span>.</p>  
+
+                        <p>This example formats a result with two flags files on Windows:</p>
+                        <pre>rawformat --flagsurl %SPEC%\config\flags\tmp1.xml,%SPEC%\config\flags\tmp2.xml OMPG2012.059.ref.rsf</pre>
+
+                        <p>The special value <span class="tt">noflags</span> may
+                        be used to cause <span class="tt">rawformat</span> to remove a stored flags file when 
+                        re-formatting a previously run result.</p>
+
+                        <p>Flags files are required by <a class="external" href="runrules.html#section4.2.5">run rule 4.2.5</a>.  If
+                        a run is marked "invalid" because some flags are "unknown", you may be able to resolve the invalid marking
+                        by finding, or creating, a flags file with proper descriptions and entering commands such as:</p> 
+<pre>
+cp OMPG2012.059.ref.rsf retry
+rawformat --flagsurl myfixedflags.xml --output_format pdf,raw retry
+</pre>
+                        <p class="snugtop">The first command preserves the original raw file, which is always recommended
+                        before doing any operations that create a new raw file.  The second command creates <span
+                        class="ttnobr">retry.rsf</span> and <span class="ttnobr">retry.pdf</span>, both of which will include
+                        descriptions of flags from <span class="ttnobr">myfixedflags.xml</span>.   If you are submitting
+                        a result to SPEC, the newly-generated rawfile is the one to submit.</p>
+                        
+                        <p>Note that saying 
+                        <span class="ttnobr">rawformat</span> is equivalent to saying <span class="ttnobr">runspec 
+                        --rawformat</span>, as described <a href="#rawformat">below</a>.</p>
+                        
+                        <p>On Windows systems, the first
+                        command above would use <span class="tt">copy</span> instead of <span class="tt">cp</span>.  Also, if 
+                        Windows refuses to accept the syntax with a comma in it, you might have to generate just the rawfile
+                        as a first step, then generate other format(s).</p>
+
+                        <p class="snugtop">You can find out more about how to write flag description files in <a
+                        class="external" href="flag-description.html">flag-description.html</a>.  You will find there a
+                        complete <a class="external" href="flag-description.html#rawformat">example of a flags file
+                        update</a> using <span class="ttnobr">rawformat --flagsurl</span>.</p> 
+
+                        <p>You can format a single result using multiple flags files.  This feature is intended to make it
+                        easier for multiple results to share what should be shared, while separating what should be
+                        separated.  Common elements (such as a certain version of a compiler) can be placed into one flags
+                        file, while the elements that differ from one system to another (such as platform notes) can be
+                        maintained separately.</p>
+<!--
+                        <p><span class="new">New with OMP2012 V1.2,</span> multiple flags files will typically be needed,
+                        because flags files are now separated into two types.  See the overview in <a class="external"
+                        href="changes-in-v1.2.html#flagsfiles">changes-in-v1.2.html</a>.</p>
+-->
+                        </li>
+
+
+</ul>
+
+<h4 id="help">--help</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-h</span> | <span class="ttnobr">-?</span></li>
+<li>          Default:  Help text is not displayed.</li>
+<li>          Meaning:  Print helpful text</li>
+</ul>
+
+
+<h4 id="I"><a name="ignore_errors"> </a>--ignore_errors</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-I</span> | <span class="ttnobr">--ignoreerror</span></li>
+<li>          Default:  Stop on first error.</li>
+<li>          Meaning:  Continue running even if errors occur.  </li>
+</ul>
+
+<h4 id="iter"><a name="iterations"> </a>--iterations <i>number</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-n <i>number</i></span></li>
+<li>          Default: <span class="tt">3</span></li>
+<li>          Meaning: How many times to run each benchmark.  For a reportable run, must be 3.  </li>
+</ul>
+
+<h4 id="loose"><a name="nostrict"> </a> <a name="noreportable"> </a>--loose</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-l</span> | 
+                        <span class="ttnobr">--nostrict</span> | 
+                        <span class="ttnobr">--noreportable</span></li>
+<li>          Default: <span class="tt">loose</span></li>
+<li>          Meaning: Unset <span class="tt">reportable</span>.   For example, suppose that you have 
+                       a golden config file that is used for reportable runs, which sets the config file option <span
+                       class="tt">reportable</span>.  However, you aren't ready to do a reportable run, because you first
+                       want to ensure that the system under test is adequately configured to run the benchmark <span
+                       class="ttnobr">351.bwaves</span>.  Since the config file sets the option <span
+                       class="tt">reportable</span>, the following command will result in an error message:
+
+<pre>
+[/usr/mwong/omp2012]$ <b>runspec --config golden --iterations 1 351.bwaves</b>
+</pre>
+
+                       as the SPEC tools will inform you that you cannot change the number of iterations on a reportable
+                       run.  But either of the following commands will override the config file and just run <span
+                       class="ttnobr">351.bwaves</span> once:
+
+<pre>[/usr/mwong/omp2012]$ <b>runspec --config golden --iterations 1 --loose 351.bwaves</b>
+[/usr/mwong/omp2012]$ <b>runspec --config golden --iterations 1 --noreportable 351.bwaves</b>
+</pre></li>
+</ul>
+
+<h4 id="out"> <a name="output_format"> </a> --output_format <i>format</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-o <i>format</i></span></li>
+<li>          Default: HTML and text</li>
+<li>          Meaning: Desired report format, one or more of the following.  If more than one option is used, separate them
+                       by commas.  The values are not case-sensitive.</li>
+</ul>
+
+<table class="l2">
+<tr><th><span class="tt">all</span>    </th>
+    <td>implies all of the following except screen, check, and mail</td>
+</tr>
+<tr><th>cfg|config|conffile<br />configfile|cfgfile </th>
+    <td>config file used for this run (e.g. <span class="tt">OMPG2012.030.ref.cfg</span>) 
+    </td> 
+</tr>
+<tr><th id="subcheck">check|chk|sub|<br />subcheck|subtest|test </th>
+    <td>Submission syntax check (automatically enabled for reportable runs).  Causes many fields to be checked for acceptable
+    formatting - e.g. hardware available <span class="ttnobr">"Nov-2012"</span>, not <span class="ttnobr">"11/12"</span>;
+    memory size <span class="ttnobr">"4 GB"</span>, not <span class="ttnobr">"4Gb"</span>; and so forth.  SPEC enforces
+    consistent syntax for results submitted to its website as an aid to readers of results, and to increase the likelihood
+    that queries find the intended results.  If you select <span class="ttnobr">--output_format subcheck</span> on your local
+    system, you can find out about most formatting problems before you submit your results to SPEC.  Even if you don't plan
+    to submit your results to SPEC, the Submission Check format can help you create reports that are more complete and
+    readable.  
+    </td>
+</tr>
+<tr><th>csv|spreadsheet </th>
+    <td><p class="snugtop">Comma-separated variable (e.g. <span class="tt">OMPG2012.030.ref.csv</span>).  If you populate
+    spreadsheets from your runs, you probably shouldn't be doing cut/paste of text files; you'll get more accurate data by
+    using <span class="ttnobr">--output_format csv</span>.  </p>
+    
+    <p class="snugbot">
+    CSV output includes much of the information in the other
+    reports.  All runs times are included, and the selected run times are listed separately. The flags used are also
+    included. </p> 
+    </td>
+</tr>
+<tr><th>default</th>
+    <td>implies HTML and text</td>
+</tr>
+<tr><th>flag|flags</th>
+    <td>Flag report (e.g. <span class="tt">OMPG2012.030.flags.ref.html</span>).  Will also be produced when 
+        formats that use it are requested (PDF, HTML).  
+        </td>
+</tr>
+<tr><th>html|xhtml|www|web</th>
+    <td>web page (e.g. <span class="tt">OMPG2012.030.ref.html</span>)</td>
+</tr>
+<tr><th>mail|mailto|email</th>
+    <td>All generated reports will be sent to an address specified in the config file.  
+    </td>
+</tr>
+<tr><th>pdf|adobe</th>
+    <td>Portable Document Format (e.g. <span class="tt">OMPG2012.030.pdf</span>).  This format is the design center for
+    SPEC OMP2012 reporting.  Other formats contain less information: text lacks graphs, postscript lacks hyperlinks, 
+    and HTML is less structured.  (It does not appear as part of "default" only because some systems may lack the ability 
+    to read PDF.)</td>
+</tr>
+<tr><th>postscript|ps|<br />printer|print  </th>
+    <td>PostScript (e.g. <span class="tt">OMPG2012.030.ref.ps</span>)</td>
+</tr>
+<tr><th>raw|rsf</th>
+    <td>raw results, e.g. <span class="tt">OMPG2012.030.ref.rsf</span>.  <b>Note:</b> you will automatically get an <span
+    class="ttnobr">rsf</span> file for commands that run a test or that update a result (such as <span
+    class="ttnobr">rawformat --flagsurl</span>).  
+    </td>
+</tr>
+<tr><th>screen|scr|disp|<br />display|terminal|term   </th>
+    <td>ASCII text output to stdout.  
+    </td>
+</tr>
+<tr><th>text|txt|ASCII|asc</th>
+    <td><a class="external" href="http://en.wikipedia.org/wiki/ASCII">ASCII</a> text, e.g. <span
+    class="tt">OMPG2012.030.ref.txt</span>.  
+    </td> 
+</tr>
+
+</table>
+
+
+
+<h4 id="power">--power --nopower</h4> 
+<ul>
+<li>          Synonym: none</li>
+<li>          Default: Do not change the use of power as selected elsewhere, default is no power measurement.</li>
+<li><p class="snugtop">
+              Meaning: Enable/disable the optional power measurement mode of the benchmark.  
+                       </p>
+
+</ul>
+
+<!--
+<h4 id="rate">--rate <i>[copies]</i></h4> 
+<ul>
+<li>          Synonym:  <span class="ttnobr">-r</span></li>
+<li>          Default: SPECspeed run (i.e. non-rate)</li>
+<li><p class="snugtop">
+              Meaning: Select SPECrate run instead of SPECspeed.  If a parameter is supplied, it specifies the number of copies to
+                       run.  (This is identical to specifying the number of copies to run via the <a href="#copies"
+                       class="ttnobr">--copies</a> command-line switch (which see for some important additional detail).  
+                       For example, the following commands both would do a 4-copy SPECint_rate2006 run:</p>
+
+<pre>/bigdisk/omp2012$ <b>runspec --config tony_may12a --rate 4 int</b>
+/bigdisk/omp2012$ <b>runspec --config tony_may12a --rate --copies 4 int</b>
+</pre>
+                   <p><span class="oldnews">(History: in SPEC CPU2000, you could specify that you wanted, say, 4 copies by
+                   entering <span style="white-space:nowrap">"--rate --users 4"</span>; for SPEC OMP2012 the syntax was
+                   simplified to just <span style="white-space:nowrap">"--rate 4"</span>.)</span></p>
+
+                   <p>If you have also entered <span class="ttnobr">--rawformat</span>, then the effect of <span
+                   class="ttnobr">--rate</span> is to format the rawfile for SPECrate metrics even if it was originally a
+                   SPECspeed run.  That is, it is valid to report a single copy run as both SPECspeed and SPECrate metrics. See
+                   the example in <a class="external" href="utility.html#changetype">utility.html</a>.</p> 
+                   </li>
+</ul>
+-->
+<h4 id="rawformat">--rawformat <i>rawfiles</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-R <i>rawfile</i>  </span></li>
+<li>          Default: Do not use rawformat mode.</li>
+<li><p class="snugtop">Meaning: Do not attempt to do a run; instead, take an existing result file and just generate the reports.
+                       Using this option will cause any specified <a href="#action">--action</a>s to be ignored, and instead
+                       the result formatter will be invoked.  This option is useful if (for example) you are just doing ASCII
+                       output during most of your runs, but now you would like to create additional reports for one or more
+                       especially interesting runs.  To create the html and postscript files for experiment number 324, you
+                       could say:</p>
+
+<pre><b>runspec --rawformat --output_format html,ps $SPEC/result/OMPG2012.324.ref.rsf</b>
+</pre>
+
+                   <p>You can achieve the same effect by invoking <span class="ttnobr">rawformat</span> directly:</p>
+
+<pre><b>rawformat --output_format html,ps $SPEC/result/OMPG2012.324.ref.rsf</b>
+</pre>
+
+                   <p>These two commands achieve the same effect because, in fact, saying <span class="ttnobr">runspec
+                   --rawformat</span> just causes <span class="ttnobr">runspec</span> to exit, invoking <span
+                   class="ttnobr">rawformat</span> in its stead, and passing it whatever was on the command line - in this
+                   case, the <span class="ttnobr">--output_format html,ps</span> string.</p>
+
+                   <p>Note that when runnng <span class="ttnobr">rawformat</span>, you will always get format "Submission Check",
+                   which encourages consistent formatting for various result fields when preparing final (submittable) reports. 
+                   In addition, you will get the formats that you mention on the command line, or, if none are mentioned there,
+                   then you will get the defaults documented under <a href="runspec.html#output_format">output_format</a>. 
+                   </p> 
+                   <p class="snugbot">For more information about rawformat, please see <a class="external"
+                   href="utility.html#rawformat">utility.html</a>.</p></li> 
+</ul>
+
+<h4 id="rebuild">--rebuild</h4> 
+<ul>
+<li>          Synonym:  <span class="ttnobr">-D</span></li>
+<li>          Default: Do not rebuild unless binary is missing or does not match the config file.</li>
+<li>          Meaning: Delete existing binaries and recompile.  Use this if, for example, you have installed a new 
+                       version of your compiler and want to force a rebuild of the benchmarks.</li>
+</ul>
+
+<h4 id="strict"><a name="reportable"> </a> <a name="noloose"> </a> --reportable</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-s</span> | 
+                        <span class="ttnobr">--strict</span> | 
+                        <span class="ttnobr">--noloose</span></li>
+<li>          Default:  <span class="tt">loose</span></li>
+<li>          Meaning:  Wherever it is practical to do so in an automated fashion, enforce the OMP2012 run rules, so as to
+                        produce a result which is suitable for public reporting and/or submission to SPEC.  This
+                        option forces various other options, such as <a href="#iterations">iterations</a> =3.  
+                        <b>Note</b> that when you do a reportable run, the <a href="#runlist">list of benchmarks to run</a> 
+                        must be an entire suite.  </li>
+</ul>
+
+<h4 id="threads">--threads <i>number</i></h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default:  <span class="tt">1</span></li>
+<li>          <p class="snugtop">Meaning:  Use <span class="tt"><i>number</i></span> to set the number of
+                        OMP_NUM_THREADS to use for the run. To use 32 threads for your run:</p>
+
+<pre>
+omp2012% runspec --config tony_may12a <b>--threads 32</b> gross
+</pre>
+
+                        </li>
+</ul>
+
+<h4 id="tune"><a name="tuning"> </a> --tune <i>tuning</i></h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--tuning <i>tuning</i></span> | 
+                        <span class="ttnobr">-T <i>tuning</i></span></li>
+<li>          Default: <span class="tt">base</span></li>
+<li>          Meaning: Selects tuning to use: <span class="tt">base</span>, <span class="tt">peak</span>, or <span
+                       class="tt">all</span>.  For a reportable run, must be either <span class="tt">base</span> or <span
+                       class="tt">all</span>.  Reportable runs do base first, then (optionally) peak.</li>
+</ul>
+
+
+
+<h3 id="section3.5">3.5 Less commonly used options</h3> 
+
+<h4 id="basepeak">--basepeak [<i>bench,bench,...</i>]</h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: Do not do basepeak when reformatting results.</li>
+
+<li>          Meaning: This switch only has meaning in <a href="#rawformat">--rawformat</a> mode, when reformatting previously-run 
+                       results.  When no arguments are specified, this switch will perform base to peak substitution for all
+                       benchmarks in the result file.  If arguments are given, they must be the name of benchmarks or
+                       benchmark suites, and the base results for only those benchmarks will be copied over the peak results
+                       for only those benchmarks.<br />
+                       <strong>Note:</strong> Use of this option will cause rawformat to output <i>only</i> a raw file.  This
+                       is to help ensure that there is always a raw file present to match any generated results.</li>
+</ul>
+
+<h4 id="nobuild">--nobuild  </h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-N</span></li>
+<li>          Default: normally, the tools will make their own decision of whether to rebuild, based on whether the binaries
+                       exist, or whether they match the expected MD5 sums.</li>
+<li><p class="snugtop">Meaning: Do not build binaries, even if they don't exist or MD5 sums don't match.  This feature can be 
+                       very handy if, for example, you have a long script with multiple invocations of runspec, and you would
+                       like to ensure that the build is only attempted once.  (Perhaps your thought process might be, "If it
+                       fails the first time, fine, just forget about it until I come in Monday and look things over.")  By
+                       adding <span class="ttnobr">--nobuild --ignore_errors</span> to all runs after the first one, no
+                       attempt will be made to build the failed benchmarks after the first attempt.  </p>
+                       
+                       <p>The <tt>--nobuild</tt> feature also comes in handy when testing whether proposed config file
+                       options would potentially force an <a class="external"
+                       href="config.html#about.auto.rebuilds">automatic rebuild</a>. </p> 
+
+                       <!-- <p><span class="oldnews">(History: --nobuild was added in SPEC OMP2012 V1.0.)</span> </p></li>-->
+</ul>
+
+<h4 id="comment">--comment <i>"comment text"</i></h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: Add no comment.</li>
+<li>          Meaning: Adds a comment to the log file and the stored configuration file.  
+                       <!--<span class="oldnews">(History: the --comment feature was added in SPEC OMP2012 V1.0.)</span>-->
+                       </li>
+
+</ul>
+
+<h4 id="define">--define <i>SYMBOL</i>[=<i>VALUE</i>]<br />
+                --define <i>SYMBOL</i>:<i>VALUE</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-S <i>SYMBOL</i>[=<i>VALUE</i>]</span><br />
+                       <span class="ttnobr">-S <i>SYMBOL</i>:<i>VALUE</i></span></li>
+<li>          Default: Do not define config file preprocessor macros.</li>
+<li>          <p>Meaning: Defines a preprocessor macro named <span class="tt">SYMBOL</span> (for use 
+                   in your config file) and optionally gives it the value <span class="tt">VALUE</span>.  
+                   If no value is specified, the macro is defined with no value.  <span class="tt">SYMBOL</span>
+                   may not contain equals signs ("=") or colons (":").  This option may 
+                   be used multiple times.  For example if a config file says:</p>
+
+<pre>
+%ifdef %{use_sparc_v9}
+        ext            = darryl.native64
+        mach           = native64
+        ARCH_SELECT    = -xtarget=native64 
+%else
+        ext            = darryl.native32
+        mach           = default
+        ARCH_SELECT    = -xtarget=native
+%endif
+default=base:
+OPTIMIZE     = -O ${ARCH_SELECT}
+</pre>
+
+<p>Then saying <span class="ttnobr">runspec --define use_sparc_v9=1</span> will cause base optimization to be <span
+class="ttnobr">-O -xtarget=native64</span>  
+</p>
+<!--
+<p><span class="oldnews">(History: the ability to define symbols for use in the config file was added in SPEC OMP2012 V1.0.)</span></p>
+-->
+                   </li>
+</ul>
+
+<h4 id="delay">--delay <i>secs</i></h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: Add no delay.</li>
+<li>          Meaning: Add a delay of the specified number of seconds before and after each benchmark (<span
+                       class="tt">specinvoke</span>) invocation.  The delay is not counted toward the benchmark runtime.
+                       This option is silently ignored during reportable runs.<!--  <span class="oldnews">(History: the --delay 
+                       feature was added in SPEC OMP2012 V1.0.</span>--></li>
+</ul>
+
+<h4 id="deletework">--deletework</h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-d</span></li>
+<li>          Default: Do not delete working directories.</li>
+<li>          Meaning: Delete run directories and re-populate.  Use this if you suspect that the run directories may have
+                       been corrupted, for example due to a system crash during setup of an earlier run.  You might also use
+                       this if you just wish to ensure clean run directories, but note that the tools will automatically
+                       provide what they deem to be a sufficient level of cleaning.</li>
+</ul>
+
+<h4 id="ext"><a name="extension"> </a>--extension <i>name</i>[,<i>name</i>...]</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--ext <i>name</i>[,<i>name</i>...]</span> | 
+                        <span class="ttnobr">-e <i>name</i>[,<i>name</i>...]</span></li>
+<li>          Default:  <span class="tt">none</span></li>
+<li>          Meaning:  Extensions to build or run.  Normally used only if the config file has been written to handle more 
+                        than one extension.  The config file author should tell you what extensions to enter under which
+                        circumstances.  Note that if you specify multiple extensions, multiple separate builds and runs
+                        will be performed.
+
+                        <br />Note: The extension used may only consist of alphanumeric characters, underscores, hyphens, and
+                        periods.
+
+                        <br /> Note to Windows users: Because of the command-line preprocessing performed by cmd.exe, this
+                        feature cannot be used on Windows.  <!-- <span class="oldnews">(History: the ability to run more than one
+                        extension in a single invocation of runspec  was added in SPEC OMP2012 V1.0.)</span> --></li>
+</ul>
+
+<h4 id="fake"> <a name="dryrun"> </a> <a name="dry-run"> </a> --fake</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--dryrun</span> | <span class="ttnobr">--dry-run</span>       </li>
+<li>          Default: Really do the actions requested.</li>
+<li>          Meaning: List, but do not execute, the commands needed to build or run the benchmarks.  
+              <ul><li>Use <span class="ttnobr">--fake --action build</span> to get a listing of the commands needed to build
+              a benchmark.</li>
+              <li>Use <span class="ttnobr">--fake --action run</span> to get a listing of the commands needed to run a
+              benchmark.  (If the benchmark executable does not exist, you will also get a listing of the needed build
+              commands.)</li></ul>  
+              <span class="tt">Runspec</span> uses <span class="ttnobr">specmake -n</span> and <span 
+              class="ttnobr">specinvoke -n</span> to generate these listings.  <!-- <span class="oldnews">(History: generation of
+              fake commands via runspec  was added in SPEC OMP2012 V1.0.)</span>--></li>
+
+</ul>
+
+<h4 id="fakereport"><a name="reportonly"> </a> --fakereport</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--action=report</span> | 
+                        <span class="ttnobr">--reportonly</span></li>
+<li>          Default: Not set</li>
+<li>          Meaning: Process the config file and generate output as if a run had been done.  The results will all be zero, 
+                       but otherwise the report will be correctly formatted, as if it had come from an actual run.  <b>Note</b>
+                       that if your config file or command line includes options that would cause a real run to be marked
+                       invalid (for example, setting <span class="ttnobr">iterations=1</span> or <span
+                       class="ttnobr">--size=test</span>), then the tools will also mark the fake report as invalid.  If your
+                       goal is to get a preview of what the final, golden run will look like, you might prefer <a
+                       href="#fakereportable" class="ttnobr">--fakereportable</a>.  <!--<span class="oldnews">(History:
+                       --fakereport  was added in SPEC OMP2012 V1.0.)</span>  --></li>
+</ul>
+
+<h4 id="fakereportable"><a name="mockup"> </a> --fakereportable</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--mockup</span></li> 
+<li>          Default: Not set</li>
+<li>          Meaning: Process the config file and generate output as if a "reportable" run had been done.  The results will 
+                       all be zero, but otherwise the report will be correctly formatted, as if it had come from a
+                       reportable run.
+                       <!-- <span class="oldnews">(History: -fakereportable  was added in SPEC OMP2012 V1.0.)</span> --> </li>
+</ul>
+
+<h4 id="feedback">--[no]feedback</h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default: <span class="ttnobr">--feedback</span></li>
+
+<li>          Meaning: Normally, when any of the <span class="ttnobr">PASSn_xFLAGS</span> are defined, the tools 
+                       do multiple-pass compilation with training runs between each pass.  Using <span
+                       class="ttnobr">--nofeedback</span> will cause the <span class="tt">PASSn</span> flags to be ignored
+                       and a single-pass compilation will occur.  Notice that explicitly specifying <span
+                       class="ttnobr">--feedback</span> without having appropriate <span class="ttnobr">PASSn</span> flags in
+                       the configuration file will have no effect.  Specifying <span class="ttnobr">--feedback</span> is
+                       therefore useful only as a means of overriding a previously specified <span
+                       class="ttnobr">--nofeedback</span>, or as a means of overriding a config file setting of <span
+                       class="ttnobr">feedback=0</span>.  Be careful: the flag only overrides a global setting for <span
+                       class="ttnobr">feedback=0</span>; it will not affect individual benchmarks that have this setting.
+                       <!-- <span class="oldnews">(History: control of the config file "feedback" variable from the runspec
+                       command line  was added in SPEC OMP2012 V1.0.)</span>--></li>
+</ul>
+
+<h4 id="graphauto"> <a name="graph_auto"> </a> --[no]graph_auto</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--[no]graphauto </span></li>
+<li>          Default: <span class="tt">--nograph_auto</span></li>
+<li>          Meaning: frees the tools to pick a value that they think appropriate for the top and bottom of the Y axis.  
+                       The maximum and minimum chosen will attempt to let the viewer observe differences among the
+                       benchmarks.  By default, the minimum will instead be anchored to zero.  
+                       </li>
+</ul>
+
+<h4 id="graphmax"> <a name="graph_max"> </a> --graph_max <i>N</i></h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--graphmax</span></li>
+<li>          Default: big enough (plus a little)</li>
+<li>          Meaning: Allows you to specify a new value for the maximum point on the graph scale.
+                        </li>
+</ul>
+
+<h4 id="graphmin"> <a name="graph_min"> </a> --graph_min <i>N</i></h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--graphmin <i>N</i></span></li>
+<li>          Default: <span class="tt">0</span></li>
+<li>          Meaning: Allows you to specify a new value for the minimum point on the graph scale.
+                        </li>
+</ul>
+
+<h4 id="http_proxy">--http_proxy <i>proxy[:port]</i></h4>
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default: none</li>
+<li>          <p class="snugtop">Meaning: In some cases, such as when doing <a class="external"
+                       href="config.html#check_version">version checks</a> and loading <a class="external"
+                       href="flag-description.html">flag description files</a>, <span class="tt">runspec</span> will attempt to
+                       fetch a file, using http.  If your web browser needs a proxy server in order to access the outside world,
+                       then runspec will probably want to use the same proxy server.  The proxy server can be set by:</p> 
+
+                          <ul>
+                          <li>The runspec <span class="ttnobr">--http_proxy</span> switch, or</li>
+                          <li>The environment variable <tt>http_proxy</tt>, or</li>
+                          <li>Using the <a class="external" href="config.html#http_proxy">config file http_proxy</a> option</li> 
+                          </ul>
+
+              <p>For example, a failure of this form:</p>
+
+<pre>
+$ runspec --rawformat --output_format txt \
+   --flagsurl http://portlandcyclers.net/evan.xml  OMPG2012.007.ref.rsf 
+...
+Retrieving flags file (http://portlandcyclers.net/evan.xml)...
+
+ERROR: Specified flags URL (http://portlandcyclers.net/evan.xml) could not be retrieved.
+       The error returned was: 500 Can't connect to portlandcyclers.net:80 
+       (Bad hostname 'portlandcyclers.net')
+</pre>
+<p>improves when a proxy is provided: </p>
+<pre>
+$ runspec --rawformat --output_format txt \
+   --flagsurl http://portlandcyclers.net/evan.xml  \
+   --http_proxy=http://webcache.tom.spokewrenchdad.com:8080 OMPG2012.007.ref.rsf 
+</pre>
+
+
+              <p class="snugtop">Note that this setting will override the value of the <span class="tt">http_proxy</span>
+              environment variable, as well as any setting in the <a class="external" href="config.html#http_proxy">config
+              file</a>.</p> 
+
+              <p>By default, no proxy is used.  The special value <span class="tt">none</span> may be used to unset any
+              proxies set in the environment or via config file.  <!--<span class="oldnews">(History: support for proxies  was
+              added in SPEC OMP2012 V1.0.)</span></p>--></li>
+</ul>
+
+<h4 id="http_timeout">--http_timeout <i>N</i></h4>
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default: 30 seconds</li>
+<li>          Meaning: This is the amount of time (in seconds) to wait while attempting to fetch a file via HTTP.  If the
+                       connection cannot be established in this amount of time, the attempt will be aborted. <!-- <span
+                       class="oldnews">(History: support for http timeouts  was added in SPEC OMP2012 V1.0.)</span>--></li>
+</ul>
+
+<h4 id="infowrap"> <a name="info_wrap_columns"> </a> --info_wrap_columns <i>N</i></h4>
+<ul>
+<li>          Synonym: <span class="ttnobr">--infowrap <i>N</i></span></li>
+<li>          Default: <span class="tt">50</span></li>
+<li>          Meaning: When set to a value greater than 0, attempts to split non-notes informational lines such that they are 
+                       no longer than <i>N</i> columns wide.  Lines are split on whitespace, and newly created lines are
+                       guaranteed to have at least the same indentation as the original line.<br /> 
+                       
+                       If a line contains an item that is longer than <i>N</i>, a warning is logged and the original line is
+                       left unchanged.  
+                       <!--<span class="oldnews">(History: automatic wrapping, and the ability to control it,  was added in SPEC
+                       OMP2012 V1.0.)</span>--></li>
+</ul>
+
+<h4 id="keeptmp">--[no]keeptmp</h4>
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: <span class="tt">--nokeeptmp</span></li>
+<li>          Meaning: When set, temporary files such as compiler option output and temporary log files will not be removed.  For
+                       a list of temporary file locations, see the discussion in <a class="external"
+                       href="config.html#keeptmp">config.html</a>.  <!-- <span class="oldnews">(History: preservation of temporary
+                       files is a feature that was added in SPEC OMP2012 V1.1.))</span>--></li>
+</ul>
+
+<h4 id="log_timestamp">--[no]log_timestamp</h4>
+<ul>
+<li>          Synonym: <span class="tt">--[no]log-timestamp</span></li>
+<li>          Default: <span class="tt">--nolog_timestamp</span></li>
+<li>          Meaning: When set, lines output to the log file will have a time stamp prepended.  The timestamp is
+                       always present in the debug log.
+                       <!--<span class="oldnews">(History: log timestamping  was added in SPEC OMP2012 V1.0.)</span>--></li>
+</ul>
+
+<h4 id="machine"> <a name="mach"> </a> --machine <i>name</i>[,<i>name</i>...]</h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">--mach <i>name</i>[,<i>name</i>...]</span> |
+                       <span class="ttnobr">-m <i>name</i>[,<i>name</i>...]</span></li>
+<li>          Default: none</li>
+<li><p class="snugtop">Meaning: The machines to build for or to run.  Normally used only if the config file has been written to
+                          handle more than one machine type.  The config file author should tell you what machines are
+                          supported by the config file.  </p>
+
+                          <p>The machine name may only consist of alphanumerics, underscores, hyphens, and periods.</p>
+                          
+                          <p>If you specify multiple machine types, multiple runs will be performed, on most systems.  On
+                          Microsoft Windows systems, because of the command-line preprocessing performed by <tt>cmd.exe</tt>,
+                          it is not possible to run more than one machine type. </p>
+
+                          <p><strong><span class="alarm">Warning:</span></strong> The "machine" feature is relatively rarely used,
+                          and is only lightly documented.  The key limitation is that benchmark binary names contain only the
+                          extension.  Therefore, it is quite possible, even easy, to cause binaries built in one run to be
+                          overwritten by subsequent runs.  A workaround for this limitation is described in the description of
+                          "section specifiers", in <a class="external" href="config.html#machineVSext">config.html</a>.</p> 
+
+                          <!-- <p><span class="oldnews">(History: the ability to run more than one machine type in a single
+                          invocation of runspe  was added in SPEC OMP2012 V1.0.)</span></p>--></li>
+</ul>
+
+<h4 id="noclobber"> <a name="make_no_clobber"> </a> --make_no_clobber</h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-M</span> </li>
+<li>          Default: clobber</li>
+<li><p class="snugtop">Meaning: Do not delete existing object files before attempting to build.  This option should only be used for
+                       troubleshooting a problematic compile.  It is against the run rules to use it when building binaries
+                       for an actual submission.</p>
+
+                       <p>For a better way of troubleshooting a problematic compile, see the information about <span
+                       class="tt">specmake</span> in <a class="external" href="utility.html#specmake">utility.html</a></p></li> 
+</ul>
+
+<h4 id="makebundle"> <a name="make_bundle"> </a> --make_bundle <i>name</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">--make-bundle <i>name</i></span> </li>
+<li>          Default: none</li>
+<li><p class="snugtop">Meaning: Package up the currently selected set of binaries, config files and other support files into 
+                                a bundle that can be used to re-create the current run on a different system or installation.</p> 
+
+                                <p>When <tt>--make_bundle</tt> is present on the command line, <span class="u"><b>most other
+                                switches have no immediate effect.</b></span>  The tools do not actually do the run at bundle
+                                creation time.  Instead, a control file is written to the bundle to allow the run to occur on
+                                the destination system.  The <tt>runspec</tt> command on the destination system will include
+                                all of your options other than those related to bundling.</p>
+
+                                <div style="background:#ececec;margin-left:3em;">
+                                <p class="snugbot"><b>Optional: additional files or directories may be specified on the command line
+                                for inclusion in the bundle.</b></p>
+
+                                <p class="l1">Any such additional files must be underneath the <tt>$SPEC/</tt> directory (or
+                                <tt>%SPEC%\</tt> on Windows), but may not reside under any of the top-level subdirectories that
+                                ship with the suite (such as <tt>benchspec</tt>, <tt>bin</tt>, <tt>config</tt>, or
+                                <tt>result</tt>).  Create a new subdirectory, such as <span class="ttnobr">%SPEC%\extras\</span>
+                                (on Windows) or <span class="ttnobr">$SPEC/extras/</span> (Unix).  If your compiler license allows
+                                redistribution of run time libraries, you could place copies of them in that subdirectory, and use
+                                <a class="external" href="config.html#preenv">preenv</a> variables to point <span
+                                class="ttnobr">$LD_LIBRARY_PATH</span> at them.</p> 
+
+                                <p class="l1snugbot">In the following example, we begin by building a binary, check its
+                                runtime requirements, and populate a directory with the needed run time libraries:</p>
+
+<pre>$ <b>cat config/jul21a.cfg</b>
+ext      = jul21a
+
+gross=default:
+CXX      = g++
+OPTIMIZE = -O
+
+$ <b>runspec --config jul21a --action build 376.kdtree</b>
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12933 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+Benchmarks selected: 376.kdtree
+Compiling Binaries
+  Building 376.kdtree base jul21a default: (build_base_jul21a.0000)
+
+Build successes: 376.kdtree(base)
+
+Build Complete
+
+The log for this run is in /export/bmk/omp2012/result/OMP2012.002.log
+
+runspec finished at Fri Aug  3 07:03:31 2012; 2 total seconds elapsed
+$ <b>go kdtree exe</b>
+/export/bmk/omp2012/benchspec/OMP2012/376.kdtree/exe
+$ <b>ldd kdtree_base.jul21a</b>
+        linux-vdso.so.1 =>  (0x00007fff3dfff000)
+        libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x00000032c3600000)
+        libm.so.6 => /lib64/libm.so.6 (0x00000032bce00000)
+        libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00000032c1a00000)
+        libc.so.6 => /lib64/libc.so.6 (0x00000032bc200000)
+        /lib64/ld-linux-x86-64.so.2 (0x00000032bba00000)
+$ <b>mkdir $SPEC/extras</b>
+$ <b>cp /usr/lib64/libstdc++.so.6 $SPEC/extras</b>
+$ <b>cp /lib64/libm.so.6 $SPEC/extras</b>
+$ <b>cp /lib64/libgcc_s.so.1 $SPEC/extras</b>
+$ <b>cp /lib64/libc.so.6 $SPEC/extras</b>
+</pre>
+
+<p class="l1">Next, add the needed <a class="external" href="config.html#preenv">preENV</a> line for the run time library to the
+config file. Then, bundle it all up:</p> 
+<pre>$ <b>go config</b>
+/export/bmk/omp2012/config
+$ <b>cat &gt; tmp</b>
+preENV_LD_LIBRARY_PATH = $[top]/extras/:\$LD_LIBRARY_PATH
+$ <b>cat jul21a.cfg &gt;&gt; tmp</b>
+$ <b>mv tmp jul21a.cfg</b>
+$ <b>runspec --config jul21a --size test --iterations 1 \
+  376.kdtree --make_bundle mumble $SPEC/extras</b>
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+...
+
+Bundling finished.  The completed bundle is in
+  /export/bmk/omp2012/mumble.omp2012bundle.xz
+...
+</pre>
+
+                                <p class="l1snug">The above command causes the entire contents of <span
+                                class="ttnobr">$SPEC/extras/</span> to be added to the bundle, along with the binary for
+                                <span class="ttnobr">376.kdtree</span> and the config file <span
+                                class="ttnobr">jul21a.cfg</span>.  </p>
+</div>                                
+
+                                <p><b>Bundle verification</b>: If you would like to verify the contents of a bundle, you can
+                                do so with "<span class="ttnobr">specxz -dc</span>" and "<span class="ttnobr">spectar -tf
+                                -</span>", like so:</p>
+
+<pre>$ <b>specxz -dc mumble.omp2012bundle.xz | spectar -tf -</b>
+config/mumble.control
+extras/libc.so.6
+extras/libgcc_s.so.1
+extras/libm.so.6
+extras/libstdc++.so.6
+config/jul21a.cfg
+Docs/sysinfo
+benchspec/OMP2012/376.kdtree/exe/kdtree_base.jul21a
+config/MD5.mumble.control.e5812e5b206da9452725199e2fef2aeb
+extras/MD5.libc.so.6.c43a8aff6ee73a8f8acdeacc7f6f1899
+extras/MD5.libgcc_s.so.1.c59480aceba993edd294bad450871c45
+extras/MD5.libm.so.6.ff2d14050df858e3fa07108f788f65f2
+extras/MD5.libstdc++.so.6.fae4b9a7dee7fad91190f572efe3105f
+config/MD5.jul21a.cfg.f135740df120c1e1ed2c9455c7d3f279
+Docs/MD5.sysinfo.8f8c0fe9e19c658963a1e67685e50647
+benchspec/OMP2012/376.kdtree/exe/MD5.kdtree_base.jul21a.47f2d01ab30efedda33f32d56cc6fa05
+$
+</pre>
+
+                                <p>Don't worry about the odd looking extra files in the bundle; these are md5 checksums,
+                                which are used to help ensure bundle integrity.</p>
+
+                                <p><b>Using a bundle:</b> See the descriptions of <a href="#usebundle">--use_bundle</a> or <a
+                                href="#unpackbundle">--unpack_bundle</a> for information on what to do with a bundle when
+                                you've got one.</p>
+
+                                <p><strong>Note:</strong> <span class="ttnobr">--make_bundle</span> can't bundle files up that
+                                aren't underneath the top-level <tt>$SPEC</tt> directory.  If you use the <a
+                                href="runspec.html#output_root">output_root</a> config file option with <span
+                                class="ttnobr">--make_bundle</span>, please make sure that it points to somewhere under
+                                <tt>$SPEC</tt>.</p> 
+                                 <p style="font-size:115%;padding:.3em;border:thin solid red;margin:.3em 4em;"
+                                 class="alarm">WARNING: Although the features to create and use bundles are intended to make
+                                 it easier to run SPEC OMP2012, the <span class="u">tester</span> remains responsible for
+                                 compliance with the run rules.  And, of course, both the creators and the users of bundles
+                                 are responsible for compliance with any applicable software licenses. </p>
+                                
+                                </li>
+</ul>
+
+<!--
+<h4 id="maxcomp"> <a name="max_active_compares"> </a> --maxcompares <i>N</i>   </h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">--max_active_compares <i>N</i></span></li>
+<li>          Default: the same as number specified for <span class="ttnobr">--copies</span></li>
+<li>          Meaning: Set the number of concurrent compares to N.  This option is useful if you have multiple CPUs 
+                       and are doing a SPECrate run.  Do not exceed the value that was specified for 
+                       <span class="ttnobr">--copies</span>.</li>
+</ul>
+-->
+
+<h4 id="noteswrap"> <a name="notes_wrap_columns"> </a> --notes_wrap_columns <i>N</i></h4>
+<ul>
+<li>          Synonym: <span class="ttnobr">--noteswrap</span></li>
+<li>          Default: 0 (disabled)</li>
+<li>          Meaning: When set to a value greater than 0, attempts to split notes lines such that they are no longer than
+                       <i>N</i> columns wide.  Lines are split on whitespace, and newly created lines are guaranteed to have
+                       at least the same indentation as the original line.
+
+                       <br/> If a line contains an item that is longer than <i>N</i>, a warning is logged and the original
+                       line is left unchanged.
+                       </li>
+</ul>
+
+<!--
+<h4 id="parallel_setup">--parallel_setup <i>processes</i> </h4> 
+<ul>
+<li>          Synonyms: --parallel-setup <i>processes</i> </li>
+<li>          Default:  1 </li>
+<li><p class="snugtop"> Meaning:  The number of run directories to setup in parallel.  Parallelism is only applied 
+                        per-benchmark; the maximum number of setups that will be done in parallel is equal to the number of
+                        copies being run.  This has no effect for SPECspeed runs or 1-copy SPECrate runs.  A setting of "1" 
+                        (the default) effectively disables this feature.</p>
+                        
+                        <p id="parallel.setup.notes">Notes: </p>
+                        
+                        <ol>
+
+                        <li><p>The parallel setup / test features control parallelism during the <i>preparation</i> phase for
+                        running the benchmarks, not the actual runs.  Therefore, they have no effect on the setting of the report
+                        field "Auto&nbsp;Parallel:&nbsp;Yes/No", discussed in <a class="external"
+                        href="config.html#parallelreporting">config.html</a>. </p> </li> 
+
+                        <li><p>Prior to experimenting with the command line features for parallel setup/test, you might find it
+                        easier to try out the <a class="external" href="config.html#parallel_setup">corresponding config file
+                        features</a>, at least while you are debugging your methods and ensuring that you <a class="external"
+                        href="config.html#sidebar.quoting">have your quote levels correct</a>.  Once you have a config file that
+                        works, then you can experiment with command line overrides.</p></li> 
+
+                        <li><p><span style="color:red">The parallel setup / test features can not be used on
+                        Windows.</span></p></li>
+                        <li><p><span class="oldnews">(History: The parallel setup / test features were added in SPEC OMP2012
+                        V1.1.)</span></p></li>
+                        </ol>
+              </li>
+</ul>
+
+<h4 id="parallel_setup_prefork">--parallel_setup_prefork <i>cmd</i> </h4> 
+<ul>
+<li>          Synonyms: --parallel-setup-prefork <i>cmd</i> </li>
+<li>          Default:  none </li>
+<li>          Meaning:  If <a href="#parallel_setup_type">parallel_setup_type=fork,</a> the command used to bind a particular run
+                        directory setup process to a particular processor.  When fork() is used, no separate <tt>runspec</tt>
+                        program invocation happens -- so, the binding command must be able to bind a pre-existing process to a
+                        processor.  The current process I.D. is available in the <span class="tt">$$</span> variable.  The
+                        <tt>$SPECCOPYNUM</tt> and <tt><a class="external" href="config.html#bind">$BIND</a></tt> variables are
+                        also available for substitution.  Note that this command is actually executed <strong>after</strong> the
+                        call to fork() and before the process begins its work.  <br /> See the <a
+                        href="#parallel.setup.notes">notes</a> above. </li> 
+</ul>
+
+<h4 id="parallel_setup_type">--parallel_setup_type <i>&lt;<tt>fork</tt>|<tt>submit</tt>|<tt>none</tt>&gt;</i> </h4> 
+<ul>
+<li>          Synonyms: --parallel-setup-type <i>&lt;<tt>fork</tt>|<tt>submit</tt>|<tt>none</tt>&gt;</i> </li>
+<li>          Default:  fork </li>
+<li>          Meaning: The method to use to spawn and bind setup jobs when doing parallel setups.
+                       The possible values are:
+                       <ul>
+                        <li><tt>none</tt>: Do no parallel setup, regardless of the setting for
+                            <a href="#parallel_setup">parallel_setup</a></li>
+                        <li><tt>fork</tt>: Use fork() to create setup processes, and uses the command in
+                            <a href="#parallel_setup_prefork">parallel_setup_prefork</a> (if any) to bind them to processors.  This
+                            option has lower overhead, as no new runspec invocations happen, but it is also less flexible
+                            in terms of how the jobs are distributed.</li>
+                        <li><tt>submit</tt>: Start a separate runspec invocation to do each setup, using the contents of the <a
+                            class="external" href="config.html#submit">submit</a> and <a class="external"
+                            href="config.html#bind">bind</a> variables as appropriate to distribute the jobs.</li> 
+                       </ul>
+                       See the <a href="#parallel.setup.notes">notes</a> above.
+              </li>
+</ul>
+
+<h4 id="parallel_test">--parallel_test <i>processes</i> </h4> 
+<ul>
+<li>          Synonyms: --parallel-test <i>processes</i> </li>
+<li>          Default:  1 (or number of copies for SPECrate runs)</li>
+<li>          Meaning:  For reportable runs, the number of mandatory test and train workloads to run in parallel.  This is on by
+                        default for reportable SPECrate runs; it can be disabled by setting it to 1.  It is off by default for
+                        SPECspeed runs, but can be turned on by setting it to something higher than 1.  Your <a class="external"
+                        href="config.html#submit">submit</a> and <a class="external" href="config.html#bind">bind</a> settings are
+                        not used for this (non-timed) work, unless you set the config file feature <a class="external"
+                        href="config.html#parallel_test_submit">parallel_test_submit</a> <br/> See the <a
+                        href="#parallel.setup.notes">notes</a> above.</li> 
+</ul>
+-->
+
+<h4 id="preenv">--preenv, --nopreenv</h4>
+<ul>
+<li>          Synonym: none</li>
+<li>          Default: True (<span class="ttnobr"><a class="external" href="config.html#preenv">preENV_</a></span> lines are
+used)</li> 
+<li>          Meaning: When set, causes <span class="ttnobr"><a class="external" href="config.html#preenv">preENV_</a></span>
+                       lines in the config file to be used.  Use of --nopreenv will disable this behavior. <!-- <span
+                       class="oldnews">(History: runspec-controlled environment setting was added in SPEC OMP2012
+                       v1.1.)</span>  <span class="new">For SPEC OMP2012 V1.2, the <a href="changes-in-v1.2.html#preenv"
+                       class="external">logging has been improved for this feature</a>.</span>--></li> 
+</ul>
+
+<h4 id="review">--review, --noreview</h4> 
+<ul>
+<li>          Synonym: none</li>
+<li>          Default: --noreview</li>
+<li>          Meaning: Format results for review, meaning that additional detail will be printed that normally would not be
+                       present.  In lists of Portability Flags, benchmarks that do not use any flags are nevertheless listed,
+                       along with the notation "No flags used".  Flags marked to be hidden (typically, <a class="external"
+                       href="flag-description.html#splitters">splitters</a>) will be displayed anyway, along with a notation that
+                       they are usually hidden.  <!-- <span class="oldnews">(History: formatting for review, and flag reporting,
+                       are features that were added in SPEC OMP2012 V1.0.)</span>--></li> 
+</ul>
+
+<h4 id="setpg"> <a name="setprocgroup"> </a> --setprocgroup, --nosetprocgroup </h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default:  <span class="ttnobr">--setprocgroup</span></li>
+<li>          Meaning:  Attempt to create all processes in a single group.  Improves the chances that <span
+                        class="ttnobr">^C</span> will get the whole run, not just one of the children.</li>
+</ul>
+
+
+<h4 id="size"> <a name="input"> </a> --size <i>size</i>[,<i>size</i>...]</h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">-i <i>size</i></span> | 
+                        <span class="ttnobr">--input <i>size</i></span> </li>
+<li>          Default: <span class="tt">ref</span></li>
+<li>          Meaning: Selects size of input data to run: <span class="tt">test</span>, <span class="tt">train</span>, or
+                       <span class="tt">ref</span>.  For example, you might choose to run <span class="tt">test</span> while
+                       debugging a new set of compilation options.  Reportable runs ensure that your binaries can produce
+                       correct results with the test and train workloads 
+                       and then run the ref workload 3 times for the actual
+                       measurements.  </li>
+</ul>
+
+<!--
+<h4 id="speed"> <a name="speedformat"> </a> --speed</h4>
+<ul>
+<li>          Synonyms: None</li>
+<li>          Default: No</li>
+<li><p class="snugtop">Meaning: Do a SPECspeed run, even if the config file calls for a SPECrate run.  The config file settings
+                       for <a class="external" href="config.html#rate">rate</a> and <a class="external"
+                       href="config.html#copies">copies</a> will be silently ignored.  (SPECspeed runs always, by definition, use
+                       only a single copy.)  </p> 
+
+                       <p><span class="new">Support for --speed with runspec is new in V1.2; formerly, it affected only
+                       rawformat:</span>  The change is intended to make the switch more consistent with other switches, because,
+                       in general, the <a  href="runspec.html#precedence-runspec-vs-config" >command line takes precedence</a>
+                       over the config file.  </p> 
+
+                       <p>When formatting results with <a href="#rawformat">--rawformat</a>, causes the rawfile to be formatted
+                       with SPECspeed metrics, even if it was from a 1-copy SPECrate run.  That is, it is valid to report a single
+                       copy run with both SPECspeed and SPECrate metrics.  Attempting to format a multi-copy SPECrate run as a
+                       SPECspeed result is an error.  See the example in <a class="external"
+                       href="utility.html#changetype">utility.html</a>.  <span class="oldnews">(History: the ability to
+                       format a 1-copy SPECrate result as a SPECspeed result was added in SPEC OMP2012 V1.1.)</span></p>   
+                       </li>
+</ul>
+-->
+
+<h4 id="test">--test   </h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default:  do not run test</li>
+<li>          Meaning:  Run various perl validation tests on <tt>specperl</tt></li>
+</ul>
+
+<h4 id="table"> <a name="notable"> </a> --table, --notable   </h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default:  <span class="ttnobr">--table</span></li>
+<li>          Meaning:  For ASCII reports, include a detailed table of all runs.</li>
+</ul>
+
+
+<h4 id="train_with">--train_with <i>WORKLOAD</i>   </h4> 
+<ul>
+<li>          Synonyms: none</li>
+<li>          Default:  <span class="ttnobr">train</span></li>
+<li>          Meaning:  Select the workload to use for training binaries built using feedback-directed optimization. Note that the
+                        training workload used is considered one of the build options, so this option (with identical argument)
+                        must be used each time the binaries themselves are used in order to prevent an automatic re-build.  It's
+                        probably best to just set it in the config file instead. <b>Note:</b> it is unlikely that a OMP2012 user
+                        would use this feature; see the additional detail on this topic in <a class="external"
+                        <href="config.html#train_with">config.html</a>.</li> 
+</ul>
+
+
+<h4 id="undef">--undef <i>SYMBOL</i></h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: </li>
+<li>          Meaning: Removes the definition of any preprocessor macro named SYMBOL.<br />
+                   This option may be used multiple times.  </li>
+
+</ul>
+
+<h4 id="newflags">
+<a name="flagupdate"> </a>
+<a name="flagsupdate"> </a>
+<a name="update_flags"> </a>
+<a name="getflags"> </a>
+<a name="update"> </a>
+--update</h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">--update_flags</span> |
+                       <span class="ttnobr">--flagupdate</span> |
+                       <span class="ttnobr">--flagsupdate</span> |
+                       <span class="ttnobr">--newflags</span> |
+                       <span class="ttnobr">--getflags</span></li>
+<li>          Default: do not check</li>
+<li>          Meaning: Checks <a class="external" href="http://www.spec.org/omp2012/">www.spec.org</a> for updates to the
+                       benchmark flag description files, config files, example flags files, and syntax files  that ship with the
+                       OMP2012 distribution. Its usage requires a working internet connection. When this option is used, <span
+                       class="tt">runspec</span> will not perform any other actions. <b>If you set your verbosity level to 7 or
+                       higher, you will get a list of files that are checked.</b>  
+
+<pre>
+$ <b>runspec --newflags --verbose 7</b>
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12933 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Checking for flag updates for 350.md
+Checking for flag updates for 351.bwaves
+Checking for flag updates for 352.namd
+.
+.
+.
+Checking for updates to Docs/flags/flags-advanced.xml
+Checking for updates to Docs/flags/flags-simple.xml
+
+Flag and config file update successful!
+
+There is no log file for this run.
+
+runspec finished at Tue Jul 31 15:24:33 2012; 9 total seconds elapsed
+
+$
+</pre>
+                       <!--<span class="oldnews">(History: flag reporting, and the ability to update flag description files,  are
+                       features that were added in SPEC OMP2012 V1.0.)</span>-->
+                       </li>
+
+</ul>
+
+<h4 id="unpackbundle"> <a name="unpack_bundle"> </a> --unpack_bundle <i>name</i></h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: none</li>
+<li><p class="snugtop">Meaning: Unpack a previously-created bundle of binaries and config file, but do not attempt to start a run
+                                using the settings in the bundle.  For your reference, the command that would have been used
+                                is printed out.  See <a href="#make_bundle">--make_bundle</a> for more information about
+                                bundles. 
+                                </p></li>
+</ul>
+
+<h4 id="usebundle"> <a name="use_bundle"> </a> --use_bundle <i>name</i></h4> 
+<ul>
+<li>          Synonym: None</li>
+<li>          Default: none</li>
+<li><p class="snugtop">Meaning: Use a previously-created bundle of binaries and config file for the current run.  Unless overridden,
+                                the run will use the set of extension, machine name, tuning levels, and benchmarks that were
+                                in effect when the bundle was created.  If you specify a run that would use binaries that the
+                                current bundle doesn't contain, they will attempt to be built as usual before the run.  See
+                                <a href="#make_bundle">--make_bundle</a> for more information about bundles.  </p>
+
+                                <p>The following is an excerpt from the output that is printed when we use the bundle that was
+                                created in the example at <a href="#make_bundle">--make_bundle</a>:</p>
+
+<pre>$ <b>runspec --use_bundle /export/bmk/omp2012/mumble.omp2012bundle.xz</b>
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12933 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+
+Use Bundle: /export/bmk/omp2012/mumble.omp2012bundle.xz
+  Uncompressing bundle file "/export/bmk/omp2012/mumble.omp2012bundle.xz"...done!
+  Reading bundle table of contents...8 files
+  Unpacking bundle file...done
+  Bundle unpacking complete.
+  About to run:
+
+    /export/bmk/omp2012/bin/specperl /export/bmk/omp2012/bin/runspec --config=jul21a.cfg 
+    --ext=jul21a --mach=default --size=test --iterations=1 --threads=1 --tune=base 376.kdtree
+
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12933 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+Setting up environment for runspec...
+About to re-exec runspec...
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+
+runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+Using 'linux-suse10-amd64' tools
+Reading MANIFEST... 12933 files
+Loading runspec modules................
+Locating benchmarks...found 14 benchmarks in 9 benchsets.
+Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+Benchmarks selected: 376.kdtree
+Compiling Binaries
+  Up to date 376.kdtree base jul21a default
+
+
+Setting Up Run Directories
+  Setting up 376.kdtree test base jul21a default: created (run_base_test_jul21a.0000)
+Running Benchmarks
+  Running 376.kdtree test base jul21a default
+Success: 1x376.kdtree
+...
+</pre>
+
+<p>Note in the example that <tt>runspec</tt> restarted itself twice.  It unpacked the bundle, then restarted itself to run the
+command that had been entered at the time that the bundle was created.  Upon doing so, it discovered the <a class="external"
+href="config.html#preenv">preENV</a> line for <tt>$LD_LIBRARY_PATH</tt> in the config file.  It applied the environment setting,
+then began all over again.</p> 
+
+<p style="font-size:115%;padding:.3em;border:thin solid red;margin:.3em 4em;" class="alarm">WARNING: Although the features to create
+and use bundles are intended to make it easier to run SPEC OMP2012, the <span class="u">tester</span> remains responsible for
+compliance with the run rules.  And, of course, both the creators and the users of bundles are responsible for compliance with any
+applicable software licenses. </p>
+
+                                
+                                </li>
+</ul>
+
+<h4 id="username">--username <i>name</i></h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-U <i>name</i></span>     </li>
+<li>          Default: same as current process</li>
+<li>          Meaning: Name of user.  Useful if multiple users are sharing a SPEC tree.  Please see 
+              <a href="#section1.4">About Disk Usage and Support for Multiple Users</a>, above.</li>
+</ul>
+
+<h4 id="verbose"> <a name="debug"> </a> --verbose <i>n</i></h4> 
+<ul>
+<li>          Synonyms: <span class="ttnobr">--debug <i>n</i></span> |
+                        <span class="ttnobr">-v <i>n</i></span></li>
+<li>          Default:  <span class="tt">5</span></li>
+<li>          Meaning:  Set verbosity level to a level between <span class="tt">1</span> and <span class="tt">99</span>.  For more
+                        information, see <a class="external" href="config.html">config.html</a></li> 
+</ul>
+
+<h4 id="version">--version</h4> 
+<ul>
+<li>          Synonym: <span class="ttnobr">-V</span>       </li>     
+<li>          Default: Print short version information.</li>
+<li>          Meaning: Print detailed version information for the SPEC CPU tool suite.</li>
+</ul>
+
+<hr />
+
+<h2 id="section4">4 Quick reference</h2> 
+<p>(This table is organized alphabetically, without regard to upper/lower case, and without regard
+to the presence of a leading "no").</p>
+
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+<table border="0" cellspacing="0" cellpadding="0" >
+<tr><th>-a ACTION      </th>                                <td>Same as <a href="#action">--action ACTION</a>          </td></tr>
+<tr><th><a href="#action"> --action</a> <i>ACTION</i></th>  <td>Do: <span class="tt">build|buildsetup|clean|clobber|configpp|onlyrun|realclean|report|run|runsetup|scrub|setup|trash|validate</span></td> </tr>
+<tr><th><a href="#basepeak"> --basepeak</a></th>            <td>Copy base results to peak (use with --rawformat)</td></tr>
+<tr><th><a href="#nobuild"> --nobuild</a></th>              <td>Do not attempt to build binaries</td> </tr>
+<tr><th>-c FILE        </th>                                <td>Same as <a href="#config">    --config FILE      </a></td></tr>
+<!--<tr><th>-C             </th>                                <td>Same as <a href="#copies">    --copies           </a></td></tr>-->
+<tr><th><a href="#check_version"> --check_version</a></th>  <td>Check whether an updated version of OMP2012 is available</td></tr>
+<tr><th><a href="#comment"> --comment</a> <i>"text"</i></th><td>Add a comment to the log and the stored configfile.</td> </tr>
+<tr><th><a href="#config"> --config</a> <i>file</i></th>    <td>Set config file for runspec to use</td> </tr>
+<!--<tr><th><a href="#copies"> --copies</a></th>                <td>Set the number of copies for a SPECrate run</td> </tr>-->
+<tr><th>-D             </th>                                <td>Same as <a href="#rebuild">    --rebuild          </a></td></tr>
+<tr><th>-d             </th>                                <td>Same as <a href="#deletework">   --deletework       </a></td></tr>
+<tr><th>--debug LEVEL  </th>                                <td>Same as <a href="#verbose">    --verbose LEVEL    </a></td></tr>
+<tr><th><a href="#define"> --define</a> 
+        <i>SYMBOL</i>[=<i>VALUE</i>]</th>                   <td>Define a config preprocessor macro</td> </tr>
+<tr><th><a href="#delay"> --delay</a> <i>secs</i></th>      <td>Add delay before and after benchmark invocation</td> </tr>
+<tr><th><a href="#deletework"> --deletework</a></th>        <td>Force work directories to be rebuilt</td> </tr>
+<tr><th>--dryrun       </th>                                <td>Same as <a href="#fake"> --fake         </a></td></tr>
+<tr><th>--dry-run      </th>                                <td>Same as <a href="#fake"> --fake         </a></td></tr>
+<tr><th>-e EXT[,EXT...]            </th>                    <td>Same as <a href="#ext">    --extension EXT[,EXT...]       </a></td></tr>
+<tr><th>--ext=EXT[,EXT...]         </th>                    <td>Same as <a href="#ext">    --extension EXT[,EXT...]       </a></td></tr>
+<tr><th><a href="#ext"> --extension</a> 
+        <i>ext</i>[,<i>ext</i>...]</th>                     <td>Set the extensions</td> </tr>
+<tr><th>-F URL         </th>                                <td>Same as <a href="#flagsurl">--flagsurl URL</a></td></tr>
+<tr><th><a href="#fake"> --fake</a> </th>                   <td>Show what commands would be executed.</td> </tr>
+<tr><th><a href="#fakereport">--fakereport</a></th>         <td>Generate a report without compiling codes or doing a run.</td></tr>
+<tr><th><a href="#fakereportable">--fakereportable</a></th> <td>Generate a fake report as if "--reportable" were set.</td></tr>
+<tr><th><a href="#feedback">--[no]feedback</a></th>         <td>Control whether builds use feedback directed optimization</td></tr>
+<!--<tr><th>--flagupdate</th>                                   <td>Same as <a href="#newflags">--update</a></td></tr>-->
+<!--<tr><th>--flagsupdate</th>                                  <td>Same as <a href="#newflags">--update</a></td></tr>-->
+<tr><th><a href="#flagsurl">--flagsurl-URL</a> <i>url</i></th>  <td>Use the file at URL as a flags description file.</td></tr>
+<!--<tr><th>--getflags</th>                                     <td>Same as <a href="#newflags">--update</a></td></tr>->-->
+<tr><th><a href="#graphauto">--graph_auto</a></th>          <td>Let the tools pick minimum and maximum for the graph</td></tr>
+<tr><th><a href="#graphmin">--graph_min</a> <i>N</i></th>   <td>Set the minimum for the graph</td></tr>
+<tr><th><a href="#graphmax">--graph_max</a> <i>N</i></th>   <td>Set the maximum for the graph </td></tr>
+<tr><th>-h             </th>                                <td>Same as <a href="#help">    --help             </a></td></tr>
+<tr><th><a href="#help"> --help</a></th>                    <td>Print usage message</td> </tr>
+<tr><th><a href="#http_proxy"> --http_proxy</a></th>        <td>Specify the proxy for internet access </td> </tr>
+<tr><th><a href="#http_timeout"> --http_timeout</a></th>    <td>Timeout when attempting http access </td> </tr>
+<tr><th>-I             </th>                                <td>Same as <a href="#I">    --ignore_errors    </a></td></tr>
+<tr><th>-i SET[,SET...]      </th>                                <td>Same as <a href="#size"> --size SET[,SET...]      </a></td></tr>
+<tr><th><a href="#I"> --ignore_errors</a></th>              <td>Continue with benchmark runs even if some fail</td> </tr>
+<tr><th>--ignoreerror  </th>                                <td>Same as <a href="#I">    --ignore_errors    </a></td></tr>
+<tr><th><a href="#infowrap"> --info_wrap_column</a> <i>N</i></th><td>Set wrap width for non-notes informational items</td> </tr>
+<tr><th>--infowrap N</th>                                   <td>Same as <a href="#infowrap"> --info_wrap_column N</a></td></tr>
+<tr><th>--input SET[,SET...]    </th>                       <td>Same as <a href="#size"> --size SET[,SET...]    </a></td></tr>
+<tr><th><a href="#iter"> --iterations</a> <i>N</i>   </th>  <td>Run each benchmark N times </td> </tr>
+<tr><th><a href="#keeptmp"> --keeptmp</a></th>              <td>Keep temporary files </td> </tr>
+<tr><th>-l             </th>                                <td>Same as <a href="#loose">  --loose            </a></td></tr>
+<tr><th><a href="#loose"> --loose</a></th>                  <td>Do not produce a reportable result</td> </tr>
+<tr><th>--noloose      </th>                                <td>Same as <a href="#strict">    --reportable       </a></td></tr>
+<tr><th>-m NAME[,NAME...}    </th>                          <td>Same as <a href="#machine">    --machine NAME[,NAME...]   </a></td></tr>
+<tr><th>-M             </th>                                <td>Same as <a href="#noclobber">  --make_no_clobber  </a></td></tr>
+<tr><th>--mach NAME[,NAME...]  </th>                        <td>Same as <a href="#machine">    --machine NAME[,NAME...]   </a></td></tr>
+<tr><th><a href="#machine"> --machine</a>
+        <i>name</i>[,<i>name</i>...]</th>                   <td>Set the machine types</td> </tr>
+<tr><th><a href="#make_bundle"> --make_bundle</a></th>      <td>Create a package of binaries and config file</td></tr>
+<tr><th><a href="#noclobber"> --make_no_clobber </a></th>   <td>Do not delete existing object files before building.</td> </tr>
+<tr><th>--max_active_compares N</th>                        <td>Same as <a href="#maxcomp">   --maxcompares N    </a></td></tr>
+<tr><th><a href="#maxcomp"> --maxcompares</a> <i>N</i></th> <td>Set the number of concurrent compares to N</td> </tr>
+<tr><th>--mockup       </th>                                <td>Same as <a href="#fakereportable">   --fakereportable</a></td></tr>
+<tr><th>-n N           </th>                                <td>Same as <a href="#iter">   --iterations N     </a></td></tr>
+<tr><th>-N             </th>                                <td>Same as <a href="#nobuild">   --nobuild       </a></td></tr>
+<!--<tr><th>--newflags</th>                                     <td>Same as <a href="#newflags">--update</a></td></tr>-->
+<tr><th><a href="#noteswrap"> --notes_wrap_column</a> <i>N</i></th><td>Set wrap width for notes lines</td> </tr>
+<tr><th>-noteswrap N   </th>                                <td>Same as <a href="#noteswrap">  --notes_wrap_column N</a></td></tr>
+<tr><th>-o FORMAT[,...]    </th>                            <td>Same as <a href="#out">    --output_format FORMAT[,...]   </a></td></tr>
+<tr><th><a href="#out"> --output_format</a> 
+        <i>format</i>[,<i>format</i>...]</th>               <td>Generate: <span 
+                                                                class="tt">all|cfg|check|csv|flags|html|mail|pdf|ps|raw|screen|text
+                                                                </span></td></tr>
+<!--<tr><th><a href="#parallel_setup"> --parallel_setup </a></th><td>Number of run directories to set up in parallel</td></tr>-->
+<!--<tr><th><a href="#parallel_setup_prefork"> --parallel_setup_prefork</a></th><td>Command to run before setup</td></tr>-->
+<!--<tr><th><a href="#parallel_setup_type"> --parallel_setup_type</a></th><td>Method to use for parallel setup</td></tr>-->
+<!--<tr><th><a href="#parallel_test"> --parallel_test </a></th> <td>Number of test/train workloads to run in parallel</td></tr>-->
+<tr><th><a href="#power"> --[no]power </a></th>             <td>Control poiwer measurement during run</td></tr>
+<tr><th><a href="#preenv"> --[no]preenv </a></th>           <td>Allow environment settings in config file to be applied</td></tr>
+<tr><th>-R             </th>                                <td>Same as <a href="#rawformat">  --rawformat     </a></td></tr>
+<!--<tr><th>-r             </th>                                <td>Same as <a href="#rate">    --rate             </a></td></tr>-->
+<!--<tr><th><a href="#rate"> --rate</a> <i>[N]</i></th>         <td>Do throughput (SPECrate) run, or rawformat with SPECrate metrics </td> </tr>-->
+<tr><th><a href="#rawformat"> --rawformat</a></th>          <td>Format raw file</td> </tr>
+<tr><th><a href="#rebuild"> --rebuild</a></th>              <td>Force a rebuild of binaries</td> </tr>
+<tr><th>--reportonly</th>                                   <td>Same as <a href="#fakereport">--fakereport</a></td></tr>
+<tr><th>--noreportable </th>                                <td>Same as <a href="#loose">  --loose            </a></td></tr>
+<tr><th><a href="#strict"> --reportable</a></th>            <td>Produce a reportable result</td> </tr>
+<tr><th><a href="#review"> --[no]review</a></th>            <td>Format results for review</td> </tr>
+<tr><th>-s             </th>                                <td>Same as <a href="#strict">    --reportable       </a></td></tr>
+<tr><th>-S
+        <i>SYMBOL</i>[=<i>VALUE</i>]</th>                   <td>Same as <a href="#define"> --define</a></td></tr>
+<tr><th>-S
+        <i>SYMBOL</i>:<i>VALUE</i></th>                     <td>Same as <a href="#define"> --define</a></td></tr>
+<tr><th><a href="#setpg"> --[no]setprocgroup</a></th>       <td>[Don't] try to create all processes in one group.</td> </tr>
+<tr><th><a href="#size"> --size</a> 
+        <i>size</i>[,<i>size</i>...]</th>                   <td>Select data set(s): <span class="tt">test|train|ref</span></td></tr>
+<!--<tr><th><a href="#speed"> --speed</a></th>                  <td>Convert SPECrate run to SPECspeed, or do a SPECspeed run</td></tr>-->
+<tr><th>--strict       </th>                                <td>Same as <a href="#strict">    --reportable       </a></td></tr>
+<tr><th>--nostrict     </th>                                <td>Same as <a href="#loose">  --loose            </a></td></tr>
+<tr><th>-T TUNE[,TUNE]    </th>                             <td>Same as <a href="#tune">    --tune TUNE[,TUNE]   </a></td></tr>
+<tr><th><a href="#table"> --[no]table</a></th>              <td>Do [not] include a detailed table of results</td> </tr>
+<tr><th><a href="#test"> --test</a></th>                    <td>Run various perl validation tests on specperl</td> </tr>
+<tr><th><a href="#threads"> --threads</a> <i>N</i></th>     <td>Set the number of OpenMP threads to run</td> </tr>
+<!--<tr><th><a href="#train_with"> --train_with</a></th>        <td>Change the training workload</td></tr>-->
+<tr><th><a href="#tune"> --tune</a></th>                    <td>Set the tuning levels to one of: 
+                                                                <span class="tt">base|peak|all</span></td> </tr>
+<tr><th>--tuning       </th>                                <td>Same as <a href="#tune">    --tune             </a></td></tr>
+<tr><th><a href="#undef"> --undef</a> <i>SYMBOL</i></th>    <td>Remove any definition of this config preprocessor macro</td> </tr>
+<tr><th>-U NAME        </th>                                <td>Same as <a href="#username">  --username NAME    </a></td></tr>
+<tr><th><a href="#unpack_bundle"> --unpack_bundle</a></th>  <td>Unpack a package of binaries and config file</td></tr>
+<tr><th><a href="#use_bundle"> --use_bundle</a></th>        <td>Use a package of binaries and config file</td></tr>
+<tr><th><a href="#newflags"> --update</a></th>              <td>Check www.spec.org for updates to benchmark and example flag files,
+                                                                and config files</td> </tr>
+<tr><th>--update_flags</th>                                 <td>Same as <a href="#newflags">--update</a></td></tr>
+<tr><th><a href="#username"> --username</a></th>            <td>Name of user to tag as owner for run directories</td> </tr>
+<tr><th>-v             </th>                                <td>Same as <a href="#verbose">    --verbose          </a></td></tr>
+<tr><th><a href="#verbose"> --verbose</a></th>              <td>Set verbosity level for messages to N</td> </tr>
+<tr><th>-V             </th>                                <td>Same as <a href="#version">  --version          </a></td></tr>
+<tr><th><a href="#version"> --version</a></th>              <td>Output <span class="u">lots</span> of version information</td> </tr>
+<tr><th>-?        </th>                                     <td>Same as <a href="#help">    --help             </a></td></tr>
+
+</table>
+
+<hr />
+<p>Copyright 1999-2012 Standard Performance Evaluation Corporation</p>
+<p>All Rights Reserved</p>
+
+<!-- this space NOT intentionally left blank: for runspec.html, it's nice to have single keystroke (END) to this table.  -->
+
+</body></html>
+
+

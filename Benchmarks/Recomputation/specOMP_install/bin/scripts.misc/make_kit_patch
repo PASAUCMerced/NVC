@@ -1,0 +1,441 @@
+#!specperl
+
+# Copyright 2010-2012 Standard Performance Evaluation Corporation
+# All Rights Reserved
+
+# Given a two MANIFEST files and a file tree corresponding to one of them,
+# generate a tarball of new and changed files and attach it to a Perl script
+# (to be run with specperl) which will check that the file is being overlayed
+# onto the correct version of the kit as well as remove old files.
+
+# No support is provided for this script or its output
+
+# $Id: make_kit_patch 1727 2012-07-24 19:42:08Z CloyceS $
+
+use strict;
+use IO::File;
+use File::Temp qw(tempfile);
+use MIME::Base64 qw(encode_base64);
+use Getopt::Long;
+
+our (%to_remove, %changed, @add, @remove, $tar, $xz, $version, %opts, $excludere, %cleanup_files);
+
+die "\$SPEC isn't set\n" unless -d $ENV{'SPEC'};
+chdir $ENV{'SPEC'} or die "Can't change into $ENV{'SPEC'}: $!\n";
+die "No MANIFEST file exists in $ENV{'SPEC'}\n" unless -f 'MANIFEST';
+
+$version = '$LastChangedRevision: 1727 $ '; # Make emacs happier
+$version =~ s/^\044LastChangedRevision: (\d+) \$ $/$1/;
+print "make_kit_patch r$version\n";
+
+%opts = ('debug' => 0,
+         'verbosepatch' => 0,
+         'help' => 0,
+         'force' => 0,
+        );
+
+my $rc = GetOptions(\%opts, qw(
+                                debug|d:i
+                                verbosepatch!
+                                force|f
+                                help|h
+                              )
+                   );
+
+my ($old_manifest, $outfile) = @ARGV;
+$outfile = 'kit_diff' unless defined($outfile) && $outfile ne '';
+
+usage(0) if $opts{'help'};
+usage(1) if (!-f $old_manifest);
+
+die "Cowardly refusing to overwrite '$outfile'\n" if (-f $outfile && !$opts{'force'});
+
+# Find utility programs
+
+# We must have GNU tar, because we're going to make a list of files to add
+# rather than passing it on the command line.  And it won't screw up long
+# paths.
+my @tartry = qw(spectar gtar tar);
+$tar = '';
+foreach my $try (@tartry) {
+    my $tmp=`$try --help 2>&1 | grep -- --files-from 2>&1`;
+    if ( $? == 0 && $tmp ne '' ) {
+        $tar = $try;
+        last;
+    }
+}
+die "No GNU tar found (tried '".join("', '", @tartry)."').\nPlease add it to your PATH.\n\n" unless $tar ne '';
+print "Found '$tar' for GNU tar\n" if $opts{'debug'};
+
+# We also like to compress things with xz
+my @xztry = qw(specxz xz);
+foreach my $try (@xztry) {
+    my $tmp=`$try --help >/dev/null 2>&1`;
+    if ( $? == 0 ) {
+        $xz = $try;
+        last;
+    }
+}
+die "No xz found (tried '".join("', '", @xztry)."').\nPlease add it to your PATH.\n\n" unless $xz ne '';
+print "Found '$xz' for xz\n" if $opts{'debug'};
+
+# Exclude stuff in redistributable_sources, install_archives, and
+# files named "ORIG" from change consideration
+$excludere = qr{(/ORIG$|install_archives/|redistributable_sources/)};
+
+# MANIFEST is always marked as "changed"
+%changed = ( 'MANIFEST' => { 'nocheck' => 1 } );
+
+# Read in the old manifest
+my $ifh = new IO::File '<'.$old_manifest;
+die "Old manifest ($old_manifest) couldn't be opened for reading: $!\n" unless defined($ifh);
+print "Reading $old_manifest..." if $opts{'debug'};
+my $count = 0;
+while(defined(my $line = <$ifh>)) {
+  if ($line !~ /^([\da-f]{32}) [ *] ([\dA-F]{8}) (\S.*)$/) {
+    die "Old manifest ($old_manifest) is not a valid manifest file.\n";
+  }
+  my ($sum, $size, $path) = ($1, $2, $3);
+  next if $path =~ /$excludere/;
+  $to_remove{$path} = { 'hash' => $sum, 'size' => $size };
+  $count++;
+}
+$ifh->close();
+print "$count entries\n" if $opts{'debug'};
+
+# Read in the current manifest
+$ifh = new IO::File '<MANIFEST';
+die "Current manifest couldn't be opened for reading: $!\n" unless defined($ifh);
+print "Reading current MANIFEST..." if $opts{'debug'};
+$count = 0;
+while(defined(my $line = <$ifh>)) {
+  if ($line !~ /^([\da-f]{32}) [ *] ([\dA-F]{8}) (\S.*)$/) {
+    die "Current manifest is not a valid manifest file.\n";
+  }
+  my ($sum, $size, $path) = ($1, $2, $3);
+  next if $path =~ /$excludere/;
+  if (exists $to_remove{$path}) {
+    if ($to_remove{$path}->{'size'} ne $2 || $to_remove{$path}->{'hash'} ne $1) {
+      $changed{$path} = { 'hash' => $sum, 'size' => $size,
+                       'oldhash' => $to_remove{$path}->{'hash'},
+                       'oldsize' => $to_remove{$path}->{'size'}
+                     };
+    }
+    delete $to_remove{$path};
+  } elsif (exists $changed{$path}) {
+    # This should never happen -- duplicate entries should only ever happen
+    # in previously installed trees, where this should never be run
+    $changed{$path}->{'nocheck'} = 1;
+  } else {
+    # New file
+    $changed{$path} = { };
+  }
+  $count++;
+}
+print "$count entries\n" if $opts{'debug'};
+
+# Summarize the magnitude of the changes
+print "Files to remove: ".((keys %to_remove) + 0)."\n";
+print "Files changed: ".((grep { exists($changed{$_}->{'hash'}) } keys %changed)+0)."\n";
+print "Files added: ".((grep { !exists($changed{$_}->{'hash'}) } sort keys %changed)+0)."\n";
+if ($opts{'debug'}) {
+  print "Files to remove:\n  ".join("\n  ", sort keys %to_remove)."\n\n";
+  print "Files changed:\n  ".join("\n  ", grep { exists($changed{$_}->{'hash'}) } sort keys %changed)."\n\n";
+  print "Files added:\n  ".join("\n  ", grep { !exists($changed{$_}->{'hash'}) } sort keys %changed)."\n\n";
+}
+die "Stopped" if $opts{'debug'} > 10;
+
+exclude_from_manifest('MANIFEST', $excludere);
+
+print "\n";
+
+# Make the tarball of all the new and changed files and compress it
+print "\nMaking the tarball of new and changed files...";
+my ($fh, $fn) = tempfile( $outfile.'.filelist.XXXXXXX' );
+$fh->print(join("\n", 'MANIFEST', grep { $_ ne 'MANIFEST' } sort keys %changed)."\n");
+$fh->close();
+my ($fh2, $tmptar) = tempfile( $outfile.'.tar.XXXXXXX' );
+$fh2->close();
+my @tarcmd = ($tar, '-cf', $tmptar, '-T', $fn);
+push @tarcmd, '-v' if $opts{'debug'};
+system @tarcmd;
+unlink $fn;
+if ($?) {
+  unlink $tmptar;
+  die "\ntar failed while generating the tarball of new/changed files\n";
+}
+print "done\n";
+print "Compressing it...\n";
+unlink "${tmptar}.xz"; # Just in case; okay if it fails
+system ($xz, '-9v', $tmptar);
+if ($?) {
+  unlink $tmptar;
+  die "$xz failed while compressing the tarball\n";
+}
+$tmptar .= '.xz';
+die "Huh? Can't find compressed tarball!\n" unless -f $tmptar;
+
+#
+# Output the patch script
+#
+print "Writing patch script...";
+$fh = new IO::File '>'.$outfile;
+$fh->print(qq|#!specperl
+
+# This is a kit patch script, generated with make_kit_patch r$version.
+
+# Execute it with specperl on an installed tree, and if the source matches,
+# the changes enclosed will be applied.  Note that if application fails, you
+# must download and install a full kit.  There is no recovery.
+|);
+$fh->print(q|
+BEGIN {
+  die "\$SPEC isn't set; please source shrc before running this.\n" unless -d $ENV{'SPEC'};
+  chdir $ENV{'SPEC'};
+  if (!-f 'MANIFEST') {
+    die "No MANIFEST file exists in $ENV{'SPEC'}\n";
+  }
+}
+
+use strict;
+use IO::File;
+use File::Temp qw(tempfile);
+use File::Basename qw(dirname);
+use MIME::Base64 qw(decode_base64);
+
+our (@check, @remove, %old);
+
+|);
+
+# Do the bits that will change
+$fh->print("my \$debug = $opts{'verbosepatch'};\n");
+$fh->print("\@remove = (\n  ".join(",\n  ", map { "'$_'" } sort keys %to_remove)."\n);\n\n");
+$fh->print("\@check = (\n  [".join("],\n  [", map { "'$_', qw($changed{$_}->{'oldsize'} $changed{$_}->{'oldhash'})" } grep { exists($changed{$_}->{'hash'}) && !$changed{$_}->{'nocheck'} } sort keys %changed)."]\n);\n");
+
+# And now back to the boilerplate
+$fh->print(q|
+
+# Read in the old manifest
+my $fh = new IO::File '<MANIFEST';
+die "MANIFEST couldn't be opened for reading: $!\n" unless defined($fh);
+while(defined(my $line = <$fh>)) {
+  if ($line !~ /^([\da-f]{32}) [ *] ([\dA-F]{8}) (\S.*)$/) {
+    die "MANIFEST is not a valid manifest file.\n";
+  }
+  my ($sum, $size, $path) = ($1, $2, $3);
+  next if exists($old{$path});
+  $old{$path} = { 'hash' => $sum, 'size' => $size };
+}
+$fh->close();
+
+# Check to see if all the old expected values match
+my $count = 1;
+foreach my $checkref (@check) {
+  my ($path, $size, $md5) = @$checkref;
+  if ($debug) {
+    print "Checking $path...";
+  } else {
+    print "Checking existing files... $count\r";
+  }
+  if (exists($old{$path.'/ORIG'})) {
+    # Skip relocated files
+    print "skipping (changed by relocation)\n" if $debug;
+    next;
+  }
+  die "$path does not exist in the current tree; aborting\n" unless exists($old{$path});
+  die "\n$path: size mismatch; aborting\n" unless $old{$path}->{'size'} eq $size;
+  die "\n$path: hash mismatch; aborting\n" unless $old{$path}->{'hash'} eq $md5;
+  print "ok\n" if $debug;
+  $count++;
+}
+print "Done checking existing files!                                     \n";
+
+# Ask for confirmation
+print "\n\nExisting files check out.  Are you sure you want to patch the contents of\n";
+print "$ENV{'SPEC'}?  This operation cannot be un-done.\n";
+my $answer;
+while (!defined($answer)) {
+  print "Proceed? (y/n) ";
+  chomp($answer = <>);
+  if (lc($answer) ne 'y' && lc($answer) ne 'n') {
+    print "Please just use 'y' for yes or 'n' for no.\n";
+    $answer = undef;
+  }
+}
+die "Aborting patch installation.\n" if (lc($answer) eq 'n');
+
+$ENV{'UNDO'} = 1;
+system 'specperl', '-x', '-S', 'bin/relocate';
+
+# Remove existing files
+$count = 1;
+print "\n";
+foreach my $file (@remove) {
+  if ($debug) {
+    print "Removing '$file'...";
+  } else {
+    print "Removing old files... $count\r";
+  }
+  if (-f $file) {
+    my $rc = unlink $file;
+    die "\nCouldn't unlink '$file': $!\n" unless ($rc == 1);
+    # Try to unlink the directories below the just-removed file, in case they
+    # are suddenly emptiable.
+    while (dirname($file) ne '.') {
+      $file = dirname($file);
+      rmdir $file \|\| last;
+    }
+  } elsif (-d $file) {
+    my $rc = File::Path::rmtree($file);
+    die "\nCouldn't remove '$file': $!\n" unless ($rc == 1);
+  } elsif (! -e $file) {
+    warn "\n'$file' is already removed! Continuing anyway...\n";
+  } else {
+    die "\nDon't know how to deal with '$file'.\nAborting patching.\n";
+  }
+  print "ok\n" if $debug;
+  $count++;
+}
+
+# Get rid of the install_archives directory, as its presence changes the installer's
+# behavior.
+if (-d 'install_archives') {
+  if ($debug) {
+    print "Removing 'install_archives'...";
+  } else {
+    print "Removing old files... $count\r";
+  }
+  my $rc = File::Path::rmtree('install_archives');
+  die "\nCouldn't remove 'install_archives': $!\n" unless ($rc == 1);
+  print "ok\n" if $debug;
+}
+
+print "Done removing old files!                                    \n";
+
+# Unpack the attached tarball
+print "\nUnpacking new and changed files...\n";
+# This could be done in-line with one pipe, but I don't know if it'll work
+# on Windows, so just do temporary files.
+my ($ofh, $fn) = tempfile( 'kit_diff.XXXXXX' );
+die "Couldn't get temporary file: $!\n" unless defined($fh);
+binmode $ofh, ':raw';
+while(defined(my $line = <DATA>)) {
+  $ofh->print(decode_base64($line));
+}
+$ofh->close();
+rename $fn, "$fn.tar.xz";
+system 'specxz', '-d', "${fn}.tar.xz";
+die "Error uncompressing temporary tarball\n" if $?;
+# The --exclude is just in case
+system 'spectar', '-xf', "${fn}.tar", '--exclude=install_archives';
+unlink "${fn}.tar";
+die "Error unpacking temporary tarball\n" if $?;
+
+unlink <bin/*.exe>, 'bin/specinvoke', 'bin/specperl', 'bin/specmake';
+
+my $installer = ($^O =~ /Win/) ? 'install.bat' : './install.sh';
+print "Patching application complete.  It's necessary to re-run $installer in order\n";
+print "to fix up paths in MANIFEST.  ";
+if ($^O =~ /Win/) {
+  print "\n\nPlease run $installer now (I'd do it, but it wouldn't work).  If\n";
+  print "it fails, you'll need to get the full kit to recover.\n";
+  exit;
+} else {
+  $answer = undef;
+  while (!defined($answer)) {
+    print "Should I run $installer for you? (y/n) ";
+    chomp($answer = <>);
+    if (lc($answer) ne 'y' && lc($answer) ne 'n') {
+      print "Please just use 'y' for yes or 'n' for no.\n";
+      $answer = undef;
+    }
+  }
+  if (lc($answer) eq 'n') {
+    print "\nPlease run $installer by hand before attempting to use the benchmark tree.\n";
+    exit;
+  }
+  system $installer;
+  die "Running $installer failed.  It might succeed if you run it by hand, or\nyou might just have to download the full version.\n" if $?;
+}
+
+__DATA__
+|);
+
+# Now read in the tarball, Base64-encode it, and append it
+$ifh = new IO::File "<$tmptar";
+my $buf;
+while (read($ifh, $buf, 60*57)) {
+  $fh->print(encode_base64($buf));
+}
+$ifh->close();
+unlink $tmptar; # Best effort...
+
+$fh->close();
+print "done!\n";
+
+file_cleanup();
+
+print "\nAll done!  The patch program is in '$outfile'\n";
+
+sub usage {
+  my ($rc) = @_;
+  
+  print "\nUsage: $0 [options] <old manifest> [destination filename]\n";
+  print "Options:\n";
+  print "  --debug[=i], -d[ i]  Increase verbosity while making the patch\n";
+  print "  --verbosepatch       Increase verbosity while applying the patch\n";
+  print "  --force              Overwrite preexisting destination file\n";
+  print "  --help, -h           Print this message\n";
+
+  print "\n";
+  exit $rc if defined($rc);
+}
+
+# Go through the manifest file in $file and remove any filenames from it that
+# match any of the items in $excludere.
+sub exclude_from_manifest {
+    my ($file, $excludere) = @_;
+
+    die "'$file' does not exist!\n" unless -r $file;
+    return unless ref($excludere) eq 'Regexp';
+
+    my $oldfile = $file.'.'.$$;
+    unlink $oldfile;    # Just in case
+
+    if (rename $file, $oldfile) {
+        my $ifh = new IO::File $oldfile;
+        die "Could not open '$oldfile' for reading: $!\n" unless defined($ifh);
+        my $ofh = new IO::File '>'.$file;
+        die "Could not open '$file' for writing: $!\n" unless defined($ifh);
+        while (my $line = <$ifh>) {
+            $line =~ tr/\015\012//d;
+            if ($line !~ /$excludere/) {
+                $ofh->print($line."\n");
+            }
+        }
+        $ifh->close();
+        $ofh->close();
+
+        # Make the permissions match
+        my $perm = (stat($oldfile))[2];
+        chmod $perm, $file;
+
+        $cleanup_files{$file} = $oldfile;
+
+    } else {
+        die "exclude_from_manifest: Could not rename '$file' to '$oldfile': $!\n";
+    }
+}
+
+# Do a best-effort cleanup of files that may have been modified
+sub file_cleanup {
+    foreach my $file (keys %cleanup_files) {
+        unlink $file;
+        if ($cleanup_files{$file} ne '') {
+            rename $cleanup_files{$file}, $file;
+        }
+        delete $cleanup_files{$file};
+    }
+}
+$SIG{__DIE__} = \&::file_cleanup;
+

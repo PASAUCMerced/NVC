@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Credits for OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+
+</style>
+
+</head>
+<body>
+
+
+<h1 style="margin-bottom:1em;"> Credits for SPEC OMP2012</h1>
+<p class="snugtop"><span style="font-size:80%;">Last updated: $Date: 2012-10-12 10:13:58 -0400 (Fri, 12 Oct 2012) $ by $Author: BrianWhitney $</span>
+<br />(To check for possible updates to this document, please
+see <a href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p>
+
+
+<p class="snugbot">Creating a suite of source code benchmarks to provide a consistent, comparative measure of OpenMP and CPU-intensive
+performance is not simple. The challenges are numerous, for example: </p>
+<ul> 
+   <li>locating meaningful programs;</li>
+   <li>ensuring that they port to numerous environments;</li>
+   <li>defining rules to govern how the programs are compiled, run and reported;</li>
+   <li>developing a toolset to help enforce these rules while still making things easy to use; and</li>
+   <li>defining a process by which decisions can be made amongst the group working on the project.</li>
+</ul>
+
+<p>And in the end, you hope you have something that is fair, relevant, and understandable, that will address technology for a
+period of years.</p>
+
+<p>Such is the case with SPEC OMP2012, which is an update and replacement for
+OMP2001.  The new benchmark suite:</p>
+
+<ul>
+   <li>Provides a variety of applications and application areas included in the suite. </li>
+   <li>Uses application source code that is significantly complex.</li>
+   <li>Tests more features of OpenMP.</li>
+   <li>Provides for the optional collection of power data while running the benchmark.</li>
+   <li>Improves the tools for running and using the suite.</li>
+   <li>Clarifies and updates the run rules.</li>
+   <li>Improves documentation.</li>
+</ul>
+
+<p>All of this is due to the efforts of a large team of people from around the world, that SPEC would
+like to thank (with apologies and thanks to those who may not be listed).</p>
+
+<h3>Program Authors and Contributors</h3>
+
+<p>SPEC OMP benchmarks are based on real-world applications and feature tests.  We
+therefore thank the authors of those codes.</p>
+
+<p>Thank you to the many participants of the "SPEC OMP Benchmark Search Program" and, in particular, the authors that
+contributed programs that were made part of the suite:</p>
+
+<table style="margin-left:2em;">
+
+<tr><td colspan="2"><h4 style="margin:.4em;">OMP2012 programs</h4></td></tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/350.md.html"><tt>350.md</tt></a></td>
+   <td>Don Berry</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/351.bwaves.html"><tt>351.bwaves</tt></a></td>
+   <td>Mark Kremenetsky</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/352.nab.html"><tt>352.nab</tt></a></td>
+   <td>Russ Brown, et al</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/357.bt331.html"><tt>357.bt331</tt></a></td>
+   <td>R. Van der Wijngaart, T. Harris, M. Yarrow, H. Jin</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/358.botsalgn.html"><tt>358.botsalgn</tt></a></td>
+   <td>Nanos Group, Barcelona Supercomputing Centre (Alex Duran)</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/359.botsspar.html"><tt>359.botsspar</tt></a></td>
+   <td>Nanos Group, Barcelona Supercomputing Centre (Alex Duran)</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/360.ilbdc.html"><tt>360.ilbdc</tt></a></td>
+   <td>Thomas Seiser</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/362.fma3d.html"><tt>362.fma3d</tt></a></td>
+   <td>Sam Key </td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/363.swim.html"><tt>363.swim</tt></a></td>
+   <td>Paul N. Swarztrauber</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/367.imagick.html"><tt>367.imagick</tt></a></td>
+   <td>ImageMagick Studio LLC</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/370.mgrid331.html"><tt>370.mgrid331</tt></a></td>
+   <td>Eric Barszca, Paul O Frederickson, A. Woo, M. Yarrow, H. Jin</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/371.applu331.html"><tt>371.applu331</tt></a></td>
+   <td>S. Weeratunga, V. Venkatakrishnan, E. Barszcz, M. Yarrow, H. Jin</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/372.smithwa.html"><tt>372.smithwa</tt></a></td>
+   <td>R. Brown</td>
+	</tr>
+	<tr>
+	   <td><a href="http://www.spec.org/auto/omp2012/Docs/376.kdtree.html"><tt>376.kdtree</tt></a></td>
+   <td>R. Brown</td>
+	</tr>
+	</table>
+
+
+
+<p>For more information regarding the SPEC benchmarks, including information about other contributors, see the documentation
+in the individual benchmarks directories.</p>
+
+<h3>SPEC</h3>
+
+<p>We would also like to thank:</p>
+
+<ul>
+
+<li> <p>SPEC management, who provided us with resources, and kept the SPEC HPG Subcommittee on their toes:</p>
+
+     <ul>
+        <li>Walter Bays - President, SPEC</li>
+	<li><a href="http://www.spec.org/spec/kaivalya">Kaivalya Dixit</a> - Long-time President, and Guiding Light of SPEC</li>
+	<li><a href="http://www.spec.org/spec/memories/larry/larrygray.html">Larry Gray</a> - Long-time Treasurer, SPEC</li>
+     </ul></li>
+
+<li><p>The SPEC office, who were the ones who <b>really</b> provided us with the resources: </p> 
+
+      <ul>
+         <li>Dianne Rice - Administration</li>
+         <li>Cathy Sandifer, Jason Glick  - Webmasters</li>
+         <li>Charles McKay - Office</li>
+         <li>Bob Cramblitt - Press Relations</li>
+      </ul></li>
+
+</ul>
+
+
+<h3>Benchmark Project Leaders, Analysis, Tools, Testing, and Documentation</h3>
+
+<p>Most importantly, thank you to the people who sweated through technical details and porting issues, debated
+their view points vigorously, and were willing to drive issues to conclusion.  Without these people this benchmark suite
+would truly not exist.</p>
+
+ <p>
+Huiyu Feng, Robert Henschel, Huian Li, Matthias Mueller, Chris
+  Parrott, Brian Whitney, for being project leads of one or more
+  benchmarks and sheperding them into the final suite.
+</p>
+
+ <p>
+Huiyu Feng, Daniel Hackenberg, Gabriele Jost, Huian Li, Daniel Molka,
+  Chris Parrott, Joe Robichaux, Pavel Shelepugin, Brian Whitney for
+  regularly testing out the kits and providing status reports.
+</p>
+
+ <p>
+ Huiyu Feng, Daniel Molka, Chris Parrott, 
+Joe Robichaux, Brian Whitney for help in discovering and fixing key portability
+  issues within indvidiual benchmarks.
+ </p>
+
+ <p>
+John Baron, Huiyu Feng, Brian Whitney, Daniel Hackenberg, Daniel Molka, for
+  providing performance data and analysis of the individual
+  benchmarks.
+</p>
+
+<p>
+Daniel Hackenberg and Daniel Molka for taking the lead on power
+  metrics. And Gabriele Jost and Brian Whitney for help with the
+  testing.
+</p>
+
+<p>Matthijs van Waveren for taking the lead on the run & reporting
+  rules.</p>
+
+ <p>Cloyce Spradling is the primary author of the SPEC OMP2012 toolset
+and Brian Whitney for his translation of SPEC HPG requirements so Cloyce
+could implement them.</p>
+
+<p> The SPECpower Committee for all their work on power measurements which
+  is being made use of in this benchmark suite. 
+</p>
+  
+
+<h3>Behind the scenes</h3>
+
+<p>Finally, we thank all of the people behind the scenes in the compiler groups, architecture groups and performance
+groups who supported their work for SPEC at their respective companies. </p>
+
+<h3>The Bottom Line</h3>
+
+<p>
+The SPEC OMP2001 was a popular suite that lasted more than ten
+years. We hope this suite will take its place and be an equally
+important contribution to the OpenMP community.
+</p>
+
+<p style="margin-left:8em"><big>Thank you!</big></p>
+
+<p style="margin-left:12em;">
+<span style="font-family:cursive"> Kalyan Kumaran, </span> Chair, SPEC HPG Committee<br />
+<span style="font-family:cursive"> Mattias Mueller,</span> Vice-Chair, SPEC HPG Subcommittee <br />
+<span style="font-family:cursive"> Matthijs Van Waveren,</span> Secretary, SPEC HPG Committee <br />
+<span style="font-family:cursive">Brian Whitney,</span> HPG Release Manager <br />
+</p>
+
+<hr />
+
+<p>Copyright &copy; 1999-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:900px;">&nbsp;</p>
+
+
+</body>
+</html>

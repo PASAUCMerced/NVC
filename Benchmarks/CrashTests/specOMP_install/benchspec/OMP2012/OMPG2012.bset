@@ -1,0 +1,29 @@
+$name        = 'gross';
+$units       = 'SPECompG';      # The '2012' is added later
+$metric      = 'OMPG2012';
+$speed_multiplier  = 1;
+$rate_multiplier   = 1;
+$ref         = 'ref';
+$test        = 'test';
+$train       = 'train';
+$output      = 1;
+$longest_ref = 100;
+@benchmarks = qw(
+    350.md
+    351.bwaves
+    352.nab
+    357.bt331
+    358.botsalgn
+    359.botsspar
+    360.ilbdc
+    362.fma3d
+    363.swim
+    367.imagick
+    370.mgrid331
+    371.applu331
+    372.smithwa
+    376.kdtree
+);
+
+     
+1;

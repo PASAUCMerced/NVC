@@ -1,0 +1,4 @@
+omp-tasks/sparselu/sparselu_single/my_include.c: In function 'crucial_data':
+omp-tasks/sparselu/sparselu_single/my_include.c:17:5: warning: format '%x' expects argument of type 'unsigned int', but argument 2 has type 'void *' [-Wformat=]
+     printf("The address is %x, the type is %s, the size is %d\n", addr, type, size);
+     ^

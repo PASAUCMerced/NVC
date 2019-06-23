@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd">
+<flagsdescription>
+
+<!-- filename to begin with "Example-HP-UX_IPF" -->
+<filename>Example-HP-UX_IPF.xml</filename>
+
+<title>SPEC CPU2006 Flag Description for the HP HP-UX C++ and Fortran Compilers </title>
+
+<header>
+<![CDATA[
+<p style="text-align: left; color: red; font-size: larger; background-color: black">
+ Copyright &copy; 2006 Intel Corporation.  All Rights Reserved.</p>
+]]>
+</header>
+
+
+<!--
+******************************************************************************************************
+* Compilers
+******************************************************************************************************
+-->
+
+
+<flag 
+      name="hp_cc" 
+      class="compiler" 
+      regexp="(?:/\S+/)?cc -Ae\b">
+
+<![CDATA[
+<p>
+      Invoke the HP ANSI C compiler in Extended ANSI mode.  Same as
+      -Aa -D_HPUX_SOURCE +e.  This would define the names (macros and 
+      typedefs) provided by the HP-UX Operating System and, in addition, 
+      allows extensions such as C99 features in this release (complex and 
+      imaginary data types, STDC pragmas), $ characters in identifier names,
+      sized enums, and sized bit-fields, and 64-bit integral types.
+</p>
+]]>
+</flag>
+
+<flag name="hp_aCC" 
+      class="compiler" 
+      regexp="(?:/\S+/)?aCC -Aa\b">
+<![CDATA[
+<p>
+      Invoke the HP aC++ compiler in ANSI mode.   Turns on newly supported 
+      ANSI C++ Standard features like Koenig lookup and correct scoping for
+      variables declared in conditional statements like for-loops.
+</p>
+]]>
+
+</flag>
+<flag name="hp_cc99" 
+      class="compiler" 
+      regexp="(?:/\S+/)?cc -AC99\b">
+<![CDATA[
+<p>
+      Invoke the HP C compiler in partial support for the C99 Standard mode.
+      ANSI programming language C standard ISO/IEC 9899:1999
+</p>
+]]>
+</flag>
+
+<flag name="hp_f90" 
+      class="compiler" 
+      regexp="(?:/\S+/)?f90\b">
+<![CDATA[
+<p>
+      Invoke the HP Fortran90 compiler.
+</p>
+]]>
+</flag>
+
+
+
+<!--
+******************************************************************************************************
+* Portability
+******************************************************************************************************
+-->
+
+
+<flag name="hpf90_noppu" class="portability" regexp="\+noppu" compilers="hp_f90" >
+
+Do not postpend underscores at the end of definitions of and references to externally visible symbols. 
+ 
+</flag>
+
+<!--
+******************************************************************************************************
+* Optimizations
+******************************************************************************************************
+-->
+<flag name="hp_O0" class="optimization" regexp="\+O0" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Perform minimal optimizations.
+</flag>
+
+<flag name="hp_O1" class="optimization" regexp="\+O1" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Perform optimizations within basic blocks only.
+</flag>
+
+<flag name="hp_O2" class="optimization" regexp="\+O2" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Perform level 1 as well as function level global optimizations, and intramodule interprodedural optimizations, including function inlining. Same as -O.
+<include flag="hp_O1" flagtext="+O1" />
+</flag>
+
+<flag name="hp_O3" class="optimization" regexp="\+O3" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Perform level 2 as well as additional loop nest optimizations.
+<include flag="hp_O2" flagtext="+O2" />
+</flag>
+
+<flag name="hp_O4" class="optimization" regexp="\+O4" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Perform level 3 as well as doing interprocedural optimizations across translation units (link time optimizations).  See -ipo.
+<include flag="hp_O3" flagtext="+O3" />
+<include flag="hp_ipo" flagtext="-ipo" />
+</flag>
+
+
+<flag name="DD64" class="optimization" regexp="\+DD64(?=\s|$)">
+On Itanium-based systems, which have a 64-bit kernel, the compiler default is to produce 32-bit mode. 
+This is the recommended option for compiling in 64-bit mode on either Itanium-based or PA-RISC 2.0 architecture. 
+The macros __LP64__ and (on PA platforms) _PA_RISC2_0 are #defined.
+</flag>
+
+
+<flag name="hp_ipo" class="optimization" regexp="-ipo" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90" >
+Enable interprocedural optimizations across files. This option is ignored at 
+optimization levels +O0 and +O1. It is enabled by default when +O4 or 
++Ofaster are used. 
+NOTE: Object files produced using this option contain intermediate code in the 
+IELF format. At link time, ld automatically invokes the interprocedural optimizer 
+u2comp if any of the input object files is an IELF file. These IELF object files 
+are intended to be temporary files. They are not guaranteed to be compatible from 
+one version of the compiler to the next.
+</flag>
+
+<flag name="hp_PBO_collect" class="optimization" regexp="\+Oprofile=collect(\S+)\b" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90">
+<example>+Oprofile=collect:all +Oprofile=collect:arc,loopiter</example>
+<![CDATA[
+<p>Instrument the application to enable collection of profile based optimization data.
+Qualifiers are a comma-separated list of profile collection qualifiers.  The profile collection
+qualifiers are: </p>
+<ul>
+<li>arc - Enable collection of arc counts.
+</li>
+<li>dcache - Enable collection of data cache misses via hardware performance counters.
+</li>
+<li>stride - Enable collection of stride data.
+</li>
+<li>loopiter - Enable collection of loop iteration counts.
+</li>
+<li>all - Enable collection of all types of profile data.  Equivalent to the command +Oprofile=collect:arc,dcache,stride,loopiter.  
+</li>
+</ul>
+]]>
+</flag>
+
+<flag name="hp_PBO_use" class="optimization" regexp="\+Oprofile=use\b" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90">
+Examine the profile database file produced by an instrumented program to perform profile 
+based optimizations on the code.  Some optimizations are only enabled when a feedback 
+data file is available.
+</flag>
+
+<flag name="hp_faster" class="optimization" regexp="\+Ofaster\b" compilers="hp_cc,hp_cc99,hp_aCC,hp_f90">
+This option selects +Ofast, but with the optimization level increased to +O4.
+
+<include flag="hpcc_fast" flagtext="+Ofast"/>
+<include flag="hp_O4" flagtext="+O4"/>
+</flag>
+
+<flag name="hpcc_fast" class="optimization" regexp="\+Ofast\b" compilers="hp_cc,hp_cc99,hp_aCC">
+This option selects a combination of compilation and link options for optimum execution speed and reasonable build times.  Currently implies the following:
+
+<include flag="hp_O2" flagtext="+O2" />
+<include flag="nolimit" flagtext="+Onolimit"/>
+<include flag="hp_fltacc" flagtext="+Ofltacc=relaxed"/>
+<include flag="DSmodel" flagtext="+DSnative" />
+<include flag="FPD" flagtext="+FPD"/>
+<include flag="text_page_hint" flagtext="-Wl,+pi,1M" />
+<include flag="data_page_hint" flagtext="-Wl,+pd,1M" />
+<include flag="mergeseg" flagtext="+mergeseg"/>
+</flag>
+
+<flag name="hpf90_fast" class="optimization" regexp="\+Ofast\b" compilers="hp_f90">
+This option selects a combination of compilation and link options for optimum execution speed and reasonable build times.  Currently implies the following:
+
+<include flag="hp_O2" flagtext="+O2" />
+<include flag="nolimit" flagtext="+Onolimit"/>
+<include flag="hp_fltacc" flagtext="+Ofltacc=relaxed"/>
+<include flag="DSmodel" flagtext="+DSnative" />
+<include flag="FPD" flagtext="+FPD"/>
+<include flag="text_page_hint" flagtext="-Wl,+pi,1M" />
+<include flag="data_page_hint" flagtext="-Wl,+pd,1M" />
+<include flag="mergeseg" flagtext="+mergeseg"/>
+</flag>
+
+<flag name="archive_shared" class="optimization" regexp="-Wl,-a,archive_shared\b|-Wl,-aarchive_shared\b">
+Specifies whether shared or archive libraries are searched with the -l option.  For archive_shared,
+the archive form is preferred, but the shared form is allowed.
+</flag>
+
+<flag name="text_page_hint" class="optimization" regexp="-Wl,\+pi,(\S+)">
+Request a particular virtual memory page size that should be used for instructions.  
+Sizes of 4K, 16K, 64K, 256K, 1M, 4M, 16M, 64M, 256M, 1G, 4G, D, and L are supported.  
+A size of D allows the kernel to choose what page size should be used.  
+A size of L results in using the largest page size available.
+The actual page size may vary if the requested size cannot be fulfilled.
+</flag>
+
+<flag name="data_page_hint" class="optimization" regexp="-Wl,\+pd,(\S+)">
+Request a particular virtual memory page size that should be used for data.  
+Sizes of 4K, 16K, 64K, 256K, 1M, 4M, 16M, 64M, 256M, 1G, 4G, D, and L are supported.  
+A size of D allows the kernel to choose what page size should be used.  
+A size of L results in using the largest page size available.
+The actual page size may vary if the requested size cannot be fulfilled.
+</flag>
+
+<flag name="textdata_combined" class="optimization" regexp="-Wl,-N\b">
+In 32-bit mode only, cause the data to be placed immediately following the text, 
+and make the text writable. Files of this type cannot be shared.
+</flag>
+
+<flag name="FPD" class="optimization" regexp="\+FPD\b">
+Enable sudden underflow (flush to zero) of denormalized values.
+</flag>
+
+<flag name="mergeseg" class="optimization" regexp="\+mergeseg">
+Sets a flag in the executable which causes the
+dynamic loader to merge all data segments of
+shared libraries loaded at startup time into one
+block.  Data segments for each dynamically loaded
+library will also be merged with the data segments
+of dependent libraries.  This increases run-time
+performance by allowing the kernel to use larger
+size page table entries.
+
+</flag>
+
+<flag name="DSmodel" class="optimization" regexp="\+DS(\S+)\b">
+<example>+DSnative, +DSitanium2</example>
+<![CDATA[
+<p>Use the instruction scheduler tuned to the model specified.  The defined values for model are:</p>
+<ul>
+<li>blended - Tune for the best performance on a combination of processors (i.e. Itanium, Itanium2, or native processor).</li>
+<li>itanium - Tune for best performance on an Intel(R) Itanium(R) processor.</li>
+<li>itanium2 - Tune for best performance on a Intel(R) Itanium(R) 2 processor.</li>
+<li>native - Tune for best performance on the processor on which the compiler is running.</li>
+</ul>
+<p>The default model is blended.</p>
+]]>
+</flag>
+
+<flag name="hp_integer_overflow" class="optimization" regexp="\+Ointeger_overflow=(\S+)\b" compilers="hp_cc,hp_cc99,hp_aCC">
+<![CDATA[
+<p> Controls the integer overflow assumptions made by the compiler to provide the best runtime performance.  The defined values for type are:</p>
+<ul>
+<li> aggressive -  Allows the compiler to make a broad set of assumptions so that the integer arithmetic expressions do not overflow.
+</li>
+<li> moderate - This is the same as aggressive except that the LFTR (linear function test replacement) optimization is not performed.  The default at optimization levels 2, 3 and 4.
+</li>
+<li> conservative - Directs the compiler to make fewer assumptions so that the integer arithmetic expressions do not overflow.
+</li>
+</ul>
+]]>
+</flag>
+
+<flag name="hpcc_typesafety" class="optimization" regexp="\+Otype_safety=(\S+)\b" compilers="hp_cc,hp_cc99,hp_aCC">
+<![CDATA[
+<p>Enable [disable] aliasing across types.</p>
+<ul>
+<li>off - The default.  Specifies that aliasing can occur freely across types.  This is a synonym to 
++Onoptrs_ansi and +Onoptrs_strongly_typed options in legacy cc.
+</li>
+<li>limited - Code follows ANSI aliasing rules.  Unnamed objects should be treated as if they had an 
+unknown type.
+</li>
+<li>ansi - Code follows ANSI aliasing rules, and unnamed objects should be treated the
+same as named objects.  This option is synonym to +Optrs_ansi option in legacy cc.
+</li>
+<li>strong - Code follows ANSI aliasing rules, except that accesses through lvalues of a
+character type are not permitted to touch objects of other types. This assumes that field 
+addresses are not taken.  This option is synonym to +Optrs_strongly_typed option in legacy cc.
+</li>
+</ul>
+]]>
+</flag>
+
+<flag name="hp_fltacc" class="optimization" regexp="\+Ofltacc=(\S+)\b">
+<![CDATA[
+<p>Controls the level of floating point optimizations that the compiler may perform.  The defined values for level are:</p>
+<ul>
+<li> default - Allows contractions, such as fused multiply-add (FMA), but disallows any other floating point optimization that can result in numerical differences.  </li>
+<li> limited - Like default, but also allows floating point optimizations which may affect the generation and propagation of infinities, NaNs, and the sign of zero.  </li>
+<li> relaxed - In addition to the optimizations allowed by limited, permits optimizations, such as reordering of expressions, even if parenthesized, that may affect rounding error.  This is the same as +Onofltacc.  </li>
+<li> strict  - Disallows any floating point optimization that can result in numerical differences.  This is the same as +Ofltacc.  </li>
+</ul>
+<p>The default is +Ofltacc=default.</p>
+]]>
+</flag>
+
+<flag name="hpf90_libcalls" class="optimization" regexp="\+Olibcalls\b" compilers="hp_f90">
+Use low-call-overhead versions of select library routines.  This option can be used at any level.  At optimization level 0 or 1, the default is +Onolibcalls; at optimization level 2 or higher, the default is +Olibcalls.
+</flag>
+
+<flag name="hpcc_libcalls" class="optimization" regexp="\+Olibcalls\b" compilers="hp_cc,hp_cc99,hp_aCC">
+NOTE: This option is deprecated and may not be supported in future releases.  On HP-UX HP Integrity Servers, including a system header file will cause the functions declared therein to be eligible for libcalls transformations, regardless of the state of +O[no]libcalls.
+</flag>
+
+<flag name="nolimit" class="optimization" regexp="\+Onolimit">
+Do not suppress optimizations that significantly increase compile-time or consume enormous amounts of memory.
+</flag>
+
+<flag name="mallocng" class="optimization" regexp="-lmallocng">
+Link with the Next Generation Malloc library.
+</flag>
+
+<flag name="hp_dataprefetch" class="optimization" regexp="\+Odataprefetch=(\S+)\b">
+<![CDATA[
+<p> +Odataprefetch=kind</p>
+<p>Control generation of data prefetch instructions for data structures referenced within 
+innermost loops.  The defined values for kind are:
+</p>
+<ul>
+<li> 
+direct - Enable generation of data prefetch instructions for the benefit of direct 
+memory accesses, but not indirect memory accesses.
+</li>
+<li> 
+indirect - Enable generation of data prefetch instructions for the benefit of both 
+direct and indirect memory accesses.  This is the default at optimization levels +O2 and above.
+</li>
+<li> 
+none - Disable generation of data prefetch instructions.  This is the default at 
+optimization levels +O1 and below.
+</li>
+</ul>
+]]>
+</flag>
+
+<flag name="hp_noparmsoverlap" class="optimization" regexp="\+Onoparmsoverlap">
+Optimize with the assumption that subprogram arguments do [do not] refer to the same memory.
+This option can be used at optimization levels 2, 3, and 4.  
+</flag>
+
+<flag name="hp_norecovery" class="optimization" regexp="\+Onorecovery">
+Do not generate recovery code for control speculation.  The default is +Orecovery.
+NOTE: For code which writes to uncacheable memory which may not be properly identified as volatile,
+the +Orecovery option reduces the risk of incorrect behavior.
+</flag>
+
+
+</flagsdescription>
+
+

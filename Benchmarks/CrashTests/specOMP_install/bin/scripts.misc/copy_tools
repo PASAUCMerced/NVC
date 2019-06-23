@@ -1,0 +1,244 @@
+#!/spec/omp2001/bin/specperl
+#!/spec/omp2001/bin/specperl -d
+#!/usr/bin/perl
+#
+#  copy_tools - a tool for copying CPU tools to other suites
+#
+#  Copyright 2007-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+# No support is provided for this script.
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id$
+
+use IO::Dir;
+use IO::File;
+use File::Copy;
+use File::Basename;
+use UNIVERSAL qw(isa);
+use strict;
+my $debug = 0;
+
+die "Usage: $0 <CPU base> <target base> <target suite> <target year>\nStopped" if (@ARGV < 4);
+
+my ($src, $base, $name, $year) = @ARGV;
+
+die "CPU base dir \"$src\" has no bin/ subdir!\nStopped" unless (-d "$src/bin");
+# Figure out the source info
+require "$src/bin/vars_common.pl";
+if (!defined($::suite) || $::suite eq '') {
+  die "Couldn't get source info from $src/bin/vars_common.pl\nStopped";
+}
+die "Target base dir \"$base\" has no bin/ subdir!\nStopped" unless (-d "$base/bin");
+die "Target suite name is empty!\nStopped" unless ($name ne '');
+die "Target suite year is empty!\nStopped" unless ($year ne '');
+die "Target suite year is stupid!\nStopped" unless ($year =~ /^v/i || ($year > 2000 && $year < 2020));
+
+$::srcsuite = $::suite;
+$::srclcsuite = $::lcsuite;
+$::srcsuitebase = $::suitebase;
+$::srclcsuitebase = lc($::srcsuitebase);
+$::srcsuitere = qr/$::srcsuitebase(?:\d{4}|v\d+)/;
+$::srclcsuitere = qr/$::srclcsuitebase(?:\d{4}|v\d+)/;
+$::srcyear = $::year;
+$::srcrelease_year = $::release_year;
+
+$::suitebase = uc($name);
+$::suite = $::suitebase.$year;
+$::lcsuite = lc($::suite);
+
+
+print "Copying tools files from $::srcsuite to $::suite...";
+
+# First of all, copy all of the non-SVN files over
+my @paths = read_files("$src/bin", 'bin/', [ $::srclcsuite.'.syntax', qw(index version.txt) ]);
+unshift @paths, qw(install.sh install.bat shrc cshrc);
+
+my $num_files = @paths+0;
+print "$num_files files to copy\n";
+my $copied = 0;
+my @setexe = ();
+my @delexe = ();
+foreach my $srcpath (@paths) {
+    my $destpath = $srcpath;
+    $destpath =~ s/$::srclcsuite/$::lcsuite/go;
+    $destpath =~ s/$::srcsuite/$::suite/go;
+    my $destdir = dirname($destpath);
+    mkdir $destdir, 0777 unless (-d $destdir);
+    copy "$src/$srcpath", "$base/$destpath" or die "Copy of $srcpath to $destpath failed: $!\nStopped";
+    if (-d "$base/.svn") {
+        if (-x "$src/$srcpath") {
+            push @setexe, "$base/$srcpath";
+        } else {
+            push @delexe, "$base/$srcpath";
+        }
+    }
+    print "copy \"$src/$srcpath\", \"$base/$destpath\"\n" if $debug;
+    $copied++;
+    print "Copied $copied of $num_files\r";
+}
+system (qw(svn propset svn:executable *), @setexe);
+system (qw(svn propdel svn:executable), @delexe);
+print "\n\n";
+
+print "Fixing up bang paths...";
+foreach my $file (qw(
+                     configpp convert_to_development dumpsrcalt extract_config
+                     extract_flags extract_raw flag_dump flags_dump makesrcalt
+                     port_progress printkids.pl printpath.pl rawformat
+                     relocate runspec specdiff specperldoc specpp toolsver
+                     verify_md5
+
+                     scripts.misc/copy_tools
+                     scripts.misc/extract_compopts scripts.misc/extract_misc
+                    )) {
+
+    my @lines = read_file("$base/bin/$file");
+    print " $file";
+    # The bangpath to fix up is only in the first two lines
+    $lines[0] =~ s/$::srclcsuite/$::lcsuite/go;
+    $lines[1] =~ s/$::srclcsuite/$::lcsuite/go;
+    write_file("$base/bin/$file", @lines);
+}
+print "\n\n";
+
+print "Fixing up suite name/year:";
+my @lines = read_file("$base/install.sh");
+map { s#^SUITE=$::srclcsuitere#SUITE=$::lcsuite#o; s#^UCSUITE=$::srcsuitere#UCSUITE=$::suite#o; } @lines;
+write_file("$base/install.sh", @lines);
+print " install.sh";
+
+@lines = read_file("$base/install.bat");
+map { s#^set SUITE=$::srclcsuitere#set SUITE=$::lcsuite#o; s#^set SUITE_SIZE=.*#set SUITE_SIZE="~1500"#o; } @lines;
+write_file("$base/install.bat", @lines);
+print " install.bat";
+
+my @benchmarks = <$base/benchspec/$::suite/[0-9][0-9][0-9].*>;
+my $firstbench = basename($benchmarks[0]);
+$firstbench = '400.perlbench' unless defined($firstbench);
+$firstbench =~ s/^\d{3}\.//;
+
+@lines = read_file("$base/shrc");
+map { s#$::srclcsuitere#$::lcsuite#go; s#$::srcsuitere#$::suite#o; s#ME perl(?:bench)?#ME $firstbench#o } @lines;
+write_file("$base/shrc", @lines);
+print " shrc";
+
+@lines = read_file("$base/cshrc");
+map { s#$::srclcsuitere#$::lcsuite#go; s#$::srcsuitere#$::suite#o; s#ME perl(?:bench)?#ME $firstbench#o } @lines;
+write_file("$base/cshrc", @lines);
+print " cshrc";
+
+@lines = read_file("$base/bin/scripts.misc/do_go.csh");
+map { s#$::srclcsuitere#$::lcsuite#go; s#$::srcsuitere#$::suite#o; s#ME perl(?:bench)?#ME $firstbench#o } @lines;
+write_file("$base/bin/scripts.misc/do_go.csh", @lines);
+print " bin/scripts.misc/do_go.csh";
+
+@lines = read_file("$base/bin/vars_common.pl");
+# Try hard to figure out what the revision of runspec is _going_ to be
+my $runspec_rev = undef;
+open(SVNPIPE, '-|', 'svn', 'info', $base) or die "Can't run svn on $base: $!\n";
+while(my $line = <SVNPIPE>) {
+  next unless $line =~ /^Revision: (\d+)/;
+  $runspec_rev = $1 + 1;
+  last;
+}
+close(SVNPIPE);
+map {
+      s/^\$::suitebase = '$::srcsuitebase'/\$::suitebase = '$::suitebase'/o;
+      s/^\$::year = '$::srcyear'/\$::year = '$year'/o;
+      s/^\$::release_year = '$::srcrelease_year'/\$::release_year = '$year'/o;
+    } @lines;
+if ($::suitebase eq 'MPI') {
+    map { s/^(\$::treeowner\s*=\s*).*/$1'keeper';/; s/^(\$::treegroup\s*=\s*).*/$1'hpcdevel';/; } @lines;
+}
+elsif ($::suitebase eq 'OMP') {
+    map { s/^(\$::treeowner\s*=\s*).*/$1'keeper';/; s/^(\$::treegroup\s*=\s*).*/$1'ompdevel';/; } @lines;
+}
+if (defined($runspec_rev) && $runspec_rev > 0) {
+    map { s/^\$::current_runspec = \d+/\$::current_runspec = $runspec_rev/o; } @lines;
+}
+write_file("$base/bin/vars_common.pl", @lines);
+print " vars_common.pl";
+
+@lines = read_file("$base/bin/scripts.misc/bset_header");
+map { s/$::srcsuitebase/$::suitebase/; s/$::srcyear/$year/; } @lines;
+write_file("$base/bin/scripts.misc/bset_header", @lines);
+print " scripts.misc/bset_header";
+
+if ($name eq 'MPI') {
+    # No parallelism == no need to check signal handlers
+    @lines = read_file("$base/bin/test/spec/signals.t");
+    map { s/# NOSIGTEST: //; } @lines;
+    write_file("$base/bin/test/spec/signals.t", @lines);
+    print " test/spec/signals.t";
+} else {
+    print " test/spec/signals.t (NOT CHANGED)";
+}
+
+print " index (NOT CHANGED)";
+
+if ($name eq 'MPI') {
+    @lines = read_file("$base/bin/scripts.misc/historical/syncit");
+    map { s/$::srcsuitere/$::suite/g; if ($name eq 'MPI') { s#pro.spec.org:/spec/pro/osg/$::srclcsuitebase/$::srclcsuitere/$::srclcsuitere/.#pro.spec.org:/spec/pro/hpg/mpi/mpi2007/.#; } } @lines;
+    write_file("$base/bin/scripts.misc/historical/syncit", @lines);
+    print " scripts.misc/historical/syncit";
+
+    @lines = read_file("$base/bin/scripts.misc/historical/syncit.local");
+    map { s/$::srcsuitere/$::suite/g; if ($name eq 'MPI') { s#${main::srcsuitebase}tree/$::srclcsuitere/$::srclcsuitere#MPItree/mpi2007#; } } @lines;
+    write_file("$base/bin/scripts.misc/historical/syncit.local", @lines);
+    print " scripts.misc/historical/syncit.local";
+}
+
+# Do the version file
+copy "$src/bin/version.txt", "$base/bin/version${main::srclcsuitebase}base" or die "Copy of $::srcsuitebase tools version failed: $!\nStopped";
+
+print "\n\nDone!\n\n";
+print "Now inspect the changes (if any; ignore changes to \$Id\$ and friends) and\n";
+print "commit them.\n";
+print "\nTHEN (this sounds bizarre, but do it anyway), remove $base/bin\n";
+print "and run 'svn update'.  This will put back all of the SVN variables\n";
+print "('\$Id\$', etc) which were different in $::srcsuite.\n\n";
+
+sub read_files {
+  my ($start, $prepend, $exclude) = @_;
+  my @rc = ();
+
+  return () unless -d $start;
+  my $dh = new IO::Dir $start;
+  die "Can't open $start for reading: $!\nStopped" unless defined($dh);
+  while(my $name = $dh->read()) {
+      next if ($name eq '.' || $name eq '..' || $name eq '.svn' ||
+               $name eq 'lib' || $name eq 'CVS');
+      next if defined($exclude) && isa($exclude, 'ARRAY') && grep { $name eq $_ } @{$exclude};
+      if (-d "$start/$name") {
+         push @rc, read_files("$start/$name", $prepend.$name.'/', $exclude);
+      } elsif (-f "$start/$name") {
+         push @rc, $prepend.$name;
+      }
+  }
+
+  return @rc;
+}
+
+sub read_file {
+    my ($path) = @_;
+
+    my $fh = new IO::File "<$path";
+    die "\nCouldn't open $path for reading: $!\nStopped" unless defined($fh);
+    my @lines = <$fh>;
+    $fh->close();
+
+    return @lines;
+}
+
+sub write_file {
+    my ($path, @lines) = @_;
+
+    my $fh = new IO::File ">$path";
+    die "\nCouldn't open $path for writing: $!\nStopped" unless defined($fh);
+    $fh->print(@lines);
+    $fh->close();
+}
+

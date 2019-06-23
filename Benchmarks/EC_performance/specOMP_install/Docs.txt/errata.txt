@@ -1,0 +1,88 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                            Errata for SPEC OMP2012
+
+   Last updated: $Date: 2012-10-10 19:57:10 -0400 (Wed, 10 Oct 2012) $ by
+   $Author: BrianWhitney $
+
+   (To check for possible updates to this document, please see
+   http://www.spec.org/omp2012/Docs/ )
+
+   Contents
+
+   Introduction
+
+   Open Problem Reports
+
+   01. The pdf and ps reports for power runs don't work.
+
+   Closed Problem Reports
+
+Introduction
+
+   This document describes known problems in SPEC OMP2012. The latest version
+   of this document may be found at
+   http://www.spec.org/omp2012/Docs/errata.html.
+
+   If you are looking for the solution to a technical question, you might
+   also want to review the latest version of
+   http://www.spec.org/omp2012/Docs/faq.html.
+
+   SPEC OMP2012 is extensively tested on a wide variety of systems prior to
+   release, including a variety of Unix and Linux systems; big-endian and
+   little-endian systems; 64-bit systems. Nevertheless, as with any software
+   product, problems may be found too late in the testing process to be fixed
+   in the release, or may be discovered after release.
+
+   If you discover problems that are not listed here or in the FAQ, please
+   report them to SPEC.
+
+   About the format of this document:
+
+     * Problems may be added in the Open section from time to time. In each
+       case, a workaround is given, if one is known.
+     * When problems are fixed, they are moved to the Closed section.
+
+   Notice to maintainers: When updating this document, please do not ever
+   re-use problem numbers.
+
+Open Problem Reports
+
+  01. The pdf and ps reports for power runs don't work.
+
+     * Problem summary: The pdf and ps reports for runs including power are
+       not available at this time.
+
+     * Details: The benchmarks reports are not available in ps or pdf formats
+       if you do a benchmark run that includes power measurement. If you do
+       not measure power, the ps and pdf formats are available.
+
+     * Workarounds: None at this time.
+
+Closed Problem Reports
+
+   --------------------------------------------------------------------------
+
+   Copyright 2012 Standard Performance Evaluation Corporation
+
+   All Rights Reserved
+
+

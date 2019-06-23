@@ -1,0 +1,146 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  flag_dump - Dump an XML flag description as HTML
+#  Copyright 2005-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: flag_dump 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use Getopt::Long;
+use URI;
+use File::Basename;
+$| = 1;         # We want it NOW
+
+if (!exists $ENV{'SPEC'} || !-d $ENV{'SPEC'}) {
+    print STDERR "The SPEC environment variable is not set.\n";
+    if ($^O =~ /MSWin/i) {
+	print STDERR "Please run SHRC.BAT and try again.\n";
+    } else {
+	print STDERR "Please source the shrc and try again.\n";
+    }
+    exit 1;
+}
+
+foreach my $toolsthing (qw( vars.pl util.pl flagutils.pl formatter/formatter_vars.pl )) {
+  eval "require '$toolsthing';";
+  if ($@) {
+      die "There was an error including $toolsthing!\n eval said: $@\n";
+  }
+}
+eval 'package Spec::Format::flags; require "formats/flags.pl";';
+if ($@) {
+    die "There was an error including flags.pl!\n eval said: $@\n";
+}
+
+our $cl_opts;
+our @urls;
+
+$cl_opts = { 'debug' => 3,
+             'source' => 'user',
+             'force'  => undef,
+	 };
+
+my $version = '$LastChangedRevision: 1640 $ '; # Make emacs happier
+$version =~ s/^\044LastChangedRevision: (\d+) \$ $/$1/;
+
+my $rc = GetOptions($cl_opts, qw(
+                                 force!
+                                 review!
+				 source=s
+				 debug|verbose|V=i
+				 help|h
+				 ),
+		    'flags|flagsurl|F=s' => \@urls,
+		    );
+ 
+if (@ARGV <= 0 || $cl_opts->{'help'}) {
+    print basename($0)." v$version\n";
+    print "Usage: $0 <flags file/URL> ...\n";
+    print "  URL types supported are ftp:, file:, and http:\n\n";
+    exit 1;
+}
+
+if ($::website_formatter) {
+    # Mimic the behavior of the website formatter by default
+    $cl_opts->{'review'} = !$::format_for_publication if (!defined($cl_opts->{'review'}));
+    $cl_opts->{'force'} = 1 if (!defined($cl_opts->{'force'}));
+}
+$cl_opts->{'force'} = 0 unless defined($cl_opts->{'force'});
+
+foreach my $url (@ARGV) {
+    if ($url =~ /^(?:https:)/i) {
+	print "HTTPS URLs are not supported.\n";
+	next;
+    }
+    print "Processing $url...";
+    my $uri = URI->new($url);
+    my @path_segs = $uri->path_segments;
+    my $basename = $path_segs[-1];
+    $basename =~ s/\.xml$//;
+    $basename .= '.html';
+    if (-f $basename && !$cl_opts->{'force'}) {
+	my $count = 0;
+	while(-f "$basename.$count") {
+	    $count++;
+	}
+	$basename .= '.'.$count;
+    }
+    my ($flags_str, $flags) = get_flags_file($url, $cl_opts->{'source'}, 1, undef, undef, 'select');
+    if (!defined($flags) || !exists($flags->{'flagmap'})) {
+	print "\nThere is an error in the flags file \"$url\"\n";
+	next;
+    }
+    my $fh = new IO::File '>'.$basename;
+    if (!defined($fh)) {
+	print "\nCouldn't open $basename for writing: $!\n";
+	print "Skipping $url...\n";
+	next;
+    }
+    Spec::Format::flags::flags_to_html($flags, $fh, $cl_opts->{'review'});
+    print "wrote $basename\n";
+    $fh->close();
+}
+
+# Provide our own Log stub
+sub Log {
+    my ($lvl, @strings) = @_;
+
+    if ($::cl_opts->{'debug'} >= $lvl) {
+	print join('', @strings);
+    }
+}
+
+# And our own copy of jp
+sub joinpaths {
+    my @dirs;
+    for my $tmp (@_) {
+        next unless defined($tmp);
+        # Replace all backslashes with forward slashes (for NT)
+        my $a = $tmp;
+        $a =~ s|\\|/|go;
+        next if $a eq '';
+        # If this is the start of an absolute path, remove what's already there
+        @dirs = () if ($a=~m/^([^:\[]*):?\[(\S*)\]/o || $a =~ m|^/|o || $a =~ m|^[a-zA-Z]:|o);
+
+        if ($a=~m/^([^:\[]*):?\[(\S*)\]/o) { # VMS path - make it a UNIX-alike
+            push (@dirs, $1, split('.', $2));
+        } else { # Unix PATH
+            push (@dirs, $a);
+        }
+    }
+    my $result = join('/',@dirs);
+    return $result;
+}
+sub jp { joinpaths(@_); }
+
+# We also need a copy of do_exit
+sub do_exit {
+  exit(@_);
+}
+
+1;

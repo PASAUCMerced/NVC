@@ -1,0 +1,119 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  extract_raw - a tool for extracting encoded raw files from formatted
+#                   results files
+#  Copyright 1999-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: extract_raw 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+require 'util.pl';
+
+use vars qw($mode $strip $begin $end $dup_counter $rawdata
+	    $debug $current_file $found);
+
+$mode = undef;
+$strip = undef;
+$dup_counter = 0;
+$begin = undef;
+$end = undef;
+$rawdata = '';
+$debug = 0;
+$current_file = undef;
+$found = 0;
+
+# We'll use Perl's magic <> so that files can be piped in through stdin
+# or given on the command line.
+# This will process any number of files.
+
+my $collecting = 0;
+my $fname = undef;
+while (<>) {
+    if ($current_file ne $ARGV) {
+        if (defined($current_file) && $found == 0) {
+            $current_file = 'stdin' if ($current_file eq '-');
+            print "${current_file}: No raw file found\n";
+        }
+        $current_file = $ARGV;
+        $found = 0;
+    }
+    if ($collecting) {
+        tr/\015\012//d;
+	if (/^${end}$/) {
+	    print "$end found!  fname=$fname\n" if $debug;
+	    $rawdata = decode_decompress($rawdata);
+	    if (!defined($fname) || ($fname eq '') || (-e $fname)) {
+		while (-e "tmpraw.$dup_counter.rsf") { $dup_counter++; }
+		if ($fname) {
+		    print STDERR "Cowardly refusing to overwrite $fname (it already exists).\nI'll write to tmpraw.$dup_counter.rsf instead.\n";
+		} else {
+		    print STDERR "No filename was provided or detected for this file (wierd!).\nI'll write to tmpraw.$dup_counter.rsf.\n";
+		}
+		$fname = "tmpraw.$dup_counter.rsf";
+	    }
+	    if (open(OFH, ">$fname")) {
+                binmode(OFH);
+		print OFH $rawdata;
+		close(OFH);
+		print STDERR "${current_file}: Wrote \"$fname\"\n";
+                $found = 1;
+	    } else {
+		print STDERR "There was an error opening $fname for writing: $!\n";
+	    }
+
+	    # Prepare for the possibility that more may be coming...
+	    $mode = undef;
+	    $strip = undef;
+	    $begin = undef;
+	    $end = undef;
+	    $rawdata = '';
+	    $collecting = 0;
+	} else {
+	    # It's just another line; tack it on
+	    s/^$strip// if (defined $strip);
+	    $rawdata .= $_;
+	}
+    } elsif (/^$begin( BZIP2| BASE64| GZIP)? (\S+?\.(?:raw|rsf))/) {
+	$collecting = 1;
+	$fname = $2;
+	print "$begin found!  fname=$fname\n" if $debug;
+	next;
+    }
+    if (!defined $mode) {
+	if (/^%!PS-Adobe/o) {
+	    print "PS mode\n" if $debug;
+	    $mode = 'PS';
+	    $begin = '% BEGIN';
+	    $end = '% END';
+	    $strip = '% ';
+	} elsif (/^<HTML(?:>$| xml)/oi) {
+	    print "HTML mode\n" if $debug;
+	    $mode = 'HTML';
+	    $begin = '<!-- BEGIN';
+	    $end = 'END -->';
+	    $strip = undef;
+	} elsif (/^%PDF/o) {
+	    print "PDF mode\n" if $debug;
+	    $mode = 'PDF';
+	    $begin = '% BEGIN';
+	    $end = '% END';
+	    $strip = '% ';
+	}
+    }
+}
+
+if ($current_file ne $ARGV || $found == 0) {
+    if (defined($current_file)) {
+        $current_file = 'stdin' if ($current_file eq '-');
+    } else {
+        $current_file = $ARGV; # Can happen if only one empty file is specified
+    }
+    if ($found == 0) {
+        print "${current_file}: No raw file found\n";
+    }
+}

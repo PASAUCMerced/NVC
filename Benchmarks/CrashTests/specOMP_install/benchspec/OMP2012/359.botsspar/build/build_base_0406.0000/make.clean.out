@@ -1,0 +1,6 @@
+rm -rf *.o  botsspar.out
+find . \( -name \*.o -o -name '*.fppized.f*' -o -name '*.i' -o -name '*.mod' \) -print | xargs rm -rf
+rm -rf bots-sparselu
+rm -rf bots-sparselu.exe
+rm -rf core
+rm -rf 

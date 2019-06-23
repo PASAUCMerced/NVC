@@ -1,0 +1,435 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Wed Mar 19 04:51:14 2008 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>RXP</title>
+
+</head>
+<body>
+
+<h1 align=center>RXP</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXIT_STATUS">EXIT STATUS</a><br>
+<a href="#ENVIRONMENT">ENVIRONMENT</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">rxp - XML
+parser program</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rxp</b> [
+<b>&minus;abemnNRsStvVx</b> ] [ <b>-o b|p|0|1|2|3|i|d</b> ]
+[ <b>U 0|1|2</b> ] [ <b>-c</b> <i>encoding</i> ] [
+<i>url</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rxp</b>
+reads and parses XML from the <i>url</i> (or standard input
+if none is provided) and writes it to standard output,
+optionally expanding entities, defaulting attributes, and
+translating to a different output encoding.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>rxp</b>
+accepts XML 1.0 and 1.1, and the corresponding versions of
+XML namespaces. It implements the Oasis XML catalog
+specification.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Common option
+combinations are <b>-Nxs</b> to check a document for
+well-formedness and namespace well-formedness, and
+<b>-VNxs</b> to also check for DTD-validity.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-a</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Insert declared
+default values for omitted attributes.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-v</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Be verbose.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-V</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Validate the
+document. Repeating this option will make the program treat
+validity errors as well-formedness errors, and exit after
+the first validity error (otherwise a warning will be
+printed for each one).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-d</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Read the whole DTD
+(internal and external parts) regardless of any standalone
+declaration. Otherwise a declaration
+&quot;standalone=&rsquo;yes&rsquo;&quot; will prevent the
+external part from being read (unless validation is
+selected).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-N</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Enable XML
+namespace support. The document will be checked for correct
+namespace syntax, and if <b>-b</b> is specified qualified
+element and attribute names will be displayed with their
+URIs.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-R</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">The value of this
+flag is a time limit in seconds, after which the program
+will abort. This is to protect against denial-of-service
+attacks using malicious documents.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-S</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Keep track of
+xml:space attributes. This will only affect output when
+<b>-b</b> is specified.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-e</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Obsolete, do not
+use.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-E</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Do not expand
+entity references (opposite of old <b>-e</b> flag)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-s</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Be silent (that is,
+suppress output). Useful for benchmarking or if you just
+want to see the error messages.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-b</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Print output as
+&quot;bits&quot;.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-n</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Treat the input as
+normalised SGML rather than XML. Not intended for general
+use.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-o</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">If this flag is
+<b>p</b>, output is in the default (plain) format. If it is
+<b>b</b>, output is printed as &quot;bits&quot; (equivalent
+to <b>-b</b>). If it is <b>0</b>, output is suppressed
+(equivalent to <b>-s</b>). If it is <b>1</b>, <b>2</b> or
+<b>3</b>, output is in first, second or third canonical
+form. If it is <b>i</b>, output is a dump of the
+document&rsquo;s infoset. If it is <b>d</b>, output is in a
+form suitable for use with &quot;diff&quot;; in particular
+attributes are sorted into alphabetical order.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-m</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Merge PCData across
+entity references. This will only affect the output when
+<b>-b</b> is specified.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-t</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Read in the input
+as a tree, rather than bits. Should make no difference to
+the output.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>-u</b> <i>base_uri</i></p>
+
+<p style="margin-left:22%;">Use the specified base URI when
+resolving system identifiers.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-U</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">This flag controls
+Unicode normalization checking and is only relevant when
+parsing XML 1.1 documents. If it is <b>0</b>, no checking is
+done. If it is <b>1</b>, <b>rxp</b> checks that the document
+is fully normalized as defined by the W3C character model.
+If it is <b>2</b>, the document is checked and any unknown
+characters (which may be ones corresponding to a newer
+version of Unicode than <b>rxp</b> knows about) will also
+cause an error.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-x</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Strict XML mode.
+This suppresses some warnings (eg entity redefinitions) but
+treats all XML well-formedness errors as fatal. This flag
+implies the <b>-a</b> flag, and sets the output encoding to
+UTF-8 unless the <b>-c</b> flag is given. It sets the output
+format to first canonical form unless the <b>-o</b>,
+<b>-b</b> or <b>-s</b> flag is given.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>-c</b> <i>encoding</i></p>
+
+<p style="margin-left:22%;">Produce output in the specified
+character encoding. Known encodings include
+<b>ISO-8859-1</b>, <b>UTF-8</b>, <b>ISO-10646-UCS</b> and
+<b>UTF-16</b>. 16-bit encoding names my be suffixed with
+<b>-B</b> or <b>-L</b> to specify big- or little-endian byte
+order (the default is the host byte order). If no <b>-c</b>
+or <b>-x</b> option is given, output is in the same encoding
+as the input document.</p>
+
+<p style="margin-left:11%;"><b>-D</b> <i>name sysid</i></p>
+
+<p style="margin-left:22%;">Force use of the document type
+specified by <i>sysid</i>. The root element name for
+validation is <i>name</i>. Any DTD in the document is
+ignored. This flag does not imply validation; use <b>-V</b>
+if required.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-i</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Do xml:id
+processing. Attributes named xml:id are recognised as IDs
+even if not declared.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-I</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">The same as
+<b>-i</b>, but in addition xml:id attributes are checked for
+uniqueness.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top:1em;"><b>-z</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top:1em;">Use a shorter
+format for error messages. Particularly useful when using
+the parser in Emacs compilation mode, so that Emacs can find
+the error location.</p></td>
+</table>
+
+<a name="EXIT_STATUS"></a>
+<h2>EXIT STATUS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If the
+<b>-V</b> flag is given, and the document is well-formed but
+not valid, 2 is returned. If the document is not
+well-formed, or a system error occurs, 1 is returned.
+Otherwise 0 is returned. Since the parser can expand
+external entities even when not validating, it treats
+certain errors which are technically validity errors as
+well-formedness errors. If <b>-x</b> is not specified, some
+well-formedness errors produce only warnings and do not
+affect the exit status.</p>
+
+<a name="ENVIRONMENT"></a>
+<h2>ENVIRONMENT</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If the
+environment variable <b>XML_CATALOG_FILES</b> is set, XML
+catalog processing is enabled. The variable should be set to
+a space-separated list of catalog files. The variable
+<b>XML_CATALOG_PREFER</b> may be set to <b>public</b> or
+<b>system</b> to set the initial mode for catalog
+processing; the default is <b>system</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If the variable
+<b>RXPURL</b> is set, it is used as the URL of the document
+to parse. This may be useful in CGI scripts and the like to
+avoid shell parsing of a user-supplied argument.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The variable
+<b>http_proxy</b> can be used to specify a proxy for HTTP
+connections. The syntax is <b>hostname[:port]</b>.</p>
+<hr>
+
+<p>Copyright 1999-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:900px;">&nbsp;</p>
+
+
+</body>
+</html>

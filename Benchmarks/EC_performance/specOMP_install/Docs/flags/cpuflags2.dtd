@@ -1,0 +1,215 @@
+<!--
+   SPEC CPU Flag Description File 1.2 DTD
+
+   This DTD describes the XML used to describe compilation flags for
+   benchmark suites using the SPEC CPU benchmark harness.
+
+   For further information, see
+       http://www.spec.org/cpu2006/Docs/flag-description.html
+
+   Copyright 2005-2011 Standard Performance Evaluation Corporation
+   All Rights Reserved. 
+
+   This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+
+   PUBLIC "-//SPEC//DTD SPEC CPU Flags Description 1.2//EN"
+   SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+
+   ...is what I'd like to say, but we don't have a SPEC entry in any of
+   the catalogs, so we'll just have to make do with SYSTEM for now.
+
+   $Id: cpuflags2.dtd 6491 2011-05-06 18:54:19Z cloyce $
+
+-->
+
+  <!-- The list of allowable classes for flags and headers           -->
+  <!-- This list also lives in CPUFlagParser.pm and flags.pl; if you -->
+  <!-- change it, do not forget to update those files.               -->
+<!ENTITY % Classes "mandatory | forbidden |
+                    portability | optimization |
+                    compiler | other |
+                    unknown" >
+
+  <!-- The list of allowable ways to say "yes" and "no" -->
+<!ENTITY % YesNo "(0 | 1 | no | yes | off | on |
+                           No | Yes | Off | On |
+                           NO | YES | OFF | ON)" >
+
+<!-- flagsdescription is the root element -->
+<!ELEMENT flagsdescription (filename,title,style?,submit_command?,sw_environment?,((os_tuning?,virtual_machine?,firmware?,parts?) | (fdo_settings?,header*,flag*)),dumpit?)>
+
+<!-- The filename element allows the flag description writer to SUGGEST
+     a filename to use when storing a flag description that has been
+     transmitted via a non-name-preserving channel (encoded into a raw file,
+     flags file upload to SPEC, etc).
+-->
+<!ELEMENT filename (#PCDATA)>
+
+<!-- The title element contains the text that will be used in the
+     <title>...</title> section of the HTML flag dump.
+-->
+<!ELEMENT title (#PCDATA)>
+
+<!-- style is an optional element which may contain CSS code to be
+     inserted at the bottom of the local <style>..</style> section.
+     This can be used to define new classes (which you can use in your
+     header section and flag descriptions), or to override the supplied
+     default styles.  For ease of use, the CSS code should probably be
+     contained within a CDATA section:
+     !<[CDATA[
+     ...CSS goes here...
+     ]]>
+-->
+<!ELEMENT style (#PCDATA)>
+
+<!-- header is an optional element which may contain HTML code to be
+     inserted at the top of the HTML flag dump and (default class only)
+     at the top of the per-result flag report.  For ease of use, the HTML
+     markup should be contained within a CDATA section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT header (#PCDATA)>
+<!ATTLIST header
+      class (%Classes;) #IMPLIED
+>
+
+<!-- submit_command is an optional element which describes commands, options,
+     and scripts used with submit.  If present, it should contain valid HTML
+     code, which will be inserted at the bottom of the HTML flags dump and
+     the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT submit_command (#PCDATA)>
+
+<!-- sw_environment is an optional element which describes shell resources,
+     environment variables, and other software options or installation
+     settings.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT sw_environment (#PCDATA)>
+
+<!-- fdo_settings is an optional element which describes non-compiler
+     commands used to process benchmark binaries during FDO builds.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT fdo_settings (#PCDATA)>
+
+<!-- os_tuning is an optional element which describes operating system
+     install options, boot settings, and other operating system configuration
+     options.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT os_tuning (#PCDATA)>
+
+<!-- virtual_machine is an optional element which describes settings
+     pertaining to hypervisors, domains, partitioning, or any other
+     virtualization technology.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT virtual_machine (#PCDATA)>
+
+<!-- firmware is an optional element which describes firmware, BIOS,
+     or microcode settings.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT firmware (#PCDATA)>
+
+<!-- parts is an optional element which describes hardware and software
+     parts and options needed to complete the system.
+     If present, it should contain valid HTML code, which will be inserted
+     at the bottom of the HTML flags dump and the per-result flags report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT parts (#PCDATA)>
+
+<!-- The flag element describes one single flag.  Documentation for its
+     attributes and their values is long and has already been written.  See
+     the reference at the top of the page.
+-->
+<!ELEMENT flag (#PCDATA | include | ex_replacement | display | example)*>
+<!ATTLIST flag
+      name ID #REQUIRED
+      class (%Classes;) #REQUIRED
+      regexp CDATA #IMPLIED
+      compilers CDATA #IMPLIED
+      parallel %YesNo; "0"
+>
+
+<!-- example is used to specify example flag text when the name is not
+     appropriate for display.
+-->
+<!ELEMENT example (#PCDATA)>
+
+<!-- ex_replacement is used to specify one or more values for replacing
+     $1, $2, etc in description text when that text is to be output and
+     no replacement text from a match is available (as when formatting the
+     whole list of flags as HTML).
+-->
+<!ELEMENT ex_replacement (#PCDATA)>
+
+<!-- The include element is used to note that a flag either implies the
+     presence of another flag (the 'flag' attribute) or should insert
+     some text back into the variable in which it matched (the 'text'
+     attribute.  The 'flagtext' attribute is used ONLY in conjunction with
+     the 'flag' attribute to specify the text of a flag that should be used
+     for display.
+-->
+<!ELEMENT include EMPTY>
+<!ATTLIST include
+      flag IDREF #IMPLIED
+      flagtext CDATA #IMPLIED
+      text CDATA #IMPLIED
+>
+
+<!-- The display element is used to specify whether or not a particular
+     flag description should be displayed.  A flag must be marked for
+     display (the default) unless it contains ONLY text includes.  The
+     DTD does not enforce this, but runspec and friends will.
+-->
+<!ELEMENT display EMPTY>
+<!ATTLIST display
+      enable %YesNo; "1"
+>
+
+<!-- dumpit is an undocumented element.  It might cause something to happen. -->
+<!ELEMENT dumpit (#PCDATA)>

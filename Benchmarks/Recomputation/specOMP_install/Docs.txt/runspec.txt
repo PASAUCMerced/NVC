@@ -1,0 +1,1995 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                             The 'runspec' Command
+
+   Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by
+   $Author: BrianWhitney $
+
+   (To check for possible updates to this document, please see
+   http://www.spec.org/omp2012/Docs/ )
+
+   Contents
+
+   1 Introduction
+
+   1.1 Who Needs runspec?
+
+   1.2 About Config Files
+
+   1.2.1 Finding a config file
+
+   1.2.2 Naming your config file
+
+   1.2.3 If you change only one thing...
+
+   1.3 About Defaults
+
+   1.4 About Disk Usage and Support for Multiple Users
+
+   1.4.1 Directory tree
+
+   1.4.2 Hey! Where did all my disk space go?
+
+   1.5 Multi-user support
+
+   1.5.1 Recommended sharing method: output_root
+
+   1.5.2 Alternative sharing methods
+
+   2 Before Using runspec
+
+   2.1 Install kit
+
+   2.2 Have a config file
+
+   2.3 Undefine SPEC
+
+   2.4 Set your path: Unix
+
+   2.5 Set your path: Windows
+
+   2.6 Check your disk space
+
+   3 Using runspec
+
+   3.1 Simplest usage
+
+   3.1.1 Reportable run
+
+   3.1.2 Running selected benchmarks
+
+   3.1.3 Output files
+
+   3.2 Syntax
+
+   3.2.1 Benchmark names in run lists
+
+   3.2.2 Run order for reportable runs
+
+   3.2.3 Run order when more than one tuning is present
+
+   3.3 Actions
+
+   3.4 Commonly used options
+
+   --action --check_version --config --flagsurl --help --ignore_errors
+   --iterations --loose --output_format --[no]power --threads --rawformat
+   --rebuild --reportable --tune
+
+   3.5 Less commonly used options
+
+   --basepeak --nobuild --comment --define --delay --deletework --extension
+   --fake --fakereport --fakereportable --[no]feedback --[no]graph_auto
+   --graph_max --graph_min --http_proxy --http_timeout --info_wrap_column
+   --[no]keeptmp --log_timestamp --machine --make_no_clobber --make_bundle
+   --notes_wrap_column --[no]preenv --reportonly --[no]review
+   --[no]setprocgroup --size --speed --test --[no]table --undef --update
+   --update_flags --unpack_bundle --use_bundle --username --verbose --version
+
+   4 Quick reference
+
+   Note: links to SPEC OMP2012 documents on this web page assume that you are
+   reading the page from a directory that also contains the other SPEC
+   OMP2012 documents. If by some chance you are reading this web page from a
+   location where the links do not work, try accessing the referenced
+   documents at one of the following locations:
+
+     * www.spec.org/omp2012/Docs/
+     * The $SPEC/Docs/ (Unix) or %SPEC%\Docs\ (Windows) directory on a system
+       where SPEC OMP2012 has been installed.
+     * The Docs/ directory on your SPEC OMP2012 distribution media.
+
+1 Introduction
+
+  1.1 Who Needs runspec?
+
+   Everyone who uses SPEC OMP2012 needs runspec. It is the primary tool in
+   the suite. It is used to build the benchmarks, run them, and report on
+   their results. All users of OMP2012 should read this document.
+
+   If you are a beginner, please start out by reading from the beginning
+   through section 3.1 Simplest Usage. That will probably be enough to get
+   you started.
+
+  1.2 About Config Files
+
+   In order to use runspec, you need a "config file", which contains detailed
+   instructions about how to build and run the benchmarks. You may not have
+   to learn much about config files in order to get started. Typically, you
+   start off using a config file that someone else has previously written.
+
+    1.2.1 Finding a config file
+
+   Where can you find such a config file? There are various sources:
+
+    1. Look in the directory $SPEC/config/ (Unix) or %SPEC%\config\
+       (Windows). You may find that there is a already a config file there
+       with a name that indicates that it is appropriate for your system. You
+       may even find that default.cfg already contains settings that would be
+       a good starting place for your system.
+
+    2. Look at the SPEC web site (http://www.spec.org/omp2012/) for a OMP2012
+       result submission that used your system, or a system similar to yours.
+       You can download the config file from that submission.
+
+    3. You can review the examples in
+       $SPEC/config/Example*.cfg (Unix) or
+       %SPEC%\config\Example*.cfg (Windows).
+    4. Alternatively, you can write your own, using the instructions in
+       config.html
+
+    1.2.2 Naming your config file
+
+   Once you have found a config file that you would like to use as a starting
+   point, you will probably find it convenient to copy it and modify it
+   according to your needs. There are various options:
+
+     * You can copy the config file to default.cfg. Doing so means that you
+       won't even need to mention --config on your runspec command line.
+
+     * You might find it useful to name config files after the date and the
+       test attempt: jan07a.cfg, jan07b.cfg, and so forth. This is alleged to
+       make it easier to trace the history of an experiment set.
+
+     * If you are sharing a testbed with other users, it is probably wise to
+       name the config file after yourself. For example, if Yusuf is trying
+       out the new Solaris Fortran95 compiler, he might say:
+
+       cd $SPEC/config
+       cp solaris-sparc-sunstudio.cfg yusuf-newF95.cfg
+       vi yusuf-newF95.cfg
+
+       and edit the new config file to add whatever options he wishes to try
+       out in the new compiler.
+
+    1.2.3 If you change only one thing...
+
+   At first, you may hesitate to change settings in config files, until you
+   have a chance to read config.html. But there is one thing that you might
+   want to change right away. Look for a line that says:
+
+   ext=
+
+   That line determines what extension will be added to your binaries. If
+   there are comments next to that line giving instructions ("# set ext to A
+   for this, or to B for that"), then set it accordingly. But if there are no
+   such instructions, then usually you are free to set the extension to
+   whatever you like, which can be very useful to ensure that your binaries
+   are not accidentally over-written. You might add your name in the
+   extension, if you are sharing a testbed with others. Or, you may find it
+   convenient to keep binaries for a series of experiments, to facilitate
+   later analysis; if you're naming your config files with names such as
+   jan07a.cfg, you might choose to use "ext=jan07a" in the config file.
+
+  1.3 About Defaults
+
+   The SPEC tools have followed two principles regarding defaults:
+
+    1. There should always be a default for everything
+    2. It should be easy to change the defaults
+
+   This means (the good news) that something sensible will usually happen,
+   even when you are not explicit about what you want. But it also means (the
+   bad news) that if something unexpected happens, you may have to look in
+   several places in order to figure out why it behaves differently than you
+   expect.
+
+   The order of precedence for settings is:
+
+   Highest precedence: runspec command
+   Middle:             config file
+   Lowest:             the tools as shipped by SPEC
+
+   Therefore, when this document tells you that something is the default,
+   bear in mind that your config file may have changed that setting. With
+   luck, the author of the config file will tell you so (perhaps in the
+   comments to the config file).
+
+  1.4 About Disk Usage
+
+    1.4.1 Directory Tree
+
+   The structure of the OMP2012 directory tree is:
+
+ $SPEC or %SPEC% - the root directory
+    Docs         - location for html documents concerning the benchmark suite
+    Docs.txt     - location for text versions of the Docs tree
+    benchspec    - some suite-wide files
+       OMP2012   - the benchmarks
+    bin          - tools to run and report on the suite
+    config       - config files
+    result       - log files and reports
+    tools        - sources for the OMP2012 tools
+
+   Within each of the individual benchmarks, the structure is:
+
+ nnn.benchmark - root for this benchmark
+    Docs       - Documentation about the benchmark
+    Spec       - SPEC metadata about the benchmark
+    data
+       all     - data used by all runs (if needed by the benchmark)
+       ref     - the real data set, required for all result reporting
+       test    - data for a simple test that an executable is functional
+       train   - data for feedback-directed optimization
+    build      - all builds take place here
+    exe        - compiled versions of the benchmark
+    run        - all runs take place here
+    src        - the sources for the benchmark
+
+    1.4.2 Hey! Where did all my disk space go?
+
+   When you find yourself wondering "Where did all my disk space go?", the
+   answer is "The run directories." Most (*) activity takes place in
+   automatically created subdirectories of $SPEC/benchspec/OMP2012/*/run/
+   (Unix) or %SPEC%\benchspec\OMP2012\*\run\ (Windows).
+
+   For example, suppose Bob has a config file that he is using to test some
+   new memory optimizations, and has set
+
+   ext=BobMemoryOpt
+
+   in his config file. In that case, the tools would create directories such
+   as these:
+
+ $ pwd
+ /Users/bob/omp2012/benchspec/OMP2012/350.md/run
+ $ ls
+ list
+ run_base_test_BobMemoryOpt.0001
+ run_base_train_BobMemoryOpt.0001
+ run_base_ref_BobMemoryOpt.0001
+ run_peak_test_BobMemoryOpt.0001
+ run_peak_train_BobMemoryOpt.0001
+ run_peak_ref_BobMemoryOpt.0001
+ $
+
+   To get your disk space back, see the documentation of the various cleaning
+   options, below; or issue a command such as the following (on Unix systems;
+   Windows users can select the files with Explorer):
+
+   rm -Rf $SPEC/benchspec/OMP2012/*/run/run*BobMemory*
+
+   The effect of the above command would be to delete all the run directories
+   associated with the benchmarks which used extension *BobMemory*. Note that
+   the command did not delete the directories where the benchmarks were built
+   (...OMP2012/*/build/*); sometimes it can come in handy to keep the build
+   directories, perhaps to assist with debugging.
+
+   (*) Other space: In addition to the run directories, other consumers of
+   disk space include: (1) temporary files; for a listing of these, see the
+   documentation of keeptmp; and (2) the build directories. For the example
+   above, underneath:
+
+ /Users/bob/omp2012/benchspec/OMP2012/350.md/build/
+
+   will be found:
+
+ $ ls
+ build_base_BobMemoryOpt.0001
+ build_peak_BobMemoryOpt.0001
+
+  1.5 Multi-user support
+
+   (If you are not sharing a SPEC OMP2012 installation with other users, you
+   can skip ahead to section 2.)
+
+   The SPEC OMP2012 toolset provides support for multiple users of a single
+   installation, but the tools also rely upon users to make appropriate
+   choices regarding setup of operating-system file protections. This section
+   describes the multi-user features and describes ways of organizing
+   protections. First, to the features that are always enabled:
+
+     * The SPEC-distributed source directories and data directories are not
+       changed during testing. Instead, working directories are created as
+       needed for builds and runs.
+
+     * Each user's build and run directories are tagged with the name of the
+       user that they belong to (in the file nnn.benchmark/run/list).
+       Directories created for one user are not re-used for a different user.
+
+     * Multiple users can run tests at the same time. (Of course, if the jobs
+       compete with each other for resources, it is likely that they will run
+       more slowly.)
+
+     * Multiple users can even run the "same" test at the same time, and they
+       will automatically be given separate run directories.
+
+   If you have more than one user of SPEC OMP2012, you can use additional
+   features and choose from several different ways to organize the on-disk
+   layout to share usage of the product. The recommended way is described
+   first.
+
+  1.5.1 Recommended sharing method: output_root
+
+   The recommended method for sharing a SPEC OMP2012 installation among
+   multiple users has 4 steps:
+
+   Step                            Example (Unix)
+   Protect most of the SPEC tree   chmod -R ugo-w $SPEC
+   read-only
+   Allow shared access to the      chmod 1777 $SPEC/config
+   config directory
+   Keep your own config files      cp config/assignment1.cfg config/alan1.cfg
+   Add an output_root to your      output_root=/home/${username}/spec
+   config file
+
+   More detail about the steps is below.
+
+    1. Most of the OMP2012 tree is shared, and can be protected read-only.
+       For example, on a Unix system, you might set protections with:
+
+ chmod -R ugo-w $SPEC
+
+    2. The one exception is the config directory, $SPEC/config/ (Unix) or
+       %SPEC%\config\ (Windows), which needs to be a read/write directory
+       shared by all the users. It is written to by users when they create
+       config files, and by the tools themselves: config files are updated
+       after successful builds to associate them with their binaries.
+
+       On Unix, the above protection command needs to be supplemented with:
+
+ chmod 1777 $SPEC/config
+
+       which will have the effect (on most Unix systems) of allowing users to
+       create config files which they can choose to protect to allow access
+       only by themselves.
+
+    3. Config files usually would not be shared between users. For example,
+       students might create their own copies of a config file.
+
+       Alan enters:
+
+ cd /cs403
+ . ./shrc
+ cp config/assignment1.cfg config/alan1.cfg
+ chmod u+w config/alan1.cfg
+ runspec --config alan1 --action build 351.bwaves
+
+       Wendy enters:
+
+ cd /cs403
+ . ./shrc
+ cp config/assignment1.cfg config/wendy1.cfg
+ chmod u+w config/wendy1.cfg
+ runspec --config wendy1 --action build 351.bwaves
+
+    4. Set output_root in the config files to change the destinations of the
+       outputs.
+
+       To see the effect of output_root, consider an example with and without
+       the feature. If $SPEC is set to /cs403 and if ext=feb27a, then
+       normally the build directory for 351.bwaves with base tuning would be:
+
+       /cs403/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001
+
+       But if the config files include (near the top, before any occurrence
+       of a section marker):
+
+ output_root=/home/${username}/spec
+ ext=feb27a
+
+       then Alan's build directory for 351.bwaves will be
+
+       /home/alan/spec/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001
+
+       and Wendy's will be
+
+       /home/wendy/spec/benchspec/OMP2012/351.bwaves/run/build_base_feb27a.001
+
+       With the above setting of output_root, log files and reports that
+       would normally go to /cs403/result instead will go to
+       /home/alan/spec/result and /home/wendy/spec/result. Alan will find
+       hmmer executables underneath
+       /home/alan/spec/benchspec/OMP2012/351.bwaves/exe. And so forth.
+
+   Summary: output_root is the recommended way to separate users. Set the
+   protection on the original tree to read-only, except for the config
+   directory, which should be set to allow users to write, and protect, their
+   own config files.
+
+  1.5.2 Alternative sharing methods
+
+   An alternative is to keep all the files in a single directory tree. In
+   this case:
+
+     * The directory tree must be writable by each of the users, which means
+       that they have to trust each other not to modify or delete each
+       others' files.
+
+     * Directories such as result, nnn.benchmark/exe and nnn.benchmark/run
+       are not segregated by user, so you can only have one version of (for
+       example) benchspec/OMP2012/363.swim/exe/swim_base.jan07a
+
+     * Note that user names do not appear in the directory names. For
+       example, if Lizy, Aashish, and Ajay are sharing a directory tree on a
+       Windows system, and each of them runs the ref workload for 350.md with
+       base tuning and a config file that sets ext=wwc9, there will be three
+       directories created:
+
+       %SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0001
+       %SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0002
+       %SPEC%\benchspec\OMP2012\350.md\run\run_base_ref_wwc9.0003
+
+       To discover which 350.md run directories belong to Lizy:
+
+       F:\> cd %SPEC%\benchspec\OMP2012\350.md\run
+       F:\omp2012\benchspec\OMP2012\350.md\run> findstr lizy list
+
+       To discover which result files belong to Aashish:
+
+       F:\omp2012> cd %SPEC%\result
+       F:\omp2012\result> findstr aashish *log
+
+       (Of course, on Unix, that would be grep instead of findstr).
+
+   Name convention: Users sharing a tree can adopt conventions to make their
+   files more readily identifiable. As mentioned above, you can set your
+   config file name to match your own name, and do the same for the
+   extension.
+
+   Expid convention: Another alternative is to tag directories with labels
+   that help to identify them based on an "experiment ID", with the config
+   file feature expid, as described in config.html.
+
+   Spend the disk space: A final alternative, of course, is to not share. You
+   can simply give each user their own copy of the entire SPEC OMP2012
+   directory tree. This may be the easiest way to ensure that there are no
+   surprises (at the expense of extra disk space.)
+
+   --------------------------------------------------------------------------
+
+2 Before Using runspec
+
+   Before using runspec, you need to:
+
+  2.1 Install OMP2012
+
+   The runspec tool uses perl version 5.12.3, which is installed as specperl
+   when you install OMP2012. If you haven't already installed the suite, then
+   please see system-requirements.html followed by:
+
+     * install-guide-unix.html or
+     * install-guide-windows.html
+
+  2.2 Find a config file
+
+   You won't get far unless you have a config file, but fortunately you can
+   get started by using a pre-existing config file. See About Config Files,
+   above.
+
+  2.3 Undefine SPEC
+
+   If the environment variable SPEC is already defined (e.g. from a run of
+   some other SPEC benchmark suite), it may be wise to undefine it first,
+   e.g. by logging out and logging in, or by using whatever commands your
+   system uses for removing definitions (such as unset).
+
+   To check whether the variable is already defined, type
+
+   echo $SPEC (Unix) or
+   echo %SPEC% (Windows)
+
+   On Unix systems, the desired output is nothing at all; on Windows systems,
+   the desired output is %SPEC%.
+
+   Similarly, if your PATH includes tools from some other SPEC suite, it may
+   be wise to remove them from your path.
+
+   Next, you need to set your path appropriately for your system type.
+   See section 2.4 for Unix or section 2.5 for Windows.
+
+  2.4 Setting the path: Unix (and Mac OSX)
+
+   If you are using a Unix system, change your current directory to the
+   top-level SPEC directory and source either shrc or cshrc:
+
+     * For example, if you are using a Bourne-compatible shell (such as ash,
+       bash, ksh, zsh), you could type:
+       users$ cd /bigdisk/myke/omp2012
+       omp2012$ . ./shrc     <-- that's dot-space-dot-slash-shrc
+     * If you are using a csh-compatible shell, you could type:
+       users% cd /bigdisk/bob/omp2012
+       omp2012% source cshrc
+
+   Note that it is, in general, a good idea to ensure that you understand
+   what is in your path, and that you have only what you truly need. If you
+   have non-standard versions of commonly used utilities in your path, you
+   may avoid unpleasant surprises by taking them out.
+
+   q. Do you have to be root? Occasionally, users of Unix systems have asked
+   whether it is necessary to elevate privileges, or to become 'root', prior
+   to entering the above command. SPEC recommends (*) that you do not become
+   root, because: (1) To the best of SPEC's knowledge, no component of SPEC
+   CPU needs to modify system directories, nor does any component need to
+   call privileged system interfaces. (2) Therefore, if you find that it
+   appears that there is some reason why you need to be root, the cause is
+   likely to be outside the SPEC toolset - for example, disk protections, or
+   quota limits. (3) For safe benchmarking, it is better to avoid being root,
+   for the same reason that it is a good idea to wear seat belts in a car:
+   accidents happen, humans make mistakes. For example, if you accidentally
+   type:
+
+   kill 1
+
+   when you meant to say:
+
+   kill %1
+
+   then you will very grateful if you are not privileged at that moment.
+
+   (*) This is only a recommendation, not a requirement nor a rule.
+
+  2.5 Setting the path: Windows
+
+   If you are using a Microsoft Windows system, start a Command Prompt Window
+   (previously known as an "MSDOS window"). Change to the directory where you
+   have installed OMP2012, then edit shrc.bat, following the instructions
+   contained therein. For example:
+
+   C:\> f:
+   F:\> cd diego\omp2012
+   F:\diego\omp2012\> copy shrc.bat shrc.bat.orig
+   F:\diego\omp2012\> notepad shrc.bat
+
+   and follow the instructions in shrc.bat to make the appropriate edits for
+   your compiler paths.
+
+   Caution: you may find that the lines are not correctly formatted (the text
+   appears to be all run together) when you edit this file. If so, see the
+   section "Using Text Files on Windows" in the Windows installation guide.
+
+   You will have to uncomment one of two lines:
+
+    rem set SHRC_COMPILER_PATH_SET=yes
+
+   or
+
+    rem set SHRC_PRECOMPILED=yes
+
+   by removing "rem" from the beginning of the desired line.
+
+   If you uncomment the first line, you will have to follow the instructions
+   a few lines further on, to set up the environment for your compiler.
+
+   If you uncomment the second line, you must have pre-compiled binaries for
+   the benchmarks
+
+   Note that it is, in general, a good idea to ensure that you understand
+   what is in your path, and that you have only what you truly need. If you
+   have non-standard versions of commonly used utilities in your path, you
+   may avoid unpleasant surprises by taking them out. In order to help you
+   understand your path, shrc.bat will print it after it is done.
+
+   When you are done, set the path using your edited shrc.bat, for example:
+
+   F:\diego\omp2012> shrc
+
+  2.6 Make sure that you have enough disk space.
+
+   Presumably, you checked to be sure you had enough space when you read
+   system-requirements.html, but now might be a good time to double check
+   that you still have enough. Typically, you will want to have at least 2 GB
+   free disk space at the start of a run. Windows users can say "dir", and
+   will find the free space at the bottom of the directory listing. Unix
+   users can say "df -k ." to get a measure of freespace in KB.
+
+   If you have done some runs, and you are wondering where your space has
+   gone, see section 1.4.2.
+
+   --------------------------------------------------------------------------
+
+3 Using runspec
+
+  3.1 Simplest usage
+
+    3.1.1 Reportable run
+
+   It is easiest to use runspec when:
+
+     * Some kind person has already compiled the benchmarks.
+
+     * That kind person provides both the compiled images and their
+       corresponding config file (see About Config Files above).
+
+     * The config file does not change the defaults in surprising or esoteric
+       ways (see About Defaults above).
+
+   In this lucky circumstance, all that needs to be done is to name the
+   config file, select the benchmark suite name gross, decide how many
+   threads you want to run, and say --reportable to attempt a full run.
+
+   For example, suppose that Wilfried wants to give Ryan a config file and
+   compiled binaries with some new optimizations for a Unix system. Wilfried
+   might type something like this:
+
+ [/usr/wilfried]$ cd $SPEC
+ [/bigdisk/omp2012]$ spectar -cvf - be*/C*/*/exe/*newomp* config/newomp.cfg | specxz > newomp.tar.xz
+
+   and then Ryan might type something like this:
+
+ ryan% cd /usr/ryan/omp2012
+ omp2012% bash
+ bash-2.05$ . ./shrc
+ bash-2.05$ specxz -dc newomp.tar.xz | spectar -xf -
+ bash-2.05$ runspec --config newomp.cfg --nobuild --threads 32 --reportable gross
+
+   In the example above, the --nobuild emphasizes that the tools should not
+   attempt to build the binaries; instead, the prebuilt binaries should be
+   used. If there is some reason why the tools don't like that idea (for
+   example: the config file does not match the binaries), they will complain
+   and refuse to run, but with --nobuild they won't go off and try to do a
+   build.
+
+   As a another example, suppose that Reinhold has given Kaivalya a Windows
+   config file with changes from 12 August, and Kaivalya wants to run the
+   suite. He might say something like this:
+
+ F:\kaivalya\omp2012\> shrc
+ F:\kaivalya\omp2012\> specxz -dc reinhold_aug12a.tar.xz | spectar -xf -
+ F:\kaivalya\omp2012\> runspec --config reinhold_aug12a --threads 64 --reportable gross
+
+    3.1.2 Running selected benchmarks
+
+   If you want to run a subset of the benchmarks, rather than running the
+   whole suite, you can name them. Since a reportable run uses an entire
+   suite, you will need to turn off reportable:
+
+ [/usr/mat/omp2012]$ runspec --config mat_dec25j.cfg --noreportable --threads 128 351.bwaves
+
+    3.1.3 Output files
+
+   Look for the output of your runspec command in the directory $SPEC/result
+   (Unix) or %SPEC%\result (Windows). There, you will find log files and
+   result files. More information about log files can be found in
+   config.html.
+
+   The format of the result files depends on what was selected in your config
+   file, but will typically include at least .txt for ASCII text, and will
+   always include .rsf, for raw (unformatted) run data. More information
+   about result formats can be found below, under --output_format. Note that
+   you can always re-generate the output, using the --rawformat option, also
+   documented below.
+
+   This concludes the section on simplest usage.
+   If simple commands such as the above are not enough to meet your needs,
+   you can find out about commonly used options by continuing to read the
+   next 3 sections (3.2, 3.3, and 3.4).
+
+  3.2 Syntax
+
+   The syntax for the runspec command is:
+
+ runspec [options] [list of benchmarks to run]
+
+   Options are described in the following sections. There, you will notice
+   that many options have both long and short names. The long names are
+   invoked using two dashes, and the short names use only a single dash. For
+   long names that take a parameter, you can optionally use an equals sign.
+   Long names can also be abbreviated, provided that you still enter enough
+   letters for uniqueness. For example, the following commands all do the
+   same thing:
+
+ runspec --config=dianne_july25a --debug=99 gross
+ runspec --config dianne_july25a --debug 99 gross
+ runspec --conf dianne_july25a   --deb 99   gross
+ runspec -c dianne_july25a       -v 99      gross
+
+   The list of benchmarks to run can be:
+
+     * one or more individual benchmarks
+     * an entire suite: gross for the suite
+     * all to run the suite.
+
+   For a reportable run, you must specify gross, or all.
+
+    3.2.1 Benchmark names in run lists
+
+   Individual benchmarks can be named, numbered, or both; and they can be
+   abbreviated, as long as you enter enough characters for uniqueness. For
+   example, each of the following commands does the same thing:
+
+ runspec -c jason_july09d --noreportable 350.md 351.bwaves
+ runspec -c jason_july09d --noreportable 350 351
+ runspec -c jason_july09d --noreportable md bwaves
+ runspec -c jason_july09d --noreportable md bw
+
+   It is also possible to exclude a benchmark, using a hat (^, also known as
+   carat, typically found as shift-6). For example, suppose your system lacks
+   a C++ compiler, and you therefore cannot run the benchmark 376.kdtree. You
+   could run all of the benchmarks except these by entering a command such as
+   this one:
+
+ runspec --noreportable -c kathy_sep14c gross ^kdtree
+
+   Note that if hat has significance to your shell, you may need to protect
+   it from interpretation by the shell, for example by putting it in single
+   quotes. On Windows, you will need to use both a hat and double quotes for
+   each benchmark you want to exclude, like this:
+
+ E:\omp2012> runspec --noreportable -c cathy_apr21b gross  "^kdtree"
+
+    3.2.2 Run order for reportable runs
+
+   A reportable run runs all the benchmarks in a suite with the test and
+   train data sets as an additional verification that the benchmark binaries
+   get correct results. The test and train workloads are not timed. Then, the
+   reference workloads are run three times, so that median run time can be
+   determined for each benchmark. For example, here are the runs for a
+   reportable run of OMP2012:
+
+ $ grep runspec: *036.log
+ runspec: runspec -c oss13 -T base --threads 12 --reportable gross
+ $ grep Running *036.log
+ Running Benchmarks
+   Running 350.md test base 13.0b default threads:128
+   Running 351.bwaves test base 13.0b default threads:128
+   Running 352.nab test base 13.0b default threads:128
+   Running 357.bt331 test base 13.0b default threads:128
+   Running 358.botsalgn test base 13.0b default threads:128
+   Running 359.botsspar test base 13.0b default threads:128
+   Running 360.ilbdc test base 13.0b default threads:128
+   Running 362.fma3d test base 13.0b default threads:128
+   Running 363.swim test base 13.0b default threads:128
+   Running 367.imagick test base 13.0b default threads:128
+   Running 370.mgrid331 test base 13.0b default threads:128
+   Running 371.applu331 test base 13.0b default threads:128
+   Running 372.smithwa test base 13.0b default threads:128
+   Running 376.kdtree test base 13.0b default threads:128
+ Running Benchmarks
+   Running 350.md train base 13.0b default threads:128
+   Running 351.bwaves train base 13.0b default threads:128
+   Running 352.nab train base 13.0b default threads:128
+   Running 357.bt331 train base 13.0b default threads:128
+   Running 358.botsalgn train base 13.0b default threads:128
+   Running 359.botsspar train base 13.0b default threads:128
+   Running 360.ilbdc train base 13.0b default threads:128
+   Running 362.fma3d train base 13.0b default threads:128
+   Running 363.swim train base 13.0b default threads:128
+   Running 367.imagick train base 13.0b default threads:128
+   Running 370.mgrid331 train base 13.0b default threads:128
+   Running 371.applu331 train base 13.0b default threads:128
+   Running 372.smithwa train base 13.0b default threads:128
+   Running 376.kdtree train base 13.0b default threads:128
+ Running Benchmarks
+   Running (#1) 350.md ref base 13.0b default threads:128
+   Running (#1) 351.bwaves ref base 13.0b default threads:128
+   Running (#1) 352.nab ref base 13.0b default threads:128
+   Running (#1) 357.bt331 ref base 13.0b default threads:128
+   Running (#1) 358.botsalgn ref base 13.0b default threads:128
+   Running (#1) 359.botsspar ref base 13.0b default threads:128
+   Running (#1) 360.ilbdc ref base 13.0b default threads:128
+   Running (#1) 362.fma3d ref base 13.0b default threads:128
+   Running (#1) 363.swim ref base 13.0b default threads:128
+   Running (#1) 367.imagick ref base 13.0b default threads:128
+   Running (#1) 370.mgrid331 ref base 13.0b default threads:128
+   Running (#1) 371.applu331 ref base 13.0b default threads:128
+   Running (#1) 372.smithwa ref base 13.0b default threads:128
+   Running (#1) 376.kdtree ref base 13.0b default threads:128
+   Running (#2) 350.md ref base 13.0b default threads:128
+   Running (#2) 351.bwaves ref base 13.0b default threads:128
+   Running (#2) 352.nab ref base 13.0b default threads:128
+   Running (#2) 357.bt331 ref base 13.0b default threads:128
+   Running (#2) 358.botsalgn ref base 13.0b default threads:128
+   Running (#2) 359.botsspar ref base 13.0b default threads:128
+   Running (#2) 360.ilbdc ref base 13.0b default threads:128
+   Running (#2) 362.fma3d ref base 13.0b default threads:128
+   Running (#2) 363.swim ref base 13.0b default threads:128
+   Running (#2) 367.imagick ref base 13.0b default threads:128
+   Running (#2) 370.mgrid331 ref base 13.0b default threads:128
+   Running (#2) 371.applu331 ref base 13.0b default threads:128
+   Running (#2) 372.smithwa ref base 13.0b default threads:128
+   Running (#2) 376.kdtree ref base 13.0b default threads:128
+   Running (#3) 350.md ref base 13.0b default threads:128
+   Running (#3) 351.bwaves ref base 13.0b default threads:128
+   Running (#3) 352.nab ref base 13.0b default threads:128
+   Running (#3) 357.bt331 ref base 13.0b default threads:128
+   Running (#3) 358.botsalgn ref base 13.0b default threads:128
+   Running (#3) 359.botsspar ref base 13.0b default threads:128
+   Running (#3) 360.ilbdc ref base 13.0b default threads:128
+   Running (#3) 362.fma3d ref base 13.0b default threads:128
+   Running (#3) 363.swim ref base 13.0b default threads:128
+   Running (#3) 367.imagick ref base 13.0b default threads:128
+   Running (#3) 370.mgrid331 ref base 13.0b default threads:128
+   Running (#3) 371.applu331 ref base 13.0b default threads:128
+   Running (#3) 372.smithwa ref base 13.0b default threads:128
+   Running (#3) 376.kdtree ref base 13.0b default threads:128
+
+   The above order can be summarized as:
+
+ test
+ train
+ ref1, ref2, ref3
+
+   Sometimes, it can be useful to understand when directory setup occurs. So,
+   let's expand the list to include setup:
+
+ setup for test
+ test
+ setup for train
+ train
+ setup for ref
+ ref1, ref2, ref3
+
+    3.2.3 Run order when more than one tuning is present
+
+   If you run both base and peak tuning, base is always run first. If you do
+   a reportable run with both base and peak, the order is:
+
+ setup for test
+ base test, peak test
+ setup for train
+ base train, peak train
+ setup for ref
+ base ref1, base ref2, base ref3
+ peak ref1, peak ref2, peak ref3
+
+  3.3 Actions
+
+   When runspec is used, it normally (*) takes some kind of action for the
+   set of benchmarks specified at the end of the command line (or defaulted
+   from the config file). The default action is validate, which means that
+   the benchmarks will be built if necessary, the run directories will be set
+   up, the benchmarks will be run, and reports will be generated.
+
+   (*) Exception: if you use the --rawformat switch, then --action is
+   ignored.
+
+   If you want to cause a different action, then you can enter one of the
+   following runspec options:
+
+                       Compile the benchmarks. More information about
+   --action build      compiling may be found in config.html, including
+                       information about additional files that are output
+                       during a build.
+   --action buildsetup Set up build directories for the benchmarks, but do
+                       not attempt to compile them.
+   --action configpp   Preprocess the config file and dump it to stdout
+                       Run the benchmarks but do not bother to verify that
+                       they got the correct answers. Reports are always
+                       marked "invalid", since the correctness checks are
+   --action onlyrun    skipped. Therefore, this option is rarely useful, but
+                       it can be selected if, for example, you are generating
+                       a performance trace and wish to avoid tracing some of
+                       the tools overhead.
+   --action report     Synonym for --fakereport; see also --fakereportable.
+   --action run        Synonym for --action validate.
+   --action runsetup   Synonym for --action setup
+   --action setup      Set up the run directories. Copy executables and data
+                       to work directories.
+   --action validate   Build (if needed), run, check for correct answers, and
+                       generate reports.
+
+   In addition, the following cleanup actions are available (in order by
+   level of vigor):
+
+                      Empty all run and build directories for the specified
+                      benchmark set for the current user. For example, if the
+                      current OS username is set to jeff and this command is
+                      entered:
+   --action clean     D:\omp2012\> runspec --action clean --config may12a
+                      gross
+                      then the tools will remove run directories with
+                      username jeff for benchmarks generated by config file
+                      may12a.cfg (in nnn.benchmark\run and
+                      nnn.benchmark\build).
+   --action clobber   Clean + remove all executables of the current type for
+                      the specified benchmark set.
+                      Same as clean, but do it for all users of this SPEC
+   --action trash     directory tree, and all types, regardless of what's in
+                      the config file.
+   --action realclean A synonym for --action trash
+   --action scrub     Remove everybody's run and build directories and all
+                      executables for the specified benchmark set.
+
+   Alternative cleaning method:
+
+   If you prefer, you can clean disk space by entering commands such as the
+   following (on Unix systems):
+
+       rm -Rf $SPEC/benchspec/O*/*/build
+       rm -Rf $SPEC/benchspec/O*/*/run
+       rm -Rf $SPEC/benchspec/O*/*/exe
+
+   Notes
+
+    1. The above commands not only empty the contents of the run and exe
+       directories; they also delete the directories themselves. That's fine;
+       the tools will re-create the run and exe directories if they are
+       needed again later on.
+
+    2. The above commands do NOT clean the build directories (unless you've
+       set build_in_build_dir=0). Often, it's useful to preserve the build
+       directories for debugging purposes, but if you'd like to get rid of
+       them too, just add $SPEC/benchspec/O*/*/build to your list of
+       directories.
+
+   Windows users:
+
+   Windows users can achieve a similar effect using Windows Explorer.
+
+   I have so much disk space, I'll never use all of it:
+
+   Run directories are automatically re-used for subsequent runs. If you
+   prefer, you can ask the tools to never touch a used run directory. Do this
+   by setting the environment variable:
+
+      SPEC_OMP2012_NO_RUNDIR_DEL
+
+   In this case, you should be prepared to do frequent cleaning, perhaps
+   after reviewing the results of each run.
+
+  3.4 Commonly used options
+
+   Most users of runspec will want to become familiar with the following
+   options.
+
+    --action action
+
+     * Synonym: -a action
+     * Default: validate
+     * Meaning: One of the following actions that runspec can do for you:
+       build, buildsetup, clean, clobber, configpp, onlyrun, realclean,
+       report, run, runsetup, scrub, setup, trash, or validate. For more
+       information, see Actions, above
+
+    --check_version
+
+     * Default: check only when doing reportable runs
+     * Meaning: From time to time, SPEC may update the OMP2012 suite.
+       Typically, SPEC will not publish results at www.spec.org/omp2012
+       unless they have been run using the most recent update. Prior to
+       investing substantial time running your tests, it is recommended that
+       you check whether your version is up to date, either by saying runspec
+       --check_version, or by adding the switch to whatever else you were
+       doing on your runspec command. Note that if you are running within a
+       firewall, you may need to add a proxy server to the command line. For
+       example:
+
+    runspec --check_version --http_proxy http://webcache.tom.spokewrenchdad.com:8080
+
+       or, equivalently, for those who prefer to abbreviate to the shortest
+       possible amount of typing:
+
+    runspec --ch --http_p http://webcache.tom.spokewrenchdad.com:8080
+
+       The command downloads a small file (~15 bytes) from www.spec.org which
+       contains information about the most recent release, and compares that
+       to your release. If your version is out of date, a warning will be
+       printed.
+
+    --config name
+
+     * Synonym: -c name
+     * Default: default.cfg
+     * Meaning: Use config file $SPEC/config/name.cfg (Unix) or
+       %SPEC%\config\name.cfg (Windows). If not specified, the tools will try
+       default.cfg
+
+    --flagsurl URL[,URL...]
+
+     * Synonym: -F URL
+     * Default: none
+     * Meaning: A "flags file" provides information about how to interpret
+       and report on the flags (e.g. -O5, -fast, etc.) that are used in a
+       config file.
+
+       The --flagsurl switch says that a flags file may be found at the
+       specified URL (such as http://myflags.com/flags.xml). URL schemes
+       supported are http, ftp, and file. A URL without a scheme is assumed
+       to be a file or path name. If you need to specify an http proxy, you
+       can do so in your config file, by using the --http_proxy command line
+       switch, or via the environment variable http_proxy.
+
+       This example formats a result with two flags files on Windows:
+
+ rawformat --flagsurl %SPEC%\config\flags\tmp1.xml,%SPEC%\config\flags\tmp2.xml OMPG2012.059.ref.rsf
+
+       The special value noflags may be used to cause rawformat to remove a
+       stored flags file when re-formatting a previously run result.
+
+       Flags files are required by run rule 4.2.5. If a run is marked
+       "invalid" because some flags are "unknown", you may be able to resolve
+       the invalid marking by finding, or creating, a flags file with proper
+       descriptions and entering commands such as:
+
+ cp OMPG2012.059.ref.rsf retry
+ rawformat --flagsurl myfixedflags.xml --output_format pdf,raw retry
+
+       The first command preserves the original raw file, which is always
+       recommended before doing any operations that create a new raw file.
+       The second command creates retry.rsf and retry.pdf, both of which will
+       include descriptions of flags from myfixedflags.xml. If you are
+       submitting a result to SPEC, the newly-generated rawfile is the one to
+       submit.
+
+       Note that saying rawformat is equivalent to saying runspec
+       --rawformat, as described below.
+
+       On Windows systems, the first command above would use copy instead of
+       cp. Also, if Windows refuses to accept the syntax with a comma in it,
+       you might have to generate just the rawfile as a first step, then
+       generate other format(s).
+
+       You can find out more about how to write flag description files in
+       flag-description.html. You will find there a complete example of a
+       flags file update using rawformat --flagsurl.
+
+       You can format a single result using multiple flags files. This
+       feature is intended to make it easier for multiple results to share
+       what should be shared, while separating what should be separated.
+       Common elements (such as a certain version of a compiler) can be
+       placed into one flags file, while the elements that differ from one
+       system to another (such as platform notes) can be maintained
+       separately.
+
+    --help
+
+     * Synonyms: -h | -?
+     * Default: Help text is not displayed.
+     * Meaning: Print helpful text
+
+    --ignore_errors
+
+     * Synonyms: -I | --ignoreerror
+     * Default: Stop on first error.
+     * Meaning: Continue running even if errors occur.
+
+    --iterations number
+
+     * Synonym: -n number
+     * Default: 3
+     * Meaning: How many times to run each benchmark. For a reportable run,
+       must be 3.
+
+    --loose
+
+     * Synonyms: -l | --nostrict | --noreportable
+     * Default: loose
+     * Meaning: Unset reportable. For example, suppose that you have a golden
+       config file that is used for reportable runs, which sets the config
+       file option reportable. However, you aren't ready to do a reportable
+       run, because you first want to ensure that the system under test is
+       adequately configured to run the benchmark 351.bwaves. Since the
+       config file sets the option reportable, the following command will
+       result in an error message:
+
+ [/usr/mwong/omp2012]$ runspec --config golden --iterations 1 351.bwaves
+
+       as the SPEC tools will inform you that you cannot change the number of
+       iterations on a reportable run. But either of the following commands
+       will override the config file and just run 351.bwaves once:
+
+ [/usr/mwong/omp2012]$ runspec --config golden --iterations 1 --loose 351.bwaves
+ [/usr/mwong/omp2012]$ runspec --config golden --iterations 1 --noreportable 351.bwaves
+
+    --output_format format
+
+     * Synonym: -o format
+     * Default: HTML and text
+     * Meaning: Desired report format, one or more of the following. If more
+       than one option is used, separate them by commas. The values are not
+       case-sensitive.
+
+            all          implies all of the following except screen, check,
+                         and mail
+    cfg|config|conffile  config file used for this run (e.g.
+    configfile|cfgfile   OMPG2012.030.ref.cfg)
+                         Submission syntax check (automatically enabled for
+                         reportable runs). Causes many fields to be checked
+                         for acceptable formatting - e.g. hardware available
+                         "Nov-2012", not "11/12"; memory size "4 GB", not
+                         "4Gb"; and so forth. SPEC enforces consistent syntax
+                         for results submitted to its website as an aid to
+      check|chk|sub|     readers of results, and to increase the likelihood
+   subcheck|subtest|test that queries find the intended results. If you
+                         select --output_format subcheck on your local
+                         system, you can find out about most formatting
+                         problems before you submit your results to SPEC.
+                         Even if you don't plan to submit your results to
+                         SPEC, the Submission Check format can help you
+                         create reports that are more complete and readable.
+                         Comma-separated variable (e.g.
+                         OMPG2012.030.ref.csv). If you populate spreadsheets
+                         from your runs, you probably shouldn't be doing
+                         cut/paste of text files; you'll get more accurate
+      csv|spreadsheet    data by using --output_format csv.
+
+                         CSV output includes much of the information in the
+                         other reports. All runs times are included, and the
+                         selected run times are listed separately. The flags
+                         used are also included.
+          default        implies HTML and text
+                         Flag report (e.g. OMPG2012.030.flags.ref.html). Will
+        flag|flags       also be produced when formats that use it are
+                         requested (PDF, HTML).
+    html|xhtml|www|web   web page (e.g. OMPG2012.030.ref.html)
+     mail|mailto|email   All generated reports will be sent to an address
+                         specified in the config file.
+                         Portable Document Format (e.g. OMPG2012.030.pdf).
+                         This format is the design center for SPEC OMP2012
+                         reporting. Other formats contain less information:
+         pdf|adobe       text lacks graphs, postscript lacks hyperlinks, and
+                         HTML is less structured. (It does not appear as part
+                         of "default" only because some systems may lack the
+                         ability to read PDF.)
+      postscript|ps|     PostScript (e.g. OMPG2012.030.ref.ps)
+       printer|print
+                         raw results, e.g. OMPG2012.030.ref.rsf. Note: you
+          raw|rsf        will automatically get an rsf file for commands that
+                         run a test or that update a result (such as
+                         rawformat --flagsurl).
+     screen|scr|disp|    ASCII text output to stdout.
+   display|terminal|term
+    text|txt|ASCII|asc   ASCII text, e.g. OMPG2012.030.ref.txt.
+
+    --power --nopower
+
+     * Synonym: none
+     * Default: Do not change the use of power as selected elsewhere, default
+       is no power measurement.
+     * Meaning: Enable/disable the optional power measurement mode of the
+       benchmark.
+
+    --rawformat rawfiles
+
+     * Synonym: -R rawfile
+     * Default: Do not use rawformat mode.
+     * Meaning: Do not attempt to do a run; instead, take an existing result
+       file and just generate the reports. Using this option will cause any
+       specified --actions to be ignored, and instead the result formatter
+       will be invoked. This option is useful if (for example) you are just
+       doing ASCII output during most of your runs, but now you would like to
+       create additional reports for one or more especially interesting runs.
+       To create the html and postscript files for experiment number 324, you
+       could say:
+
+ runspec --rawformat --output_format html,ps $SPEC/result/OMPG2012.324.ref.rsf
+
+       You can achieve the same effect by invoking rawformat directly:
+
+ rawformat --output_format html,ps $SPEC/result/OMPG2012.324.ref.rsf
+
+       These two commands achieve the same effect because, in fact, saying
+       runspec --rawformat just causes runspec to exit, invoking rawformat in
+       its stead, and passing it whatever was on the command line - in this
+       case, the --output_format html,ps string.
+
+       Note that when runnng rawformat, you will always get format
+       "Submission Check", which encourages consistent formatting for various
+       result fields when preparing final (submittable) reports. In addition,
+       you will get the formats that you mention on the command line, or, if
+       none are mentioned there, then you will get the defaults documented
+       under output_format.
+
+       For more information about rawformat, please see utility.html.
+
+    --rebuild
+
+     * Synonym: -D
+     * Default: Do not rebuild unless binary is missing or does not match the
+       config file.
+     * Meaning: Delete existing binaries and recompile. Use this if, for
+       example, you have installed a new version of your compiler and want to
+       force a rebuild of the benchmarks.
+
+    --reportable
+
+     * Synonyms: -s | --strict | --noloose
+     * Default: loose
+     * Meaning: Wherever it is practical to do so in an automated fashion,
+       enforce the OMP2012 run rules, so as to produce a result which is
+       suitable for public reporting and/or submission to SPEC. This option
+       forces various other options, such as iterations =3. Note that when
+       you do a reportable run, the list of benchmarks to run must be an
+       entire suite.
+
+    --threads number
+
+     * Synonyms: none
+     * Default: 1
+     * Meaning: Use number to set the number of OMP_NUM_THREADS to use for
+       the run. To use 32 threads for your run:
+
+ omp2012% runspec --config tony_may12a --threads 32 gross
+
+    --tune tuning
+
+     * Synonyms: --tuning tuning | -T tuning
+     * Default: base
+     * Meaning: Selects tuning to use: base, peak, or all. For a reportable
+       run, must be either base or all. Reportable runs do base first, then
+       (optionally) peak.
+
+  3.5 Less commonly used options
+
+    --basepeak [bench,bench,...]
+
+     * Synonym: None
+     * Default: Do not do basepeak when reformatting results.
+     * Meaning: This switch only has meaning in --rawformat mode, when
+       reformatting previously-run results. When no arguments are specified,
+       this switch will perform base to peak substitution for all benchmarks
+       in the result file. If arguments are given, they must be the name of
+       benchmarks or benchmark suites, and the base results for only those
+       benchmarks will be copied over the peak results for only those
+       benchmarks.
+       Note: Use of this option will cause rawformat to output only a raw
+       file. This is to help ensure that there is always a raw file present
+       to match any generated results.
+
+    --nobuild
+
+     * Synonym: -N
+     * Default: normally, the tools will make their own decision of whether
+       to rebuild, based on whether the binaries exist, or whether they match
+       the expected MD5 sums.
+     * Meaning: Do not build binaries, even if they don't exist or MD5 sums
+       don't match. This feature can be very handy if, for example, you have
+       a long script with multiple invocations of runspec, and you would like
+       to ensure that the build is only attempted once. (Perhaps your thought
+       process might be, "If it fails the first time, fine, just forget about
+       it until I come in Monday and look things over.") By adding --nobuild
+       --ignore_errors to all runs after the first one, no attempt will be
+       made to build the failed benchmarks after the first attempt.
+
+       The --nobuild feature also comes in handy when testing whether
+       proposed config file options would potentially force an automatic
+       rebuild.
+
+    --comment "comment text"
+
+     * Synonym: None
+     * Default: Add no comment.
+     * Meaning: Adds a comment to the log file and the stored configuration
+       file.
+
+    --define SYMBOL[=VALUE]
+    --define SYMBOL:VALUE
+
+     * Synonym: -S SYMBOL[=VALUE]
+       -S SYMBOL:VALUE
+     * Default: Do not define config file preprocessor macros.
+     * Meaning: Defines a preprocessor macro named SYMBOL (for use in your
+       config file) and optionally gives it the value VALUE. If no value is
+       specified, the macro is defined with no value. SYMBOL may not contain
+       equals signs ("=") or colons (":"). This option may be used multiple
+       times. For example if a config file says:
+
+ %ifdef %{use_sparc_v9}
+         ext            = darryl.native64
+         mach           = native64
+         ARCH_SELECT    = -xtarget=native64
+ %else
+         ext            = darryl.native32
+         mach           = default
+         ARCH_SELECT    = -xtarget=native
+ %endif
+ default=base:
+ OPTIMIZE     = -O ${ARCH_SELECT}
+
+       Then saying runspec --define use_sparc_v9=1 will cause base
+       optimization to be -O -xtarget=native64
+
+    --delay secs
+
+     * Synonym: None
+     * Default: Add no delay.
+     * Meaning: Add a delay of the specified number of seconds before and
+       after each benchmark (specinvoke) invocation. The delay is not counted
+       toward the benchmark runtime. This option is silently ignored during
+       reportable runs.
+
+    --deletework
+
+     * Synonym: -d
+     * Default: Do not delete working directories.
+     * Meaning: Delete run directories and re-populate. Use this if you
+       suspect that the run directories may have been corrupted, for example
+       due to a system crash during setup of an earlier run. You might also
+       use this if you just wish to ensure clean run directories, but note
+       that the tools will automatically provide what they deem to be a
+       sufficient level of cleaning.
+
+    --extension name[,name...]
+
+     * Synonyms: --ext name[,name...] | -e name[,name...]
+     * Default: none
+     * Meaning: Extensions to build or run. Normally used only if the config
+       file has been written to handle more than one extension. The config
+       file author should tell you what extensions to enter under which
+       circumstances. Note that if you specify multiple extensions, multiple
+       separate builds and runs will be performed.
+       Note: The extension used may only consist of alphanumeric characters,
+       underscores, hyphens, and periods.
+       Note to Windows users: Because of the command-line preprocessing
+       performed by cmd.exe, this feature cannot be used on Windows.
+
+    --fake
+
+     * Synonyms: --dryrun | --dry-run
+     * Default: Really do the actions requested.
+     * Meaning: List, but do not execute, the commands needed to build or run
+       the benchmarks.
+
+          * Use --fake --action build to get a listing of the commands needed
+            to build a benchmark.
+          * Use --fake --action run to get a listing of the commands needed
+            to run a benchmark. (If the benchmark executable does not exist,
+            you will also get a listing of the needed build commands.)
+
+       Runspec uses specmake -n and specinvoke -n to generate these listings.
+
+    --fakereport
+
+     * Synonyms: --action=report | --reportonly
+     * Default: Not set
+     * Meaning: Process the config file and generate output as if a run had
+       been done. The results will all be zero, but otherwise the report will
+       be correctly formatted, as if it had come from an actual run. Note
+       that if your config file or command line includes options that would
+       cause a real run to be marked invalid (for example, setting
+       iterations=1 or --size=test), then the tools will also mark the fake
+       report as invalid. If your goal is to get a preview of what the final,
+       golden run will look like, you might prefer --fakereportable.
+
+    --fakereportable
+
+     * Synonyms: --mockup
+     * Default: Not set
+     * Meaning: Process the config file and generate output as if a
+       "reportable" run had been done. The results will all be zero, but
+       otherwise the report will be correctly formatted, as if it had come
+       from a reportable run.
+
+    --[no]feedback
+
+     * Synonyms: none
+     * Default: --feedback
+     * Meaning: Normally, when any of the PASSn_xFLAGS are defined, the tools
+       do multiple-pass compilation with training runs between each pass.
+       Using --nofeedback will cause the PASSn flags to be ignored and a
+       single-pass compilation will occur. Notice that explicitly specifying
+       --feedback without having appropriate PASSn flags in the configuration
+       file will have no effect. Specifying --feedback is therefore useful
+       only as a means of overriding a previously specified --nofeedback, or
+       as a means of overriding a config file setting of feedback=0. Be
+       careful: the flag only overrides a global setting for feedback=0; it
+       will not affect individual benchmarks that have this setting.
+
+    --[no]graph_auto
+
+     * Synonyms: --[no]graphauto
+     * Default: --nograph_auto
+     * Meaning: frees the tools to pick a value that they think appropriate
+       for the top and bottom of the Y axis. The maximum and minimum chosen
+       will attempt to let the viewer observe differences among the
+       benchmarks. By default, the minimum will instead be anchored to zero.
+
+    --graph_max N
+
+     * Synonyms: --graphmax
+     * Default: big enough (plus a little)
+     * Meaning: Allows you to specify a new value for the maximum point on
+       the graph scale.
+
+    --graph_min N
+
+     * Synonyms: --graphmin N
+     * Default: 0
+     * Meaning: Allows you to specify a new value for the minimum point on
+       the graph scale.
+
+    --http_proxy proxy[:port]
+
+     * Synonyms: none
+     * Default: none
+     * Meaning: In some cases, such as when doing version checks and loading
+       flag description files, runspec will attempt to fetch a file, using
+       http. If your web browser needs a proxy server in order to access the
+       outside world, then runspec will probably want to use the same proxy
+       server. The proxy server can be set by:
+
+          * The runspec --http_proxy switch, or
+          * The environment variable http_proxy, or
+          * Using the config file http_proxy option
+
+       For example, a failure of this form:
+
+ $ runspec --rawformat --output_format txt \
+    --flagsurl http://portlandcyclers.net/evan.xml  OMPG2012.007.ref.rsf
+ ...
+ Retrieving flags file (http://portlandcyclers.net/evan.xml)...
+
+ ERROR: Specified flags URL (http://portlandcyclers.net/evan.xml) could not be retrieved.
+        The error returned was: 500 Can't connect to portlandcyclers.net:80
+        (Bad hostname 'portlandcyclers.net')
+
+       improves when a proxy is provided:
+
+ $ runspec --rawformat --output_format txt \
+    --flagsurl http://portlandcyclers.net/evan.xml  \
+    --http_proxy=http://webcache.tom.spokewrenchdad.com:8080 OMPG2012.007.ref.rsf
+
+       Note that this setting will override the value of the http_proxy
+       environment variable, as well as any setting in the config file.
+
+       By default, no proxy is used. The special value none may be used to
+       unset any proxies set in the environment or via config file.
+
+    --http_timeout N
+
+     * Synonyms: none
+     * Default: 30 seconds
+     * Meaning: This is the amount of time (in seconds) to wait while
+       attempting to fetch a file via HTTP. If the connection cannot be
+       established in this amount of time, the attempt will be aborted.
+
+    --info_wrap_columns N
+
+     * Synonym: --infowrap N
+     * Default: 50
+     * Meaning: When set to a value greater than 0, attempts to split
+       non-notes informational lines such that they are no longer than N
+       columns wide. Lines are split on whitespace, and newly created lines
+       are guaranteed to have at least the same indentation as the original
+       line.
+       If a line contains an item that is longer than N, a warning is logged
+       and the original line is left unchanged.
+
+    --[no]keeptmp
+
+     * Synonym: None
+     * Default: --nokeeptmp
+     * Meaning: When set, temporary files such as compiler option output and
+       temporary log files will not be removed. For a list of temporary file
+       locations, see the discussion in config.html.
+
+    --[no]log_timestamp
+
+     * Synonym: --[no]log-timestamp
+     * Default: --nolog_timestamp
+     * Meaning: When set, lines output to the log file will have a time stamp
+       prepended. The timestamp is always present in the debug log.
+
+    --machine name[,name...]
+
+     * Synonym: --mach name[,name...] | -m name[,name...]
+     * Default: none
+     * Meaning: The machines to build for or to run. Normally used only if
+       the config file has been written to handle more than one machine type.
+       The config file author should tell you what machines are supported by
+       the config file.
+
+       The machine name may only consist of alphanumerics, underscores,
+       hyphens, and periods.
+
+       If you specify multiple machine types, multiple runs will be
+       performed, on most systems. On Microsoft Windows systems, because of
+       the command-line preprocessing performed by cmd.exe, it is not
+       possible to run more than one machine type.
+
+       Warning: The "machine" feature is relatively rarely used, and is only
+       lightly documented. The key limitation is that benchmark binary names
+       contain only the extension. Therefore, it is quite possible, even
+       easy, to cause binaries built in one run to be overwritten by
+       subsequent runs. A workaround for this limitation is described in the
+       description of "section specifiers", in config.html.
+
+    --make_no_clobber
+
+     * Synonym: -M
+     * Default: clobber
+     * Meaning: Do not delete existing object files before attempting to
+       build. This option should only be used for troubleshooting a
+       problematic compile. It is against the run rules to use it when
+       building binaries for an actual submission.
+
+       For a better way of troubleshooting a problematic compile, see the
+       information about specmake in utility.html
+
+    --make_bundle name
+
+     * Synonym: --make-bundle name
+     * Default: none
+     * Meaning: Package up the currently selected set of binaries, config
+       files and other support files into a bundle that can be used to
+       re-create the current run on a different system or installation.
+
+       When --make_bundle is present on the command line, most other switches
+       have no immediate effect. The tools do not actually do the run at
+       bundle creation time. Instead, a control file is written to the bundle
+       to allow the run to occur on the destination system. The runspec
+       command on the destination system will include all of your options
+       other than those related to bundling.
+
+       Optional: additional files or directories may be specified on the
+       command line for inclusion in the bundle.
+
+       Any such additional files must be underneath the $SPEC/ directory (or
+       %SPEC%\ on Windows), but may not reside under any of the top-level
+       subdirectories that ship with the suite (such as benchspec, bin,
+       config, or result). Create a new subdirectory, such as %SPEC%\extras\
+       (on Windows) or $SPEC/extras/ (Unix). If your compiler license allows
+       redistribution of run time libraries, you could place copies of them
+       in that subdirectory, and use preenv variables to point
+       $LD_LIBRARY_PATH at them.
+
+       In the following example, we begin by building a binary, check its
+       runtime requirements, and populate a directory with the needed run
+       time libraries:
+
+ $ cat config/jul21a.cfg
+ ext      = jul21a
+
+ gross=default:
+ CXX      = g++
+ OPTIMIZE = -O
+
+ $ runspec --config jul21a --action build 376.kdtree
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'linux-suse10-amd64' tools
+ Reading MANIFEST... 12933 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+ Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+ Benchmarks selected: 376.kdtree
+ Compiling Binaries
+   Building 376.kdtree base jul21a default: (build_base_jul21a.0000)
+
+ Build successes: 376.kdtree(base)
+
+ Build Complete
+
+ The log for this run is in /export/bmk/omp2012/result/OMP2012.002.log
+
+ runspec finished at Fri Aug  3 07:03:31 2012; 2 total seconds elapsed
+ $ go kdtree exe
+ /export/bmk/omp2012/benchspec/OMP2012/376.kdtree/exe
+ $ ldd kdtree_base.jul21a
+         linux-vdso.so.1 =>  (0x00007fff3dfff000)
+         libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x00000032c3600000)
+         libm.so.6 => /lib64/libm.so.6 (0x00000032bce00000)
+         libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00000032c1a00000)
+         libc.so.6 => /lib64/libc.so.6 (0x00000032bc200000)
+         /lib64/ld-linux-x86-64.so.2 (0x00000032bba00000)
+ $ mkdir $SPEC/extras
+ $ cp /usr/lib64/libstdc++.so.6 $SPEC/extras
+ $ cp /lib64/libm.so.6 $SPEC/extras
+ $ cp /lib64/libgcc_s.so.1 $SPEC/extras
+ $ cp /lib64/libc.so.6 $SPEC/extras
+
+       Next, add the needed preENV line for the run time library to the
+       config file. Then, bundle it all up:
+
+ $ go config
+ /export/bmk/omp2012/config
+ $ cat > tmp
+ preENV_LD_LIBRARY_PATH = $[top]/extras/:\$LD_LIBRARY_PATH
+ $ cat jul21a.cfg >> tmp
+ $ mv tmp jul21a.cfg
+ $ runspec --config jul21a --size test --iterations 1 \
+   376.kdtree --make_bundle mumble $SPEC/extras
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ ...
+
+ Bundling finished.  The completed bundle is in
+   /export/bmk/omp2012/mumble.omp2012bundle.xz
+ ...
+
+       The above command causes the entire contents of $SPEC/extras/ to be
+       added to the bundle, along with the binary for 376.kdtree and the
+       config file jul21a.cfg.
+
+       Bundle verification: If you would like to verify the contents of a
+       bundle, you can do so with "specxz -dc" and "spectar -tf -", like so:
+
+ $ specxz -dc mumble.omp2012bundle.xz | spectar -tf -
+ config/mumble.control
+ extras/libc.so.6
+ extras/libgcc_s.so.1
+ extras/libm.so.6
+ extras/libstdc++.so.6
+ config/jul21a.cfg
+ Docs/sysinfo
+ benchspec/OMP2012/376.kdtree/exe/kdtree_base.jul21a
+ config/MD5.mumble.control.e5812e5b206da9452725199e2fef2aeb
+ extras/MD5.libc.so.6.c43a8aff6ee73a8f8acdeacc7f6f1899
+ extras/MD5.libgcc_s.so.1.c59480aceba993edd294bad450871c45
+ extras/MD5.libm.so.6.ff2d14050df858e3fa07108f788f65f2
+ extras/MD5.libstdc++.so.6.fae4b9a7dee7fad91190f572efe3105f
+ config/MD5.jul21a.cfg.f135740df120c1e1ed2c9455c7d3f279
+ Docs/MD5.sysinfo.8f8c0fe9e19c658963a1e67685e50647
+ benchspec/OMP2012/376.kdtree/exe/MD5.kdtree_base.jul21a.47f2d01ab30efedda33f32d56cc6fa05
+ $
+
+       Don't worry about the odd looking extra files in the bundle; these are
+       md5 checksums, which are used to help ensure bundle integrity.
+
+       Using a bundle: See the descriptions of --use_bundle or
+       --unpack_bundle for information on what to do with a bundle when
+       you've got one.
+
+       Note: --make_bundle can't bundle files up that aren't underneath the
+       top-level $SPEC directory. If you use the output_root config file
+       option with --make_bundle, please make sure that it points to
+       somewhere under $SPEC.
+
+       WARNING: Although the features to create and use bundles are intended
+       to make it easier to run SPEC OMP2012, the tester remains responsible
+       for compliance with the run rules. And, of course, both the creators
+       and the users of bundles are responsible for compliance with any
+       applicable software licenses.
+
+    --notes_wrap_columns N
+
+     * Synonym: --noteswrap
+     * Default: 0 (disabled)
+     * Meaning: When set to a value greater than 0, attempts to split notes
+       lines such that they are no longer than N columns wide. Lines are
+       split on whitespace, and newly created lines are guaranteed to have at
+       least the same indentation as the original line.
+       If a line contains an item that is longer than N, a warning is logged
+       and the original line is left unchanged.
+
+    --preenv, --nopreenv
+
+     * Synonym: none
+     * Default: True (preENV_ lines are used)
+     * Meaning: When set, causes preENV_ lines in the config file to be used.
+       Use of --nopreenv will disable this behavior.
+
+    --review, --noreview
+
+     * Synonym: none
+     * Default: --noreview
+     * Meaning: Format results for review, meaning that additional detail
+       will be printed that normally would not be present. In lists of
+       Portability Flags, benchmarks that do not use any flags are
+       nevertheless listed, along with the notation "No flags used". Flags
+       marked to be hidden (typically, splitters) will be displayed anyway,
+       along with a notation that they are usually hidden.
+
+    --setprocgroup, --nosetprocgroup
+
+     * Synonyms: none
+     * Default: --setprocgroup
+     * Meaning: Attempt to create all processes in a single group. Improves
+       the chances that ^C will get the whole run, not just one of the
+       children.
+
+    --size size[,size...]
+
+     * Synonyms: -i size | --input size
+     * Default: ref
+     * Meaning: Selects size of input data to run: test, train, or ref. For
+       example, you might choose to run test while debugging a new set of
+       compilation options. Reportable runs ensure that your binaries can
+       produce correct results with the test and train workloads and then run
+       the ref workload 3 times for the actual measurements.
+
+    --test
+
+     * Synonyms: none
+     * Default: do not run test
+     * Meaning: Run various perl validation tests on specperl
+
+    --table, --notable
+
+     * Synonyms: none
+     * Default: --table
+     * Meaning: For ASCII reports, include a detailed table of all runs.
+
+    --train_with WORKLOAD
+
+     * Synonyms: none
+     * Default: train
+     * Meaning: Select the workload to use for training binaries built using
+       feedback-directed optimization. Note that the training workload used
+       is considered one of the build options, so this option (with identical
+       argument) must be used each time the binaries themselves are used in
+       order to prevent an automatic re-build. It's probably best to just set
+       it in the config file instead. Note: it is unlikely that a OMP2012
+       user would use this feature; see the additional detail on this topic
+       in config.html.
+
+    --undef SYMBOL
+
+     * Synonym: None
+     * Default:
+     * Meaning: Removes the definition of any preprocessor macro named
+       SYMBOL.
+       This option may be used multiple times.
+
+    --update
+
+     * Synonym: --update_flags | --flagupdate | --flagsupdate | --newflags |
+       --getflags
+     * Default: do not check
+     * Meaning: Checks www.spec.org for updates to the benchmark flag
+       description files, config files, example flags files, and syntax files
+       that ship with the OMP2012 distribution. Its usage requires a working
+       internet connection. When this option is used, runspec will not
+       perform any other actions. If you set your verbosity level to 7 or
+       higher, you will get a list of files that are checked.
+
+ $ runspec --newflags --verbose 7
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'linux-suse10-amd64' tools
+ Reading MANIFEST... 12933 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Checking for flag updates for 350.md
+ Checking for flag updates for 351.bwaves
+ Checking for flag updates for 352.namd
+ .
+ .
+ .
+ Checking for updates to Docs/flags/flags-advanced.xml
+ Checking for updates to Docs/flags/flags-simple.xml
+
+ Flag and config file update successful!
+
+ There is no log file for this run.
+
+ runspec finished at Tue Jul 31 15:24:33 2012; 9 total seconds elapsed
+
+ $
+
+    --unpack_bundle name
+
+     * Synonym: None
+     * Default: none
+     * Meaning: Unpack a previously-created bundle of binaries and config
+       file, but do not attempt to start a run using the settings in the
+       bundle. For your reference, the command that would have been used is
+       printed out. See --make_bundle for more information about bundles.
+
+    --use_bundle name
+
+     * Synonym: None
+     * Default: none
+     * Meaning: Use a previously-created bundle of binaries and config file
+       for the current run. Unless overridden, the run will use the set of
+       extension, machine name, tuning levels, and benchmarks that were in
+       effect when the bundle was created. If you specify a run that would
+       use binaries that the current bundle doesn't contain, they will
+       attempt to be built as usual before the run. See --make_bundle for
+       more information about bundles.
+
+       The following is an excerpt from the output that is printed when we
+       use the bundle that was created in the example at --make_bundle:
+
+ $ runspec --use_bundle /export/bmk/omp2012/mumble.omp2012bundle.xz
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'linux-suse10-amd64' tools
+ Reading MANIFEST... 12933 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+
+ Use Bundle: /export/bmk/omp2012/mumble.omp2012bundle.xz
+   Uncompressing bundle file "/export/bmk/omp2012/mumble.omp2012bundle.xz"...done!
+   Reading bundle table of contents...8 files
+   Unpacking bundle file...done
+   Bundle unpacking complete.
+   About to run:
+
+     /export/bmk/omp2012/bin/specperl /export/bmk/omp2012/bin/runspec --config=jul21a.cfg
+     --ext=jul21a --mach=default --size=test --iterations=1 --threads=1 --tune=base 376.kdtree
+
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'linux-suse10-amd64' tools
+ Reading MANIFEST... 12933 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+ Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+ Setting up environment for runspec...
+ About to re-exec runspec...
+ ------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
+
+
+ runspec v1727 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'linux-suse10-amd64' tools
+ Reading MANIFEST... 12933 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Reading config file '/export/bmk/omp2012/config/jul21a.cfg'
+ Running "specperl /export/bmk/omp2012/Docs/sysinfo" to gather system information.
+ Benchmarks selected: 376.kdtree
+ Compiling Binaries
+   Up to date 376.kdtree base jul21a default
+
+
+ Setting Up Run Directories
+   Setting up 376.kdtree test base jul21a default: created (run_base_test_jul21a.0000)
+ Running Benchmarks
+   Running 376.kdtree test base jul21a default
+ Success: 1x376.kdtree
+ ...
+
+       Note in the example that runspec restarted itself twice. It unpacked
+       the bundle, then restarted itself to run the command that had been
+       entered at the time that the bundle was created. Upon doing so, it
+       discovered the preENV line for $LD_LIBRARY_PATH in the config file. It
+       applied the environment setting, then began all over again.
+
+       WARNING: Although the features to create and use bundles are intended
+       to make it easier to run SPEC OMP2012, the tester remains responsible
+       for compliance with the run rules. And, of course, both the creators
+       and the users of bundles are responsible for compliance with any
+       applicable software licenses.
+
+    --username name
+
+     * Synonym: -U name
+     * Default: same as current process
+     * Meaning: Name of user. Useful if multiple users are sharing a SPEC
+       tree. Please see About Disk Usage and Support for Multiple Users,
+       above.
+
+    --verbose n
+
+     * Synonyms: --debug n | -v n
+     * Default: 5
+     * Meaning: Set verbosity level to a level between 1 and 99. For more
+       information, see config.html
+
+    --version
+
+     * Synonym: -V
+     * Default: Print short version information.
+     * Meaning: Print detailed version information for the SPEC CPU tool
+       suite.
+
+   --------------------------------------------------------------------------
+
+4 Quick reference
+
+   (This table is organized alphabetically, without regard to upper/lower
+   case, and without regard to the presence of a leading "no").
+
+      -a ACTION       Same as --action ACTION
+   --action ACTION    Do:
+                      build|buildsetup|clean|clobber|configpp|onlyrun|realclean|report|run|runsetup|scrub|setup|trash|validate
+     --basepeak       Copy base results to peak (use with --rawformat)
+      --nobuild       Do not attempt to build binaries
+       -c FILE        Same as --config FILE
+   --check_version    Check whether an updated version of OMP2012 is available
+  --comment "text"    Add a comment to the log and the stored configfile.
+    --config file     Set config file for runspec to use
+         -D           Same as --rebuild
+         -d           Same as --deletework
+    --debug LEVEL     Same as --verbose LEVEL
+      --define        Define a config preprocessor macro
+   SYMBOL[=VALUE]
+    --delay secs      Add delay before and after benchmark invocation
+    --deletework      Force work directories to be rebuilt
+      --dryrun        Same as --fake
+      --dry-run       Same as --fake
+   -e EXT[,EXT...]    Same as --extension EXT[,EXT...]
+ --ext=EXT[,EXT...]   Same as --extension EXT[,EXT...]
+     --extension      Set the extensions
+    ext[,ext...]
+       -F URL         Same as --flagsurl URL
+       --fake         Show what commands would be executed.
+    --fakereport      Generate a report without compiling codes or doing a run.
+  --fakereportable    Generate a fake report as if "--reportable" were set.
+   --[no]feedback     Control whether builds use feedback directed optimization
+ --flagsurl-URL url   Use the file at URL as a flags description file.
+    --graph_auto      Let the tools pick minimum and maximum for the graph
+    --graph_min N     Set the minimum for the graph
+    --graph_max N     Set the maximum for the graph
+         -h           Same as --help
+       --help         Print usage message
+    --http_proxy      Specify the proxy for internet access
+   --http_timeout     Timeout when attempting http access
+         -I           Same as --ignore_errors
+   -i SET[,SET...]    Same as --size SET[,SET...]
+   --ignore_errors    Continue with benchmark runs even if some fail
+    --ignoreerror     Same as --ignore_errors
+--info_wrap_column N  Set wrap width for non-notes informational items
+    --infowrap N      Same as --info_wrap_column N
+--input SET[,SET...]  Same as --size SET[,SET...]
+   --iterations N     Run each benchmark N times
+      --keeptmp       Keep temporary files
+         -l           Same as --loose
+       --loose        Do not produce a reportable result
+      --noloose       Same as --reportable
+  -m NAME[,NAME...}   Same as --machine NAME[,NAME...]
+         -M           Same as --make_no_clobber
+--mach NAME[,NAME...] Same as --machine NAME[,NAME...]
+      --machine       Set the machine types
+   name[,name...]
+    --make_bundle     Create a package of binaries and config file
+  --make_no_clobber   Do not delete existing object files before building.
+--max_active_compares Same as --maxcompares N
+          N
+   --maxcompares N    Set the number of concurrent compares to N
+      --mockup        Same as --fakereportable
+        -n N          Same as --iterations N
+         -N           Same as --nobuild
+--notes_wrap_column N Set wrap width for notes lines
+    -noteswrap N      Same as --notes_wrap_column N
+   -o FORMAT[,...]    Same as --output_format FORMAT[,...]
+   --output_format    Generate: all|cfg|check|csv|flags|html|mail|pdf|ps|raw|screen|text
+ format[,format...]
+     --[no]power      Control poiwer measurement during run
+    --[no]preenv      Allow environment settings in config file to be applied
+         -R           Same as --rawformat
+     --rawformat      Format raw file
+      --rebuild       Force a rebuild of binaries
+    --reportonly      Same as --fakereport
+   --noreportable     Same as --loose
+    --reportable      Produce a reportable result
+    --[no]review      Format results for review
+         -s           Same as --reportable
+  -S SYMBOL[=VALUE]   Same as --define
+   -S SYMBOL:VALUE    Same as --define
+ --[no]setprocgroup   [Don't] try to create all processes in one group.
+--size size[,size...] Select data set(s): test|train|ref
+      --strict        Same as --reportable
+     --nostrict       Same as --loose
+   -T TUNE[,TUNE]     Same as --tune TUNE[,TUNE]
+     --[no]table      Do [not] include a detailed table of results
+       --test         Run various perl validation tests on specperl
+     --threads N      Set the number of OpenMP threads to run
+       --tune         Set the tuning levels to one of: base|peak|all
+      --tuning        Same as --tune
+   --undef SYMBOL     Remove any definition of this config preprocessor macro
+       -U NAME        Same as --username NAME
+   --unpack_bundle    Unpack a package of binaries and config file
+    --use_bundle      Use a package of binaries and config file
+      --update        Check www.spec.org for updates to benchmark and example flag files, and config files
+   --update_flags     Same as --update
+     --username       Name of user to tag as owner for run directories
+         -v           Same as --verbose
+      --verbose       Set verbosity level for messages to N
+         -V           Same as --version
+      --version       Output lots of version information
+         -?           Same as --help
+
+   --------------------------------------------------------------------------
+
+   Copyright 1999-2012 Standard Performance Evaluation Corporation
+
+   All Rights Reserved

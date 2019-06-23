@@ -188,14 +188,14 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/cc/NVC/missing aclocal-1.14
+ACLOCAL = ${SHELL} /home/cc/NVCT/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/cc/NVC/missing autoconf
-AUTOHEADER = ${SHELL} /home/cc/NVC/missing autoheader
-AUTOMAKE = ${SHELL} /home/cc/NVC/missing automake-1.14
+AUTOCONF = ${SHELL} /home/cc/NVCT/missing autoconf
+AUTOHEADER = ${SHELL} /home/cc/NVCT/missing autoheader
+AUTOMAKE = ${SHELL} /home/cc/NVCT/missing automake-1.14
 AWK = gawk
-BOOST_PATH = /home/cc/NVC/boost_1_56_0-install/
+BOOST_PATH = /home/cc/NVCT/boost_1_56_0-install/
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CCTLIB_EXTRA_CPPFLAGS = -DNDEBUG
@@ -219,12 +219,12 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
-LIBELF_PATH = /home/cc/NVC/libelf-0.8.9-install/
+LIBELF_PATH = /home/cc/NVCT/libelf-0.8.9-install/
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/cc/NVC/missing makeinfo
+MAKEINFO = ${SHELL} /home/cc/NVCT/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = cctlib
@@ -235,18 +235,18 @@ PACKAGE_TARNAME = cctlib
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.1
 PATH_SEPARATOR = :
-PIN_PATH = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
-PIN_ROOT = /home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux
+PIN_PATH = /home/cc/NVCT/pin-2.14-71313-gcc.4.4.7-linux/
+PIN_ROOT = /home/cc/NVCT/pin-2.14-71313-gcc.4.4.7-linux/
 RANLIB = ranlib
 SET_MAKE = 
 SHELL = /bin/bash
-SPARSEHASH_PATH = /home/cc/NVC/sparsehash-2.0.2-install/
+SPARSEHASH_PATH = /home/cc/NVCT/sparsehash-2.0.2-install/
 STRIP = 
 VERSION = 0.1
-abs_builddir = /home/cc/NVC
-abs_srcdir = /home/cc/NVC
-abs_top_builddir = /home/cc/NVC
-abs_top_srcdir = /home/cc/NVC
+abs_builddir = /home/cc/NVCT
+abs_srcdir = /home/cc/NVCT
+abs_top_builddir = /home/cc/NVCT
+abs_top_srcdir = /home/cc/NVCT
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -266,7 +266,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/cc/NVC/install-sh
+install_sh = ${SHELL} /home/cc/NVCT/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -760,15 +760,15 @@ check:
 	rm -f deadspy.out.* client.out.* 
 	rm -rf cctlib-database-* DeadSpy-CCTLib-database
 	@echo "-----Testing Pin---------" && $(PIN_ROOT)/pin.sh -- echo hi > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "----------TEST1----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_client$(PINTOOL_SUFFIX) -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "----------TEST2----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_client_mem_only$(PINTOOL_SUFFIX) -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "----------TEST3----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
-	@echo "----------TEST4----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client_tree_based$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
-	@echo "----------TEST5----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/deadspy_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
-	@echo "----------TEST6----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/deadspy_client$(PINTOOL_SUFFIX)  -- tests/$(OBJDIR)/deadWrites > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "----------TEST7----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cctlib_reader$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "---TEST8 (patience)-----" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client_tree_based$(PINTOOL_SUFFIX)  -- tests/$(OBJDIR)/threaded > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
-	@echo "---TEST9 (patience)-----" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/redspy_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "----------TEST1----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_client$(PINTOOL_SUFFIX) -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "----------TEST2----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_client_mem_only$(PINTOOL_SUFFIX) -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "----------TEST3----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
+#	@echo "----------TEST4----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client_tree_based$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
+#	@echo "----------TEST5----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/deadspy_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)	
+#	@echo "----------TEST6----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/deadspy_client$(PINTOOL_SUFFIX)  -- tests/$(OBJDIR)/deadWrites > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "----------TEST7----------" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cctlib_reader$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "---TEST8 (patience)-----" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/cct_data_centric_client_tree_based$(PINTOOL_SUFFIX)  -- tests/$(OBJDIR)/threaded > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
+#	@echo "---TEST9 (patience)-----" && $(PIN_ROOT)/pin.sh -t tests/$(OBJDIR)/redspy_client$(PINTOOL_SUFFIX)  -- ls > /dev/null && echo "----------PASSED---------" || (echo "----------FAILED---------"; exit -1)
 	@echo "*************************************************"
 	@echo "************* ALL TESTS PASSED ******************"
 	@echo "*************************************************"

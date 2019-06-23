@@ -1,0 +1,518 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+# Summarize benchmark successes & failures, help start the 
+# preparation of SPEC porter's progress reports
+# 
+# Copyright 2004-2012 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+#  Authors: John Henning, Cloyce Spradling
+#
+# $Id: port_progress 1835 2012-08-27 20:00:18Z CloyceS $
+#
+# History:
+# J. Henning 25 Nov 2002
+# update 6-Dec: pick up additional dir info
+# update 19-Apr: accept kit52 format of build error message; 
+#                get list of benchmarks from bset.
+# update 10 Mar 2005: add ability to search by config file
+# cds 16 Apr 2005: modified to work with new and old rundir format
+#                  formatted directory lists more nicely
+#                  made strict clean
+#                  made less CPU-centric
+#                  eliminated use of backticks
+#                  other misc. meddling & performance improvement
+# jh/cds 2 Jun 2005: Allow for multiple suites/multiple benchsets
+# jh 22 mar 2006: add -q; adjust a regexp for reportable runs
+# cds 11 sep 2006: Add support for multi-workload runs
+#                  Don't mask early failures with later successes (for example,
+#                  if train1 fails and train2 succeeds, the failure should
+#                  still be noted)
+# cds 19 apr 2007: DO mask early failures with later successes because that's
+#                  what people want.
+#                  Fix bug introduced with multi-workload support where in-
+#                  progress runs got _no_ marking.
+# ...time passes...
+# cds 14 Aug 2012: Replaced print_wrapped with Text::Wrap::wrap
+##################################################################
+
+BEGIN {
+  if ($ENV{'SPEC'} eq '' || ! -d $ENV{'SPEC'}) {
+    die "Please ensure that the SPEC environment variable is set correctly, so that\nbenchmark lists can be built.  Ideally source the shrc or cshrc, or run shrc.bat.\n";
+  }
+}
+
+use strict;
+use File::Basename;
+use Data::Dumper;
+use Getopt::Long;
+use Text::Wrap;
+require "$ENV{'SPEC'}/bin/vars_common.pl";  # For $::suite
+
+$Text::Wrap::columns = 80;
+$Text::Wrap::unexpand = 0;
+$Text::Wrap::huge = 'overflow';
+
+# The variables that we use...
+our ($config, @benchmarks, %runspec, $curr_log_num, $debug, 
+     $width_warned, $width_warning, $good_width,
+     %error_logs, %bmarks_seen, %ext_seen, %detail,
+     %error_dir,  %bad,
+     $detail_key, $comparing_dir, $output,
+     @running_dirs, $copycount, %opts, @tunes, $version, %summary);
+
+$debug = 0;
+$width_warned  = 0;
+$good_width    = 150;
+$width_warning = <<EOF;
+
+  *******************************************
+  * This procedure provides more detail about
+  * status if log_line_width is at least
+  *     $good_width 
+  * One or more logs had a smaller value.
+  *******************************************
+
+EOF
+%opts = (
+    'base' => 1,        # Do show columns for base
+    'peak' => 1,        # Do show columns for peak
+    'dev'  => 0,        # See below for default
+    'quiet' => 1,       # See below for default
+    'help' => 0,
+        );
+
+if (open(IN, "<$ENV{'SPEC'}/version.txt")) {
+    chomp($version = <IN>);
+    if ($version + 0 > 3) {
+        # It's a development kit; set opts appropriately
+        $opts{'dev'}   = 1;
+        $opts{'quiet'} = 0;
+        $version = 'kit '.$version;
+    } else {
+        # Release or unknown
+        $version = 'v'.$version;
+    }
+} else {
+    # Just assume it's not a dev build
+    $version = basename($ENV{'SPEC'});
+}
+
+my $rc = GetOptions (\%opts, qw(
+                    base!
+                    peak!
+                    help|h
+                    ext|e=s
+                    dev|development!
+                    quiet!
+                    q
+                    verbose
+                    config|c=s
+                    ));
+
+die "Unknown options; try --help for help" unless $rc;
+
+if ($opts{'help'}) {
+   print <<EOF;
+    $0: Summarize portability successes and problems
+    Usage: port_progress [-c config] [other options] log...
+
+    The log file argument is mandatory.  You can say: *log
+    for all the logs in the current directory.
+
+     Options:
+        -c config   restrict to matching config files
+        -e ext      restrict to matching binary extensions
+        --nobase    do not report on base
+        --nopeak    exactly what you think it means
+        -q          be brief
+        --verbose   be more discursive and voluminous
+        --dev       set options appropriate for development kits
+
+    For both config and ext, note that an exact match is 
+    not required: e.g. "mar01" matches "mar01.cfg" and "mar01b.cfg"
+
+EOF
+   exit;
+}
+
+$opts{'quiet'} = !$opts{'verbose'} if defined($opts{'verbose'});
+$opts{'quiet'} = 1 if defined($opts{'q'});
+  
+$opts{'base'} || $opts{'peak'} || die "Don't use --nobase and --nopeak at the same time.\n";
+push @tunes, 'base' if $opts{'base'};
+push @tunes, 'peak' if $opts{'peak'};
+
+# Get list of benchmarks
+my @bsets = <$ENV{SPEC}/benchspec/[CMOAG]*/*.bset>;
+my %benchmarklist;
+foreach my $bset (@bsets) {
+    $output = 0;
+    do "$bset";
+    next unless $output;
+    map { $benchmarklist{$_}++ } @benchmarks;
+}
+@benchmarks = sort keys %benchmarklist;
+
+if (@ARGV == 0) {
+    die "Usage: $0 <log> <log> <...>\n";
+}
+
+if ($^O =~ /MSWin/i) {
+        # Go through @ARGV looking for '*' and run those items through
+        # glob to get them expanded.
+        for(my $i = 0; $i < @ARGV; $i++) {
+                if ($ARGV[$i] =~ /\*/) {
+                        splice @ARGV, $i, 1, glob($ARGV[$i]);
+                }
+        }
+}
+
+my ($build_dir, $bmark, $ext, $tune);
+while (defined(my $line = <>)) {
+   chomp $line;
+
+   # Tuck away runspec lines
+   if ($line =~ m/^runspec:/o) {
+      print "runspec:'$line'\n" if $debug;
+      $config = "none";
+      if ($line =~ m/-c\S*\s+(\S+)/o) {
+         $config = $1;
+      }
+      if (defined $opts{'config'} && !($config =~ /$opts{'config'}/o)) {
+         close ARGV;
+         next;
+      }
+      ($curr_log_num = $ARGV) =~ s/$::suite\.(\d+(?:\.\d+)?)\.log$/$1/o;
+      $runspec{$curr_log_num} = $line;
+
+   # width
+   } elsif ($line =~ m/^\s*log_line_width\s*=\s*(\d+)/) {
+      if ($1 < $good_width && !$width_warned) {
+         warn $width_warning; 
+         $width_warned=1;
+      } 
+
+   #  Building 113.pthhmmer base aug09a-m64 default: (build_base_aug09a-m64.0000)
+   } elsif ($line =~ m/^\s+Building (\d{3}\.\S+) (base|peak) (\S+) /) {
+      print "Building:'$line'\n" if $debug;
+      ($bmark, $tune, $ext) = ($1, $2, $3);
+      # note: there is no support here for a SINGLE runspec that uses multiple ext
+      if (defined($opts{'ext'}) && !($ext =~ m/$opts{'ext'}/o)) {
+         close ARGV;
+         next;
+      }
+      $ext_seen{$ext} = 1;
+      $bmarks_seen{$ext.$tune.$bmark} = "b? "; # we started building... 
+
+   # When building, notice the name of the directory
+   } elsif ($line =~ m{^Wrote to makefile.*/(build|run)/(\S+)/Makefile}o) {
+      print "makefile:'$line'\n" if $debug;
+      $build_dir = $2;
+
+   # If build errors, save the log file # and the directory name
+   } elsif ($line =~ m/^\*\*\* Error.* build.*(\d{3}\.\S+)(?: (\S+))?/o) {
+      print "errbld:'$line'\n" if $debug;
+      ($bmark, $tune)              = ($1, $2);
+      $bmarks_seen{$ext.$tune.$bmark} = "CE ";  # might become FE later
+      $bad{$bmark}                    = 1;
+      $error_logs{$bmark}->{'build'}->{$curr_log_num} = 1;
+      my $dirkey                     = $bmark . "/" . $curr_log_num;
+      $error_dir{$dirkey}->{'build'}->{$build_dir}++;
+
+   # Build errors: 110.pparest(base; CE)
+   # Build errors: 130.pfluid(peak; FE), 150.pdedup(peak; FE)
+   } elsif ($line =~ m/^Build errors: (.*)/) {
+      print "blderr:'$line'\n" if $debug;
+      (my @err) = split ",", $1;
+      for my $err (@err) {
+         ($bmark, $tune, my $code) = ($err =~ m/(\d{3}\..*)\((peak|base);\s+(..)\)/);
+         $bmarks_seen{$ext.$tune.$bmark} = "$code ";
+         print "$bmark $tune $ext code:'$code'\n" if $debug;
+      }
+
+   # Build successes: 255.odrops2(base)
+   # Build successes: 253.ojohnripper(base), 253.ojohnripper(peak), 501.bzip2(base), 501.bzip2(peak)
+   } elsif ($line =~ m/^Build successes: (.*)/) {
+      print "bldsuc:'$line'\n" if $debug;
+      (my @ok) = split ",", $1;
+      for my $ok (@ok) {
+         ($bmark, $tune) = ($ok =~ m/(\d{3}\..*)\((peak|base)/);
+         $bmarks_seen{$ext.$tune.$bmark} = "built";
+      }
+
+   #   Running 483.xalancbmk train base mar17c default
+   #   Running (#1) 483.xalancbmk ref base mar17c default
+   #   Running 129.tera_tf mref (ref) base apr19a default
+   #   Running (#1) 129.tera_tf mref (ref) base apr19a default
+   } elsif ($line =~ m/^  Running (?:\(#\d+\) )?(\d{3}\.\S+) (\S+)(?: \((\S+)\))? (\S+) (\S+)/o) {
+      print "Running:'$line'\n" if $debug;
+      ($bmark, my $size, my $size_class, $tune, $ext) = ($1, $2, $3, $4, $5);
+      # note: there is no support here for a SINGLE runspec that uses multiple ext
+      if (defined($opts{'ext'}) && !($ext =~ m/$opts{'ext'}/o)) {
+         close ARGV;
+         next;
+      }
+      $size_class = $size unless defined($size_class);
+      $ext_seen{$ext} = 1;
+      $detail_key = $bmark . "/" . $ext . "/" . $tune . "/" . $size_class;
+      @running_dirs = ();
+      $copycount = 0;
+
+   # Record directories used during a run
+   } elsif ($line =~ m/^\s+-C (.*)/) {
+      print "dashC:'$line'\n" if $debug;
+      my $tmpdir = $1;
+      $tmpdir =~ s|^.*/$bmark/run/||;
+      $copycount += 0;        # Convert to number (if it isn't already)
+      $running_dirs[$copycount] = $tmpdir;
+      $copycount++;
+
+   # If there's a runtime error, record it and remember the directory
+   } elsif ($line =~ m/^${bmark}: copy #?(\d+) non-zero return code/) {
+      print "nz:'$line'\n" if $debug;
+      my $dirkey = $bmark . '/' . $curr_log_num;
+      $error_dir{$dirkey}->{'run'}->{$running_dirs[$1]}++;
+
+   # If about to compare something, notice directory
+   } elsif ($line =~ m{^comparing files in '.*?/run/(.+?)'$}o) {
+      print "comparing:'$line'\n" if $debug;
+      $comparing_dir = $1;
+
+   # If there are miscompares or compare cmd failures, save the directories
+   } elsif ($line =~ m/^(?:\*\*\* Miscompare|Compare command returned|Contents of compare.err)/o) {
+      print "miscomp:'$line'\n" if $debug;
+      my $dirkey = $bmark . '/' . $curr_log_num;
+      if ($comparing_dir ne '') {
+          # Directory name could be empty because we only pay attention to
+          # miscompares in RUN directories (not build directories, as happens
+          # with feedback errors)
+          $error_dir{$dirkey}->{'run'}->{$comparing_dir}++;
+      }
+
+   # At this point, we now care only about the bottom line -- lines such as:
+   # Error 998.rand base train ratio=-0.00, runtime=0.002653, power=40.00W, temp=21.22 degC, humidity=55.56%, errorcode=VE
+   # Success 999.specrand base train ratio=-0.00, runtime=0.006962, power=40.00W, temp=21.22 degC, humidity=55.56%
+   # Run 999.specrand base train ratio=-0.00, runtime=0.002646, power=40.00W, temp=21.22 degC, humidity=55.56%
+   } elsif ($line =~ m/^ (Error|Run|Success) (\d{3}\.\S+) (\S+) \S+ ratio.*?(?:, errorcode=([A-Z?]{2}))?$/o) {
+      print "ratio:'$line'\n" if $debug;
+      my ($what, $bmark, $tune, $errcode) = ($1, $2, $3, $4);
+      $errcode = 'r?' unless defined($errcode) && $errcode ne '';
+      if ($what eq 'Run') {
+         # "Run" most resembles an error in that we don't know for sure
+         # that it succeeded (== would validate), but we don't need to
+         # go pointing at the run directory.
+         $detail{$detail_key}->{'code'}     = 'R? ';
+      } elsif ($what eq 'Error' && $errcode ne 'PE' && $errcode ne 'EE') {
+         $bad{$bmark}             = 1;
+         $error_logs{$bmark}->{'run'}->{$curr_log_num} = 1;
+         $detail{$detail_key}->{'code'}     = sprintf('%-2s ', $errcode);
+      } elsif ($what eq 'Success' || $errcode eq 'PE' || $errcode eq 'EE') {
+         # Mark PE (power error) and EE (environment error) as success because in those cases the
+         # benchmark code ran and validated successfully.  Whether there was a problem in the
+         # power/env measurement setup doesn't bear on whether the benchmark worked or didn't.
+         $detail{$detail_key}->{'code'}     = 'S  ';
+      }
+   }
+
+}
+
+# All log files have been read.  Ready to start the report
+
+print "SPEC $::suite $version\n";
+print "Tester: ".getlogin."\n";       # replace with pseudonym if you wish
+
+print "\n".(' ' x 15);
+my $numexts = 0;
+foreach my $ext (sort keys %ext_seen) {
+   next if (defined($opts{'ext'}) && !($ext =~ m/$opts{'ext'}/o));
+   $numexts++;
+   printf "%-12s", $ext;
+   print ('         ' x (@tunes - 1));
+}
+print "\n";
+
+my $tmp = join(' ', map { sprintf("%-9s", ucfirst($_)) } @tunes).'   ';
+print ' '.(' ' x 14).($tmp                     x $numexts)."\n";
+$tmp = ("Te Tr Ref " x (@tunes+0)).'  ';
+print ' '.(' ' x 14).($tmp                     x $numexts)."\n";
+
+foreach my $bmark (@benchmarks) {
+   $summary{$bmark} = sprintf "%-15s", $bmark;
+   foreach my $ext (sort keys %ext_seen) {
+      next if (defined($opts{'ext'}) && !($ext =~ m/$opts{'ext'}/o));
+      foreach my $tune (@tunes) {
+         foreach my $size_class (qw(test train ref)) {
+            $detail_key = $bmark . "/" . $ext . "/" . $tune . "/" . $size_class;
+            if (defined($detail{$detail_key}) && exists($detail{$detail_key}->{'code'})) {
+               $summary{$bmark} .= $detail{$detail_key}->{'code'};
+            } elsif (exists($bmarks_seen{$ext.$tune.$bmark})) {
+               if ($bmarks_seen{$ext.$tune.$bmark} =~ m/^(CE|b\?|FE)/) {
+                  $summary{$bmark} .= $bmarks_seen{$ext.$tune.$bmark};
+                  $bmarks_seen{$ext.$tune.$bmark} = "AlreadyPrintedCE";
+               } elsif ($bmarks_seen{$ext.$tune.$bmark} eq "built") {
+                  $summary{$bmark} .= 'NR '; # Built, but this tune didn't run
+               } else {
+                  $summary{$bmark} .= '   '; # Build failed, already noted
+               }
+            }
+            else {
+               # This shouldn't happen, but at least make the spacing work out
+               $summary{$bmark} .= '   ';
+            }
+         }
+         $summary{$bmark} .= ' ';
+      }
+      $summary{$bmark} .= '  ';
+   }
+}
+
+foreach my $bmark (@benchmarks) {
+   print $summary{$bmark}, "\n";
+}
+
+if ($width_warned) {
+   print "\n$width_warning\n";
+}
+my $all_extensions = join (' ', sort keys %ext_seen);
+if (!$opts{'quiet'}) {
+   print <<EOT
+
+In the report above, please replace the user name
+with either your real name or a disguise.  Please
+replace the extensions ($all_extensions) with 
+something more meaningful (e.g. "64-bit with 
+Big Optimizations").
+
+Please replace:
+   "r?" by the appropriate run-time error code 
+        (such as RE, VE, RM, VM, etc)
+   "b?" by the appropriate build-time error code 
+        (such as CE, FE, CM, FM, etc)
+See codes list on SPEC's private server in 
+  ... cpu/cpu2006/Failure_guidelines.html
+
+In the report section below, please replace the 
+references to log file numbers with an approriate 
+excerpt from the logfile to show the "fingerprint".
+
+Thanks!
+EOT
+   ;
+}
+
+my $wid = 79;
+print "-"x$wid, "\n";
+print <<EOF;
+
+
+                    
+                     P---------+
+                     O  flags  |
+                     R---------+
+                     T
+                     A
+                     B
+                     I
+                     L
+                     I
+                     T
+                     Y
+Please record your ==+== here!
+
+
+
+
+EOF
+print "-"x$wid, "\n";
+
+# Point out which logs had the failures
+my $firstlogs = 1;
+foreach my $bmark (sort keys %bad) {
+   print "\n", "="x$wid, "\n";
+   print $summary{$bmark}, "\n";
+   print "-"x$wid, "\n";
+   print "*** Fingerprint needed for: $bmark\n\n";
+   foreach my $type (qw(build run)) {
+      if (ref($error_logs{$bmark}->{$type}) eq 'HASH') {
+         print "Please analyze $type failures in logs: \n";
+         foreach my $log (sort keys %{$error_logs{$bmark}->{$type}}) {
+            my $dirkey = $bmark . '/' . $log;
+            my @dirs = sort keys %{$error_dir{$dirkey}->{$type}};
+            my $dirline = pluralize('  Dir', @dirs + 0).': ';
+            my $newline = print_simplified_runspec_line($log, $runspec{$log}, $dirline.join(', ', @dirs));
+            if ($newline) {
+               print wrap((' ' x 12).$dirline,
+                          (' ' x (length($dirline) + 12)),
+                          join(', ', @dirs))."\n";
+            } else {
+               print $dirline.join(', ', @dirs)."\n";
+            }
+         }
+         if ($firstlogs) {
+            $firstlogs = 0;
+            my $nag = <<EOF; 
+
+            NOTE:
+            At minimimum, a failure fingerprint MUST be provided.  
+
+            You are encouraged to go beyond that and figure out solutions -- for example,
+            you might propose a portability fix.  
+
+            Once you have the fingerprint, remove the above lines about log numbers (they
+            will not be of interest to your readers), replacing them with your summary and
+            recommendation.  
+
+            You can also remove the line "Fingerprint needed for..." once you have
+            actually provided one.
+
+EOF
+         $nag =~ s{^ *}{}gm;
+         print $nag;
+         }
+      }
+   }
+}
+
+# Subroutine to chop out everything EXCEPT the essential switches
+# in the runspec command line.  Do this by removing the first part,
+# which usually looks like this:
+#    /export/home/john/cpu2006/kit29/bin/runspec
+# and by removing the names of the things that we are running
+# and switches that we don't care about
+# and finally by chopping it down to just the first 72 characters
+
+sub print_simplified_runspec_line {
+  my ($log, $simplified, $next_header) = @_;
+
+  chomp $simplified;
+  $simplified =~ s@.*runspec @@;   #chop off beginning of line
+  $simplified =~ s/-I//g;          #and switches we don't care about
+  $simplified =~ s/-n 1//g;
+  $simplified =~ s/-o \S+//g;
+  $simplified =~ s/--loose//g;
+  $simplified =~ s/-l//g;
+  $simplified =~ s/--nobuild//g;
+  # Convert all nnn.bmark to just nnn
+  $simplified =~ s/(\d{3})\.\S+/$1/g;
+  $simplified =~ tr/ / /s;  # reduce multiple spaces to 1
+  $simplified =~ s/ +$//;    # and chop any off end
+  $simplified = substr $simplified,0,72;
+  my $line = "   $log  $simplified";
+  print $line;
+  if (length($line.$next_header) > 80) {
+      print "\n";
+      return 1;
+  }
+  return 0;
+}
+
+# Save some space by eliminating the parentheses on items that may or may not
+# be plural.
+sub pluralize {
+    my ($txt, $num) = @_;
+    $txt .= ($num == 1) ? '' : 's';
+
+    return $txt;
+}

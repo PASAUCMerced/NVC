@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -ue
+
+/home/cc/rodinia/openmp/kmeans/kmeans -i /home/cc/rodinia/data/kmeans/kdd_cup

@@ -1,0 +1,95 @@
+#!/usr/bin/perl
+#
+# compress_data - Compress dataset files
+# No support is provided for this script.
+#
+# Copyright 2005-2008 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: compress_data 1061 2011-02-01 22:31:10Z keeper $
+#
+
+use strict;
+use IO::Dir;
+use File::Basename;
+use File::Temp qw(tempfile);
+use vars qw(%files);
+
+my $top = shift(@ARGV);
+my $limit = shift(@ARGV) * 1024 * 1024;
+
+if (!-d $top || !defined($limit) || $limit <= 0) {
+    print "Usage: $0 <top dir> <min size>\n";
+    exit 1;
+}
+
+my $dh = new IO::Dir $top;
+die "Can't open $top for reading: $!\nStopped" unless defined($dh);
+
+read_data_files($dh, $top, \%files);
+
+my @candidates = grep { !/\.bz2$/ } sort keys %files;
+foreach my $file (@candidates) {
+    print "Considering $file...";
+    my $bz2file = $file.'.bz2';
+    if (exists($files{$bz2file})) {
+	if ($files{$bz2file}->{'mtime'} < $files{$file}->{'mtime'}) {
+	    print "up-to-date bz2\n";
+	    next;
+	}
+	delete $files{$bz2file};
+    }
+    print "compressing...\n";
+    system "cat $file | bzip2 -9v > $bz2file";
+    print "  Compressed: ";
+    if ($files{$file}->{'size'} < (-s $bz2file) * 1.5) {
+	# Less than 33% compression; junk it
+	unlink $bz2file;
+	print "discarded\n";
+	next;
+    } else {
+	print "set SVN ignore!\n";
+	svn_ignore($bz2file);
+    }
+}
+	
+sub read_data_files {
+    my ($dh, $dir, $files) = @_;
+
+    print "Reading $dir\n" if $dir =~ m|/data$|o;
+    while(defined(my $file = $dh->read())) {
+	next if ($file eq '.' || $file eq '..' || $file eq '.svn' || $file eq 'CVS');
+	my $path = "${dir}/$file";
+	if (-d $path) {
+	    my $ndh = new IO::Dir $path;
+	    if (!defined($ndh)) {
+		warn "Can't open $path for reading: $!\n";
+		next;
+	    } else {
+		read_data_files($ndh, $path, $files);
+		undef $ndh;
+	    }
+	} elsif (-f _ && $path =~ m|/data/[^/]+/input|o) {
+	    # It's a file!  In an input directory!
+	    if (-s _ >= $limit || $path =~ /\.bz2$/) {
+		# Save it!
+		$files{$path} = { 'size' => -s _, 'mtime' => -M _ };
+	    }
+	}
+    }
+}
+
+sub svn_ignore {
+    my ($file) = @_;
+    my ($shortname, $dir) = fileparse($file);
+
+    # Get the svn:ignore property for the directory
+    my %ignore = map { $_ => 1 } split(/\n+/, `svn pg svn:ignore $dir`);
+    return if (exists $ignore{$shortname});
+    $ignore{$shortname}++;
+    my ($fh, $tempname) = tempfile('compdsetXXXXXXXX', DIR => '/tmp');
+    $fh->print(join("\n", sort keys %ignore)."\n");
+    $fh->close();
+    system "svn ps svn:ignore -F $tempname $dir";
+
+}

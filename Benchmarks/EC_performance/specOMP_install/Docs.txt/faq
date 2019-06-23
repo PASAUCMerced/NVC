@@ -1,0 +1,810 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                       OMP2012 Frequently asked questions
+
+   Last updated: $Date: 2012-10-12 11:21:33 -0400 (Fri, 12 Oct 2012) $ by
+   $Author: BrianWhitney $
+
+   This document has frequently asked technical questions and answers. The
+   latest version of this document may be found at
+   http://www.spec.org/omp2012/Docs/faq.html.
+
+   If you are looking for the list of known problems with SPEC OMP2012,
+   please see http://www.spec.org/omp2012/Docs/errata.html.
+
+   Contents
+
+   Requirements
+
+   Require.01 How much memory do I need?
+
+   Require.02 Does this work with Windows?
+
+   Installation
+
+   Install.01 ./install.sh: /bin/sh: bad interpreter: Permission denied
+
+   Install.02 The DVD drive is on system A, but I want to install on system
+   B. What do I do?
+
+   Install.03 Error occurred while processing: C:\Documents
+
+   Install.04 How do I uninstall?
+
+   Install.05 Do I need to be root?
+
+   runspec
+
+   runspec.01 Can't locate strict.pm
+
+   runspec.02 specperl: bad interpreter: No such file or directory
+
+   runspec.03 Do I need to be root?
+
+   Building benchmarks
+
+   Build.01 CreateProcess((null), ifort ...) failed.
+
+   Build.02 make.clean.err does not exist
+
+   Build.03 Why is it rebuilding the benchmarks?
+
+   Setting up
+
+   Setup.01 hash doesn't match after copy
+
+   Setup.02 Copying executable failed
+
+   Running benchmarks
+
+   Run.01 Why does this benchmark take so long to run?
+
+   Run.02 Why was there this cryptic message from the operating system?
+
+   Miscompares
+
+   Miscompare.01 I got a message about a miscompare
+
+   Miscompare.02 The benchmark took less than 1 second
+
+   Miscompare.03 The .mis file says "short"
+
+   Miscompare.04 My compiler is generating bad code!
+
+   Miscompare.05 The code is bad even with low optimization!
+
+   Miscompare.06 The .mis file is just a bunch of numbers.
+
+   Results reporting
+
+   Results.01 Where did the reference times go?
+
+   Results.02 It's hard to cut/paste into my spreadsheet
+
+   Results.03 What is a "flags file"? What does Unknown Flags mean?
+
+   Results.04 Submission Check -> FAILED
+
+   Power
+
+   Power.01 What is the power component of SPEC OMP2012?
+
+   Power.02 Am I required to run power?
+
+   Power.03 How do I measure power?
+
+   Power.04 What kind of power analyzer do I need?
+
+   Power.05 Is is possible to get all of the power sample data?
+
+   Power.06 What settings are required for the power analyzer?
+
+   Power.07 Can I use autoranging?
+
+   Power.08 The runspec command caused uncertainty errors, what can I do?
+
+   Power.09Can I use more than one power analyzer?
+
+   Temperature
+
+   Temperature.01I got an error about it being too cold, what can I do?
+
+                                  Requirements
+
+  Require.01 q. How much memory do I need?
+
+   a. The system requirements may be found in the document
+   system-requirements.html. Currently, the minimum amount of memory in a
+   system to run has been 32 GB.
+
+  Require.02 q. Does this work with Windows?
+
+   a. The SPEC OMP2012 suite has been tested on a number of platforms, but
+   Windows is not one of them. Because of how this benchmark shares
+   components with SPEC CPU benchmarks, it is possible that it might work on
+   Windows. If you buy this benchmark and expect it to work on Windows, SPEC
+   will not be able to support you because it is not a supported operating
+   system.
+
+                                  Installation
+
+  Install.01 q. Why am I getting a message such as "./install.sh: /bin/sh: bad
+  interpreter: Permission denied"?
+
+   a. If you are installing from the DVD, check to be sure that your
+   operating system allows programs to be executed from the DVD. For example,
+   some Linux man pages for mount suggest setting the properties for the CD
+   or DVD drive in /etc/fstab to "/dev/cdrom /cd iso9660
+   ro,user,noauto,unhide", which is notably missing the property "exec". Add
+   exec to that list in /etc/fstab, or add it to your mount command. Notice
+   that the sample Linux mount command in install-guide-unix.html does
+   include exec.
+
+   Perhaps install.sh lacks permission to run because you tried to copy all
+   the files from the DVD, in order to move them to another system. If so,
+   please don't do that. There's an easier way. See the next question.
+
+  Install.02 q. The DVD drive is on system A, but I want to install on system B.
+  What do I do?
+
+   a. The installation guides have an appendix just for you, which describe
+   installing from the network or installing from a tarfile. See Appendix 1
+   in install-guide-unix.html or install-guide-windows.html.
+
+  Install.03 q. Why did the installation fail with Error occurred while
+  processing: C:\Documents?
+
+   I was installing on Windows using the tar file. It said:
+
+ C:\Documents and Settings\John\omp2012> install
+ The environment variable SPEC should point to the source of the
+ SPEC distribution as an absolute path.  I will now try to set
+ the variable for you...
+
+ SPEC is set to C:\Documents and Settings\John\omp2012
+ If this is NOT what you want, press control-C
+ Press any key to continue . . .
+ Installing from "C:\Documents and Settings\John\omp2012"
+
+ Checking the integrity of your source tree...
+
+  Depending on the amount of memory in your system, and the speed of your
+  destination disk, this may take more than 10 minutes.
+  Please be patient.
+
+ The system cannot find the file specified.
+ Error occurred while processing: C:\Documents.
+ The system cannot find the file specified.
+ Error occurred while processing: and.
+ The system cannot find the path specified.
+ C:\Documents and Settings\John\omp2012\tools\bin\windows-i386\specmd5sum: MANIFEST.tmp: no properly formatted MD5 checksum lines found
+ Package integrity check failed!
+ Installation NOT completed!
+
+   a. Even though Windows is not a supported OS for SPEC OMP2012, it is
+   possible that things will work. The problem is that the SPEC tools do NOT
+   support spaces in path names. This is a limitation of the SPEC toolset and
+   there are currently no plans to change this requirement. Please use a path
+   that does not contain spaces.
+
+  Install.04 q. How do I uninstall? This script uninstall.sh doesn't seem to be
+  it.
+
+   a. You are correct that uninstall.sh does not remove the whole product; it
+   only removes the SPEC tool set, and does not affect the benchmarks (which
+   consume the bulk of the disk space). At this time, SPEC does not provide
+   an uninstall utility for the suite as a whole. But it's easy to do: on
+   Unix systems, use rm -Rf on the directory where you installed the suite,
+   for example:
+
+   rm -Rf /home/cs3000/saturos/spec/omp2012
+
+   On Windows systems, select the top directory in Windows Explorer and
+   delete it.
+
+   If you have been using the output_root feature, you will have to track
+   those down separately. See the suggested commands in the appendix about
+   uninstalling, in the install guides.
+
+   Note: instead of deleting the entire directory tree, some users find it
+   useful to keep the config and result subdirectories, while deleting
+   everything else.
+
+  Install.05 Do I need to be root?
+
+   Occasionally, users of Unix systems have asked whether it is necessary to
+   elevate privileges, or to become 'root', prior to installing or running
+   SPEC OMP2012.
+
+   a. SPEC recommends (*) that you do not become root, because: (1) To the
+   best of SPEC's knowledge, no component of SPEC OMP needs to modify system
+   directories, nor does any component need to call privileged system
+   interfaces. (2) Therefore, if you find that it appears that there is some
+   reason why you need to be root, the cause is likely to be outside the SPEC
+   toolset - for example, disk protections, or quota limits. (3) For safe
+   benchmarking, it is better to avoid being root, for the same reason that
+   it is a good idea to wear seat belts in a car: accidents happen, humans
+   make mistakes. For example, if you accidentally type:
+
+   kill 1
+
+   when you meant to say:
+
+   kill %1
+
+   then you will very grateful if you are not privileged at that moment.
+
+   (*) This is only a recommendation, not a requirement nor a rule.
+
+                                    runspec
+
+  runspec.01 q. When I say runspec, why does it say Can't locate strict.pm? For
+  example:
+
+ D:\omp2012>runspec --help
+ Can't locate strict.pm in @INC (@INC contains: .) at
+ D:\omp2012\bin\runspec line 62.
+ BEGIN failed--compilation aborted at D:\omp2012\bin\runspec line 62.
+
+   a. You can't use runspec if its path is not set correctly. On Unix, Linux,
+   or Mac OS X, you should source shrc or cshrc, as described in runspec.html
+   section 2.4. For Windows, please edit shrc.bat and make the adjustments
+   described in the comments. Then, execute that file, as described in
+   runspec.html section 2.5.
+
+  runspec.02 q. Why am I getting messages about specperl: bad interpreter? For
+  example:
+
+ bash: /omp2012newdir/bin/runspec: /omp2012/bin/specperl: bad interpreter: No such file or directory
+
+   a. Did you move the directory where runspec was installed? If so, you can
+   probably put everything to rights, just by going to the new top of the
+   directory tree and typing "bin/relocate".
+
+   For example, the following unwise sequence of events is repaired after
+   completion of the final line.
+
+ Top of SPEC benchmark tree is '/omp2012'
+ Everything looks okay.  cd to /omp2012,
+ source the shrc file and have at it!
+ $ cd /omp2012
+ $ . ./shrc
+ $ cd ..
+ $ mv omp2012 omp2012newdir
+ $ runspec -h | head
+ bash: runspec: command not found
+ $ cd omp2012newdir/
+ $ . ./shrc
+ $ runspec --help | head
+ bash: /omp2012newdir/bin/runspec: /omp2012/bin/specperl: bad interpreter: No such file or directory
+ $ bin/relocate
+
+  runspec.03 Do I need to be root?
+
+   Regarding the root account, the answer for runspec is the same as the
+   answer for installation question #5, above.
+
+                              Building benchmarks
+
+  Build.01 q. I'm using Windows and I can't build any benchmarks. What does
+  CreateProcess((null), ifort ...) failed mean? For example:
+
+ Error with make 'specmake build': check file
+ 'D:/omp2012/benchspec/OMP2012/350.md/run/build_base_omp2012.win32.fast.exe.0000/make.err'
+   Error with make!
+ *** Error building 350.md
+ -----
+ make.err:
+ process_begin: CreateProcess((null), ifort -c -Foblock_solver.obj -Ox block_solver.f, ...) failed.
+ make (e=2): The system cannot find the file specified.
+
+ specmake: *** [block_solver.obj] Error 2
+
+   a. Please note that Windows is not an officially supported platform (see
+   system-requirements.html). It may be possible that Windows will work, so
+   this answer may be of use to you.
+
+   This CreateProcess failure occurs on Windows when specmake cannot find
+   your compiler. (Recall from system-requirements.html that the benchmarks
+   are supplied in source code form, and that they must be compiled.)
+
+   The reason that it cannot find your compiler is, most likely, because:
+
+    1. You have not edited shrc.bat to correctly reference your compiler, or
+    2. You have used a config file that references a compiler that does not
+       exist.
+
+   To fix your problem, investigate and address both items.
+
+    1. In shrc.bat, you need to either:
+
+         1. Reference a vendor-supplied file that sets the path.
+
+            The supplied shrc.bat in V1.0 mentions sample .bat files that are
+            often provided by compilers to set your environment. If you want
+            to use this option but you can't find the right file, check your
+            compiler documentation, or you might try searching your hard
+            drive for *vars*bat.
+
+            The file names change frequently; check your compiler docs.
+
+            For example, for Visual Studio 10, you might use something like
+            call "C:\Program Files (x86)\Microsoft Visual Studio
+            10.0\Common7\Tools\vsvars32.bat" but for older compilers, you
+            might need to look for vcvars32.bat, not vsvars32.bat.
+
+            For example, when using the (mid-2011) Intel compiler, to select
+            32 or 64-bit mode, you must remember to add the appropriate
+            argument after the call. This statement requests 32-bit mode:
+            call "C:\Program Files
+            (x86)\Intel\ComposerXE-2011\bin\compilervars.bat" ia32
+
+            For example, when using the PGI 11.7 compiler, the path varies
+            depending on whether you are using 32 or 64-bit mode:
+            call "c:\Program Files\PGI\win64\11.7\pgi_env.bat"
+            or
+            call "c:\Program Files (x86)\PGI\win32\11.7\pgi_env.bat"
+
+            Summary: your call statement will vary, by compiler, by version,
+            and sometimes, by features. Check your compiler's documentation,
+            to find the right call.
+
+         2. Or, edit the path yourself.
+
+            You can set the path yourself if you like, with commands such as:
+
+ set PATH=%PATH%;"c:\program files\path\to\my\compiler\bin"
+
+            If you want to use option b, but you can't figure out what path
+            to set, try looking in the documentation for your compiler under
+            topics such as "setting the path", or "command line", or
+            "environment variables". The documentation should mention whether
+            any other environment variables (such as LIB or INCLUDE) are
+            required, in addition to PATH.
+
+    2. You must also use a config file that is appropriate for your compiler.
+
+  Build.02 q. The file make.clean.err is mentioned, but it does not exist. Why
+  not?
+
+   The tools print a message such as:
+
+    Building 350.md ref base omp2012.win32.fast.exe default:
+ (build_base_omp2012.win32.fast.exe.0000)
+ Error with make.clean 'specmake clean': check file
+ 'D:/omp2012/benchspec/CPU2006/350.md/run/build_base_omp2012fast.exe.0000/make.clean.err'
+ *** Error building 350.md
+ If you wish to ignore this error, please use '-I' or ignore errors.
+
+   But on investigation, the file make.clean.err does not exist. Why not?
+
+   a. Please note that Windows is not an officially supported platform (see
+   system-requirements.html). It may be possible that Windows will work, so
+   this answer may be of use to you.
+
+   A missing .err file has been reported on Microsoft Windows if a path from
+   shrc.bat uses quoted strings that include semicolons within the quotes,
+   such as:
+
+ set PATH="%PATH%;d:\My Compiler Path\bin"  <--- wrong
+ set PATH="%PATH%;d:\mycompiler\bin"        <--- wrong
+
+   Paths such as the above may appear to work if you enter them at the
+   command line. But when the tools call CreateProcess, they cause
+   mysterious-seeming failures. The correct way to do it is:
+
+     set PATH=%PATH%;"d:\My Compiler Path\bin"
+ or
+     set PATH=%PATH%;d:\mycompiler\bin
+
+   Notice that in both cases, there are no semicolons inside of quotes.
+
+  Build.03 q. Why is it rebuilding the benchmarks?
+
+   a. You changed something, and the tools thought that it might affect the
+   generated binaries.
+
+                                   Setting up
+
+  Setup.01 q. What does hash doesn't match after copy mean?
+
+   I got this strange, difficult to reproduce message:
+       hash doesn't match after copy ... in copy_file (1 try total)! Sleeping
+   2 seconds...
+   followed by several more tries and sleeps. Why?
+
+   a. During benchmark setup, certain files are checked. If they don't match
+   what they are expected to, you might see this message. Check:
+
+     * Are you out of disk space?
+     * Does the error go away if a different disk is used? Perhaps you have a
+       bad disk, or an unreliable disk controller.
+
+   If the condition persists, try turning up the verbosity level. Look at the
+   files with other tools; do they exist? Can you see differences? Try a
+   different disk and controller. And, check for the specific instance of
+   this message described in the next question.
+
+  Setup.02q. Why does it say ERROR: Copying executable failed?
+
+   I got this strange, difficult to reproduce message:
+       ERROR: Copying executable to run directory FAILED
+   or
+       ERROR: Copying executable from build dir to exe dir FAILED!
+   along with the bit about hashes not matching from the previous question.
+   Why?
+
+   a. Perhaps you have attempted to build the same benchmark twice in two
+   simultaneous jobs.
+
+   On most operating systems, the SPEC tools don't mind concurrent jobs. They
+   use your operating system's locking facilities to write the correct
+   outputs to the correct files, even if you fire off many runspec commands
+   at the same time.
+
+   But there's one case of simultaneous building that is difficult for the
+   tools to defend against: please don't try to build the very same
+   executable from two different jobs at the same time. Notice that if you
+   say something like this:
+
+ $ tail myconfig.cfg
+ 350.md=peak:
+ basepeak=yes
+ $ runspec --config myconfig --size test --tune base 350.md &
+ $ runspec --config myconfig --size test --tune peak 350.md &
+
+   then you are trying to build the same benchmark twice in two different
+   jobs, because of the presence of basepeak=yes. Please don't try to do
+   that.
+
+                               Running benchmarks
+
+  Run.01 q. Why does this benchmark suite take so long to run?
+
+   a. Please understand that the suite has been designed to be useful for at
+   least 5 years. Benchmarks that seem slow today probably will not seem slow
+   at the end of life of the suite.
+
+  Run.02 q. Why was there this cryptic message from the operating system?
+
+   a. If you are getting cryptic, hard-to-reproduce, unpredictable error
+   messages from your system, one possible reason may be that the benchmarks
+   consume substantial resources, of several types. If an OS runs out of some
+   resource - for example, pagefile space, or process heap space - it might
+   not give you a very clear message. Instead, you might see only a very
+   brief message, or a diaolog box with a hex error code in it. Please see
+   the hints and suggestions in the section about resources in
+   system-requirements.html.
+
+                                  Miscompares
+
+  Miscompare.01 I got a message about a miscompare. The tools said something
+  like:
+
+   Running Benchmarks
+     Running 358.botsalgn ref base 12.3 default threads:128
+   /spec/omp2012/21/bin/specinvoke -d /spec/omp2012/21/benchspec/OMP2012/358.
+   botsalgn/run/run_base_ref_12.3.0000 -e speccmds.err -o speccmds.stdout -f
+   speccmds.cmd -C -q
+   /spec/omp2012/21/bin/specinvoke -E -d /spec/omp2012/21/benchspec/OMP2012/3
+   58.botsalgn/run/run_base_ref_12.3.0000 -c 1 -e compare.err -o compare.stdo
+   ut -f compare.cmd -k
+
+   *** Miscompare of botsalgn.out; for details see
+       /spec/omp2012/21/benchspec/OMP2012/358.botsalgn/run/run_base_ref_12.3.
+   0000/botsalgn.out.mis
+   Error: 1x358.botsalgn
+   Producing Raw Reports
+   mach: default
+     ext: 12.3
+       size: ref
+         set: gross
+
+   Why did it say that? What's the problem?
+
+   a. We don't know. Many things can cause a benchmark to miscompare, so we
+   really can't tell you exactly what's wrong based only on the fact that a
+   miscompare occurred.
+
+   But don't panic.
+
+   Please notice, if you read the message carefully, that there's a
+   suggestion of a very specific file to look in. It may be a little hard to
+   read if you have a narrow terminal window, as in the example above, but if
+   you look carefully you'll see that it says:
+
+ *** Miscompare of botsalgn.out; for details see
+     /spec/omp2012/21/benchspec/OMP2012/358.botsalgn/run/run_base_ref_12.3.0000/botsalgn.out.mis
+
+   Now's the time to look inside that file. Simply doing so may provide a
+   clue as to the nature of your problem.
+
+   On Unix systems, change your current directory to the run directory using
+   the path mentioned in the message, for example:
+
+ cd /spec/omp2012/21/benchspec/OMP2012/358.botsalgn/run/run_base_ref_12.3.0000
+
+   On Microsoft Windows systems, remember to turn the slashes backwards in
+   your cd command.
+
+   Then, have a look at the file that was mentioned, using your favorite text
+   editor. If the file does not exist, then check your paths, and check to
+   see whether you have run out of disk space.
+
+  Miscompare.02 The benchmark ran, but it took less than 1 second and there was
+  a miscompare. Help!
+
+   a. If the benchmark took less than 1 second to execute, it didn't execute
+   properly. There should be one or more .err files in the run directory
+   which will contain some clues about why the benchmark failed to run.
+   Common causes include libraries that were used for compilation but not
+   available during the run, executables that crash with access violations or
+   other exceptions, and permissions problems. See also the suggestions in
+   the next question.
+
+  Miscompare.03 I looked in the .mis file and it said something like:
+
+    'rand.234923.out' short
+
+   What does "short" mean?
+
+   a. If a line like the above is the only line in the .mis file, it means
+   that the benchmark failed to produce any output. In this case, the
+   corresponding error file (look for files with .err extensions in the run
+   directory) may have a clue. In this case, it was Segmentation Fault - core
+   dumped. For problems like this, the first things to examine are the
+   portability flags used to build the benchmark.
+
+   Have a look at the sample config files in $SPEC/config or, on Windows,
+   %SPEC%\config. If you constructed your own config file based on one of
+   those, maybe you picked a starting point that was not really appropriate
+   (e.g. you picked a 32-bit config file but are using 64-bit compilation
+   options). Have a look at other samples in that directory. Check at
+   www.spec.org/omp2012 to see if there have been any result submissions
+   using the platform that you are trying to test. If so, compare your
+   portability flags to the ones in the the config files for those results.
+
+   If the portability flags are okay, your compiler may be generating bad
+   code.
+
+  Miscompare.04 My compiler is generating bad code! Help!
+
+   a. Try reducing the optimization that the compiler is doing. Instructions
+   for doing this will vary from compiler to compiler, so it's best to ask
+   your compiler vendor for advice if you can't figure out how to do it for
+   yourself.
+
+  Miscompare.05 My compiler is generating bad code with low or no optimization!
+  Help!
+
+   a. If you're using a beta compiler, try dropping down to the last released
+   version, or get a newer copy of the beta. If you're using a version of GCC
+   that shipped with your OS, you may want to try getting a "vanilla" (no
+   patches) version and building it yourself.
+
+  Miscompare.06 I looked in the .mis file and it was just full of a bunch of
+  numbers.
+
+   a. In this case, the benchmark is probably running, but it's not
+   generating answers that are within the tolerances set. See the suggestions
+   for how to deal with compilers that generate bad code in the previous two
+   questions. In particular, you might see if there is a way to encourage
+   your compiler to be careful about optimization of floating point
+   expressions.
+
+                               Results reporting
+
+  Results.01 q. Where did the reference times go?
+
+   I was reading an HTML (or PDF or PS) report and see that in the table SPEC
+   now prints all three observations as both seconds and ratio, with the bold
+   underlined item for the median. Although this is useful, CPU2000 results
+   reports included the reference times in their own column, and I miss them.
+   Yes, I understand that the ratio is defined as reference time / observed
+   time, so I could calculate the reference times by simple multiplication.
+   Nevertheless, it was nice having them handy in the previous report format.
+
+   a. Because of space issues, the reference times are no longer available in
+   the actual reports. They can be found by examining the reftime files in
+   the data/ref directories of the individual benchmarks. They are also
+   provided in the table below
+
+           350.md             4630
+           351.bwaves         4530
+           352.nab            3890
+           357.bt331          4740
+           358.botsalgn       4350
+           359.botsspar       5250
+           360.ilbdc          3560
+           362.fma3d          3800
+           363.swim           4530
+           367.imagick        7030
+           370.mgrid331       4420
+           371.applu331       6060
+           372.smithwa        5360
+           376.kdtree         4500
+
+  Results.02 q. It's hard to cut/paste into my spreadsheet
+
+   a. Please don't do that. With OMP2012, there's a handy .csv format file
+   right next to the other result formats on the index page. Or, you can go
+   up to the top of your browser and change the .pdf (or .whichever) to .csv
+
+  Results.03 q. What is a "flags file"? What does the message Unknown Flags mean
+  in a report?
+
+   a. SPEC OMP2012 provides benchmarks in source code form, which are
+   compiled under control of SPEC's toolset. Compilation flags (such as -O5
+   or -unroll) are detected and reported by the tools with the help of flag
+   description files. Therefore, to do a complete run, you need to (1) point
+   to an existing flags file (easy) or (2) modify an existing flags file
+   (slightly harder) or (3) write one from scratch (definitely harder).
+
+    1. Find an existing flags file by noticing the address of the .xml file
+       at the bottom of any result published at www.spec.org/omp2012. You can
+       use the --flagsurl switch to point your own runspec command at that
+       file, or you can reference it from your config file with the flagsurl
+       option. For example:
+          runspec --config=myconfig
+       --flagsurl=http://www.spec.org/omp2012/flags/sun-studio.xml int
+    2. You can download the .xml flags file referenced at the bottom of any
+       published result at www.spec.org/omp2012. Warning: clicking on the
+       .xml link may just confuse your web browser; it's probably better to
+       use whatever methods your browser provides to download a file without
+       viewing it - for example, control-click in Safari, right click in
+       Internet Explorer. Then, look at it with a text editor.
+    3. You can write your own flags file by following the instructions in
+       flag-description.html.
+
+   Notice that you do not need to re-run your tests if the only problem was
+   Unknown flags. You can just use runspec --rawformat --flagsurl
+
+  Results.04 q. What's all this about Submission Check -> FAILED littering my
+  log file and my screen?
+
+   At the end of my run, why did it print something like this?
+
+ format: Submission Check -> FAILED.  Found the following errors:
+         - The "hw_memory" field is invalid.
+             It must contain leading digits, followed by a space,
+             and a standard unit abbreviation.  Acceptable
+             abbreviations are KB, MB, GB, and TB.
+            The current value is "20480 Megabytes".
+
+   a. A complete, reportable result has various information filled in for
+   readers. These fields are listed in the table of contents for config.html.
+   If you wish to submit a result to SPEC for publication at
+   www.spec.org/omp2012, these fields not only have to be filled in; they
+   also have to follow certain formats. Although you are not required to
+   submit your result to SPEC, for convenience the tools try to tell you as
+   much as they can about how the result should be improved if you were to
+   submit it. In the above example, the tools would stop complaining if the
+   field hw_memory said something like "20 GB" instead of "20480 Megabytes".
+
+   Notice that you can repair minor formatting problems such as these without
+   doing a re-run of your tests. You are allowed to edit the rawfile, as
+   described in utility.html.
+
+                                     Power
+
+  Power.01 q. What is the power component of SPEC OMP2012?
+
+   a. As part of the the update to the SPEC OMP benchmark suite, a power
+   measurement component was added. This optional feature allows the power
+   consumed during the benchmark to be reported.
+
+  Power.02 q. Am I required to run power?
+
+   a. The measurement of power is optional. It requires a methology that SPEC
+   has been developing starting with the SPECpower_ssj2008 benchmark.
+
+  Power.03 q. How do I measure power?
+
+   a. Please see the runrules as a starting point for what is required to run
+   and measure power. In order to create a submittable run, you will need an
+   approved power analyzer which has been calibrated within the past year by
+   an appropriate testing organization. You will have to connect your system
+   up to the power analyzer. You will need to use the provided tools and set
+   up your configuration file to tell it how to use power. Another place to
+   look for help in how to set up your configuration file is in published
+   OMP2012 results at www.spec.org.
+
+  Power.04 q. What kind of power analyzer do I need?
+
+   a. Please see the list of accepted power analyzers. The list contains
+   those power analyzers that can be used for making reportable runs.
+
+  Power.05 q. Is it possible to retrieve all of the sample data collected from
+  the power analyzer?
+
+   a. Power data is sampled at 1 second intervals. This data is stored in the
+   created raw file (.rsf) that is created after a run finishes. As an
+   example, to extract the data, you would run
+
+     specperl $SPEC/bin/scripts.misc/extract_misc
+     spec.omp2012.idle_powersamples
+
+   The output will go to the screen.
+
+   The general format of the command is
+
+     Usage: /export/bmk/omp2012.21/bin/scripts.misc/extract_misc
+
+   Where the section will look something like
+
+     spec.omp2012.results.<benchmark>.<base|peak>.<iter>.powersamples
+
+   where <benchmark> is the full benchmark name, <iter> is the iteration
+   number (3 digits).
+
+  Power.06 q. What settings are required for the power analyzer?
+
+   a. For instructions how to setup the power analyzers and to run the SPEC
+   PTDaemon please consult the SPECpower Measurement Setup Guide which you
+   can find in the PTDaemon tree.
+
+  Power.07 q. Can I use autoranging?
+
+   a. In order to minimize measurement errors, the autoranging feature should
+   not be used. If the measurement range is too great for your power analyzer
+   for a benchmark run, you can set your measurement rang on a per-benchmark
+   basis. Please check the config.html document for more on how to set the
+   per-benchmark controls.
+
+  Power.08 q. The runspec command caused uncertainty errors, what can I do?
+
+   a. There could be lots of answers. Are the values being returned during
+   the run within the measurement capabilities that have been set for your
+   power analyzer? Maybe you need to set the range on a per benchmark basis.
+
+   If that isn't the problem, you probably need to see if PTDaemon is
+   reporting any errors. If you did not enable PTDaemon with logging,
+   consider restarting it and adding the -l file1 and -d file2 options to
+   capture more information. These may lead you to finding the answer.
+
+  Power.09 q. Can I use more than one power analyzer?
+
+   a. Yes, it is possible to use more than one power analyzer. Just provide
+   the information in the configuration file to tell the benchmarks which
+   connections to check for the power analyzers.
+
+                                  Temperature
+
+  Temperature.01 q. I got an error about it being too cold, what can I do?
+
+   ERROR: Minimum temperature during the run (19.5 degC) is less than the
+   minimum a llowed (20 degC)
+
+   a. The benchmark requires that the minimum inflow temperature be at 20
+   degC or higher. This value was chosen to prevent artificially good result
+   by trying to influence the performance of the machine by keeping it colder
+   than normal. To get a submission quality result, you will need to find a
+   warmer spot in your data center to do your runs.
+
+
+
+   --------------------------------------------------------------------------
+
+   Copyright 2006-2012 Standard Performance Evaluation Corporation
+
+   All Rights Reserved
+
+

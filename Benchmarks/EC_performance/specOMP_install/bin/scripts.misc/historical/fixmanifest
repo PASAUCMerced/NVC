@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# fixmanifest - re-generate MANIFEST entries for modified benchmark sources
+#               and workloads.
+#
+# No support is provided for this script.
+#
+# Copyright 2005-2008 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: fixmanifest 1061 2011-02-01 22:31:10Z keeper $
+
+if [ -z "$SPEC" ]; then
+    echo "SPEC variable is not set!"
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo "Please specify a full benchmark name (xxx.nnnnnn)"
+    exit 1
+fi
+
+found=0
+for i in $SPEC/benchspec/[CM]*; do
+  if [ -d $i/$1 ]; then
+    found=$i
+  fi
+done
+
+if [ $found -eq 0 ]; then
+    echo "Please specify the full name of a benchmark that actually exists"
+    exit 1
+fi
+
+found=`echo $found | sed "s/^$SPEC\/?//"`
+
+# Making this work with auto-compressed datasets would be quite a pain,
+# so if there are any, just decompress them.
+bz2data=`find $SPEC/$found -name \*.bz2 -print`
+if [ -n "$bz2data" ]; then
+    echo "Expanding compressed dataset files"
+    for i in $bz2data; do
+	specbzip2 -d $bz2data
+    done
+fi
+
+# First clean out the old entries
+echo "Removing old sums"
+for i in MANIFEST SUMS.data; do
+    grep -v $found/$1 $SPEC/$i > $SPEC/$i.$$
+    cat $SPEC/$i.$$ > $SPEC/$i
+    rm -f $SPEC/$i.$$
+done
+
+# Now regenerate the sums for the affected benchmark
+echo "Recomputing sums for $1"
+cd $SPEC
+find $found/$1 '(' '(' -name run -o -name CVS -o -name .svn -o -name exe ')' -prune ')' -o '(' -type f -print ')' | xargs specmd5sum --binary -e >> $SPEC/MANIFEST
+

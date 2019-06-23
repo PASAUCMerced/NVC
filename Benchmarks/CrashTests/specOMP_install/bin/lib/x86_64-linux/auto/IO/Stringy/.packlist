@@ -1,0 +1,16 @@
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/AtomicFile.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/InnerFile.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/Lines.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/Scalar.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/ScalarArray.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/Stringy.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/Wrap.pm
+/spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3/IO/WrapTie.pm
+/spec/cpu2006/tools/output/share/man/man3/IO::AtomicFile.3
+/spec/cpu2006/tools/output/share/man/man3/IO::InnerFile.3
+/spec/cpu2006/tools/output/share/man/man3/IO::Lines.3
+/spec/cpu2006/tools/output/share/man/man3/IO::Scalar.3
+/spec/cpu2006/tools/output/share/man/man3/IO::ScalarArray.3
+/spec/cpu2006/tools/output/share/man/man3/IO::Stringy.3
+/spec/cpu2006/tools/output/share/man/man3/IO::Wrap.3
+/spec/cpu2006/tools/output/share/man/man3/IO::WrapTie.3

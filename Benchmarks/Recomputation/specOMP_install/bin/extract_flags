@@ -1,0 +1,182 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  extract_flags - a tool for extracting encoded flag descriptions from raw
+#                  result files
+#  Copyright 2005-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: extract_flags 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use Getopt::Long;
+use IO::File;
+require 'vars.pl';
+require 'util.pl';
+require 'flagutils.pl';
+
+use vars qw(%opts @flags $processed $lastidx);
+
+%opts = (
+          'stdout'   => 0,
+          'filename' => 1,
+          'basename' => $::suite.'_flags',
+          'debug'    => 0,
+        );
+my $rc = GetOptions(\%opts, qw(
+                                stdout!
+                                filename!
+                                basename=s
+                                help|usage|h|?
+                                debug:i
+                              ));
+
+usage(1) unless $rc;
+usage(0) if $opts{'help'};
+
+$processed = 0;
+@flags = ();
+$lastidx = -1;
+
+# We'll use Perl's magic <> so that files can be piped in through stdin
+# or given on the command line.
+# There's no way to know what the flags file should be called, so they'll
+# just be output on stdout separated by a line of comment characters (if
+# necessary).
+# This will process any number of files.
+
+my ($current_file, $printed) = ('', undef);
+my $flags_found = 0;
+while (<>) {
+    if (!$opts{'stdout'} && $ARGV ne $printed) {
+      print "No flags found!\n" if ($flags_found == 0 && $printed ne '');
+      # This is a file change (probably), so dump out the current flags
+      # (if any).  This is redundant, but keeps the "Reading..." and "Wrote.."
+      # messages in the right order.
+      if (@flags) {
+	output_flags($current_file, join('', @flags));
+	# Reset state
+	@flags = ();
+        $current_file = undef;
+      }
+      if ($ARGV eq '-') {
+        print "Reading from stdin\n";
+      } else {
+        print "Reading \"$ARGV\"\n";
+      }
+      $printed = $ARGV;
+      $flags_found = 0;
+    }
+    tr/\015\012//d;
+    next unless /^(?:spec\.${main::lcsuite}\.)?rawflags(\d*)(?: =|:) (.*)$/o;
+    $flags_found++;
+    my ($tmpidx, $data) = ($1+0, $2);
+    if ($tmpidx < $lastidx) {
+	# This must be a new flags file!
+	# First, kick the old one (if any) out
+	output_flags($current_file, join('', @flags)) if @flags;
+	# Reset state
+	@flags = ();
+        $current_file = undef;
+    }
+    $current_file = $ARGV unless defined($current_file) && $current_file ne '';
+    $lastidx = $tmpidx;
+    $flags[$lastidx] = $data;
+}
+if (@flags) {
+  output_flags($current_file, join('', @flags));
+} else {
+  print "No flags found!\n";
+}
+
+sub output_flags {
+    my ($fn_maybe, $encflags) = @_;
+
+    my $flagsstring = scalar(decode_decompress($encflags));
+    my $filename;
+    if ($flagsstring =~ /<flagsdescription>/) {
+        my @files = grep { $_ ne '' } split(/<\/flagsdescription>[\s\r\n]*/, $flagsstring, -1);
+        foreach my $flags (@files) {
+            $flags .= "</flagsdescription>\n";   # Eliminated by split, earlier
+            if ($processed > 0) {	# Output a separator if necessary
+                print "#\n# --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE ---\n#\n";
+            }
+            if ($opts{'stdout'} == 1) {
+                $processed++;
+                print $flags;
+            } else {
+                if ($opts{'filename'}) {
+                    # Waste time parsing the flags to get the contents of the
+                    # filename field (if any)
+                    my $tmpflags = join("\n", split(/(?:\n\r|\n|\r\n|\r)/, $flags, -1));
+                    # Try hard to not cause errors
+                    my $flagref = parse_flags($tmpflags, $fn_maybe, 'user', 0);
+                    if (exists($flagref->{'filename'})) {
+                        $filename = $flagref->{'filename'};
+                    } else {
+                        $filename = $opts{'basename'};
+                    }
+                } elsif ($fn_maybe ne '' && $fn_maybe ne '-') {
+                    $filename = $fn_maybe;
+                    # Trim off any '.rsf' extension
+                    $filename =~ s/\.rsf$//;
+                } else {
+                    $filename = $opts{'basename'};
+                }
+
+                # Make sure that the filename is unique
+                if (-f $filename.'.xml') {
+                    my $count = 1;
+                    while (-f "${filename}-${count}.xml") {
+                        $count++;
+                    }
+                    $filename = "${filename}-${count}";
+                }
+                $filename .= '.xml';
+
+                my $ofh = new IO::File '>'.$filename;
+                die "Can't open $filename for writing: $!\n" unless defined($ofh);
+                $ofh->print($flags);
+                $ofh->close();
+                print "Wrote \"$filename\"\n";
+            }
+        }
+    } elsif ($flagsstring ne '') {
+        my $in = ($fn_maybe ne '') ? " in $fn_maybe" : '';
+	print "\n# ERROR: A flags file was found$in, but does not seem to contain\n";
+	print "#       valid flag description XML.  The file's content will be ignored.\n";
+        print "==== File contents: ===========================\n$flagsstring\n===============================================\n" if ($opts{'debug'} > 8);
+        $processed++ if $opts{'stdout'};
+    }
+}
+
+sub usage {
+  my ($rc) = @_;
+
+  print "Usage: $0 [options] <files>\n";
+  print "\nOption list (alphabetical order):\n";
+  print "--basename=<name>      Set the base file name for flags files that don't\n";
+  print "                        suggest a name for themselves.\n";
+  print "--filename             Use the flag file's suggested basename (if any);\n";
+  print "                        This is the default.\n";
+  print "-h                     Print this message.\n";
+  print "--help                 Print this message.\n";
+  print "--nofilename           Do NOT use the flag file's suggested basename (if any);\n";
+  print "                        The base of the input file will be used, or\n";
+  print "                        \"$opts{'basename'}\" if reading from stdin.\n";
+  print "--nostdout             Dump NO flags files to stdout.  Suggested filenames\n";
+  print "                        will be used if possible, otherwise the value of\n";
+  print "                        --basename (currently \"$opts{'basename'}\")\n";
+  print "                        will be used.  This is the default.\n";
+  print "--stdout               Dump all flags files to stdout.\n";
+  print "--usage                Print this message.\n";
+
+  exit $rc;
+}
+
+sub Log {
+  # Dummy function for stuff in flagutils
+}

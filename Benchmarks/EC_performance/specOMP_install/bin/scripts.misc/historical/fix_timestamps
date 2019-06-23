@@ -1,0 +1,47 @@
+#!/usr/bin/perl -n
+#
+# fix_timestamps - Make sure timestamps of files under Subversion control
+#                  are NOT NEWER than those stored in the repository.
+#
+# No support is provided for this script.
+#
+# Copyright 2005-2008 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id$
+
+# Pipe the output of 'svn ls -vR' through this script
+
+use strict;
+use Date::Parse;
+our $count;
+
+BEGIN {
+  $count = 0;
+}
+
+chomp;
+if (/([A-Z]\S{2} \d+ (?: \d{4}|\d+:\d+)) (.*)/o) {
+  my ($datestr, $path) = ($1, $2);
+  my $time = str2time($datestr);
+  if (-f $path || -e _) {
+    my @stat = stat(_);
+    if ($stat[9] > $time) {
+      my $changed = utime $stat[8], $time, $path;
+      if ($changed < 1) {
+        print "Failed to set mtime on $path\n";
+      } elsif ($changed > 1) {
+        print "Too many files changed for $path!\n";
+      }
+      $count += $changed;
+    }
+  } else {
+    next;
+  }
+} else {
+  print "Huh? \"$_\"\n";
+}
+
+END {
+  print "Changed mtime on $count files\n";
+}

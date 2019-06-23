@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription SYSTEM
+       "http://www.spec.org/dtd/cpuflags2.dtd">
+
+<!-- This file DOES NOT define flags that appear in the sources of NNN.BMARK.
+
+  Copyright 2011 Standard Performance Evaluation Corporation
+
+  $Revision$
+  $Date$
+-->
+<flagsdescription>
+
+<!-- Normal flags file should suggest a name for themselves -->
+<filename>NNN.BMARK.flags</filename>
+
+<title>NNN.BMARK Flags</title>
+
+<header>
+<![CDATA[
+<p>I don't have <strong>ANY</strong> idea what flags you may or may not use
+with this benchmark.</p>
+]]>
+</header>
+
+<flag name="DSPEC" class="forbidden">
+You can't make reportable runs with this benchmark until this flags file is
+fixed.
+</flag>
+<flag name="DSPEC_CPU" class="forbidden">
+You can't make reportable runs with this benchmark until this flags file is
+fixed.
+</flag>
+
+</flagsdescription>

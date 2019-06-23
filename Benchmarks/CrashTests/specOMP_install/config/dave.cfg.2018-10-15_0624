@@ -1,0 +1,29 @@
+
+#botsspar.cfg
+ runlist         = 359.botsspar
+ size            = test
+ iterations      = 1
+ sysinfo_program = specperl $[top]/Docs/sysinfo 
+ ext             = 0406
+ output_format   = text,config
+
+ default=default:
+ CC              = /usr/bin/gcc 
+ OPTIMIZE        = -O2 
+ PORTABILITY     = -DSPEC_LP64
+ COPTIMIZE	   = -fopenmp
+
+__MD5__
+359.botsspar=base=0406=default:
+# Last updated Mon Oct 15 04:13:14 2018
+optmd5=75e68b3332a45ab21e4acef49ed38c1b
+baggage=
+compile_options=\
+@eNqtUV1vwiAUfedXEN6xm1n20FgTi52y1dJofdheGu3QMAs00C7Zvx+t1jmzh2UZgXC53I9zzk20\
+wnJz4DtRcqirWmhlfWBrI4o6N416FSZ/50bsPgJ0i4AzrQsJ0PAGAcIWqQ+9xhpvK5S3LwqI3dZ9\
+nYGGeLpKI3K6chd/NtMo6V7JNArXM4jpoD2elhWuN/ZgPVttjOVlczZyK9TeoWzDCi2lVhBiNoR4\
+pyuuZAWP69QgTu/vYL9GVjem4GNAfEhIgC4xo87JwkeWZgH6RgABx4+k64d4Mlu5v1+S6dLCKCHz\
+vM/8CzsEmA8dKLqgL5GrwYadh1y4Tsy7hilbZpOQxjR77qF2IiAQ0+Tpak5Xwv2g2Uhv33hR23Er\
+aSl795c4rWzx9FrLf4Lsai8m2TyPadjKV0p0bMfW7YwuBvQJvb3Mrg==
+exemd5=bdcc1b1110f703ff1241602b5f5d229a
+

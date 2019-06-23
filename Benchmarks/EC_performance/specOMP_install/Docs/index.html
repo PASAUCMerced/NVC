@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+   SPEC OMP2012 Documentation
+</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+.newterm {font-style:italic; font-weight:bold;}
+p.docname { font-size:120%; margin: 1.7em 0em .3em; font-family: sans-serif;}
+p.docdescr {margin:.2em 2em 1em; font-family:serif; }
+body { background: white; color: black; }
+</style>
+</head>
+<body>
+
+
+<h1>SPEC OMP2012 Documentation </h1>
+<p class="snugp"><span style="font-size:80%;">
+This index was last updated: $Date: 2012-10-10 19:57:10 -0400 (Wed, 10 Oct 2012) $ by $Author: BrianWhitney $</span></p>
+<p class="snugtop">(To check for possible updates to the SPEC OMP2012 documentation, see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs</a>. </p>
+
+
+<h2 id="order">Suggested reading order:</h2>
+
+  <p>If you are just getting started with SPEC OMP2012, here is a suggested reading order:</p> 
+
+<ol>
+    <li><p>Start with <a class="external" href="readme1st.html">readme1st.html</a> to get an overview of the suite and the
+   process. </p></li>
+
+    <li><p>Use <a class="external" href="system-requirements.html">system-requirements.html</a> to help you choose which computer to use as your
+    first test system.</p></li>
+
+    <li><p>Once you've chosen the test system, install the suite, using <a class="external"
+    href="install-guide-unix.html">install-guide-unix.html</a>.  Please note
+that Windows operating system has not been tested, but it is possible 
+it will work, see <a class="external"
+    href="install-guide-windows.html">install-guide-windows.html</a>
+for hints on installing on Windows.</p></li>
+
+    <li><p>Read at least the first part of <a class="external" href="runspec.html">runspec.html</a>, because <tt>runspec</tt> is the primary
+    tool in the suite. It is used to build the benchmarks, run them, and report on their results.  You should read at least
+    <a class="external" href="runspec.html#section1">section 1</a> through <a class="external" href="runspec.html#section3.1">section 3.1</a> of
+    that document.</p></li>
+
+    <li><p>After that, you can pick and choose which documents to read based on where your needs may take you.  The list in
+    the next section can help you decide.  Note that the <a class="external" href="runrules.html">run rules</a> will need to be studied
+    carefully if you plan to quote results in public.</p></li>
+</ol>
+
+<h2 id="doclist">List of documents</h2>
+
+    <p> The following documents are included with SPEC OMP2012.  
+      </p>
+
+<!--    <p>
+      You can download the entire doc set as either a <a class="external" href="OMP2012-docs.tar.bz2">UNIX tar.bz2</a> or a <a
+      href="OMP2012-docs.zip">WINDOWS zip</a> archive file; or just access
+      them individually below.
+    </p>
+--> 
+
+<p class="docname"><a class="external" href="config.html">config.html</a></p>
+     <p class="docdescr">SPEC OMP2012 provides benchmarks in source code form, which are compiled under control of SPEC's
+     toolset.  A config file controls how they are compiled, and also controls various settings for your tests.  If you are
+     new to the suite, you will probably start with an existing config file, such as one downloaded from <a
+     href="http://www.spec.org/omp2012">www.spec.org/omp2012</a>.  Eventually, you will either want to understand the details
+     of what is inside that config file, or you will want to write your own.  This document tells you how.  </p>
+     
+
+<p class="docname"><a class="external" href="credits.html">credits.html</a></p>
+   <p class="docdescr"> Information about the contributors to SPEC OMP2012.</p>
+
+<p class="docname"><a class="external" href="errata.html">errata.html</a></p>
+   <p class="docdescr">  Known problems and errata information.</p>
+
+<p class="docname"><a class="external" href="faq.html">faq.html</a></p>
+   <p class="docdescr">  Frequently asked technical questions</p>
+
+<p class="docname"><a class="external" href="flag-description.html">flag-description.html</a></p>
+   <p class="docdescr">    When the benchmarks are compiled, compilation flags (such as <span class="ttnobr">-O5</span> or
+   <span class="ttnobr">-unroll</span>) are detected and automatically reported by the tools.  A flag description file helps
+   the tools recognize such flags and describe them in reports.  The tester is responsible for providing a flag description
+   file to go with his or her config file.  This document tells you how to write a flag description file. </p>
+
+   <p class="docdescr">Note that if you are just getting started with OMP2012, you may find that your starter config file
+   already points to a valid flags description, via the config file <a class="external" href="config.html#flagsurl">flagsurl</a> field.</p>
+
+
+<p class="docname"><a class="external" href="install-guide-unix.html">install-guide-unix.html</a></p>
+   <p class="docdescr">    How to install SPEC OMP2012 on Unix, Linx, and Mac OS X systems.  Includes an example installation
+   and an example of running the first benchmark. </p>
+
+<p class="docname"><a class="external" href="install-guide-windows.html">install-guide-windows.html</a></p>
+   <p class="docdescr">    How to install SPEC OMP2012 on Microsoft Windows systems.  Includes an example installation and an
+   example of running the first benchmark. Running on Windows is not
+officially supported.</p>
+
+<p class="docname"><a class="external" href="legal.html">legal.html</a></p>
+   <p class="docdescr">    Copyright notice and other legal information.</p>
+
+<p class="docname"><a class="external" href="makevars.html">makevars.html</a></p>
+   <p class="docdescr">    Advanced users of the suite who want to understand exactly how the benchmarks are built can use
+   this file to help decipher the process.</p>
+
+<p class="docname"><a class="external" href="monitors.html">monitors.html</a></p>
+   <p class="docdescr">Information about monitoring hooks.</p>
+
+<p class="docname"><a class="external" href="readme1st.html">readme1st.html</a></p>
+
+   <p class="docdescr">    Written in the form of questions and answers, this document provides useful <a class="external"
+   href="readme1st.html#Q1">background information</a> to the SPEC OMP benchmarks, explains <a class="external"
+   href="readme1st.html#Q5">which system components are measured</a>, gives a high-level <a class="external"
+   href="readme1st.html#Q10">overview of the benchmarking steps</a>, summarizes the <a class="external"
+   href="readme1st.html#Q8">contents of the SPEC OMP2012 package</a>, and details types of <a class="external"
+   href="readme1st.html#Q13">metrics available</a> with the suite.</p>
+
+<p class="docname"><a class="external" href="runrules.html">runrules.html</a></p>
+   <p class="docdescr">    The SPEC OMP2012 Run and reporting rules. These must be followed for generating publicly disclosed
+   results.  If you plan to quote results in public, you will need to study these rules carefully.  </p>
+   
+<p class="docname"><a class="external" href="runspec.html">runspec.html</a></p>
+   <p class="docdescr">    Information on the "<tt>runspec</tt>" command, which is the primary user interface for running
+   SPEC OMP2012 benchmarks and reporting results.  </p>
+   
+
+<p class="docname"><a class="external" href="runspec-avoidance.html">runspec-avoidance.html</a></p>
+   <p class="docdescr">    Some users prefer to avoid using the SPEC-supplied toolset, because they have specialized tasks
+   that require more direct access to the benchmarks.  Such tasks might include instrumenting the code, doing performance
+   traces, or debugging an experimental compiler.  This document describes how you can use SPEC's tools for the minimal
+   purpose of just generating work directories, for use as a private sandbox.  </p>
+   
+<p class="docname"><a class="external" href="sysinfo">sysinfo</a></p>
+
+   <p class="docdescr">    A SPEC result includes a system description.  If your system allows it, you may be able to
+   automate part of the process of gathering a system description.  This perl script provides an example of how that might be
+   done.  Note: some web browsers may refuse to open a file of type "<tt>.pl</tt>".  If clicking on the link doesn't work, 
+   try saving the file and opening it with your favorite text editor.  </p>
+     
+
+<p class="docname"><a class="external" href="system-requirements.html">system-requirements.html </a></p>
+   <p class="docdescr">    A list of the hardware and software needed in order to run the SPEC OMP2012 suite.  </p>
+   
+
+<p class="docname"><a class="external" href="techsupport.html">techsupport.html</a></p>
+   <p class="docdescr">    Information on SPEC technical support.</p>
+
+<p class="docname"><a class="external" href="tools-build.html">tools-build.html</a></p>
+   <p class="docdescr">    How to build (or re-build) the tools such as <tt>runspec</tt></p>
+
+<p class="docname"><a class="external" href="utility.html">utility.html</a></p>
+   <p class="docdescr">    How to use various utilities, such as specinvoke, specdiff, and specmake.  </p>
+   
+
+<h2 id="benchdocs">Benchmark Documentation</h2>
+
+	<table class="l2">
+	<tr>
+	   <td><b>Benchmark</b></td>
+	   <td><b>Language</b></td>
+	   <td><b>Application domain</b></td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/350.md.html"><tt>350.md</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Molecular Dynamics     </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/351.bwaves.html"><tt>351.bwaves</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)     </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/352.nab.html"><tt>352.nab</tt></a></td>
+	   <td>C</td>
+	   <td>Molecular Modeling      </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/357.bt331.html"><tt>357.bt331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/358.botsalgn.html"><tt>358.botsalgn</tt></a></td>
+	   <td>C</td>
+	   <td>Protein Alignment</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/359.botsspar.html"><tt>359.botsspar</tt></a></td>
+	   <td>C</td>
+	   <td>Sparse LU</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/360.ilbdc.html"><tt>360.ilbdc</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Lattic Boltzmann</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/362.fma3d.html"><tt>362.fma3d</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Mechanical Response Simulation </td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/363.swim.html"><tt>363.swim</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Weather Prediction</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/367.imagick.html"><tt>367.imagick</tt></a></td>
+	   <td>C</td>
+	   <td>Image Processing</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/370.mgrid331.html"><tt>370.mgrid331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/371.applu331.html"><tt>371.applu331</tt></a></td>
+	   <td>Fortran</td>
+	   <td>Physics: Computational Fluid Dynamics (CFD)</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/372.smithwa.html"><tt>372.smithwa</tt></a></td>
+	   <td>C</td>
+	   <td>Optimal Pattern Matching</td>
+	</tr>
+	<tr>
+	   <td><a class="external" href="http://www.spec.org/auto/omp2012/Docs/376.kdtree.html"><tt>376.kdtree</tt></a></td>
+	   <td>C++</td>
+	   <td>Sorting and Searching</td>
+	</tr>
+	</table>
+
+
+<p> Some individual benchmark in the suite have additional documents, found in the benchmark "Docs" subdirectory on your
+installed benchmark tree, or on the OMP2012 distribution media.
+For example, additional information about 350.md may be found in:</p>
+
+<p class="codeexample">$SPEC/benchspec/OMP2012/350.md/Docs/350.md.html (Unix) 
+<br />or
+<br />%SPEC%\benchspec\OMP2012\350.md\Docs\350.md.html (Windows)</p>
+
+<h2 id="original">Redistributable Sources</h2>
+
+<p>On the SPEC distribution, you will find:</p>
+
+<pre>
+redistributable_sources/README      Information about freely-available sources
+                                    that have been incorporated in SPEC OMP2012
+</pre>
+
+<hr />
+<p>Copyright &copy; 2001-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+</body>
+</html>
+

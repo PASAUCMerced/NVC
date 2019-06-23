@@ -1,0 +1,396 @@
+=head2 Fri Apr 15 14:59:49 2011: C<Module> L<IO::Stringy|IO::Stringy>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.110>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 14:59:52 2011: C<Module> L<GD|GD>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.19>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 14:59:53 2011: C<Module> L<TimeDate|TimeDate>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.20>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 14:59:54 2011: C<Module> L<Mail|Mail>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 2.04>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 14:59:58 2011: C<Module> L<MIME::tools|MIME::tools>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 5.428>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:16 2011: C<Module> L<PDF::API2|PDF::API2>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.73>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:24 2011: C<Module> L<Text::CSV_XS|Text::CSV_XS>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.79>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:28 2011: C<Module> L<HTML::Tagset|HTML::Tagset>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 3.20>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:31 2011: C<Module> L<HTML::Parser|HTML::Parser>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 3.68>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:33 2011: C<Module> L<XML::NamespaceSupport|XML::NamespaceSupport>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.11>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:34 2011: C<Module> L<XML::SAX|XML::SAX>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.96>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:38 2011: C<Module> L<URI|URI>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.56>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:00:47 2011: C<Module> L<LWP|LWP>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 5.837>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:01:15 2011: C<Module> L<Algorithm::Diff|Algorithm::Diff>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.1902>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:01:16 2011: C<Module> L<Font::AFM|Font::AFM>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.20>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:01:17 2011: C<Module> L<File::NFSLock|File::NFSLock>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.20>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Fri Apr 15 15:01:42 2011: C<Module> L<String::ShellQuote|String::ShellQuote>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.04>
+
+=item *
+
+C<EXE_FILES: shell-quote>
+
+=back
+
+=head2 Fri Apr 15 15:01:50 2011: C<Module> L<XML::SAX::ExpatXS|XML::SAX::ExpatXS>
+
+=over 4
+
+=item *
+
+C<installed into: /spec/cpu2006/tools/output/lib/perl5/site_perl/5.12.3>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 1.31>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

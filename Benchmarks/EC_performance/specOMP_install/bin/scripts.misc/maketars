@@ -1,0 +1,989 @@
+#!/usr/bin/perl
+#
+# maketars - make a release tarball/ISO/whatever
+# No support is provided for this script.
+#
+# Copyright 1999-2012 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: maketars 1842 2012-09-04 21:00:06Z CloyceS $
+#
+BEGIN {
+  if ($ENV{'SPEC'} eq '' || ! -d $ENV{'SPEC'}) {
+    die "The SPEC environment variable is not set.\nStopped";
+  }
+}
+
+use strict;
+use File::Basename;
+use File::Temp qw(tempfile);
+use Digest::MD5;
+use IO::File;
+use IO::Dir;
+use Getopt::Long;
+use Data::Dumper;
+use UNIVERSAL qw(isa);
+require "$ENV{'SPEC'}/bin/vars_common.pl";
+use vars qw($benchmark $benchname $benchbasedir $outputdir $data_dir $verbose
+            @compressor $comp_ext $small_comp_ext @exclude $debug $iso_exclude
+            @benchsets %bset_info %benchmarks %cleanup_files $compressor_can_pipe);
+
+#############################################################################
+## External pre-requisites
+#############################################################################
+# We must have GNU tar, because it can exclude files and doesn't screw up
+# long paths.
+# If you need to point to a different tar, set SPECTAR
+my @tartry = qw(spectar gtar tar);
+@tartry = ($ENV{'SPECTAR'}) if ($ENV{'SPECTAR'} ne '');
+my $TAR = '';
+foreach my $try (@tartry) {
+    my $tmp=`$try --help 2>&1 | grep -- --exclude 2>&1`;
+    if ( $? == 0 && $tmp ne '' ) {
+        $TAR = $try;
+        last;
+    }
+}
+if ( $TAR eq '' ) {
+    die "No GNU tar found (tried '".join("', '", @tartry)."').  Please add it to your PATH\nor set SPECTAR to its location\n\nStopped"
+}
+
+# We also like to compress things with xz or bzip2 (depends on the benchmark)
+# Specify the "keep original file" flag (usually -k) for each option.  It's
+# needed for keeping uncompressed ISO files.
+my %comp = ( 'pxz'   => [ '', '-kvfT24', '.xz',  'xz', 0 ],
+             'xz'    => [ '', '-kv',     '.xz',  'xz', 1 ],
+             'bzip2' => [ '', '-k9v',    '.bz2', 'bz', 1 ]
+           );
+for my $comptry (sort keys %comp) {
+    my @bins = ("spec$comptry", $comptry);
+    @bins = ($ENV{'SPEC'.uc($comptry)}) if ($ENV{'SPEC'.uc($comptry)} ne '');
+    foreach my $try (@bins) {
+        my $tmp=`$try --help >/dev/null 2>&1`;
+        if ( $? == 0 ) {
+            $comp{$comptry}->[0] = $try;
+            last;
+        }
+    }
+}
+# "none" is special
+$comp{'none'} = [ 'cat', '', '', 'ar' ];
+
+$debug = 0;
+$benchmark = $::lcsuite;        # The name of the working tree subdirectory
+$benchname = $::suite;          # Benchmark name for the tarball
+$benchbasedir = $ENV{'SPEC'};   # The dir that holds the
+                                # working tree directory (workingdir/..)
+# $outputdir needs to be an absolute path
+$outputdir = "$ENV{'SPEC'}/../src"; # Where the tarballs should go
+$data_dir = 'benchspec/*/*/data';   # Where the data directories are
+$iso_exclude = "/tmp/${benchmark}.iso.exclude.$$"; # Temp path for exclude file
+$verbose = '';
+@exclude=(qw(CVS .cvsignore .svn .ignoreme benchspec/common)); # Exclude CVS/SVN junk
+my $nameadd = '';
+my $descadd = '';
+my @benchballs = ();
+my %opts = (
+             'comp' => 'xz',
+             'unified' => 1,
+             'use_existing' => 0,
+             'tools_src' => 1,
+           );
+
+# Make sure we're in the right directory
+if ( ! -d 'benchspec' ) {
+    chdir $benchbasedir;
+}
+
+sub usage {
+    my ($rc) = @_;
+
+    print "Usage: $0 [options]\n";
+    print "    -A      make every kind of tarball possible\n";
+    print "    -i      make ISO image\n";
+    print "    -I      make ISO image without live tree (install tarballs only)\n";
+    print "    --nounified  Omit the unified (big) tarball in the ISO\n";
+    print "    --notools_src  Omit the tools sources in everything\n";
+    print "    -t      pack tools binaries\n";
+    print "    -s      pack tools src\n";
+    print "    -B      pack base system (filesystem skeleton, perl tools, etc)\n";
+    print "    -b      pack benchspec\n";
+    print "    -D      pack data directories separately\n";
+    print "    -a      make the big all-inclusive tarball\n";
+    print "    -e      pack each benchmark\n";
+    print "    -r      pack each benchmark and make control files for release\n";
+    print "    -S      make split version of the big tarball\n";
+#   print "    -T #    set tools version\n";
+#   print "    -V #    set benchspec version\n";
+    print "    -U      leave an uncompressed version of the ISO\n";
+    print "    -C      do not make any compressed ISO file\n";
+    print "    --benchsets=a,b,c  pack only benchsets a,b,c and the benchmarks and\n";
+    print "                       workloads that they reference\n";
+    print "    -L <s>  add contents of <s> to filenames and ISO volume description (if\n";
+    print "            applicable)\n";
+    print "    --comp=<pxz|xz|bzip2|none>  Set the compression type to use.  Default is '$opts{comp}'\n";
+    print "\n";
+    print "Note you need GNU tar and either bzip2 or xz!  See comments.  Also, when using\n";
+    print "bzip2 and it prints\n  (stdin):\nthat doesn't mean it's waiting for you to type a comment or something.\n";
+    print "It's waiting on tar.  Go get coffee (for bzip2).  Or lunch (for xz).\n";
+    exit $rc;
+}
+
+Getopt::Long::Configure(qw(bundling_override auto_abbrev no_ignore_case));
+GetOptions(\%opts, qw(
+                      everything|A
+                      pack_all|a
+                      pack_eachbench|e
+                      release|r
+                      pack_bench|b
+                      pack_base|B
+                      pack_tools|t
+                      pack_toolssrc|s
+                      split|S:i
+                      tools_ver|T=s
+                      bench_ver|V=s
+                      verbose|v
+                      do_iso|i
+                      install_only|I
+                      unified!
+                      tools_src!
+                      use_existing!
+                      pack_data|D
+                      fake|n
+                      debug=i
+                      help|h
+                      uncompressed_iso|U
+                      nocomp_iso|C
+                      benchsets|bsets|bset=s
+                      label|L=s
+                      comp=s
+		      )
+	   ) or usage(1);
+
+usage(0) if $opts{'help'};
+$debug = $opts{'debug'} if (exists($opts{'debug'}));
+
+# Set up the compression stuff
+@compressor = @{$comp{$opts{'comp'}}}[0,1];       # Compression command
+$comp_ext = $comp{$opts{'comp'}}->[2];            # What extension it makes
+$small_comp_ext = $comp{$opts{'comp'}}->[3];      # When making a short (8.3)
+                                                  # filename, what to put after
+                                                  # the '.t'
+$compressor_can_pipe = defined($comp{$opts{'comp'}}->[5]) ? $comp{$opts{'comp'}}->[4] : 1;
+
+if ( $compressor[0] eq '' ) {
+    die "No $opts{'comp'} found (tried 'spec$opts{'comp'}' and '$opts{'comp'}').  Please add it to your PATH\nor set SPEC".uc($opts{'comp'})." to its location.\n\nStopped";
+}
+
+if (exists ($opts{'label'}) && $opts{'label'} ne '') {
+    # Convert non-filename characters to _ for use in $nameadd
+    ($nameadd = '_'.$opts{'label'}) =~ tr/-_.a-zA-Z0-9/_/cs;
+    $nameadd =~ s/__+/_/;
+    $descadd = $opts{'label'};
+    $descadd = ' '.$descadd unless $descadd =~ /^\s/;
+}
+
+if (exists ($opts{'benchsets'}) && $opts{'benchsets'} ne '') {
+    # Munge the exclude lists appropriately, so that only the specified
+    # benchsets are included
+
+    @benchsets = split(/[\s,:]+/, $opts{'benchsets'});
+    push @exclude, generate_benchset_excludes(@benchsets);
+
+} else {
+    @benchsets = ('all');
+}
+
+if ($opts{'everything'}) {
+    $opts{'pack_tools'} = 1;
+    $opts{'pack_toolssrc'} = 1;
+    $opts{'pack_bench'} = 1;
+    $opts{'pack_all'} = 1;
+    $opts{'pack_base'} = 1;
+    $opts{'pack_eachbench'} = 1;
+    $opts{'release'} = 1;
+    $opts{'split'} = 20;
+    $opts{'do_split'} = 1;
+}
+if ($opts{'verbose'}) {
+    $verbose = '-v';
+}
+
+if (exists($opts{'split'})) {
+    $opts{'pack_all'} = 1;
+    $opts{'do_split'} = 1;
+    if ($opts{'split'} < 2) {   # Make a reasonable size
+        $opts{'split'} = 20;
+    }
+}
+
+if ($opts{'release'}) {
+  # Release requires that each benchmark be packed separately
+  $opts{'pack_eachbench'} = 1;
+  $opts{'pack_toolssrc'} = 1;
+  $opts{'pack_base'} = 1;
+}
+
+if ($#ARGV > 1) {
+    print "unknown option(s): ",join(', ', @ARGV),"\n\n";
+    usage(1);
+    exit 1;
+}
+
+if (!exists($opts{'release'}) || $opts{'release'} eq '') {
+    # Save a few hundred MB in the tarball.  This must NEVER be used
+    # for a public release!
+    push @exclude, 'redistributable_sources';
+}
+
+# Add the contents of SUMS.data (if any) to the exclude list
+my $efh = new IO::File '<SUMS.data';
+if (defined($efh)) {
+    while(my $line = <$efh>) {
+        if ($line =~ m/\S+\s+(?:\*\s+)?\S+\s+(.*)$/o) {
+            push @exclude, $1;
+        }
+    }
+}
+
+# Exclude the build logs that have already been compressed
+if ($comp_ext ne '') {
+    my $dh = new IO::Dir 'tools/src/buildtools.log';
+    while(my $file = $dh->read()) {
+      next unless $file =~ /\.txt$/;
+      if ( -f "tools/src/buildtools.log/${file}${comp_ext}" ) {
+        push @exclude, "tools/src/buildtools.log/${file}";
+      }
+    }
+    $dh->close();
+}
+
+if (-f "tools/tools_src.tar${comp_ext}" || $opts{'tools_src'} == 0) {
+    push @exclude, 'tools/src';
+}
+
+# Fix up the MANIFEST, so that the install will actually work
+exclude_from_manifest('MANIFEST', \@exclude);
+
+if ($opts{'do_iso'} || $opts{'install_only'}) {
+    # Make a list of files/dirs to exclude
+    unlink $iso_exclude;
+    open(EXC, ">$iso_exclude");
+    foreach my $exc (@exclude) {
+        if ($exc =~ m|/|) {
+            print EXC "${benchbasedir}/$exc\n";
+        } else {
+            print EXC "$exc\n";
+        }
+    }
+    if (-f "tools/tools_src.tar${comp_ext}") {
+        print EXC "${benchmark}/tools/tools_src.tar${comp_ext}";
+    }
+    if ($opts{'install_only'}) {
+        $opts{'do_iso'} = 1;  # Just in case
+        print EXC "${benchbasedir}/benchspec\n";
+        print EXC "${benchbasedir}/config\n";
+        print EXC "${benchbasedir}/result\n";
+    }
+    if ($opts{'install_only'} || $opts{'tools_src'} == 0) {
+        print EXC "${benchbasedir}/tools/src\n";
+    }
+    close EXC;
+    $cleanup_files{$iso_exclude} = '';
+}
+
+# Clean up possible leavings
+system "rm -f benchspec/*/*/src/Makefile.spec 2>/dev/null";
+system "rm -f install_archives/${benchmark}.t*z* 2>/dev/null";
+system "rm -f install_archives/data.t*z* 2>/dev/null";
+system "rm -f install_archives/release_control 2>/dev/null";
+system "rm -rf install_archives/benchball 2>/dev/null";
+
+my ($current_tools_ver, $current_bench_ver, $current_suite_ver) = (0, 0, 0);
+chomp($current_tools_ver = qx( cat bin/version.txt ));
+$current_tools_ver = sprintf('%03d', $current_tools_ver) if ($current_tools_ver =~ /^[0-9]+$/);
+chomp($current_bench_ver = qx( cat benchspec/version.txt ));
+$current_bench_ver = sprintf('%03d', $current_bench_ver) if ($current_bench_ver =~ /^[0-9]+$/);
+chomp($current_suite_ver = qx( cat version.txt ));
+$current_suite_ver = sprintf('%03d', $current_suite_ver) if ($current_suite_ver =~ /^[0-9]+$/);
+$opts{'tools_ver'} = $current_tools_ver unless ($opts{'tools_ver'});
+$opts{'bench_ver'} = $current_bench_ver unless ($opts{'bench_ver'});
+my $current_kit = ($opts{'tools_ver'} < $opts{'bench_ver'}) ? $opts{'bench_ver'} : $opts{'tools_ver'};
+my $iso_descr    = "SPEC ${benchname} v${current_suite_ver}$descadd";
+my $iso_vol      = "${benchname}v${current_suite_ver}";
+if (length($iso_vol) <= 11) {
+  $iso_vol = "SPEC_$iso_vol";
+} elsif (length($iso_vol) > 16) {
+  die "The ISO9660 volume label (\"$iso_vol\") is too long;\nonly the first 16 characters would be shown on Windows and MacOS X.  Please shorten it.\n";
+}
+my $iso_filename = "${benchmark}-${current_suite_ver}${nameadd}.iso${comp_ext}";
+
+my $alltarname   = "${benchmark}-${current_suite_ver}${nameadd}.ALL.tar${comp_ext}";
+my $bigtarname   = "${benchmark}-${current_suite_ver}${nameadd}.tar${comp_ext}";
+my $partprefix   =  $bigtarname.".";
+my $dataname     = "${benchmark}-${current_kit}${nameadd}.data.tar${comp_ext}";
+my $basename     = "${benchmark}-${current_kit}.base.tar${comp_ext}";
+my $benchtarname = "${benchmark}-$opts{'bench_ver'}.benchspec.tar${comp_ext}";
+my $toolsbinname = "${benchmark}-$opts{'tools_ver'}.tools-bin.tar${comp_ext}";
+my $toolssrcname = "${benchmark}-$opts{'tools_ver'}.tools-src.tar${comp_ext}";
+if ($opts{'pack_data'}) {
+    print "    all tarball name: $alltarname\n"   if ($opts{'pack_all'});
+} else {
+    print "    all tarball name: $bigtarname\n"   if ($opts{'pack_all'});
+}
+print "   data tarball name: $dataname\n"     if ($opts{'pack_data'});
+if ($opts{'do_iso'}) {
+    print "  ISO image filename: $iso_filename\n";
+    print "     ISO description: '$iso_descr'\n";
+    print "    ISO volume label: '$iso_vol' (".(16 - length($iso_vol))." characters left)\n";
+}
+print "   base tarball name: $basename\n"     if ($opts{'pack_base'});
+print "   benchspec tarball: $benchtarname\n" if ($opts{'pack_bench'});
+print "tools binary tarball: $toolsbinname\n" if ($opts{'pack_tools'});
+print "tools source tarball: $toolssrcname\n" if ($opts{'pack_toolssrc'});
+
+if ($opts{'do_iso'})  {
+    # There's no _requirement_ to have benchmarks packaged separately on
+    # the ISO image.  But if there is a control file, make sure that all the
+    # benchmarks are there too.
+    if (-f 'install_archives/release_control') {
+      if (!check_control('install_archives/release_control')) {
+        print "The release control file doesn't match the contents of benchball; everything\n";
+        print "will be rebuilt.\n";
+        $opts{'release'} = 1;
+        $opts{'pack_eachbench'} = 1;
+        $opts{'pack_toolssrc'} = 1;
+        $opts{'pack_base'} = 1;
+      }
+      # Remove the leavings now, so it doesn't upset tar when making the
+      # "all" tarball
+      system "rm -f install_archives/release_control 2>/dev/null";
+      system "rm -rf install_archives/benchball 2>/dev/null";
+    }
+    if (-f "${outputdir}/$bigtarname") {
+        # It already exists; there's no need to make a new one.
+        unlink "install_archives/${benchmark}.tar${comp_ext}";
+        unlink "install_archives/${benchmark}.t${small_comp_ext}";
+        if ($opts{'unified'}) {
+            my_system("ln -s ${outputdir}/$bigtarname install_archives/${benchmark}.tar${comp_ext}");
+            # Make a standalone copy of the MD5 sum for install_archives
+            unlink "install_archives/${benchmark}.tar${comp_ext}.md5";
+            update_md5('', "install_archives/${benchmark}.tar${comp_ext}", "install_archives/${benchmark}.tar${comp_ext}.md5", 0);
+        }
+    } elsif ($opts{'unified'}) {
+        print "The big tarball necessary for making the ISO image does not exist.\n";
+        # Arrange for it to be made
+        $opts{'pack_all'} = 1;
+    }
+}
+
+if ($opts{'pack_all'}) {
+    my $local_exclude = [ 'install_archives', @exclude ];
+    my $realtarball = $outputdir.'/'.(($opts{'pack_data'}) ? $alltarname : $bigtarname);
+    print "Making the ALL tarball...\n";
+    make_tarball($local_exclude, '*', 1, $realtarball);
+    update_md5($outputdir, $realtarball, undef, 0);
+    if ($opts{'do_split'}) {
+        mkdir "${outputdir}/parts", 0777 unless (-d "${outputdir}/parts");
+        my_system("cd $outputdir; split -b $opts{'split'}m $realtarball $partprefix");
+        # Take the easy way out
+        my_system("cd $outputdir; specmd5sum -b -e ${partprefix}* > ${partprefix}md5");
+    }
+    if ($opts{'pack_data'}) {
+        print "Making the big tarball...\n";
+        push @$local_exclude, 'benchspec/*/*/data';
+        make_tarball($local_exclude, '*', 1, "${outputdir}/${bigtarname}");
+        update_md5($outputdir, $bigtarname, undef, 0);
+    }
+    unlink "install_archives/${benchmark}.tar${comp_ext}";
+    unlink "install_archives/${benchmark}.t${small_comp_ext}";
+    my_system("ln -s ${outputdir}/${bigtarname} install_archives/${benchmark}.tar${comp_ext}");
+    # Now make sure the MD5 of the tarball is in the MANIFEST (for the DVD)
+    update_md5('', "install_archives/${benchmark}.tar${comp_ext}", 'MANIFEST', 1, 1);
+    # Also make a standalone copy for install_archives
+    unlink "install_archives/${benchmark}.tar${comp_ext}.md5";
+    update_md5('', "install_archives/${benchmark}.tar${comp_ext}", "install_archives/${benchmark}.tar${comp_ext}.md5", 0);
+}
+
+if ($opts{'pack_data'} && ($opts{'pack_all'} || $opts{'pack_bench'})) {
+    print "Making the data tarball...\n";
+    make_tarball(\@exclude, $data_dir, 1, "${outputdir}/$dataname");
+    if ($opts{'do_split'}) {
+        mkdir "${outputdir}/parts", 0777 unless (-d "${outputdir}/parts");
+        my_system("cd $outputdir; split -c $opts{'split'}m $dataname ${partprefix}data.");
+        # Take the easy way out
+        my_system("cd $outputdir; specmd5sum -b -e ${partprefix}data.* > ${partprefix}data.md5");
+    }
+    update_md5($outputdir, $dataname, undef, 0);
+    unlink "install_archives/data.tar${comp_ext}";
+    unlink "install_archives/data.t${small_comp_ext}";
+    my_system("ln -s ${outputdir}/$dataname install_archives/data.tar${comp_ext}");
+    update_md5('', "install_archives/data.tar${comp_ext}", 'MANIFEST', 1, 1);
+}
+
+if ($opts{'pack_bench'}) {
+    print "Making the benchspec tarball...\n";
+    my $local_exclude = [ @exclude ];
+    if ($opts{'pack_data'}) {
+        push @$local_exclude, 'benchspec/*/*/data';
+    }
+    make_tarball($local_exclude, 'benchspec', 1, "${outputdir}/${benchtarname}");
+    update_md5('', "${outputdir}/${benchtarname}", undef, 1);
+}
+
+if ($opts{'pack_eachbench'}) {
+    print "Making tarballs for each benchmark...\n";
+    my_system("mkdir -p ${outputdir}/benchmarks");
+    foreach my $suite (<benchspec/[CM]*[0-9]>) {
+        $suite =~ s/^$benchmark\///io;
+        if (!grep { /^${suite}$/ } @exclude) {
+            foreach my $bench (<$suite/[0-9]*>) {
+                my $i = basename($bench);
+                my $ver = qx( cat $bench/version.txt );
+                chomp($ver);
+                $ver = sprintf('%03d', $ver);
+                print "$i-$ver  ************************************************************\n";
+                my $local_exclude = [ @exclude ];
+                if ($opts{'pack_data'}) {
+                    my $before_size = make_tarball($local_exclude, "$suite/$i/data", 2, "${outputdir}/benchmarks/$i-$ver.data.tar${comp_ext}");
+                    update_md5('', "${outputdir}/benchmarks/$i-$ver.data.tar${comp_ext}", undef, 0);
+                    push @benchballs, [ $i, "$i-$ver.data", 2, $before_size ];
+                    push @$local_exclude, "$suite/$i/data";
+                }
+                my $before_size = make_tarball($local_exclude, "$suite/$i", 2, "${outputdir}/benchmarks/$i-$ver.tar${comp_ext}");
+                update_md5('', "${outputdir}/benchmarks/$i-$ver.tar${comp_ext}", undef, 0);
+                push @benchballs, [ $i, "$i-$ver", !$opts{'pack_data'}, $before_size ];
+            }
+        }
+    }
+}
+
+if ($opts{'pack_base'}) {
+    print "Making base tarball...\n";
+    my $before_size = make_tarball([ 'benchspec/[CM]*/[0-9]*', 'tools', 'install_archives', @exclude ], '*', 2, "${outputdir}/${basename}");
+    update_md5('', "${outputdir}/${basename}", undef, 0);
+    unshift @benchballs, [ $benchname, $basename, 1, $before_size ];
+}
+
+if ($opts{'pack_tools'}) {
+    print "Making tools binary tarball...\n";
+    make_tarball(\@exclude, 'tools/bin', 1, "${outputdir}/${toolsbinname}");
+    update_md5('', "${outputdir}/${toolsbinname}", undef, 0);
+}
+
+if ($opts{'pack_toolssrc'}) {
+    print "Making tools source tarball...\n";
+    my @tmpexclude = grep { $_ eq 'tools/src' } @exclude;
+    if (@tmpexclude) {
+        @exclude = grep { $_ ne 'tools/src' } @exclude;
+        push @exclude, "tools/tools_src.tar${comp_ext}";
+    }
+    my $before_size = make_tarball(\@exclude, [ 'tools/src' ], 2, "${outputdir}/${toolssrcname}");
+    update_md5('', "${outputdir}/${toolssrcname}", undef, 0);
+    my $tmpname = $toolssrcname;
+    $tmpname =~ s/\.tar${comp_ext}$//;
+    push @benchballs, [ 'tools source', $tmpname, 3, $before_size ];
+    push @exclude, @tmpexclude if @tmpexclude;
+}
+
+if ($opts{'release'}) {
+  print "Writing files and making links for release tarballs...\n";
+  system 'rm', '-rf', 'install_archives/benchball';
+  die "Couldn't make install_archives/benchball: $!\nStopped" unless mkdir 'install_archives/benchball', 0777;
+  my $fh = new IO::File '>install_archives/release_control';
+  die "Couldn't open release_control for writing: $!\nStopped" unless defined($fh);
+  # Write the release control file.  The base tarball always comes first:
+  my_system("ln -s ${outputdir}/${basename} install_archives/benchball");
+  update_md5('', "install_archives/benchball/${basename}", 'MANIFEST', 1, 1);
+  my $bref = shift(@benchballs);
+  my ($bm, $file, $type, $size) = @{$bref};
+  # Convert the size (in bytes) to a more human-friendly rounded mibibytes.
+  $size = int(($size / (1024 * 1024) * 10) + 0.5)/10;
+  $fh->print("$file ".(-s "${outputdir}/$file")." $size $bm base files\n");
+
+  # Now do the benchmarks
+  foreach $bref (sort { $a->[1] cmp $b->[1] } @benchballs) {
+    ($bm, $file, $type, $size) = @{$bref};
+    # Convert the size (in bytes) to a more human-friendly rounded mibibytes.
+    $size = int(($size / (1024 * 1024) * 10) + 0.5)/10;
+    my $desc = 'benchmark and data files';
+    my $path = "${outputdir}/benchmarks/${file}.tar${comp_ext}";
+    if ($type == 2) {
+      # Just data files
+      $desc = 'data files';
+    } elsif ($type == 3) {
+      # Misc
+      $desc = 'files';
+      $path = "${outputdir}/${file}.tar${comp_ext}";
+    } elsif ($type == 0) {
+      # Just the benchmark sources
+      $desc = 'base benchmark files';
+    }
+    my_system("ln -s $path install_archives/benchball");
+    update_md5('', 'install_archives/benchball/'.basename($path), 'MANIFEST', 1, 1);
+    $fh->print("${file}.tar${comp_ext} ".(-s $path)." $size $bm $desc\n");
+  }
+  $fh->close();
+  update_md5('', 'install_archives/release_control', 'MANIFEST', 1, 1);
+}
+  
+if ($opts{'do_iso'}) {
+    print "Making the ISO image...\n";
+    my $me = qx( id -un );
+    chomp($me);
+    my $uncomp_iso = basename($iso_filename, $comp_ext);
+    my @mkisofs_args = (
+                        $verbose ? '-verbose' : '-quiet',
+                        '-full-iso9660-filenames',
+                        '-rational-rock',
+                        '-hide-rr-moved',
+                        '-joliet',
+                        '-hide-joliet-trans-tbl',
+# Re-enable UDF support when it allows files to be executable.
+#                        '-udf',
+                        "-exclude-list $iso_exclude",
+                        '-follow-links',
+                        "-volid \"$iso_vol\"",
+                        "-publisher \'Standard Performance Evaluation Corporation (info\@spec.org; http://www.spec.org/)\'",
+                        "-preparer \'$me\@spec.org and bin/scripts.misc/maketars\'",
+                        "-appid \"$iso_descr\"",
+                       );
+                          
+    if ($opts{'uncompressed_iso'} || $opts{'nocomp_iso'} || !$compressor_can_pipe) {
+        my_system('cd ..; /usr/bin/mkisofs '.join(' ', @mkisofs_args)." -o $outputdir/$uncomp_iso $benchbasedir");
+        print "Generating MD5 sum for uncompressed ISO image...\n";
+        update_md5('', "${outputdir}/$uncomp_iso", undef, 0);
+        if (!$opts{'nocomp_iso'} && $opts{'comp'} ne 'none') {
+            print "Compressing ISO image...\n";
+            my_system("cd $outputdir; ".join(' ', @compressor)." $verbose $uncomp_iso");
+            print "Generating MD5 sum for compressed ISO image...\n";
+            if ("${uncomp_iso}${comp_ext}" ne $iso_filename) {
+                if (-f "$outputdir/${uncomp_iso}${comp_ext}") {
+                    rename "$outputdir/${uncomp_iso}${comp_ext}", "$outputdir/$iso_filename";
+                    update_md5('', "${outputdir}/$iso_filename", undef, 0);
+                } else {
+                    print STDERR "WARNING: Couldn't find ${uncomp_iso}${comp_ext} in $outputdir\n";
+                    update_md5('', "${outputdir}/${uncomp_iso}${comp_ext}", undef, 0);
+                }
+            } else {
+		update_md5('', "${outputdir}/$iso_filename", undef, 0);
+            }
+        }
+    } else {
+        # Build and compress in one pass
+        my_system('cd ..; /usr/bin/mkisofs '.join(' ', @mkisofs_args)." $benchbasedir | ".join(' ', @compressor)." $verbose > ${outputdir}/$iso_filename");
+        print "Generating MD5 sum for compressed ISO image...\n";
+        update_md5('', "${outputdir}/$iso_filename", undef, 0);
+    }
+}
+
+file_cleanup();
+
+sub update_md5 {
+    my ($dir, $file, $dest, $keep_path, $extended) = @_;
+
+    $dir = '.' unless (defined($dir) && $dir ne '');
+
+    return if ($opts{'fake'});
+
+    # Add a file's MD5 to the MANIFEST file
+    my $infile = "${file}";
+    $infile = "${dir}/$infile" if ($infile !~ /^\//);
+    my $size = -s $infile;
+    my $fh = new IO::File "<$infile";
+    if (!defined($fh)) {
+        print STDERR "Couldn't open $infile for reading: $!\n";
+        return;
+    }
+    my $md5 = new Digest::MD5;
+    $md5->addfile($fh);
+    $fh->close();
+    my $out = $md5->hexdigest.' *';
+    $out .= sprintf ' %08X ', $size if ($extended);
+    my $outputpath = $keep_path ? $file : basename($file);
+    if (defined($dest) && $dest ne '') {
+        $fh = new IO::File ">>$dest";
+        if (!defined($fh)) {
+            print STDERR "Couldn't open $dest for appending: $!\n";
+            return;
+        }
+        print $fh $out.$outputpath."\n";
+        $fh->close();
+    } else {
+        my $outfile = "${file}.md5";
+        $outfile = "${outputdir}/$outfile" if ($outfile !~ /^\//);
+        $fh = new IO::File ">${outfile}";
+        if (!defined($fh)) {
+            print STDERR "Couldn't open $outfile for writing: $!\n";
+        } else {
+            print $fh $out.$outputpath."\n";
+            $fh->close();
+        }
+    }
+}
+
+sub make_tarball {
+    my ($exclude, $filepats, $compress, $outfile) = @_;
+    my $filename = undef;
+    $compress = 2 unless $compressor_can_pipe;
+
+    if ($opts{'use_existing'} && -f $outfile) {
+        # This will probably be wrong, since it's already compressed.
+        return -s $outfile;
+    }
+
+    # Unlink the destination file, so that if it's hardlinked the backup
+    # copy doesn't also get munged.
+    unlink($outfile);
+
+    my $compressor = '';
+    if ($compress == 1) {
+        $compressor = '| '.join(' ', @compressor).' ';
+    } elsif ($compress == 2) {
+      # Two-stage, so that the original file size can be known
+      $outfile =~ s/${comp_ext}$//;
+    }
+    my $cmd = "($TAR $verbose -chf - ";
+    if (ref($exclude) eq 'ARRAY' && @{$exclude}+0 > 0) {
+        my $fh;
+        ($fh, $filename) = tempfile( 'maketar_exclude.XXXXXXX',
+                                     DIR => '/tmp', UNLINK => 0 );
+        $fh->print(join("\n", @{$exclude})."\n");
+        $fh->close();
+        $cmd .= "--exclude-from=$filename ";
+    }
+    if (ref($filepats) eq 'ARRAY') {
+        $cmd .= join(' ', @$filepats);
+    } elsif ($filepats ne '') {
+        $cmd .= $filepats;
+    }
+    $cmd .= " $compressor ) > $outfile";
+    my_system($cmd);
+    unlink $filename if (defined($filename) && ($filename ne '') &&
+                         -e $filename);
+    if ($compress == 2) {
+      # Get the original size and then compress it
+      my $origsize = -s $outfile;
+      system @compressor, $outfile unless $opts{'comp'} eq 'none';
+      unlink $outfile;	# Because the compressors all have the "keep original"
+                        # flag set
+      return $origsize;
+    }
+}
+
+sub check_control {
+  my ($file) = @_;
+  my $basepath = dirname($file);
+  my $rc = 0;
+
+  # Read in a release control file and verify that all of the tarballs are
+  # present and accounted for.
+  return 0 unless -s $file;
+  my $fh = new IO::File '<'.$file;
+  return 0 unless defined($fh);
+  while (my $line = <$fh>) {
+    my ($filename, $size, $origsize, $desc) = split(/\s+/, $line, 4);
+    if (!-f $basepath.'/benchball/'.$filename) {
+      print "\"$filename\" does not exist\n" if ($debug & 4);
+      return 0;
+    }
+    if (-s _ != $size) {
+      print "Size of \"$filename\" isn't correct; should be $size\n" if ($debug & 4);
+      return 0;
+    }
+    $rc = 1;
+  }
+
+  return $rc;
+}
+
+sub my_system {
+    my ($cmd) = @_;
+
+    print "$cmd\n" if ($opts{'fake'} || ($debug & 2));
+    system($cmd) unless $opts{'fake'};
+}
+
+sub generate_benchset_excludes {
+    # Benchsets were specified, so read them, figure out which workload
+    # directories and benchmarks can be excluded, and add those to the
+    # exclusion list
+    my (@sets) = @_;
+    my @exclude_list = ();
+
+    %benchmarks = map {
+                        basename($_) => { 'set'  => basename(dirname($_)),
+                                          'file' => $_,
+                                        }
+                      } <benchspec/[CM]*/[0-9]*>;
+
+    foreach my $set (@sets) {
+       $bset_info{$set} = read_benchset_info($set);
+       if (!defined($bset_info{$set})) {
+          die "ERROR: No benchset for '$set' was found\n";
+       }
+    }
+
+    # Read in _all_ the benchsets so that they may be excluded (or not)
+    # depending on their workload specifications, benchmarks, etc.
+    my %all_bset_info;
+    foreach my $bset_file (<benchspec/[CM]*/*.bset>) {
+        $all_bset_info{basename($bset_file, '.bset')} = read_benchset_info($bset_file);
+    }
+
+    # Now that all benchsets are read, build the list of benchmarks to _keep_.
+    my %keep_bmarks = ();
+    my %base_workloads = ( 'ref' => {}, 'train' => {}, 'test' => {} );
+    foreach my $set (@sets) {
+        foreach my $bmark (@{$bset_info{$set}->{'benchmarks'}}) {
+            $keep_bmarks{$bmark}++;
+        }
+        foreach my $size (qw(test train ref)) {
+            $base_workloads{$size}->{$bset_info{$set}->{$size}}++;
+        }
+    }
+    # Remove all benchmarks that are not kept
+    foreach my $bmark (sort keys %benchmarks) {
+        if (!exists($keep_bmarks{$bmark})) {
+            # Exclude the benchmark itself
+            print "Exclude $bmark ($benchmarks{$bmark}->{'file'}) because it is not in selected bsets\n" if ($debug & 8);
+            push @exclude_list, $benchmarks{$bmark}->{'file'};
+
+            # Exclude benchsets that reference the benchmark
+            foreach my $set (keys %all_bset_info) {
+                if (grep { /$bmark/ } @{$all_bset_info{$set}->{'benchmarks'}}) {
+                    print "Exclude set $set ($all_bset_info{$set}->{'filename'}) because it references $bmark\n" if ($debug & 8);
+                    push @exclude_list, $all_bset_info{$set}->{'filename'};
+                    delete $all_bset_info{$set};
+                }
+            }
+
+            # Remove the entry so that we don't have to waste time looking
+            # at it again.
+            delete $benchmarks{$bmark};
+        }
+    }
+
+    # Exclude alternate benchsets that do not use the same test/train/ref
+    # as the ones we're keeping
+    foreach my $set (keys %all_bset_info) {
+        foreach my $size (qw(test train ref)) {
+            if (!exists($base_workloads{$size}->{$all_bset_info{$set}->{$size}})) {
+                print "Exclude set $set ($all_bset_info{$set}->{'filename'}) because its $size workload is not one of (".join(', ', sort keys %{$base_workloads{$size}}).")\n" if ($debug & 8);
+                push @exclude_list, $all_bset_info{$set}->{'filename'};
+                delete $all_bset_info{$set};
+                last;
+            }
+        }
+    }
+
+    # Figure out which workload directories must ALWAYS be saved
+    my %workloads = ( 'all' => 1 );     # "all" is always there
+    foreach my $set (@sets) {
+        foreach my $size (qw(test train ref)) {
+            $workloads{$bset_info{$set}->{$size}}++;
+        }
+    }
+
+    # Go through the list of remaining benchmarks and exclude workloads which
+    # are not referenced.
+    foreach my $bmark (sort keys %benchmarks) {
+        # Get the list of workload directories for this benchmark
+        my @sizes = ();
+        my $dh = new IO::Dir $benchmarks{$bmark}->{'file'}.'/data';
+        if (defined($dh)) {
+            # Cloned benchmarks won't have data directories
+            while(my $dir = $dh->read()) {
+                next if ($dir =~ /^\.\.?$/);
+                next unless -d $benchmarks{$bmark}->{'file'}.'/data/'.$dir;
+                push @sizes, $benchmarks{$bmark}->{'file'}.'/data/'.$dir;
+            }
+            $dh->close();
+        }
+
+        # Now read the benchmark's object.pm file to figure out which sizes
+        # (if any) the specified workloads inherit
+        my %keep_workloads = %workloads;
+        read_benchmark_info($benchmarks{$bmark}->{'file'}, \%keep_workloads);
+
+        # Go through the list of workload dirs and add ones not listed in
+        # %keep_workloads to the exclude list
+        foreach my $dir (@sizes) {
+            if (!exists($keep_workloads{basename($dir)})) {
+                print "Excluding workload $dir for $bmark\n" if ($debug & 8);
+                push @exclude_list, $dir;
+            }
+        }
+    }
+
+    return @exclude_list;
+}
+
+
+sub read_benchset_info {
+    # Read in a benchset file and return a hash of the workloads that it
+    # uses for test, train, and ref
+    my ($set) = @_;
+
+    # Get the file names of all the benchsets
+    my @sets = <benchspec/[CM]*/*.bset>;
+    if (@sets == 0) {
+        die "No benchsets found!\n";
+    }
+
+    # Get the filename if the benchset was specified by filename, with or
+    # without the '.bset' extension
+    my $fname = (grep { /${set}(?:\.bset)?$/ } @sets)[0];
+    if (defined($fname) && $fname ne '' && -f $fname) {
+        print "Selected benchset file $fname for \"$set\"\n" if ($debug & 16);
+        return read_benchset_file($fname);
+    } else {
+        # The filename wasn't specified, so look in all of them and match
+        # against units and metric
+        foreach $fname (@sets) {
+            my $tmphash = read_benchset_file($fname);
+            next unless defined($tmphash) && isa($tmphash, 'HASH');
+            if ($tmphash->{'name'} =~ /^${set}$/) {
+                print "Selected benchset file $fname for \"$set\" based on name\n" if ($debug & 16);
+                return $tmphash;
+            }
+            if ($tmphash->{'units'} =~ /$set/) {
+                print "Selected benchset file $fname for \"$set\" based on units\n" if ($debug & 16);
+                return $tmphash;
+            }
+            if ($tmphash->{'metric'} =~ /$set/) {
+                print "Selected benchset file $fname for \"$set\" based on metric\n" if ($debug & 16);
+                return $tmphash;
+            }
+        }
+        print "Found no benchset file for \"$set\"\n" if ($debug & 16);
+        return undef;
+    }
+}
+
+sub read_benchset_file {
+    my ($file) = @_;
+
+    return undef unless -r $file;
+
+    my $class = "BenchsetTemp::".basename($file);
+    $class =~ s/\..*//;
+    eval "
+            package $class;
+            require '$file';
+         ";
+    die "Error reading benchset in '$file': $@\n" if ($@);
+    no strict 'refs';
+    my $info = { 'name'       => ${"${class}::name"},
+                 'units'      => ${"${class}::units"},
+                 'metric'     => ${"${class}::metric"},
+                 'ref'        => 'ref',
+                 'test'       => 'test',
+                 'train'      => 'train',
+                 'benchmarks' => \@{"${class}::benchmarks"},
+                 'filename'   => $file,
+                 };
+    $info->{'test'} = ${"${class}::test"} if defined(${"${class}::test"});
+    $info->{'train'} = ${"${class}::train"} if defined(${"${class}::train"});
+    $info->{'ref'} = ${"${class}::ref"} if defined(${"${class}::ref"});
+    use strict 'refs';
+
+    return $info;
+}
+
+sub read_benchmark_info {
+    my ($basedir, $workloads) = @_;
+
+    my @base_workloads = keys %{$workloads};  # The ones to pay attention to
+
+    my $objectpm = $basedir.'/Spec/object.pm';
+    die "No object.pm file in '$basedir'!\n" unless -r $objectpm;
+
+    my $class = 'BenchTemp::'.basename($basedir);
+    $class =~ s/\./_/g;
+
+    eval "
+          package $class;
+          require '$objectpm';
+         ";
+    if ($@) {
+        die "Couldn't read object.pm from '$basedir': $@\n";
+    }
+
+    no strict 'refs';
+    my %size_map = %{"${class}::workloads"};
+    foreach my $wanted_size (@base_workloads) {
+        next unless exists($size_map{$wanted_size});
+        if (isa($size_map{$wanted_size}, 'ARRAY')) {
+            foreach my $save_size (@{$size_map{$wanted_size}}) {
+                $workloads->{$save_size}++;
+            }
+        } else {
+            $workloads->{$size_map{$wanted_size}}++;
+        }
+    }
+    use strict 'refs';
+}
+
+# Go through the manifest file in $file and remove any filenames from it that
+# match any of the items in $excludes.
+sub exclude_from_manifest {
+    my ($file, $excludes) = @_;
+
+    die "'$file' does not exist!\n" unless -r $file;
+    return unless isa($excludes, 'ARRAY') && @{$excludes} > 0;
+
+    my $oldfile = $file.'.'.$$;
+    unlink $oldfile;    # Just in case
+    push @{$excludes}, $oldfile;
+
+    # Build an RE listing all of the filenames in $exclude.
+    # For some reason, the \Q...\E get ignored when the string is constructed
+    # interpolated, and the qr// keeps them literal.  So... construct it
+    # non-interpolated, and use qq in eval to interpolate it, and then
+    # compile it.  Pretty stupid, eh?  It works.
+    my $exclude_re = ' (?:\Q'.join('\E|\Q', @{$excludes}).'\E)';
+    $exclude_re = eval " qq{$exclude_re} ";
+    $exclude_re = qr/$exclude_re/;
+    print "Exclusion RE is\n $exclude_re\n" if ($debug & 32);
+
+    if (rename $file, $oldfile) {
+        my $ifh = new IO::File $oldfile;
+        die "Could not open '$oldfile' for reading: $!\n" unless defined($ifh);
+        my $ofh = new IO::File '>'.$file;
+        die "Could not open '$file' for writing: $!\n" unless defined($ifh);
+        while (my $line = <$ifh>) {
+            $line =~ tr/\015\012//d;
+            if ($line =~ /$exclude_re/) {
+                print "Excluded '$line' from '$file'\n" if ($debug & 32);
+            } else {
+                $ofh->print($line."\n");
+            }
+        }
+        $ifh->close();
+        $ofh->close();
+
+        # Make the permissions match
+        my $perm = (stat($oldfile))[2];
+        chmod $perm, $file;
+
+        $cleanup_files{$file} = $oldfile;
+
+    } else {
+        die "exclude_from_manifest: Could not rename '$file' to '$oldfile': $!\n";
+    }
+}
+
+# Do a best-effort cleanup of files that may have been modified during the
+# maketars operation.
+sub file_cleanup {
+    foreach my $file (keys %cleanup_files) {
+        unlink $file;
+        if ($cleanup_files{$file} ne '') {
+            rename $cleanup_files{$file}, $file;
+        }
+        delete $cleanup_files{$file};
+    }
+}
+$SIG{__DIE__} = \&::file_cleanup;
+

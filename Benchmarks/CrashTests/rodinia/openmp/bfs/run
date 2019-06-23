@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -ue
+
+/home/cc/rodinia/openmp/bfs/bfs /home/cc/rodinia/data/bfs/graph1M.txt

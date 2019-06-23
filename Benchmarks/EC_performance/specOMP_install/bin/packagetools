@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# packagetools - package tools
+#
+# Copyright 1999-2011 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: packagetools 1164 2011-08-19 19:20:01Z CloyceS $
+
+
+if [ -z "$SPEC" ]; then
+    echo "SPEC is not set!"
+    exit 1
+fi
+
+if [ -z "$1" -o "$1" = "-h" -o "$1" = "-help" -o "$1" = "--help" -o "$1" = "-H" -o "$1" = "-?" ]; then
+    echo "Usage: $0 <arch-name> [extra file, extra file, ...]"
+    exit 1
+fi
+
+arch=$1
+shift
+toolbindir=$SPEC/tools/bin
+archdir=$toolbindir/$arch
+
+cd $SPEC
+umask 002
+chmod -R u+w,o+r bin
+mkdir -p $archdir
+# Make sure that no old tools tarballs are lying around.  Don't just remove
+# everything because there may be a user-supplied 'excludearch' or something
+rm -f $archdir/*tools-$arch.tar* $archdir/spec*
+
+# Copy the tools that install.sh will need
+echo Preparing $archdir
+cp -pr $SPEC/bin/specxz $SPEC/bin/spectar $SPEC/bin/specmd5sum $archdir
+
+# Don't glob here because the file might not exist
+LIBPERL=`ls bin | grep libperl`
+LIBPERL=bin/`ls bin | grep libperl`
+if [ "x$LIBPERL" = "xbin/" ]; then
+  LIBPERL=""
+fi
+
+# Make sums for the stuff inside the tarball
+echo Generating MD5 checksums for the tools
+$SPEC/bin/specmd5sum -b -e $* $LIBPERL bin/spec[bfh-oq-z]* bin/specperl bin/specperldoc bin/lib > $SPEC/SUMS.tools
+
+# Make the tools tarball
+echo Generating the tools installation tarball
+$SPEC/bin/spectar -cf - SUMS.tools $* $LIBPERL bin/spec[bfg-oq-z]* bin/specperl* bin/lib | $SPEC/bin/specxz -v > $archdir/tools-$arch.tar.xz
+# Add an order file if one doesn't already exist
+if [ -f $archdir/order ]; then
+  grep $arch $archdir/order >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo 1:$arch > $archdir/order
+  fi
+else
+  echo 1:$arch > $archdir/order
+fi
+# Add a marker for install.sh
+echo yow > tools/bin/$arch/unbundled
+
+# Make the distribution tarball
+echo Making the distribution tarball
+$SPEC/bin/spectar --exclude=CVS --exclude=.svn -cvf $arch-`cat $SPEC/bin/version.txt`.tar tools/bin/$arch
+
+echo
+echo '*******************************************************************'
+echo
+echo The tarball to submit for inclusion in the distribution is
+echo
+echo $arch-`cat $SPEC/bin/version.txt`.tar
+echo
+echo ABSOLUTELY DO NOT submit the tarball in tools/bin/$arch
+echo as it is not complete.
+echo
+echo '*******************************************************************'
+echo

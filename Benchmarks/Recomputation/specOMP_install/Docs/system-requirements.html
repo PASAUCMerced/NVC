@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+</style>
+<title>Requirements SPEC OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+</head>
+
+<body> 
+<h1>SPEC OMP2012 System Requirements</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-11 13:43:55 -0400 (Thu, 11 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+
+  <p class="contents">Contents</p>
+  <p class="contentsl1">    <a href="#requirements" >I.</a> Hardware and Software Requirements</p>
+  <p class="contentsl2">    <a href="#sysarch"           >A.</a> System/OS</p>
+  <p class="contentsl3">    <a href="#linux"                >1.</a> About Linux Distributions</p>
+  <p class="contentsl3">    <a href="#winunix"              >2.</a> SPEC does not recommend use of Windows/Unix compatibility products with OMP2012</p>
+  <p class="contentsl2">    <a href="#dvd"               >B.</a> ISO</p>
+  <p class="contentsl2">    <a href="#memory"            >C.</a> Memory</p>
+  <p class="contentsl2">    <a href="#disk"              >D.</a> Disk Space</p>
+  <p class="contentsl2">    <a href="#compiler"          >E.</a> Compiler, or precompiled binaries</p>
+  <p class="contentsl1">    <a href="#port"         >II.</a> Portablility Notes</p>
+  <p class="contentsl1last"><a href="#resources"    >III.</a> About Resources and Mysterious Failures</p>
+
+         <p class="commentarystart" style="margin-top:0.1cm"> <i>Note:</i> links to SPEC OMP2012 documents on this web page
+         assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+         some chance you are reading this web page from a location where the links do not work, try accessing the referenced
+         documents at one of the following locations:</p>
+         <ul class="commentaryul">
+         <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li>
+         <li class="commentaryli">The <tt><b>$SPEC/Docs/</b></tt> directory on a system where SPEC OMP2012 has been
+         installed.</li>
+         <li class="commentaryli">The <tt><b>Docs/</b></tt>directory on your SPEC OMP2012 distribution.</li>
+         </ul>
+         <p class="commentaryend"> </p>
+
+<h2 id="requirements">I. Hardware and Software Requirements</h2>
+
+<p>To run and install SPEC OMP2012, the following are required.</p>
+
+
+<h3 id="sysarch">A. System/OS:</h3> 
+   
+   <p>You will need a computer system running UNIX, Microsoft Windows, or Mac OS X.  
+The benchmark suite includes a toolset. 
+   Pre-compiled versions of the toolset are provided that are expected to work with:</p>
+
+      <ul>
+      <li>AIX: PowerPC systems running AIX 5L V5.3 or later</li>
+      <li>Linux: The SPEC tools are compatible with many contemporary (year 2011) Linux distributions for Itanium, PowerPC,
+      and x86, and with many older versions.   For an exact list of the Linux tool sets, where they were built, and their
+      expected compatibility, please see the <a href="#linux">table below</a>.  </li>
+      <li>MacOS X 10.4 or later on Intel systems.</li>
+      <li>Solaris: SPARC systems running Solaris 8 or later</li>
+      <li>Solaris: x86 systems running Solaris 9 9/05  or later</li>
+      <li>Windows: Microsoft Windows XP or later on x86 or x86_64 systems </li>
+      </ul>
+
+     <p>Please ensure that you meet the minimum required version prior to installing SPEC OMP2012 V1.2.</p>
+
+     <p>For systems not listed in above, such as earlier or later versions of the above systems, you may find that the tools
+     also work, but SPEC has not tested them.  Windows systems that are not based on NT, such as Windows 95, Windows 98, and
+     Windows ME, will definitely NOT work.  Please see the <a href="#port">Portability Notes</a> below.</p>
+
+     <p>Even though tools are provided for
+Windows and MacOS, the benchmark is <span class="u">unsupported</span> 
+for these systems because there has been no testing done with them.
+The toolsets are provided as a courtesy in case you want to see if
+the benchmark does work on these OS. </p> 
+
+
+<p class="snugbot"><b>Caution:</b></p>
+<ul class="snugtop">
+   <li class="tight">Unsupported toolsets are provided as a courtesy, as a service to users who may have the listed
+   platform(s).</li>
+   <li class="tight">Unsupported toolsets have been tested much less extensively than other tool sets and might or might not
+   work.</li>
+   <li class="tight"><p class="snug">More importantly, some of the benchmarks themselves have not been ported for the environments
+   represented by the unsupported toolsets:</p>
+   <ul>
+      <li class="tight">Therefore, if you use an unsupported toolset, you will need to dedicate time to a porting effort. </li>
+      <li class="tight"><span class="u">Please especially notice</span> that it is impossible to do a <a
+      class="external" href="runspec.html#reportable">reportable</a> run on an unsupported system until such time as SPEC
+      approves any source changes and/or portability flags needed for such system.</li>
+      <li class="tight">For more information about obtaining SPEC approval for source changes, see <a
+      class="external" href="techsupport.html#source">techsupport.html</a>.</li>
+   </ul></li>
+</ul>
+
+
+<h4 id="linux">I.A.1. About Linux distributions</h4> 
+
+   <p class="l1">Over time, various mechanisms have evolved on Linux, including libraries, 32-bit/64-bit support, executable format,
+   linking, and run-time loading.  These mechanisms have sometimes forked with Linux distributions and then occasionally
+   rejoined later.  SPEC OMP2012 has been tested with a variety of Linux distributions, but the possibility remains that you
+   may encounter incompatibilities if you are not using *exactly* the same version as was used when the tools were built.
+   Therefore, the table that follows tells you exactly what was used.</p>
+
+   <p class="l1">If you find that you are unable to install the pre-compiled SPEC OMP2012 on Linux, and you would like to build
+   the tools yourself, please see the notes in <a class="external" href="tools-build.html">tools-build.html</a>.  SPEC may be able
+   to provide advice for your build, but SPEC does not promise that you will succeed.  Please see the limitations described in <a
+   class="external" href="techsupport.html#limits">techsuport.html</a>.</p> 
+
+      <table style="margin:1em 4em;">
+      <tr>
+          <th>Toolset name</th>
+          <th>Expected compatibility</th>
+          <th style="width:35%;">Build environment</th>
+      </tr>
+      <tr>
+         <td class="ttnobr">linux-debian6-armv6</td>
+         <td>ARMv6 and ARMv7 systems</td>
+         <td>Built with GCC v4.5.5 on a Raspberry Pi
+             running Debian Linux v6.0.4.  </td>
+      </tr>
+      <tr>
+         <td class="ttnobr">linux-redhat72-ia32</td>
+         <td>x86, IA-64, EM64T, and AMD64-based Linux systems with GLIBC 2.2.4+.</td>
+         <td>Built on RedHat 7.2 (x86) with gcc 3.1.1</td>
+      </tr>
+      <tr>
+         <td class="ttnobr">linux-rhas4r4-ia64</td>
+         <td>IA64 systems running Red Hat Enterprise Linux 4 or later.</td>
+         <td>Built on RHAS 4r4 with GCC 3.4.6 20060404 (Red Hat 3.4.6-3)</td>
+      </tr>
+      <tr>
+         <td class="ttnobr">linux-suse10-amd64</td>
+         <td>64-bit AMD64/EM64T Linux systems running SuSE Linux 10 or later, and other compatible Linux distributions, including some
+         versions of RedHat Enterprise Linux and Oracle Linux Server.</td>
+         <td>Built on SuSE Linux 10 with GCC v4.1.0 (SUSE Linux)</td>
+      </tr>
+      </table>
+
+<h4 id="winunix">I.A.2. SPEC does not recommend use of Windows/Unix compatibility products with OMP2012</h4>
+
+<p>SPEC does not recommend installation of OMP2012 on Microsoft Windows under Windows/Unix compatibility environments (such as
+Cygwin, MinGW, MKS, SFU, and so forth).  The tools and benchmarks have not been ported to such environments.  Please install
+from an ordinary command window (formerly known as an MS-DOS window).  </p>
+
+<p>If you have a Windows/Unix compatibility product on your Windows computer, SPEC recommends that you <span class="u">remove it
+from your %PATH%</span> prior to installing or using SPEC OMP2012.  The reason for this recommendation is that providing a
+Unix-like environment on Windows poses difficult problems.  Historically there have been various approaches, with differing
+(incompatible) assumptions about how to mask or bridge differences between Windows and Unix.  The SPEC CPU toolset has its own
+approach and its own set of assumptions, and there have been reports of difficult-to-diagnose errors when a Windows/Unix
+compatibility product is present on the path, as described in <a class="external" href="faq.html#Run.04">faq.html</a>.  As
+discussed in the faq document, if such problems occur, your first step should be to simplify the path, removing the compatibility
+product.</p> 
+
+
+<h3 id="dvd">B. ISO</h3>
+<p>The benchmark is provided as an ISO file.  If you want, you can put it
+on a DVD, and if you do, you will need a DVD drive or network access to a system that has one </p>
+
+<h3 id="memory">C. Memory</h3>
+
+<p>Typically 28 GB of memory will be required, exclusive of OS/overhead; but more may be required:</p>
+   
+   <ul>
+      <li><p>The OMP2012 benchmarks (code + workload) have been designed to fit within about 28GB of physical memory.
+      </p></li>
+
+
+      <li><p>The 28GB of RAM for the benchmarks does not include space needed for the operating system and
+      other non-SPEC tasks on the system under test.</p></li>
+    
+      <li><p>Attempting to run the suite with insufficient memory is strongly discouraged, as you will end up
+      measuring the speed of your paging file, not the speed of your system running compute intensive workloads.</p></li>
+
+      <li><p>More memory may be needed if you run larger thread counts, in that
+additional threads may add to the requirement memory total.  </p></li>
+    </ul>
+
+<p><span class="alarm">Warning:</span> When an operating system runs out of memory, errors may occur that are difficult to
+diagnose.  See the section on <a href="#resources">resources</a>, below.</p>
+
+
+<h3 id="disk">D. Disk space</h3>
+
+       <ul>
+        <li><p>Typically you will need at least 8GB of disk space to install and run the suite.  However, space needs can
+        vary greatly depending upon your usage and system.  The 8GB estimate is based on the following:</p>
+
+     <ol>
+        <li>Unpacked and installed, the suite takes approximately 1.5 to 2GB of disk space.</li>
+
+        <li>When compiling your own binaries, the size of the build directories and resulting objects will vary depending
+        upon your system, compiler, and compiler options.  Estimate at least 2 to 3GB of disk space per build.  If you plan
+        to maintain multiple sets of binaries, each set will need space.</li>
+
+        <li>A single run (using binaries you have built, or using pre built binaries from a separate source) takes an
+        additional 2 to 3GB of disk space.  
+  
+     </ol></li>
+
+        <li><p>Minimum requirement: It is possible to run with about 3GB of disk space if: 
+        you delete the build directories after the build is done; and you clean run directories between tests.  See the
+        discussion of disk space in <a class="external" href="runspec.html#section1.4.2">runspec.html</a> for more information
+        about managing disk space.  </p></li> 
+       </ul>
+
+
+
+
+<h3 id="compiler">E. Compiler, or pre-compiled binaries </h3>
+
+<p>Since SPEC supplies only source code for the benchmarks, you will need either:</p>
+     <ol style="list-style:decimal">
+      <li>A set of compilers for the result(s) you intend to measure:
+          All three of C99, C++98 and Fortran-95 compilers
+
+       <p>--or--</p></li>
+
+       <li>A pre-compiled set of benchmark executables, given to you by another user of the same revision of SPEC OMP2012,
+       and any run-time libraries that may be required for those executables.</li>
+       </ol>
+
+<h2 id="port">II. Portability Notes</h2>
+
+   <p>SPEC OMP2012 is a source code benchmark, and portability of that source code is one of the chief goals of SPEC OMP2012.
+   SPEC has invested substantial effort to make the benchmarks portable across a wide variety of hardware architectures,
+   operating systems, and compilers.  
+   </p>
+
+   <p>Despite SPEC's testing efforts, certain portability problems are likely to arise from time to time.  For example:</p>
+    <ul>
+
+       <li> <p>Some platforms may not have a Fortran-95 compiler available.</p></li>
+
+       <li> <p>Some older compilers may not include all the features needed to run the entire suite.</p></li>
+
+       <li> <p>Sometimes, a new release of a compiler or operating system may introduce new behavior that is incompatible
+       with one of the benchmarks.</p></li>
+
+    </ul>
+
+   <p>If you visit <a class="external" href="http://www.spec.org/omp2012/">http://www.spec.org/omp2012/</a>  and look up results
+   for SPEC OMP2012, you will find combinations of OS and compiler versions that are known to work.  For example, if a vendor
+   reports a SPEComp2012 result on the SuperHero 4 using SuperHero Unix V4.0 with SuperHero C V4.0 and SuperHero C++ V4.0, you may
+   take that as an assertion by the vendor that the listed versions of Unix, C, and C++ will successfully compile and run the SPEC
+   OMPG2012 suite on the listed machine.</p> 
+
+   <p>For systems that have not (yet) been reported by vendors, SPEC can provide limited technical support to resolve portability
+   issues.  See <a class="external" href="techsupport.html">techsupport.html</a> for information.</p> 
+
+
+<h2 id="resources">III. About Resources and Mysterious Failures</h2>
+
+<p><b>Resource Demand:</b>  The SPEC OMP2012 benchmarks place a significant load on your system.  Each benchmark will issues as many threads as you request
+and try to
+consume 100% of it (perhaps virtual).  
+</p> 
+
+<p class="snugbot">As described above, the nominal memory footprint is just under 32 GB.  Depending on your
+operating system architecture, the memory may be of various types, including:</p>
+<ul class="snugtop">
+<li>physical memory, </li>
+<li>virtual memory, and </li>
+<li>swap/pagefile reservations (*);</li>
+<li>process-private heap, </li>
+<li>process-private stack, and</li> 
+<li>process-private code;</li>
+<li>operating system memory of similar types when the OS performs tasks on behalf of the process. </li>
+</ul>
+<p class="l2">(*)You don't want to actually <span class="u">use</span> your pagefile much, as that is a recipe for testing
+your disk instead of testing your CPU.   Nevertheless, it is not uncommon for operating systems to require that pagefile
+space be "reserved", and benchmarks may fail if reservations are unavailable.</p>
+
+<p><b>Mysterious failures:</b> If an OS is unable to satisfy a resource request while your benchmarks are running, you may
+encounter difficult-to-diagnose, hard-to-reproduce error messages.  Processes may be killed by the OS on a (seemingly) random
+basis, or may fail to start.  If the OS is feeling sufficiently stressed, error messages may be cryptic or even non-existent.
+You might, or you might not, be able to find additional detail about the resource shortages in system locations such as event
+logs, message logs, or console logs.  </p>
+
+<p class="snugbot"><b>Resource Competition:</b>  Meanwhile, contemporary systems run many tasks other than the benchmarks.
+Personal systems commonly include processes that support the user, which the user may not be aware of:</p>
+<ul class="snugtop">
+<li>There may be virus/spyware/intrusion defenders, disk defragmenters, search indexers, bluetooth and network listeners,
+license managers, software updaters, and nightly backup programs.  </li>
+<li>There may be automated power-saving modes or screen savers that start when the user wanders away from the keyboard.</li>
+<li>The system may be configured:
+<ul><li>to download the Library of Congress once every 4 days,</li>
+<li>to check for email once every 4 minutes, and</li> 
+<li>to update a social media newsfeed once every 4 seconds.</li>
+</ul></li>
+</ul>
+
+<p>All of the above may affect observed performance, and if you are unlucky, may cause hard-to-reproduce resource shortages
+that prevent you from completing benchmark runs.   Therefore, you may want to consider reviewing the controls for services
+such as the above, and you may want to reduce the load from these services during the benchmark run. <span class="alarm">When
+you consider adjusting services, please observe these CAUTIONS:</span></p>
+
+<ul><li><p><span class="alarm"><b>CAUTION 1</b> </span> SPEC does not endorse any particular solution to the resource problems
+discussed in this section.  You need to make your own decision as to what services and programs are important.  If you turn
+off something essential, and your system turns into a mushroom, <span class="u">it is not SPEC's fault</span>.  Use good
+judgment about what you choose to disable.</p></li>
+
+<li><p><span class="alarm"><b>CAUTION 2</b></span> If you choose to report results in public, you must run your system in a manner
+that is documented and supported.  See the <a class="external" href="runrules.html">run rules</a> for details. </p> 
+</li></ul>
+
+
+<p class="snugbot">In addition, each of these techniques may improve the probability that the benchmarks have a fresh set of
+dedicated resources:</p>
+<ol class="snugtop">
+<li>Start a new terminal window, or </li>
+<li>Log out and back in, or </li>
+<li>Reboot</li>
+</ol>
+
+
+
+<hr />
+<p>Copyright 2006-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:1900px;">&nbsp;</p>
+
+
+</body>
+</html>
+

@@ -1,0 +1,398 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                        SPEC OMP2012 Monitoring Facility
+
+   Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by
+   $Author: BrianWhitney $
+   (To check for possible updates to this document, please see
+   http://www.spec.org/omp2012/Docs/ )
+
+   Contents
+
+   Introduction
+
+   Monitoring Hooks in Header Section
+
+   monitor_pre and monitor_post
+
+   Monitoring Hooks Per Benchmark
+
+   monitor_pre_bench and monitor_post_bench
+
+   monitor_wrapper
+
+   monitor_specrun_wrapper
+
+   build_pre_bench and build_post_bench
+
+   Considerations for Writing Monitoring Scripts
+
+   Note: links to SPEC OMP2012 documents on this web page assume that you are
+   reading the page from a directory that also contains the other SPEC
+   OMP2012 documents. If by some chance you are reading this web page from a
+   location where the links do not work, try accessing the referenced
+   documents at one of the following locations:
+
+     * www.spec.org/omp2012/Docs/
+     * The $SPEC/Docs/ (Unix) or %SPEC%\Docs\ (Windows) directory on a system
+       where SPEC OMP2012 has been installed.
+     * The Docs/ directory on your SPEC OMP2012 distribution media.
+
+Introduction
+
+   While some users will be using the SPEC OMP2012 suite to benchmark the
+   system under test (SUT) using the SPEC provided tools, others might be
+   inclined to understand and evaluate the performance bottlenecks when
+   running the benchmarks on the SUT. Performance evaluation requires
+   performance data to be collected either on a suite-wide basis or for
+   individual benchmarks. To facilitate the collection of performance data or
+   to run any command-line task/utility at specific execution points of the
+   runspec script, SPEC OMP2012 provides several "monitoring hooks" which can
+   be set up in the configuration file. These hooks allow you to run
+   arbitration shell commands while still using the SPEC recommended way of
+   running SPEC OMP2012; which is using the runspec command utility. This
+   document explains the various hooks that are available in SPEC OMP2012.
+
+   All monitoring hooks are specified in the configuration file. This
+   document, therefore assumes that you have a working familiarity with the
+   construction and layout of the benchmark configuration files.
+
+   The monitor hooks have been a little-known feature of the SPEC toolset for
+   many years. They were first described in the ACM SIGARCH article SPEC
+   Benchmark Tools and now are explained further in this document. The
+   monitor hooks allow advanced users to instrument the suite in a variety of
+   ways. SPEC can provide only limited support for their use; if your
+   monitors break files or processes that the suite expects to find, you
+   should be prepared to do significant diagnostic work on your own.
+
+   In order to illustrate the usage of monitoring hooks facility in SPEC
+   OMP2012, this document will extensively use the
+   Example-monitors-macosx.cfg configuration file which comes with your
+   standard SPEC installation. You can find this configuration file located
+   in the $SPEC/config directory of your SPEC installation tree. You will
+   also find on your kit an example oriented toward users of Microsoft
+   Windows: Example-monitor-windows.cfg. Please not that Windows is not
+   officially supported, but the tools set should work, as should the
+   monitoring capabilities.
+
+   The monitoring facility in OMP2012 is not limited to simple examples
+   presented here. Scripts and programs of any level of complexity may be
+   used to examine command arguments and executables and change their
+   monitoring actions accordingly. In this way only a specific part of a
+   benchmark's workload may be monitored while not wasting time or other
+   resources tracing uninteresting workloads.
+
+Monitoring Hooks in Header Section
+
+   There are two monitoring hooks that can be set in the header section of
+   the configuration file:
+
+     * monitor_pre
+     * monitor_post
+
+  monitor_pre and monitor_post
+
+   When the SPEC provided (and approved) script, runspec, is used to run the
+   OMP2012 suite, it breaks down the benchmarks specified on the command line
+   into one or more sets and runs each set as a separate unit. A set of
+   benchmarks that comprise a specific unit is defined by the tuple of data
+   size (test, train, and ref) and extension. It is therefore possible for
+   runspec to run multiple sets of benchmarks, one after another, for one
+   invocation of runspec.
+
+   The monitor_pre hook is invoked before while the monitor_post hook is
+   invoked after the execution of each run configuration set. Therefore, for
+   a single runspec invocation, these hooks might be executed multiple times,
+   as shown in examples below.
+
+   If you do not run at least one benchmark then monitor_pre and monitor_post
+   are not used (e.g. if you use "--action setup" or "--action build").
+
+   Note - stdout/stderr: The stdout and stderr for the monitor_pre and
+   monitor_post commands are redirected to the files monitor_{pre|post}.out
+   and monitor_{pre|post}.err in your current working directory.
+
+    Example Output 1
+
+   The runspec command below requests one input data set; so monitor_pre and
+   monitor_post will each be called once. Here is the sample output printed
+   to the screen (monitor_pre and monitor_post markers are highlighted in
+   red):
+
+ spec002:~/benchmarks/omp2012-kit100 peg$ runspec -c Example-monitors-macosx.cfg -n 1 -i test 350
+ runspec v1763 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'macosx' tools
+ Reading MANIFEST... 12938 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Reading config file '/Users/peg/benchmarks/omp2012-kit100/config/Example-monitors-macosx.cfg'
+ Benchmarks selected: 350.md
+ Executing monitor_pre: echo "monitor_pre"
+ Compiling Binaries
+   Up to date 350.md test base example-monitors default
+
+
+ Setting Up Run Directories
+   Setting up 350.md test base example-monitors default: existing (run_base_test_example-monitors.0000)
+ Running Benchmarks
+   Running 350.md test base example-monitors default
+ Executing monitor_pre_bench: echo "monitor_pre_bench"
+ Executing monitor_post_bench: echo "monitor_post_bench"
+ Success: 1x350.md
+ Executing monitor_post: echo "monitor_post"
+ Producing Raw Reports
+ mach: default
+   ext: example-monitors
+     size: test
+       set: gross
+
+ The log for this run is in /Users/peg/benchmarks/omp2012-kit100/result/OMP2012.022.log
+
+ runspec finished at Mon Aug 20 12:47:13 2012; 6 total seconds elapsed
+
+    Example Output 2
+
+   The runspec -i test,train command below requests two input data sets, and
+   effectively causes two runs; so monitor_pre and monitor_post will each be
+   called twice. Here is the sample output printed to the screen:
+
+ spec002:~/benchmarks/omp2012-kit100 peg$ runspec -c Example-monitors-macosx.cfg -n 1 -i test,train --tune=base 350
+ runspec v1763 - Copyright 1999-2012 Standard Performance Evaluation Corporation
+ Using 'macosx' tools
+ Reading MANIFEST... 12938 files
+ Loading runspec modules................
+ Locating benchmarks...found 14 benchmarks in 9 benchsets.
+ Reading config file '/Users/peg/benchmarks/omp2012-kit100/config/Example-monitors-macosx.cfg'
+ Benchmarks selected: 350.md
+ Executing monitor_pre: echo "monitor_pre"
+
+ Compiling Binaries
+   Up to date 350.md test base example-monitors default
+
+
+ Setting Up Run Directories
+   Setting up 350.md test base example-monitors default: existing (run_base_test_example-monitors.0000)
+ Running Benchmarks
+   Running 350.md test base example-monitors default
+ Executing monitor_pre_bench: echo "monitor_pre_bench"
+ Executing monitor_post_bench: echo "monitor_post_bench"
+ Success: 1x350.md
+ Executing monitor_post: echo "monitor_post"
+ Producing Raw Reports
+ mach: default
+   ext: example-monitors
+     size: test
+       set: gross
+ Benchmarks selected: 350.md
+ Executing monitor_pre: echo "monitor_pre"
+ Compiling Binaries
+   Up to date 350.md train base example-monitors default
+
+
+ Setting Up Run Directories
+   Setting up 350.md train base example-monitors default: existing (run_base_train_example-monitors.0000)
+ Running Benchmarks
+   Running 350.md train base example-monitors default
+ Executing monitor_pre_bench: echo "monitor_pre_bench"
+ Executing monitor_post_bench: echo "monitor_post_bench"
+ Success: 1x350.md
+ Producing Raw Reports
+ Executing monitor_post: echo "monitor_post"
+ mach: default
+   ext: example-monitors
+     size: train
+       set: gross
+
+ The log for this run is in /Users/peg/benchmarks/omp2012-kit100/result/OMP2012.024.log
+
+ runspec finished at Mon Aug 20 15:41:51 2012; 13 total seconds elapsed
+
+Monitoring Hooks Per Benchmark
+
+   The SPEC tools allow the following monitoring hooks to be set for
+   individual benchmark:
+
+     * monitor_pre_bench
+     * monitor_post_bench
+     * monitor_wrapper
+     * monitor_specrun_wrapper
+     * build_pre_bench
+     * build_post_bench
+
+   These monitoring hooks can be added to any Named Section to control which
+   benchmarks will be affected by the hooks.
+
+  monitor_pre_bench and monitor_post_bench
+
+   The monitoring hooks called as monitor_pre_bench and monitor_post_bench
+   allow programs to be executed before and after specinvoke is called to run
+   the benchmark. This could be used to harvest files written by an
+   instrumented binary or to start and stop a system-level profiler. As as
+   example, here is the part of the configuration file written to collect
+   branch and basic block data profiles to evaluate the correspondence of
+   training workloads to the reference workloads in SPEC OMP2012 under
+   Solaris OS using a custom profiling tool called Binary Improvement Tool
+   (bit).
+
+ monitor_pre_bench = bit instrument ${commandexe}; \
+    cp ${commandexe} ${commandexe}.orig; \
+    cp ${commandexe}.instr ${commandexe}
+
+ monitor_post_bench = bit analyze -o $[top]/analysis/branches.${benchmark}.${size}.csv -a branch ${commandexe}; \
+    bit analyze -o $[top]/analysis/blocks.${benchmark}.${size}.csv -a bbc ${commandexe}; \
+    cp ${commandexe}.orig ${commandexe}
+
+   Before the run, via (monitor_pre_bench), the Binary Improvement Tool
+   (bit), is used to instrument the binary executable. After the run, via
+   (monitor_post_bench), bit is again used to dump statistics from the run
+   into files in the $SPEC/analysis/ directory.
+
+   The values for ${commandexe}, ${benchmark} and ${size} are provided by the
+   tools at run time; there are many other variables available. The variables
+   that are available vary depending on what is being done. For a list of
+   variables available for substitution, execute your runspec command with
+   verbosity set to 35 or greater. This can be accomplished by specifying
+   "runspec -v 35". For more information on variable substitution, see the
+   config.html section on variable substitution.
+
+   Note - stdout/stderr: The stdout and stderr for the monitor_pre_bench and
+   monitor_post_bench commands are redirected to the files
+   monitor_{pre|post}_bench.out and monitor_{pre|post}_bench.err in the run
+   directory for each benchmark.
+
+   Note that the execution time for the commands specified by the
+   $monitor_pre_bench, and $monitor_post_bench are not included in the
+   benchmark's reported time.
+
+  monitor_wrapper
+
+   It is also possible to instrument each invocation of a benchmark binary
+   using the monitor_wrapper. This allows profiling or tracing of the
+   individual workload components without measuring the overhead of
+   specinvoke. One potential disadvantage is that the execution time of these
+   commands is counted as part of the benchmark's reported run time. Here is
+   an example of how you would collect a system call trace in Linux for
+   individual benchmark workloads and save output files directly in to the
+   profile directory:
+
+  strace -f -o $benchmark.calls.\$\$ $command; \
+    mkdir -p $[top]/calls.$lognum; \
+    mv $benchmark.calls.\$\$ $[top]/calls.$lognum
+
+   One very important point to note about monitor_wrapper is that by default
+   any output that the monitoring software writes to stdout will be mixed
+   with the benchmark's utput.
+
+   A setting such as the following will cause many benchmarks to fail
+   validation:
+
+ monitor_wrapper = date; $command
+
+   The benchmark's expected output certainly does not include the current
+   time of the run. This is a contrived example of a real problem that can
+   occur even if the monitoring program outputs only benign static status
+   information. This is because normally the output redirections are set up
+   by specinvoke before executing the benchmark. A similar problem can occur
+   with inputs, if the monitoring application consumes input that the
+   benchmark expects to find on stdin.
+
+   The way around this problem of misdirected stdin and stdout when using
+   monitor_wrapper is a configuration file switch called
+   command_add_redirect.
+
+   Normally input and output files are opened by specinvoke and attached
+   directly to new process's file descriptors. Setting command_add_redirect
+   in the header section of the configuration file causes that step to be
+   skipped and instead modifies the benchmark command to include shell
+   redirection operators. So, in Bourne shell syntax, by default the above
+   example translates to something like:
+
+ (date; $command) < in > out 2>> err
+
+   With the command_add_redirect set, this becomes:
+
+ date; $command < in > out 2>> err
+
+   The output from the date command is still stored but in a file
+   speccmds.stdout in the run directory that is not subject to validation.
+
+  monitor_specrun_wrapper
+
+   By using monitor_specrun_wrapper, it is possible to directly monitor
+   specinvoke, and by extension the entire benchmark iteration, no matter how
+   many separate executions (workloads) it involves. For example, to generate
+   a system call trace for specinvoke and all of its children on a Linux
+   system, you could set up monitor_specrun_wrapper as follows:
+
+ monitor_specrun_wrapper = strace -ff -o $benchmark.calls $command; \
+    mkdir -p $[top]/calls.$lognum; \
+    mv $benchmark.calls* $[top]/calls.$lognum
+
+   In this example, the crucial point is the $command; it expands to the full
+   command to be run, including arguments. If $command is omitted or
+   replaced, something other than the desired command will be traced, and the
+   benchmark will not validate.
+
+   Note that the execution time for the commands specified by the
+   $monitor_specrun_wrapper is not included in the benchmark's reported time.
+
+  build_pre_bench and build_post_bench
+
+   The monitoring hooks build_pre_bench and build_post_bench are executed
+   before and after the individual benchmark is built.
+
+   Note - stdout/stderr: The stdout and stderr for the build_pre_bench and
+   build_post_bench commands are redirected to the files
+   build_{pre|post}_bench.out and build_{pre|post}_bench.err in the run
+   directory for each benchmark.
+
+Considerations for Writing Monitoring Scripts
+
+   You can specify a lot of shell commands separated by semicolons, but for
+   ease of understanding and maintenance, you might prefer to have scripts
+   that do the work. Here are a few things to keep in mind when writing
+   scripts that will run with the monitoring hooks:
+
+     * $CWD points to the current run directory, whether you are building or
+       running the benchmark.
+
+     * $PATH is modified to include the $SPEC/bin directory. So if you put
+       your executables or scripts in the $SPEC/bin directory, they will be
+       in the path when the SPEC environment is set.
+
+     * If you are using monitor_wrapper, ensure that the monitoring
+       applications and/or scripts do not use the stdin and stdout pipes.
+       However, if they do use them, set the variable command_add_redirect in
+       the header section of the configuration file to avoid unintended
+       failures with the OMP2012 benchmarks. See section on monitor_wrapper
+       for more discussion.
+
+     * If you are saving data collected from your monitoring run in files,
+       they are most likely being saved in $CWD, which is set to the current
+       run directory. It is a good idea to move these files from the run
+       directories to some other directory which does not get modified by the
+       SPEC's runspec command. The run directories, by default, get
+       over-written if you run the benchmark again.
+
+   --------------------------------------------------------------------------
+
+   Copyright (c) 2001-2012 Standard Performance Evaluation Corporation
+   All Rights Reserved

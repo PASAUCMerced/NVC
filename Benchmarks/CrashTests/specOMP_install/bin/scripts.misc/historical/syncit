@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# syncit - sync a copy of the CPU2006 working tree to the current directory
+# No support is provided for this script; it wouldn't work for you anyway.
+#
+# Copyright 1999-2008 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: syncit 708 2010-05-21 21:27:29Z cloyce $
+
+# THIS WILL KILL YOUR WORKING TREE!
+
+if [ -z "$SPEC" ]; then
+  echo "Source the shrc, nimrod"
+  exit 1
+fi
+cd $SPEC
+if [ -d .svn ]; then
+  echo This will destroy your working tree.  If you still want to do it, remove
+  echo the .svn directory from the top-level and re-run the script
+  exit 1
+fi
+rsync -aHSlve ssh --stats --delete --progress \
+      --delete-excluded --exclude=.svn --exclude=install_archives \
+      pro.spec.org:/spec/pro/hpg/omp/omp2001/omp2001/. \
+      .

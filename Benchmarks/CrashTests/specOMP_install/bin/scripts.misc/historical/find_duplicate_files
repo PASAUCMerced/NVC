@@ -1,0 +1,30 @@
+#!/usr/bin/perl -n
+#
+# find_duplicate_files - identify identical files based on the contents of
+#                        the MANIFEST
+#
+# No support is provided for this script.
+#
+# Copyright 2005-2008 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# $Id: find_duplicate_files 1061 2011-02-01 22:31:10Z keeper $
+
+# cat the MANIFEST through this
+
+BEGIN {
+  $search = shift(@ARGV) || '';
+}
+
+next if (defined($search) && ($search ne '') && !/$search/o);
+
+($sum, $path) = /^(\S+)\s+.\s+\S+\s+(.*)/o;
+push @{$sums{$sum}}, $path;
+
+END {
+  foreach my $sum (keys %sums) {
+    if (@{$sums{$sum}} > 1) {
+      print scalar(@{$sums{$sum}}).": ".join("\n   ", @{$sums{$sum}})."\n";
+    }
+  }
+}

@@ -1,0 +1,1371 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags1.dtd"
+>
+
+<!-- $Id: flags-advanced.xml 1334 2009-10-26 14:19:56Z keeper $ -->
+
+<!-- ... You'll want a nice wide window when reading or editing this .................................................... -->
+
+<!-- This flags file is intended as *both* an example: $SPEC/Docs/flags-advanced.xml and as the flags file for Sun's first
+MPI2007 submission.  In order to serve as an example, there are more details in some of the comments than might otherwise be
+strictly necessary, and there are definitely more flags than are actually going to be used in the first submission.  --> 
+
+<flagsdescription>
+
+<filename>sun-studio</filename>
+
+<title>Sun Microsystems SPEC MPI Flags</title>
+
+<!-- 
+  *********************************************************************************************************************
+  Preface for flags dump and per-result flag report
+  ********************************************************************************************************************* 
+-->
+<header>
+<![CDATA[
+<p>Compilers: Sun Studio 12</p>
+<p>Operating systems: Solaris 10</p>
+<p>Last updated: 31-Mar-2008 jlh </p>
+
+<p>The text for many of the descriptions below was taken from the Sun Studio 11 Compiler Documentation, which is
+copyright &copy; 2005 Sun Microsystems, Inc.  The original documentation can be found at
+<a href="http://docs.sun.com/">docs.sun.com</a>.</p>
+]]>
+</header>
+
+<!-- 
+  *********************************************************************************************************************
+  Explanations of platform info, such as boot time settings
+  ********************************************************************************************************************* 
+-->
+
+<platform_settings>
+<![CDATA[
+
+<p><b>Platform settings</b></p>
+
+<p>One or more of the following settings may have been applied to the testbed.  If so, the "Platform Notes" section of the
+report will say so; and you can read below to find out more about what these settings mean.</p>
+
+<p><b><kbd>autoup=&lt;n&gt;</kbd></b> (Unix)
+<br />When the file system flush daemon <tt>fsflush</tt> runs, it writes to disk all modified file buffers that are more
+than <kbd>n</kbd> seconds old.  </p>
+
+<p><b><kbd>cpu_bringup_set=&lt;n&gt;</kbd></b> (Unix /etc/system)
+<br /> Specifies which processors are enabled at boot time.  <kbd><b>&lt;n&gt;</b></kbd> represents a bitmap of the
+processors to be brought online.  </p>
+
+<p><b><kbd>disablecomponent</kbd></b> (System Management Services)
+<br />This command can be used prior to booting the system for a 1-cpu test.  The tester uses <kbd>disablecomponent</kbd> to
+add all other CPUs to the "blacklist", which is a list of components that cannot be used at boot time.  </p>
+
+<p><b><kbd>LD_LIBRARY_PATH=&lt;directories&gt;</kbd></b> (linker)
+<br />LD_LIBRARY_PATH controls the search order for both the compile-time and run-time linkers.  Usually, it can be
+defaulted; but testers may sometimes choose to explicitly set it (as documented in the notes in the submission), in order to
+ensure that the correct versions of libraries are picked up.  </p>
+
+<p><b><kbd>PARALLEL=&lt;n&gt;</kbd></b> (Unix)
+<br />If programs have been compiled with <kbd>-xautopar</kbd>, this environment variable can be set to the number of
+processors that programs should use.
+</p>
+
+<p><b><kbd>STACKSIZE=&lt;n&gt;</kbd></b> (Unix)
+<br /> Set the size of the stack (temporary storage area) for each slave thread of a multithreaded program.  </p>
+
+<p><b><kbd>submit=echo 'pbind -b...' > dobmk; sh dobmk</kbd></b> (SPEC tools, Unix)
+<br /> When running multiple copies of benchmarks, the SPEC config file feature <kbd><b>submit</b></kbd> is sometimes used to
+cause individual jobs to be bound to specific processors.  If so, the specific command may be found in the config file; here
+is a brief guide to understanding that command: </p>
+   <ul>
+   <li><kbd><b>submit=</b></kbd> causes the SPEC tools to use this line when submitting jobs.</li>
+   <li><kbd><b>echo ...&gt; dobmk</b></kbd> causes the generated commands to be written to a file, namely
+       <kbd>dobmk</kbd>.</li>
+   <li><kbd><b>pbind -b</b></kbd> causes this copy's processes to be bound to the CPU specified by the expression that
+       follows it.  See the config file used in the submission for the exact syntax, which tends to be cumbersome because of
+       the need to carefully quote parts of the expression.  When all expressions are evaluated, each core ends up with
+       exactly one copy of each benchmark.  The pbind expression may include:
+       <ul>
+       <li><kbd><b>$SPECCOPYNUM</b></kbd>: the SPEC tools-assigned number for this copy of the benchmark.</li>
+       <li><kbd><b>psrinfo</b></kbd>: find out what processors are available</li>
+       <li><kbd><b>grep on-line</b></kbd>: search the <kbd>psrinfo</kbd> output for information regarding on-line cpus</li>
+       <li><kbd><b>expr</b></kbd>: Calculate simple arithmetic expressions.  For example, the effect of binding jobs to a
+           (quote-resolved) expression such as: <br /><tt>expr ( $SPECCOPYNUM / 4 ) * 8 + ($SPECCOPYNUM % 4 ) )</tt>
+           <br />would be to send the jobs to processors whose numbers are:
+           <br /><tt>0,1,2,3, 8,9,10,11, 16,17,18,19 ...</tt></li>
+       <li><kbd><b>awk...print \$1</b></kbd>: Pick out the line corresponding to this copy of the benchmark and use the CPU
+           number mentioned at the start of this line.</li>
+       </ul></li>
+   <li><kbd><b>sh dobmk</b></kbd> actually runs the benchmark.</li>
+   </ul>
+
+<p><b><kbd>tune_t_fsflushr=&lt;n&gt;</kbd></b> (Unix)
+<br /> Controls the number of seconds between runs of the file system flush daemon, <tt>fsflush</tt>.  </p>
+
+<p><b><kbd>ulimit -s &lt;n&gt;</kbd></b> (Unix)
+<br /> Sets the stack size to <kbd>n</kbd> kbytes, or "<kbd>unlimited</kbd>" to allow the stack size to grow without limit.
+</p>
+]]>
+</platform_settings>
+
+<!-- 
+  ********************************************************************************************************************
+  Compilers
+  ********************************************************************************************************************* 
+-->
+
+<!-- If there is any chance that your compiler will be used by any third party in conjunction with another compiler, it is
+   _strongly_ recommended that the flag names be chosen in such a way as to facilitate flag file merging.
+
+  Sure, the C compiler name below could be "cc", but "sun_cc" is so much less ambiguous.
+
+  The regexp below allows a path, as in /usr/opt/SUNwspro/.  The "(?:pattern)" notation groups the pattern inside the
+  parentheses so that the "?" operator that immediately follows the closing parentheses applies to the pattern, thus allowing
+  0 or 1 instances of the whole thing.  
+-->
+
+<flag name="sun_CC"
+      class="compiler"
+      regexp="(?:/\S+/)?CC\b">
+<example>CC</example>
+Invoke the Sun Studio C++ Compiler
+</flag>
+
+<flag name="sun_cc"
+      class="compiler"
+      regexp="(?:/\S+/)?cc\b">
+<example>cc</example>
+Invoke the Sun Studio C Compiler.
+</flag>
+
+<flag name="sun_f90"
+      class="compiler"
+      regexp="(?:/\S+/)?f90\b">
+<example>f90</example>
+Invoke the Sun Studio Fortran 90 Compiler
+</flag>
+
+<!-- 
+  ********************************************************************************************************************
+  Compiler Component Splitters
+  ********************************************************************************************************************* 
+-->
+
+<!-- 
+  The Sun Studio compilation system allows comma-delimited flags to be sent to different components, as in
+      -qoption iropt -Adata_access,-Mt7000,-Mm14000
+  which sends 3 switches to the optimizer (iropt).
+
+  The flags in this section are "splitters": they break up flags such as the above into their component parts.  If the above
+  string were used with this flags file, the rule that follows would separate it into:
+
+      -qoption iropt -Adata_access -qoption iropt -Mt7000 -qoption iropt -Mm14000 
+  
+  Commonly addressed components include cg, iropt, and f90comp.   
+
+  In the regexp that follows, 
+   $1   (cg|iropt|f90comp)   matches one of these three component names
+   $2   (-[^,\s]+)           matches "-string"; to be more precise:
+                                - matches itself
+                                [^class] says match characters that are NOT described by the class between brackets
+                                So, we'll accept anything but ",\s" which means comma or whitespace 
+                                + says match one or more times
+   $3   (-\S+)               matches "-" followed by one or more characters that are not whitespace
+   $4   (?=\s|$)             matches whitespace or end of string (see flag-description.html section 3.3.4) 
+--> 
+
+<flag name="qoption_splitter" 
+      class="optimization" 
+      regexp="-[qQ]option (cg|iropt|f90comp) (-[^,\s]+),(-\S+)(?=\s|$)">
+<example>Splitter rule for qoptions: -Qoption (cg|iropt|f90comp) -switch[,-switch...] </example>
+<include text="-qoption $1 $2" />
+<include text="-qoption $1 $3" />
+<display enable="0" />
+</flag>
+
+<flag name="Wx_splitter" 
+      class="optimization" 
+      regexp="-W(2|c),(-[^,\s]+),(-\S+)(?=\s|$)"
+      compilers="sun_cc">
+<example>Splitter rule for Wx: -W2,-switch[,-switch...] or -Wc,-switch[,-switch...]</example>
+<include text="-W$1,$2" />
+<include text="-W$1,$3" />
+<display enable="0" />
+</flag>
+
+<!-- 
+  ********************************************************************************************************************
+  Other Splitters
+  ********************************************************************************************************************* 
+-->
+
+<!-- ********************************************************************************************************************
+     The regexp below looks for a string of the form
+
+          -qoption iropt -Ainline:<something>:<more stuff>
+
+     It removes what it found, and puts back in its place
+
+          -qoption iropt -Ainline:<something> -qoption iropt -Ainline:<more stuff>
+
+     After multiple iterations through, the original macro flag will have been split into its components (which should all be
+     described below).
+
+     ********************************************************************* -->
+
+<!-- -Ainline[:cp=n][:cs=n][:inc=n][:irs=n][:mi][:rs=n][:recursion=n] --> 
+<flag name="Ainline_splitter"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:([^:\s]+):(\S+)(?=\s|$)">
+<example>Splitter rule for -Ainline</example>
+<include text="$1-Ainline:$2" />
+<include text="$1-Ainline:$3" />
+<display enable="0" />
+</flag>
+
+<!-- -Apf:llist=n:noinnerllist  -->
+<flag name="Apf_splitter"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Apf:([^:\s]+):(\S+)(?=\s|$)">
+<example>Splitter rule for -Apf</example>
+<include text="$1-Apf:$2" />
+<include text="$1-Apf:$3" />
+<display enable="0" />
+</flag>
+
+<!-- -Qlp[=n][-av=n][-t=n][-fa=n][-fl=n][-ip=n] [-pt=weak][-ol=n] --> 
+<flag name="Qlp_splitter1"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp(-|=)([^-\s]+)-(\S+)(?=\s|$)">
+<example>Splitter rule for -Qlp</example>
+<include text="$1-Qlp$2$3" />
+<include text="$1-Qlp-$4" />
+<display enable="0" />
+</flag>
+
+<!--
+  *************************************************************************************************************************
+  Flags
+
+  Actual flag descriptions at last begin here.  The order is alphabetical by how the human reads it (so you might have to
+  peek at that regexp to understand what it would look like to the human).  The alphabetizing is without regard to
+  upper/lower case, without regard to the presence of leading punctuation, and without regard to the presence of a leading
+  -Wx, or -qoption x
+
+  Exception: The flag "-#" is alphabetized next to "-v".
+  *************************************************************************************************************************
+-->
+
+<!-- Note that the name "F-Abcopy" allows a default <example> text of -Abcopy; see flag-description.html section 3.7 -->
+<flag name="F-Abcopy"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Abcopy\b">
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Increase the probability that the compiler will perform memcpy/memset transformations.</p>
+]]>
+</flag>
+
+<!-- Note that the regular expression above might have been written slightly more efficiently.  These two would do similar
+     things:
+
+          regexp="(-W2,|-[qQ]option iropt )-Abcopy\b"
+     or
+          regexp="-(?:W2,|[qQ]option iropt )-Abcopy\b">
+
+     The former notation captures into $1; the latter does not, and also factors out the common substring "-".  Therefore,
+     the latter might be slightly more efficient.  But it is not used here because the former seems a little easier on the human
+     eye.   You can read up about the ?: notation by typing "specperldoc perlre" and can make your own decision of whether to
+     use it (TMTOWTDI).  -->
+
+<flag name="Addint:ignore_parallel"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Addint:ignore_parallel\b">
+<example>-Addint:ignore_parallel</example>
+<![CDATA[
+<p><small>[optimizer]</small></p>
+<p>Ignore parallelization factors in loop interchange heuristics.</p>
+]]>
+</flag>
+
+<flag name="Addint:sf"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Addint:sf=\d+\b">
+<example>-Addint:sf=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer]</small></p>
+<p>When considering whether to interchange loops, set memory store operation weight to <kbd>n</kbd>.  A higher value of
+<kbd>n</kbd> indicates a greater performance cost for stores.</p>
+]]>
+</flag>
+
+<flag name="Ainline:cp"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:cp=\d+\b">
+<example>-Ainline:cp=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; set the minimum call site frequency counter in order to consider a routine for
+inlining.  </p>
+]]>
+</flag>
+
+<flag name="Ainline:cs"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:cs=\d+\b">
+<example>-Ainline:cs=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Set inline callee size limit to <kbd>n</kbd>.  The unit roughly corresponds to the
+number of instructions.  </p>
+]]>
+</flag>
+
+<flag name="Ainline:inc"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:inc=\d+\b">
+<example>-Ainline:inc=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner;
+The inliner is allowed to increase the size of the program by up to <kbd>n</kbd>%.  </p>
+]]>
+</flag>
+
+<flag name="Ainline:irs"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:irs=\d+\b">
+<example>-Ainline:irs=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Allow routines to increase by up to <kbd>n</kbd>.  The unit roughly corresponds to
+the number of instructions.  </p>
+]]>
+</flag>
+
+<flag name="Ainline:mi"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:mi\b">
+<example>-Ainline:mi</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Perform maximum inlining (without considering code size increase).  </p>
+]]>
+</flag>
+
+<flag name="Ainline:recursion"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:recursion=1\b">
+<example>-Ainline:recursion=1</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Allow routines that are called recursively to still be eligible for inlining.  </p>
+]]>
+</flag>
+
+<flag name="Ainline:rs"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ainline:rs=\d+\b">
+<example>-Ainline:rs=400</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Inliner only considers routines smaller than n pseudo instructions as possible inline candidates.</p>
+]]>
+</flag>
+
+<flag name="F-Aivsub3"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Aivsub3\b">
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p>Increase the probability that loop induction variables will replaced, so that some extraneous code can be eliminated from
+loops.</p>
+]]>
+</flag>
+
+<flag name="Aloop_dist:ignore_parallel"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Aloop_dist:ignore_parallel\b">
+<example>-Aloop_dist:ignore_parallel</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p> Ignore parallelization factors in loop distribution heuristics.  </p>
+]]>
+</flag>
+
+<flag name="Amemopt:arrayloc"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Amemopt:arrayloc\b">
+<example>-Amemopt:arrayloc</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p>
+<p> Reconstruct array subscripts during memory allocation merging and data layout program transformation.  </p>
+]]>
+</flag>
+
+<flag name="Apf:llist"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Apf:llist=\d+\b">
+<example>-Apf:llist=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Do speculative prefetching for link-list data structures; perform prefetching <kbd>n</kbd> iterations ahead.  </p>
+]]>
+</flag>
+
+<flag name="Apf:noinnerllist"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Apf:noinnerllist\b">
+<example>-Apf:noinnerllist</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Do speculative prefetching for link-list data structures; do not attempt prefetching for innermost loops.  </p>
+]]>
+</flag>
+
+<flag name="Apf:pdl"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Apf:pdl=1\b">
+<example>-Apf:pdl=1</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Do prefetching for one-level indirect memory references.  </p>
+]]>
+</flag>
+
+<flag name="array_pad_rows_n"
+      class="optimization"
+      regexp="(-[qQ]option f90comp )-array_pad_rows,\d+\b" compilers="sun_f90">
+<example>-array_pad_rows,&lt;n&gt;</example>
+<![CDATA[
+<p> Enable padding of arrays by <kbd>n</kbd>.  </p>
+]]>
+</flag>
+
+<flag name="F-Ashort_ldst"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Ashort_ldst\b">
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Convert multiple short memory operations into single long memory operations.  </p>
+]]>
+</flag>
+
+<flag name="Atile:skewp"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Atile:skewp(?:b\d+)?\b">
+<example>-Atile:skewp[:b&lt;n&gt;]</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Perform loop tiling which is enabled by loop skewing.  Loop skewing is a transformation that transforms a non-fully
+interchangeable loop nest to a fully interchangeable loop nest.  The optional <kbd>b&lt;n&gt;</kbd> sets the tiling block
+size to <kbd>n</kbd>.  </p>
+]]>
+</flag>
+
+<flag name="Aujam:inner:g"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-Aujam:inner=g\b">
+<example>-Aujam:inner=g</example>
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Increase the probability that small-trip-count inner loops will be fully unrolled.  </p>
+]]>
+</flag>
+
+<flag name="F-crit"
+      class="optimization"
+      regexp="(-W2,|-[qQ]option iropt )-crit\b">
+<![CDATA[
+<p><small>[optimizer flag]</small></p> 
+<p> Enable optimization of critical control paths </p>
+]]>
+</flag>
+
+<!-- Here for the first time, we use "F-flagname" to allow both a default <example> and a defult regexp; see
+flag-description.html sections 3.3.1 and 3.7 -->
+<flag name="F-dalign"
+      class="optimization">
+Assume data is naturally aligned. 
+</flag>
+
+<flag name="Dalloca:__builtin_alloca"
+      class="optimization">
+<example>-Dalloca=__builtin_alloca</example>
+Used for 403.gcc:  allow use of compiler's internal builtin alloca.
+</flag>
+
+<flag name="F-depend"
+      class="optimization"
+      compilers="sun_f90">
+<include flag="F-xdepend" />
+Synonym for -xdepend.
+</flag>
+
+<flag name="D__MATHERR_ERRNO_DONTCARE"
+      class="optimization"
+      compilers="sun_cc,sun_CC">
+<![CDATA[
+<p> Allows the compiler to assume that your code does not rely on setting of the <tt>errno</tt> variable.  </p>
+]]>
+</flag>
+
+<flag name="fast_CC"
+      class="optimization"
+      regexp="-fast\b" compilers="sun_CC">
+<example>-fast</example>
+A convenience option, this switch selects several other options that are described in this file.  
+<include flag="F-dalign" />
+<include flag="F-fns" />
+<include flag="fsimple" flagtext="-fsimple=2" />
+<include flag="ftrap_none" />
+<include flag="xbuiltin_all" />
+<include flag="F-xlibmil" />
+<include flag="F-xlibmopt" />
+<include flag="xO" flagtext="-xO5" />
+<include flag="xtarget" flagtext="-xtarget=native" />
+</flag>
+
+<flag name="fast_cc"
+      class="optimization"
+      regexp="-fast\b" compilers="sun_cc">
+<example>-fast</example>
+A convenience option, this switch selects several other options that are described in this file.  
+<include flag="D__MATHERR_ERRNO_DONTCARE" />
+<include flag="F-dalign" />
+<include flag="F-fns" />
+<include flag="fsimple" flagtext="-fsimple=2" />
+<include flag="F-fsingle" />
+<include flag="ftrap_none" />
+<include flag="xalias_level_cc" flagtext="-xalias_level=basic" />
+<include flag="xbuiltin_all" />
+<include flag="F-xdepend" />
+<include flag="F-xlibmil" />
+<include flag="xO" flagtext="-xO5" />
+<include flag="xprefetch" />
+<include flag="xtarget" flagtext="-xtarget=native" />
+</flag>
+
+<flag name="fast_f90"
+      class="optimization"
+      regexp="-fast\b" compilers="sun_f90">
+<example>-fast</example>
+A convenience option, this switch selects the following switches that are described in this file:
+<include flag="F-dalign" />
+<include flag="F-depend" />
+<include flag="F-fns" />
+<include flag="fsimple" flagtext="-fsimple=2" />
+<include flag="F-fsingle" />
+<include flag="F-ftrap_common" />
+<include flag="F-xlibmil" />
+<include flag="F-xlibmopt" />
+<include flag="xO" flagtext="-xO5" />
+<include flag="F-xpad:local" />
+<include flag="xprefetch" />
+<include flag="xtarget" flagtext="-xtarget=native" />
+<include flag="xvector" flagtext="-xvector=yes" />
+</flag>
+
+<flag name="F-fns"
+      class="optimization">
+Selects faster (but nonstandard) handling of floating point arithmetic exceptions and gradual underflow.
+</flag>
+
+<flag name="fsimple"
+      class="optimization"
+      regexp="-fsimple=\d+\b">
+<example>-fsimple=&lt;n&gt;</example>
+<![CDATA[
+<p> Controls simplifying assumptions for floating point arithmetic: </p>
+   <ul>
+   <li><kbd>-fsimple=0</kbd> permits no simplifying assumptions.  Preserves strict IEEE 754 conformance.</li>
+   
+   <li><kbd>-fsimple=1</kbd> allows the optimizer to assume:
+   <ul>
+      <li>The IEEE 754 default rounding/trapping modes do not change after process initialization.</li>
+      <li>Computations producing no visible result other than potential floating-point exceptions may be deleted.</li>
+      <li>Computations with Infinity or NaNs as operands need not propagate NaNs to their results. For example, x*0 may be
+      replaced by 0.</li>
+      <li>Computations do not depend on sign of zero.</li>
+   </ul></li>
+   
+   <li><kbd>-fsimple=2</kbd> permits more aggressive floating point optimizations that may cause programs to produce
+   different numeric results due to changes in rounding. Even with <b><kbd>-fsimple=2</kbd></b>, the optimizer still is not
+   permitted to introduce a floating point exception in a program that otherwise produces none.</li>
+   </ul>
+]]>
+</flag>
+
+<flag name="F-fsingle"
+      class="optimization"
+      compilers="sun_cc">
+Evaluate float expressions as single precision.
+</flag>
+
+<flag name="F-ftrap_common"
+      class="optimization">
+Sets the IEEE 754 trapping mode to common exceptions (invalid, division by zero, and overflow).
+</flag>
+
+<flag name="ftrap_none"
+      class="optimization"
+      regexp="-ftrap=%none\b">
+<example>-ftrap=%none</example>
+Turns off all IEEE 754 trapping modes.
+</flag>
+
+<flag name="F-g"
+      class="optimization"
+      compilers="sun_cc,sun_f90">
+Includes symbols in the executable.  If the optimization level is -xO3 or lower, some optimizations may be
+disabled when -g is present.  At -xO4 or higher, full optimization is performed, even when -g is present.
+</flag>
+
+<flag name="F-g0"
+      class="optimization"
+      compilers="sun_CC">
+Includes symbols in the executable.  If the optimization level is -xO3 or lower, some optimizations may be
+disabled when -g0 is present.  At -xO4 or higher, full optimization is performed, even when -g0 is present.
+</flag>
+
+<flag name="F-lbsdmalloc"
+      class="optimization">
+Links in a library of general purpose memory allocation routines which can be faster than those found in libc, at the expense
+of more virtual memory consumed.
+</flag>
+
+<flag name="F-lcplxsupp" 
+      class="portability">
+This library is necessary to get full implementation of _Complex data types on Solaris 8 and Solaris 9.  It is not
+necessary (and should not be used) on Solaris 10.
+</flag>
+
+<flag name="F-lfast"
+      class="optimization">
+This library provides faster versions of some common functions, such as malloc/free and bcopy.
+</flag>
+
+<flag name="F-ll2amm"
+      class="optimization">
+Include a library containing chip-specific memory routines.  
+</flag>
+
+<flag name="F-lmopt"
+      class="optimization">
+Include the optimized math library.  This option usually generates faster code, but may produce slightly different
+results.  Usually these results will differ only in the last bit. 
+</flag>
+
+<flag name="F-lmvec"
+      class="optimization">
+Include a library with vectorized versions of some elementary mathematical functions.
+</flag>
+
+<flag name="F-lnsl" 
+      class="forbidden" >
+This library is necessary to get functions used for accessing name services.  As there are no network-enabled MPI2007
+benchmarks, this flag should not be used.
+</flag>
+
+<flag name="F-lstlport4" 
+      class="optimization"
+      regexp="-library=stlport4">
+Use STLport's Standard Library implementation instead of the default libCstd.
+</flag>
+
+<flag name="F-lsunmath" 
+      class="optimization">
+The libsunmath math library contains functions that are not specified by any standard but are useful in numerical software.
+It also contains many of the functions that are in libm.so.2 but not in libm.so.1.
+</flag>
+
+<flag name="F-lumem"
+      class="optimization">
+Links in a library of "object caching" memory allocation routines which can be faster than those found in libc.
+</flag>
+
+<flag name="f-m32"
+      class="optimization">
+Specifies the memory model for the compiled binary object as 32-bit.'
+</flag>
+
+<flag name="f-m64"
+      class="optimization">
+Specifies the memory model for the compiled binary object as 64-bit.'
+</flag>
+<flag name="F-noex"
+      class="optimization"
+      compilers="sun_CC">
+Do not allow C++ exceptions.  A throw specification on a function is accepted but ignored; the compiler does not generate
+exception code.  
+</flag>
+
+<flag name="F-O"
+      class="optimization">
+<include flag="xO" flagtext="-xO3" />
+A synomym for -xO3.
+</flag>
+
+<flag name="Qdepgraph-early_cross_call"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qdepgraph-early_cross_call=1\b">
+<example>-Qdepgraph-early_cross_call=1</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> There are several scheduling passes in the compiler.  This option allows early passes to move instructions across call
+instructions.  </p>
+]]>
+</flag>
+
+<flag name="Qeps:do_spec_load"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qeps:do_spec_load=1\b">
+<example>-Qeps:do_spec_load=1</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Allow the enhanced pipeline scheduler (EPS) to use speculative (non-faulting) loads.  </p>
+]]>
+</flag>
+
+<flag name="Qeps:enabled"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qeps:enabled=1\b">
+<example>-Qeps:enabled=1</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Use enhanced pipeline scheduling (EPS) and selective scheduling algorithms for instruction scheduling.  </p>
+]]>
+</flag>
+
+<flag name="Qeps:rp_filtering_margin"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qeps:rp_filtering_margin=\d+\b">
+<example>-Qeps:rp_filtering_margin=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> The number of live variables allowed at any given point is n more than the number of physical registers. Setting n to a
+significantly large number (e.g., 100) will disable register pressure heuristics in EPS.  </p>
+]]>
+</flag>
+
+<flag name="Qeps:ws"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qeps:ws=\d+\b">
+<example>-Qeps:ws=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Set the EPS window size, that is, the number of instructions it will consider across all paths when trying to find
+independent instructions to schedule a parallel group.  Larger values may result in better run time, at the cost of increased
+compile time.  </p>
+]]>
+</flag>
+
+<flag name="Qgsched-T"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qgsched-T[456]\b">
+<example>-Qgsched-T&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Sets the aggressiveness of the trace formation, where <kbd>n</kbd> is 4, 5, or 6.  The higher the value of <kbd>n</kbd>,
+the lower the branch probability needed to include a basic block in a trace.  </p>
+]]>
+</flag>
+
+<flag name="Qicache-chbab"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qicache-chbab=1\b">
+<example>-Qicache-chbab=1</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Turn on optimization to reduce branch after branch penalty: nops will be inserted to prevent one branch from occupying
+the delay slot of another branch.  </p>
+]]>
+</flag>
+
+<flag name="Qipa:valueprediction"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qipa:valueprediction\b">
+<example>-Qipa:valueprediction</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Use profile feedback data to predict values and attempt to generate faster code along these control paths, even at the
+expense of possibly slower code along paths leading to different values. Correct code is generated for all paths.  </p>
+]]>
+</flag>
+
+<flag name="Qiselect-funcalign"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qiselect-funcalign=\d+\b">
+<example>-Qiselect-funcalign=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Do function entry alignment at <kbd>n</kbd>-byte boundaries.  </p>
+]]>
+</flag>
+
+<flag name="Qiselect-sw_pf_tbl_th"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qiselect-sw_pf_tbl_th=\d+\b">
+<example>-Qiselect-sw_pf_tbl_th=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Peels the most frequent test branches/cases off a switch until the branch probability reaches less than 1/n. This is
+effective only when profile feedback is used </p>
+]]>
+</flag>
+
+<flag name="Qlp"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp=\d+(?=\s|$)">
+<example>-Qlp=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; turns the module on (1) or off (0) (default is on for F90; off for C/C++) </p>
+]]>
+</flag>
+
+<flag name="Qlp-av"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-av=\d+(?=\s|$)">
+<example>-Qlp-av=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; sets the prefetch look ahead distance, in bytes.  The default is 256.  </p>
+]]>
+</flag>
+
+<flag name="Qlp-fa"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-fa=\d+(?=\s|$)">
+<example>-Qlp-fa=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; a setting of "1" means force user settings to override internally computed values.</p>
+]]>
+</flag>
+
+<flag name="Qlp-fl"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-fl=\d+(?=\s|$)">
+<example>-Qlp-fl=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; a setting of "1" means force the optimization to be turned on for all languages.</p>
+]]>
+</flag>
+
+<flag name="Qlp-ol"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-ol=1(?=\s|$)">
+<example>-Qlp-pt=weak</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Turns on prefetching for outer loops</p>
+]]>
+</flag>
+
+<flag name="Qlp-pt_weak"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-pt=weak(?=\s|$)">
+<example>-Qlp-pt=weak</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; use weak prefetches in the general loop prefetch.  </p>
+]]>
+</flag>
+
+<flag name="Qlp-t"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qlp-t=\d+(?=\s|$)">
+<example>-Qlp-t=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; sets the number of attempts at prefetching.  If not specified, <kbd>t=2</kbd> if
+<kbd>-xprefetch_level=3</kbd> has been set; otherwise, defaults to <kbd>t=1</kbd>.  </p>
+]]>
+</flag>
+
+<!-- In this flag, the '+' in the regexp is escaped with a backslash, because '+' is a special character.  Without that
+backslash, this rule would match "-Qms_pipealldoall" or "-Qms_pipeeeeeeeeeeeeeealldoall", but NOT "-Qms_pipe+alldoall".  
+-->
+
+<flag name="Qms_pipe_alldoall"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe\+alldoall\b">
+<example>-Qms_pipe+alldoall</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Specifies that all loops can be pipelined without needing to be concerned about loop-carried dependencies.  </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe_intdivusefp"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe\+intdivusefp\b">
+<example>-Qms_pipe+intdivusefp</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> In pipelined loops, use floating point divide instructions for signed integer division.  </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe_prefolim"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe\+prefolim=\d+\b">
+<example>-Qms_pipe+prefolim=&lt;n&gt;</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Set number of outstanding prefetches in pipelined loops to &lt;n&gt; </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe-pref_prolog" 
+      class="optimization" 
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe-pref_prolog\b">
+<example>-Qms_pipe-pref_prolog</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Turn off prefetching in the prolog of modulo scheduled loops.  </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe-prefst" 
+      class="optimization" 
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe-prefst\b">
+<example>-Qms_pipe-prefst</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Turn off prefetching for stores in the pipeliner.  </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe-prefstrong_0" 
+      class="optimization" 
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe-prefstrong=0\b">
+<example>-Qms_pipe-prefstrong=0</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Turn off the use of strong prefetches in modulo scheduled loops.  </p>
+]]>
+</flag>
+
+<flag name="Qms_pipe_unoovf"
+      class="optimization"
+      regexp="(-Wc,|-[qQ]option cg )-Qms_pipe\+unoovf\b">
+<example>-Qms_pipe+unoovf</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Assert (to the pipeliner) that unsigned int computations will not overflow.  </p>
+]]>
+</flag>
+
+<flag name="Qpeep-Sh0" 
+      class="optimization" 
+      regexp="(-Wc,|-[qQ]option cg )-Qpeep-Sh0\b">
+<example>-Qpeep-Sh0</example>
+<![CDATA[
+<p><small>[code generator flag]</small></p>
+<p> Reduce the probability that the compiler will hoist sethi insructions out of loops.  </p>
+]]>
+</flag>
+
+<flag name="F-stackvar" 
+      class="optimization" 
+      compilers="sun_f90">
+Allocate routine local variables on the stack.
+</flag>
+
+<flag name="verbose_cc" 
+      class="other" 
+      regexp="-#(?=\s|$)" compilers="sun_cc">
+<example>-#</example>
+Turns on verbose mode, showing how command options expand. Shows each component as it is invoked.  
+</flag>
+
+<flag name="verbose_CC" 
+      class="other" 
+      regexp="-verbose=\S+\b">
+<example>-verbose=diags,version</example>
+<![CDATA[
+<p>Controls compiler verbosity.  There are several values that can be used with this flag:</p>
+<dl>
+<dt>[no%]diags</dt>
+<dd>[Do not] Print the command line for each compilation pass</dd> <dt>[no%]template</dt>
+<dd>[Do not] Turn on the template instantiation <tt>verbose</tt> mode (sometimes called the "verify" mode). The 
+<tt>verbose</tt> mode displays each phase of instantiation as it occurs during compilation.</dd>
+<dt>[no%]version</dt>
+<dd>[Do not] Direct the CC driver to print the names and version numbers of the programs it invokes.</dd>
+<dt>%all</dt>
+<dd>Invokes all of the above.</dd>
+<dt>%none</dt>
+<dd><tt>-verbose=%none</tt> is the same as <tt>-verbose=no%template,no%diags,no%version</tt>.</dd>
+</dl>
+<p>The default is <tt>-verbose=%none</tt>.</p>
+]]>
+</flag>
+
+<flag name="verbose_diags_CC" 
+      class="other" 
+      regexp="-v\b" compilers="sun_CC">
+<example>-v</example>
+<![CDATA[
+<p>Same as <tt>-verbose=diags</tt>.</p>
+]]>
+<include flag="verbose_CC" flagtext="-verbose=diags" /> 
+</flag>
+
+<flag name="verbose_f90" 
+      class="other" 
+      regexp="-v\b" compilers="sun_f90">
+<example>-v</example>
+This flag will cause the Fortran compiler to emit verbose messages.  
+</flag>
+
+<flag name="version_ccf90" 
+      class="other" 
+      regexp="-V\b" compilers="sun_cc,sun_f90">
+<example>-V</example>
+Directs the compiler to print the name and version ID of each component as the compiler executes.  
+</flag>
+
+<flag name="version_CC" 
+      class="other" 
+      regexp="-V\b" compilers="sun_CC">
+<example>-V</example>
+<![CDATA[
+<p>Same as <tt>-verbose=version</tt>.</p>
+]]>
+<include flag="verbose_CC" flagtext="-verbose=version" /> 
+</flag>
+
+<flag name="X"
+      class="optimization" 
+      regexp="-X(a|c)"
+      compilers="sun_cc">
+<example>-X[a|c]</example>
+<![CDATA[
+<p>Specifies the degree of conformance with the ISO C standard: -Xc indicates strict conformance, whereas -Xa indicates ISO C
+plus some K&amp;R compatibility extensions.</p>
+]]>
+</flag>
+
+
+<flag name="xalias_level_cc" 
+      class="optimization" 
+      regexp="-xalias_level=(?:basic|std|strong)\b"
+      compilers="sun_cc">
+<example>-xalias_level=[basic|std|strong]</example>
+<![CDATA[
+<p> Allows the compiler to perform type-based alias analysis at the specified alias level: </p>
+<ul>
+   <li><b><kbd>basic</kbd></b> assume that memory references that involve different C basic types do not alias each
+   other.</li>
+   <li><b><kbd>std</kbd></b> assume aliasing rules described in the ISO 1999 C standard.</li>
+   <li><b><kbd>strong</kbd></b> in addition to the restrictions at the <kbd>std</kbd> level, assume that pointers of type
+   <kbd>char *</kbd> are used only to access an object of type char; and assume that there are no interior pointers.</li>
+</ul>
+]]>
+</flag>
+
+<flag name="xalias_level_CC" 
+      class="optimization" 
+      regexp="-xalias_level=(?:any|simple|compatible)?\b" 
+      compilers="sun_CC">
+<example>-xalias_level[=any|simple|compatible]</example>
+<![CDATA[
+<p>Allows the compiler to perform type-based alias analysis:</p>
+<ul>
+  <li><b><kbd>any</kbd></b> assumes that any type can alias any other</li>
+  <li><b><kbd>simple</kbd></b> assumes that fundamental types are not aliased</li>
+  <li><b><kbd>compatible</kbd></b> assumes that layout-incompatible types are not aliased.</li>
+</ul>
+]]>
+</flag>
+
+<flag name="xarch" 
+      class="optimization" 
+      regexp="-xarch=(?:v8plusb|generic|native|native64)\b">
+<example>-xarch=[v8plusb|generic|native|native64]</example>
+<![CDATA[
+<p> Specifies which instructions can be used.  Among the choices are:</p>
+<ul>
+   <li><kbd><b>native64</b></kbd> Use the instructions available on the current processor in 64-bit mode</li>
+   <li><kbd><b>v8plusb</b></kbd> Use instructions that are available on the UltraSPARC-III/IV processors</li>
+   <li><kbd><b>native</b></kbd> Use the instructions available on the current processor</li>
+   <li><kbd><b>generic</b></kbd> Use instructions that are compatible with most SPARC processors</li>
+</ul>
+]]>
+</flag>
+
+<flag name="F-xautopar" 
+      class="optimization" 
+      parallel="yes"
+      compilers="sun_cc,sun_f90">
+Turn on automatic parallelization for multiple processors.
+</flag>
+
+<flag name="xbuiltin_all" 
+      class="optimization" 
+      regexp="-xbuiltin=%all\b" 
+      compilers="sun_cc,sun_CC">
+<example>-xbuiltin=%all</example>
+Substitute intrinsic functions or inline system functions where profitable for performance.
+</flag>
+
+<flag name="xcache" 
+      class="optimization" 
+      regexp="-xcache=(generic|native|native64|\d+/\d+/\d+(\:\d+/\d+/\d+){0,2})\b"> 
+<example>-xcache=(generic|native|native64|c) where "c" is a cache specifier of the form size:line:associativity</example>
+<![CDATA[
+<p>xcache defines the cache properties for use by the optimizer.  It can specify
+use of default assumptions ("generic"); use of whatever the compiler can assume
+about the current platform ("native"); or an explicit description of up to three 
+levels of cache, using colon-separated specifiers of the form <tt>si/li/ai</tt>, 
+where:</p>
+<ul>
+<li><tt>si</tt> is the size of the cache, in kb</li>
+<li><tt>li</tt> is the line size, in bytes</li>
+<li><tt>ai</tt> is the associativity</li>
+</ul>
+]]>
+</flag>
+
+<flag name="xchip" 
+      class="optimization" 
+      regexp="-xchip=(?:ultra3|generic|native|native64)\b">
+<example>-xchip=[ultra3|generic|native|native64]</example>
+<![CDATA[
+<p> xchip determines timing properties that are assumed by the compiler.  It does not limit which instructions are allowed
+(see xtarget for that).  Among the choices are:</p>
+<ul>
+   <li><kbd><b>native64</b></kbd> Optimize for the current processor in 64-bit mode</li>
+   <li><kbd><b>ultra3</b></kbd> Optimize for the UltraSPARC-III processor</li>
+   <li><kbd><b>native</b></kbd> Optimize for the current processor</li>
+   <li><kbd><b>generic</b></kbd> Use timing properties for good performance on most SPARC processors</li>
+</ul>
+]]>
+</flag>
+
+<flag name="F-xdepend" 
+      class="optimization" >
+Analyze loops for inter-iteration data dependencies, and do loop restructuring. 
+</flag>
+
+<flag name="xinline_" 
+      class="optimization" 
+      regexp="-xinline=(?=\s|$)">
+<example>-xinline=</example>
+Turn off inlining.
+</flag>
+
+<flag name="xipo" 
+      class="optimization" 
+      regexp="-xipo(?:=\d+)\b">
+<example>-xipo or -xipo=(0|1|2)</example>
+<![CDATA[
+<p> Perform optimizations across all object files in the link step: </p>
+<ul>
+<li><kbd>0</kbd> = off</li>
+<li><kbd>1</kbd> = on</li>
+<li><kbd>2</kbd> = performs whole-program detection and analysis.</li>
+</ul>
+<p>At -xipo=2, the compiler performs inter-procedural aliasing analysis as well as optimization of memory allocation and
+layout to improve cache performance.  </p>
+]]>
+</flag>
+
+<flag name="xjobs"
+      class="other"
+      regexp="-xjobs=\d+\b">
+<example>-xjobs=&lt;n&gt;</example>
+<![CDATA[
+<p>Specify the <tt>-xjobs</tt> option to set how many processes the compiler creates to complete its work. Currently,
+<tt>-xjobs</tt> works only with the <tt>-xipo</tt> option. When you specify <tt>-xjobs=</tt><i>n</i>, the interprocedural
+optimizer uses <i>n</i> as the maximum number of code generator instances it can invoke to compile different files.
+</p>
+]]>
+</flag>
+
+<flag name="F-xlibmil" 
+      class="optimization" >
+Use inline expansion for math library, libm.
+</flag>
+
+<flag name="F-xlibmopt" 
+      class="optimization" 
+      compilers="sun_CC,sun_f90">
+Select the optimized math library.
+</flag>
+
+<flag name="F-xlic_lib:sunperf" 
+      class="optimization">
+Link with Sun supplied licensed sunperf library.
+</flag>
+
+<flag name="F-xlinkopt" 
+      class="optimization" >
+Perform link-time optimizations, such as branch optimization and cache coloring.
+</flag>
+
+<flag name="F-xmemalign:4s" 
+      class="optimization">
+Set maximum assumed data alignment to be at a 4 byte boundary and raise signal SIGBUS in the case of misaligned data
+accesses.
+</flag>
+
+<flag name="xO" 
+      class="optimization" 
+      regexp="-xO\d+\b">
+<example>-xO&lt;n&gt;</example>
+<![CDATA[
+<p> Specify optimization level <kbd>n</kbd>: </p>
+<ul>
+  <li><kbd>-xO1</kbd> does only basic local optimizations (peephole.)</li>
+  <li><kbd>-xO2</kbd> Do basic local and global optimizations, such as induction variable elimination, common subexpression
+  elimination, constant propogation, register allocation, and basic block merging.</li>
+  <li><kbd>-xO3</kbd> Add global optimizations at the function level, loop unrolling, and software pipelining.</li>
+  <li><kbd>-xO4</kbd> Adds automatic inlining of functions in the same file.</li>
+  <li><kbd>-xO5</kbd> Uses optmization algorithms that may take significantly more compilation time or that do not have as
+  high a probability of improving execution time, such as speculative code motion.</li>
+</ul>
+]]>
+</flag>
+
+<flag name="xpad_common" 
+      class="optimization" 
+      regexp="-xpad=common(?::\d+)?\b" 
+      compilers="sun_f90">
+<example>-xpad=common[:&lt;n&gt;]</example>
+<![CDATA[
+<p> If multiple arrays are placed in common, insert padding between them for better use of cache.  <tt>n</tt> specifies the
+amount of padding to apply, in units that are the same size as the array elements.  If no parameter is specified then the
+compiler selects one automatically.  </p>
+]]>
+</flag>
+
+<flag name="F-xpad:local" 
+      class="optimization" 
+      compilers="sun_f90">
+Pad local variables, for better use of cache.
+</flag>
+
+<flag name="xpagesize" 
+      class="optimization" 
+      regexp="-xpagesize=\S+\b">
+<example>-xpagesize=&lt;n&gt;</example>
+Set the preferred page size for running the program.
+</flag>
+
+<flag name="xpagesize_stack" 
+      class="optimization" 
+      regexp="-xpagesize_stack=\S+\b" >
+<example>-xpagesize_stack=&lt;n&gt;</example>
+Set the preferred stack page size for running the program.
+</flag>
+
+<flag name="xprefetch" 
+      class="optimization" 
+      regexp="-xprefetch=auto,explicit\b">
+<example>-xprefetch=auto,explicit</example>
+<![CDATA[
+<p> Allow generation of prefetch instructions.  <kbd>-xprefetch=yes</kbd> and <kbd>-xprefetch</kbd> are synonyms for
+<kbd>-xprefetch=auto,explicit</kbd>.  </p>
+]]>
+</flag>
+
+<flag name="F-xprefetch_auto_type:indirect_array_access"
+            class="optimization">
+Generate indirect prefetches for data arrays accessed indirectly.
+</flag>
+
+<flag name="xprefetch_latx" 
+      class="optimization" 
+      regexp="-xprefetch=latx:\S+\b">
+<example>-xprefetch=latx:&lt;n&gt;</example>
+Adjust the compiler's assumptions about prefetch latency by the specified factor.  Typically values in the range of 0.5
+to 2.0 will be useful.  A lower number might indicate that data will usually be cache resident; a higher number might
+indicate a relatively larger gap between the processor speed and the memory speed (compared to the assumptions built into the
+compiler).
+</flag>
+
+<flag name="xprefetch-no_auto" 
+      class="optimization" 
+      regexp="-xprefetch=no%auto\b">
+<example>-xprefetch=no%auto</example>
+Turn off prefetch instruction generation.
+</flag>
+
+<flag name="xprefetch_level" 
+      class="optimization" 
+      regexp="-xprefetch_level=[123]\b">
+<example>-xprefetch_level=&lt;n&gt;</example>
+<![CDATA[
+<p> Control the level of searching that the compiler does for prefetch opportunities by setting <kbd>n</kbd> to 1, 2, or 3,
+where higher numbers mean to do more searching.  The default for Fortran is 2. The default for C and C++ is 1.  </p>
+]]>
+</flag>
+
+<flag name="xprofile_collect" 
+      class="optimization" 
+      regexp="-xprofile=collect(:\S+)?\b">
+<example>-xprofile=collect[:directory]</example>
+Collect profile data for feedback-directed optimization.  If an option  directory is named, the feedback will be stored there.
+</flag>
+
+<flag name="xprofile_use" 
+      class="optimization" 
+      regexp="-xprofile=use(:\S+)?\b">
+<example>-xprofile=use[:directory]</example>
+Use data collected for profile feedback.  If an option directory is named, look for the feedback data there.
+</flag>
+
+<flag name="F-xreduction" 
+      class="optimization" 
+      compilers="sun_cc,sun_f90">
+Analyze loops for reductions such as dot products, maximum and minimum finding.
+</flag>
+
+<flag name="F-xrestrict" 
+      class="optimization">
+Treat pointer-valued function parameters as restricted pointers. 
+</flag>
+
+<flag name="F-xsafe:mem" 
+      class="optimization" >
+<![CDATA[
+<p> Enables the use of non-faulting loads when used in conjunction with <b><kbd>-xarch=v8plus</kbd></b>. Assumes that no
+memory based traps will occur.  </p>
+]]>
+</flag>
+
+<flag name="xtarget" 
+      class="optimization" 
+      regexp="-xtarget=(\S+)\b">
+<include flag="xarch" flagtext="-xarch=$1" />
+<include flag="xcache" flagtext="-xcache=$1" />
+<include flag="xchip" flagtext="-xchip=$1" />
+<example>-xtarget=native</example>
+<ex_replacement>native</ex_replacement>
+Selects options appropriate for the system where the compile is taking place, including architecture, chip, and cache
+sizes.  (These can also be controlled separately, via -xarch, -xchip, and -xcache, respectively.) 
+</flag>
+
+<flag name="xunroll" 
+      class="optimization" 
+      regexp="-xunroll=\d+\b">
+<example>-xunroll=&lt;n&gt;</example>
+Enable unrolling loops n times where possible.
+</flag>
+
+<flag name="xvector" 
+      class="optimization" 
+      regexp="-xvector(?i:=yes)?\b">
+<example>-xvector, -xvector=yes</example>
+<![CDATA[
+<p> Allow the compiler to transform math library calls within loops into calls to the vector math library.   Specifying
+<kbd>-xvector</kbd> is equivalent to <kbd>-xvector=yes</kbd>.
+</p>
+]]>
+</flag>
+
+</flagsdescription>

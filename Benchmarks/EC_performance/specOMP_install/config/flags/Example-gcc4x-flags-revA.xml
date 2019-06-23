@@ -1,0 +1,1362 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<!-- The lines above are NOT optional.  If you're adept at reading DTDs,
+     the one that this file conforms to is at the URL listed above.  
+     
+     But most humans writing a flags file will want to have it automatically 
+     checked using a validating parser such as RXP (available at
+     http://www.ltg.ed.ac.uk/~richard/rxp.html), or use one of the on-line
+     parsers:
+       http://www.stg.brown.edu/service/xmlvalid/
+       http://www.cogsci.ed.ac.uk/~richard/xml-check.html
+     
+     The parser used by the CPU tools is _not_ a validating parser, so it
+     may be possible to sneak things by it that would not pass the checkers
+     above.  However, if the checkers above say that your file is clean, it's
+     clean.
+
+     Flag files submitted to SPEC _will_ be checked by a validating parser.
+     Invalid or not-well-formed flag files will be rejected.
+-->
+
+<!-- **********************************************************************
+     **********************************************************************
+     Unless otherwise explicitly noted, all references to "section n.nn"
+     refer to flag_description.html, available at
+
+     http://www.spec.org/cpu2006/docs/flag_description.html
+     **********************************************************************
+     ********************************************************************** -->
+
+<!--
+     $Id: Example-gcc4x-flags-revA.xml 6738 2011-08-10 21:52:54Z CloyceS $
+-->
+
+<!-- This starts the fun. -->
+<flagsdescription>
+
+<!-- =====================================================================
+  All flag descriptions MUST have a filename.  It'll be used as the base
+  name when saving the flags file on the server, and when extracting it
+  from raw files.
+     ===================================================================-->
+<filename>Example-gcc4x-flags-revA</filename>
+
+<!-- =====================================================================
+  All flag descriptions MUST have a title.  It'll be used as the page
+  title for the full dump, and also as the page heading for both the
+  flag dump and the per-result flag report.
+
+  See section 2.3 for the longer version of this summary.
+     ===================================================================-->
+<title>GCC SPEC CPU2006 Flags</title>
+
+
+<!-- =====================================================================
+  The <style> section is entirely optional.  If the default styling is not
+  to your taste, or if you need to add styles for elements in your flag
+  descriptions, you may put it here.
+  This result doesn't need it; it's just here as an illustration.
+
+  This example puts the stylesheet within a CDATA section.  This is a good
+  idea in general.  See section 2.3.1 for slightly more detail.
+
+  CSS is pretty powerful; please don't try to do sneaky things.  The text
+  of your XML will still be available for review.
+     ===================================================================-->
+<style>
+<![CDATA[
+body { background: white; }
+]]>
+</style>
+
+<!-- =====================================================================
+  The <header> section is also entirely optional.  If it is provided, and
+  no class is specified, then it will be inserted verbatim at the top
+  of the flags dump.
+
+  If a class is specified, that text will be inserted verbatim before flags
+  of that class.  
+  
+  As the contents should be HTML, it will save lots of time to just enclose
+  the whole thing in a CDATA section.  Section 2.3.1 again.
+     ===================================================================-->
+<header>
+<![CDATA[
+<p>Compilers: gcc 4.1.2 (AMD64)</p>
+<p>Compilers: gcc 4.3 (AMD64)</p>
+<p>Compilers: gcc 4.4 (AMD64)</p>
+<p>Compilers: gcc 4.6 (AMD64)</p>
+
+<p>This file contains information about the GNU gcc compiler, reformatted for
+SPEC result reporting, excerpted and/or summarized from the GNU documentation
+and from Apple's Mac OS X man pages.</p>
+
+<p>The Copyright notice from the Mac OS X page for 'man gcc' lists:<br />
+Copyright (c) 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.</p>
+
+<p>SPEC's modifications are:<br />
+Copyright (C) 2006-2011 Standard Performance Evaluation Corporation</p>
+
+<p>Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.2 or any later
+version published by the Free Software Foundation; with the Invariant Sections
+being "GNU General Public License" "Funding Free Software", the Front-Cover
+texts being (a) (see below), and with the Back-Cover Texts being (b) (see
+below).  A copy of the license is included on your SPEC media as
+<tt>redistributable_sources/licences/fdl-1.2.txt</tt> 
+<br />and the "Funding Free Software" section is on your SPEC media as
+<br /><tt>redistributable_sources/licences/fsf-funding.txt</tt></p>
+
+<p>(a) The FSF's Front-Cover Text is:</p>
+
+     <p style="margin-left:3em;">A GNU Manual</p>
+
+<p>(b) The FSF's Back-Cover Text is:</p>
+
+<p style="margin-left:3em;">You have freedom to copy and modify this GNU Manual,
+like GNU software.  Copies published by the Free Software Foundation raise funds
+for GNU development.</p>
+]]>
+</header>
+
+<!-- ======================================================================
+     ======================================================================
+     Finally!  Descriptions of flags start here, and don't end until the
+     end of the file.
+
+     In the flag dump, these flags will appear in the same order that they
+     appear in this file.
+
+     When doing flag matching, these flags will be tried in the same order
+     that they appear in this file.(*)
+
+     You might want to keep that in mind when figuring out how to order
+     the individual descriptions.  There ARE some cases where order is
+     important, but since this is supposed to be a simple example, there
+     won't be any here.
+     ======================================================================
+     (*) Except for the "compiler" class; see below
+     ====================================================================== -->
+
+<!-- =====================================================================
+  First, we'll describe our compiler.  There's no requirement that this
+  flag be first; it just seems logical to me.
+
+  When the flags are all being matched, the compiler list _is_ promoted to
+  the front, so they are always matched first.  This is only important 
+  for flags that only match a specific compiler.  There are none of those
+  in this file.
+     ===================================================================-->
+<!-- The <flag> element is where all the action is.  It takes several
+     attributes.  Sorry that all the comments are up top; it's not allowed
+     to intersperse them in the <flag...> tag. -->
+      <!-- Each flag must have a unique name.  See section 3.1. -->
+      <!-- Each flag must have a class.  The class list is in section 3.2. -->
+      <!-- Each flag does have a regular expression that can be used to pick
+           it out of a string.  Usually the default regexp (section 3.3.1)
+           will be sufficient; in some cases, you'll have to roll your own.
+           This is one of those cases ONLY because the compiler may be
+           specified with its full path.  With the default regexp, the compiler
+           path would be left as an "unknown" flag. 
+           
+           The regexp below says that we can optionally match a string that 
+           starts and ends with "/" and which contains non-blank characters.  
+           (<opinion>Anyone who puts a blank into a directory name should not 
+           be allowed to operate a compiler.  (<spite>There.  I (jh) have said
+           it and I'm proud.</spite>)</opinion>) -->
+<flag
+      name="gcc"
+      class="compiler"
+      regexp="(?:/\S+/)?gcc\b">
+
+<!-- Each flag MAY have some example text (section 3.7).  Usually the "name"
+  of the flag appearing next to its description will be the actual text from
+  the command line that was matched.  When doing a flag dump, there's no
+  matching, so the example text is used instead.  If this is omitted, the
+  flag's name will be used (subject to certain transformations, described in 
+  section 3.7). -->
+<example>gcc</example>
+<!-- The main event!  What follows is the descriptive text for the flag.
+     If this section contains HTML, it must be enclosed
+     in a CDATA section.  See section 2.3.1, if you haven't already. -->
+<![CDATA[
+<p>
+Invoke a Linux distribution's modified version of the GCC C compiler, or one direct from FSF.
+</p>
+]]>
+<!-- Without the closing tag, the flag description is neither valid nor
+     well-formed. -->
+</flag>
+
+<!-- Now the same thing again, but for the C++ compiler.   -->
+<!-- The regexp is a little different; '+' is a "magic" character for
+     regular expressions, so it must be escaped with a backslash. 
+     Also, '+' is not a word character, so '\b' is useless.  See section
+     3.3.4 for an explanation of the thing at the end. -->
+<!-- Hey!  After all these times where we've been saying "use CDATA",
+     why isn't there any this time?  Well, actually, the rule is that
+     you have to use CDATA if you're using any HTML.  But all we want 
+     to say today is a simple sentence, with no emphasis, no HTML, no
+     italics, no flashing, just a simple plain declarative uncurliqued 
+     straightforward unembelished sentence.  Fine.  We can skip the 
+     CDATA stuff.  See the bottom part of section 2.3.1 -->
+<flag name="CC"
+      class="compiler"
+      regexp="(?:/\S+/)?g\+\+(?=\s|$)">
+<example>g++</example>
+Invoke a Linux distribution's modified version of the GCC C++ compiler, or one direct from FSF.
+</flag>
+
+<flag name="FC"
+      class="compiler"
+      regexp="(?:/\S+/)?gfortran\b">
+<example>gfortran</example>
+Invoke a Linux distribution's modified version of the GCC fortran compiler, or one direct from FSF.
+</flag>
+
+<!-- The first non-compiler flag!  For a simple flag like this, the default
+     regexp will do, so it's not specified. -->
+
+<flag name="F-O0"
+      class="optimization">
+<example>-O0</example>
+<![CDATA[
+<p>Do not optimize. This is the default.</p>
+]]>
+</flag>
+
+<!--
+<flag name="F-O -O1" class="optimization">
+	-->
+<flag name="F-O1" class="optimization">
+<example>-O</example>
+<example>-O1</example>
+<![CDATA[
+<p>Optimize. Optimizing compilation takes somewhat more time, and a lot more
+memory for a large function.</p>
+
+<p>With -O, the compiler tries to reduce code size and execution time, without
+performing any optimizations that take a great deal of compilation time.</p>
+
+<p>-O turns on the following optimization flags:</p>
+<ul>
+<li>-fdefer-pop</li>
+<li>-fdelayed-branch</li>
+<li>-fguess-branch-probability</li>
+<li>-fcprop-registers</li>
+<li>-floop-optimize</li>
+<li>-fif-conversion</li>
+<li>-fif-conversion2</li>
+<li>-ftree-ccp</li>
+<li>-ftree-dce</li>
+<li>-ftree-dominator-opts</li>
+<li>-ftree-dse</li>
+<li>-ftree-ter</li>
+<li>-ftree-lrs</li>
+<li>-ftree-sra</li>
+<li>-ftree-copyrename</li>
+<li>-ftree-fre</li>
+<li>-ftree-ch</li>
+<li>-fmerge-constants</li>
+</ul>
+
+<p>-O also turns on -fomit-frame-pointer on machines where doing so does not 
+interfere with debugging.</p>
+]]>
+<include flag="F-fdefer-pop" />
+<include flag="F-fdelayed-branch" />
+<include flag="F-fguess-branch-probability" />
+<include flag="F-fcprop-registers" />
+<include flag="F-floop-optimize" />
+<include flag="F-fif-conversion" />
+<include flag="F-fif-conversion2" />
+<include flag="F-ftree-ccp" />
+<include flag="F-ftree-dce" />
+<include flag="F-ftree-dominator-opts" />
+<include flag="F-ftree-dse" />
+<include flag="F-ftree-ter" />
+<include flag="F-ftree-lrs" />
+<include flag="F-ftree-sra" />
+<include flag="F-ftree-copyrename" />
+<include flag="F-ftree-fre" />
+<include flag="F-ftree-ch" />
+<include flag="F-fmerge-constants" />
+<!-- <include flag="F-O" /> -->
+</flag>
+
+
+
+
+<flag name="F-O2"
+      class="optimization">
+<example>-O2</example>
+<![CDATA[
+<p>Optimize even more. GCC performs nearly all supported optimizations that do 
+not involve a space-speed tradeoff. The compiler does not perform loop 
+unrolling or function inlining when you specify -O2. As compared to -O, this 
+option increases both compilation time and the performance of the generated 
+code.</p>
+
+<p>-O2 turns on all optimization flags specified by -O. It also turns on the 
+following optimization flags:</p>
+<ul>
+<li>-fthread-jumps</li>
+<li>-fcrossjumping</li>
+<li>-foptimize-sibling-calls</li>
+<li>-fcse-follow-jumps</li>
+<li>-fcse-skip-blocks</li>
+<li>-fgcse</li>
+<li>-fgcse-lm</li>
+<li>-fexpensive-optimizations</li>
+<li>-fstrength-reduce</li>
+<li>-frerun-cse-after-loop</li>
+<li>-frerun-loop-opt</li>
+<li>-fcaller-saves</li>
+<li>-fpeephole2</li>
+<li>-fschedule-insns</li>
+<li>-fschedule-insns2</li>
+<li>-fsched-interblock</li>
+<li>-fsched-spec</li>
+<li>-fregmove</li>
+<li>-fstrict-aliasing</li>
+<li>-fdelete-null-pointer-checks</li>
+<li>-freorder-blocks</li>
+<li>-freorder-functions</li>
+<li>-funit-at-a-time</li>
+<li>-falign-functions</li>
+<li>-falign-jumps</li>
+<li>-falign-loops</li>
+<li>-falign-labels</li>
+<li>-ftree-vrp</li>
+<li>-ftree-pre</li>
+</ul>
+]]>
+<include flag="F-fthread-jumps" />
+<include flag="F-fcrossjumping" />
+<include flag="F-foptimize-sibling-calls" />
+<include flag="F-fcse-follow-jumps" />
+<include flag="F-fcse-skip-blocks" />
+<include flag="F-fgcse" />
+<include flag="F-fgcse-lm" />
+<include flag="F-fexpensive-optimizations" />
+<include flag="F-fstrength-reduce" />
+<include flag="F-frerun-cse-after-loop" />
+<include flag="F-frerun-loop-opt" />
+<include flag="F-fcaller-saves" />
+<include flag="F-fpeephole2" />
+<include flag="F-fschedule-insns" />
+<include flag="F-fschedule-insns2" />
+<include flag="F-fsched-interblock" />
+<include flag="F-fsched-spec" />
+<include flag="F-fregmove" />
+<include flag="F-fstrict-aliasing" />
+<include flag="F-fdelete-null-pointer-checks" />
+<include flag="F-freorder-blocks" />
+<include flag="F-freorder-functions" />
+<include flag="F-funit-at-a-time" />
+<include flag="F-falign-functions" />
+<include flag="F-falign-jumps" />
+<include flag="F-falign-loops" />
+<include flag="F-falign-labels" />
+<include flag="F-ftree-vrp" />
+<include flag="F-O1" />
+</flag>
+
+<flag name="F-O3"
+      class="optimization">
+<example>-O3</example>
+<![CDATA[
+<p>Optimize yet more. -O3 turns on all optimizations specified by -O2 and also turns on the -finline-functions, -funswitch-loops and -fgcse-after-reload options.</p>
+]]>
+<include flag="F-finline-functions" />
+<include flag="F-funswitch-loops" />
+<include flag="F-fgcse-after-reload" />
+<include flag="F-O2" />
+</flag>
+
+<!-- Here's a flag that matches '-mcpu=' followed by some arbitrary non-empty
+     non-whitespace characters.  I _could_ have listed all the possibilities,
+     but I didn't.  The upside would be that config file typos in this flag
+     would be caught (because it wouldn't match the fat fingered version).
+     The downside is that it would make the regexp LONG and thus more
+     difficult to maintain.
+-->
+<flag name="F-mcpu"
+      class="optimization"
+      regexp="-mcpu=(\S+)\b">
+<example>-mcpu=k8, -mcpu=opteron</example>
+<![CDATA[
+<p>Tune to cpu-type everything applicable about the generated code, except for the ABI and the set of available instructions.</p>
+
+<p>Supported values for this flag are</p>
+<ul>
+  <li>i386		</li>
+  <li>i486		</li>
+  <li>i586		</li>
+  <li>pentium		</li>
+  <li>pentium-mmx	</li>
+  <li>i686		</li>
+  <li>pentiumpro	</li>
+  <li>pentium2		</li>
+  <li>pentium3		</li>
+  <li>pentium3m		</li>
+  <li>pentium-m		</li>
+  <li>pentium4		</li>
+  <li>pentium4m		</li>
+  <li>prescott		</li>
+  <li>nocona		</li>
+  <li>k6		</li>
+  <li>k6-2		</li>
+  <li>k6-3		</li>
+  <li>athlon		</li>
+  <li>athlon-tbird	</li>
+  <li>athlon-4		</li>
+  <li>athlon-xp		</li>
+  <li>athlon-mp		</li>
+  <li>k8		</li>
+  <li>opteron		</li>
+  <li>athlon64		</li>
+  <li>athlon-fx		</li>
+  <li>winchip-c6	</li>
+  <li>winchip2		</li>
+  <li>c3		</li>
+  <li>c3-2		</li>
+</ul>
+]]>
+</flag>
+
+<!-- ======================================================================
+     ======================================================================
+     At this point we're to all of the "subordinate" flags; that is, flags
+     that are only referenced indirectly.  There is NO technical reason that
+     these flags must be segregated.  I'm only doing it here because
+     initially the flags above (sans includes) were the only ones I had
+     described.  (I used to use this flags file for some of my test runs.)
+
+     Also, the comments will start to thin out; I've already covered all of
+     the basics.
+     ======================================================================
+     ====================================================================== -->
+
+<flag name="F-falign-functions"
+      class="optimization">
+<example>
+-falign-functions,
+-falign-functions=n
+</example>
+<![CDATA[
+<p>Align the start of functions to the next power-of-two greater than
+   <i>n</i>, skipping up to <i>n</i> bytes.  For instance,
+   <tt>-falign-functions=32</tt> aligns functions to the next 32-byte
+   boundary, but <tt>-falign-functions=24</tt> would align to the next
+   32-byte boundary only if this can be done by skipping 23 bytes or less.</p>
+
+<p><tt>-fno-align-functions</tt> and <tt>-falign-functions=1</tt> are
+   equivalent and mean that functions will not be aligned.</p>
+
+<p>Some assemblers only support this flag when <i>n</i> is a power of two; in
+   that case, it is rounded up.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-falign-loops"
+      class="optimization">
+<example>
+-falign-loops,
+-falign-loops=n
+</example>
+<![CDATA[
+<p>Align loops to a power-of-two boundary, skipping up to <i>n</i> bytes like
+   <tt>-falign-functions.</tt>  The hope is that the loop will be executed
+   many times, which will make up for any execution of the dummy
+   operations.</p>
+]]>
+</flag>
+
+<flag name="F-falign-loops-max-skip"
+      class="optimization">
+<example>
+-falign-loops-max-skip,
+-falign-loops-max-skip=n
+</example>
+<![CDATA[
+<p>When aligning loops to a power-of-two boundary, only do so if can skip by
+   up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-falign-jumps"
+      class="optimization">
+<example>
+-falign-jumps,
+-falign-jumps=n
+</example>
+<![CDATA[
+<p>Align branch targets to a power-of-two boundary, for branch targets
+    where the targets can only be reached by jumping, skipping up to <i>n</i>
+    bytes like <tt>-falign-functions.</tt>  In this case, no dummy operations
+    need be executed.</p>
+]]>
+</flag>
+
+<flag name="F-falign-jumps-max-skip"
+      class="optimization">
+<example>
+-falign-jumps-max-skip,
+-falign-jumps-max-skip=n
+</example>
+<![CDATA[
+<p>When aligning branch targets to a power-of-two boundary, only do so
+   if can skip by up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+]]>
+</flag>
+
+<flag name="F-force_cpusubtype_ALL"
+      class="optimization">
+<example>
+-force_cpusubtype_ALL
+</example>
+<![CDATA[
+<p>Hey!  What does this flag do?  It's not in the man page.</p>
+<p>Well, I know that <strong>you</strong>, as the well informed and well-
+   connected (with your compiler vendor) will be able to document ALL of
+   your implicitly included flags.</p>
+]]>
+</flag>
+
+<flag name="F-fsched-interblock"
+      class="optimization">
+<example>
+-fsched-interblock
+</example>
+<![CDATA[
+<p>Schedule instructions across basic blocks.  This is enabled by default when
+scheduling before register allocation, i.e. with <tt>-fschedule-insns</tt> or  
+at <tt>-O2</tt> or higher.</p>
+]]>
+</flag>
+
+<flag name="F-fstrict-aliasing"
+      class="optimization">
+<example>
+-fstrict-aliasing
+</example>
+<![CDATA[
+<p>Allows the compiler to assume the strictest aliasing rules applicable to
+   the language being compiled.  For C (and C++), this activates optimizations
+   based on the type of expressions.  In particular, an object of one type is
+   assumed never to reside at the same address as an object of a different
+   type, unless the types are almost the same.  For example, an "unsigned int"
+   can alias an "int", but not a "void*" or a "double".  A character type may
+   alias any other type.</p>
+
+<p>Pay special attention to code like this:</p>
+<pre>
+   union a_union {
+     int i;
+     double d;
+   };
+
+   int f() {
+     a_union t;
+     t.d = 3.0;
+     return t.i;
+   }
+</pre>
+
+<p>The practice of reading from a different union member than the one
+   most recently written to (called ``type-punning'') is common.  Even
+   with <tt>-fstrict-aliasing</tt>, type-punning is allowed, provided the
+   memory is accessed through the union type.  So, the code above will
+   work as expected.  However, this code might not:</p>
+<pre>
+   int f() {
+     a_union t;
+     int* ip;
+     t.d = 3.0;
+     ip = &amp;t.i;
+     return *ip;
+   }
+</pre>
+]]>
+</flag>
+
+<flag name="F-fno-second-underscore"
+      class="other">
+<example>
+-fno-second-underscore
+</example>
+<![CDATA[
+  Fortran appends an underscore to external
+  names.  If this option is not used, \s-1GNU\s0 Fortran appends two
+  underscores to names with underscores and one underscore to external names
+  with no underscores.  \s-1GNU\s0 Fortran also appends two underscores to
+  internal names with underscores to avoid naming collisions with external
+  names. With this option the second underscore is not used.
+]]>
+</flag>
+
+<flag name="F-fno-strict-aliasing"
+      class="optimization">
+<example>
+-fno-strict-aliasing
+</example>
+<![CDATA[
+<p>Does not allow the compiler to assume the strictest aliasing rules applicable to
+   the language being compiled.  For C (and C++), optimizations
+   based on the type of expressions are not activated.</p>
+]]>
+</flag>
+
+<flag name="F-funroll-loops"
+      class="optimization">
+<example>
+-funroll-loops
+</example>
+<![CDATA[
+<p>Unroll loops whose number of iterations can be determined at compile time
+   or upon entry to the loop.  <tt>-funroll-loops</tt> implies both
+   <tt>-fstrength-reduce</tt> and <tt>-frerun-cse-after-loop</tt>.  This
+   option makes code larger, and may or may not make it run faster.</p>
+]]>
+<include flag="F-fstrength-reduce" />
+<include flag="F-frerun-cse-after-loop" />
+</flag>
+
+<flag name="F-ffast-math"
+      class="optimization">
+<example>
+-ffast-math
+</example>
+<![CDATA[
+<p>Sets the following flags:</p>
+<ul>
+  <li>-fno-math-errno		</li>
+  <li>-funsafe-math-optimizations</li>
+  <li>-fno-trapping-math	</li>
+  <li>-ffinite-math-only	</li>
+  <li>-fno-signaling-nans	</li>
+</ul>
+]]>
+<include flag="F-fno-math-errno" />
+<include flag="F-funsafe-math-optimizations" />
+<include flag="F-fno-trapping-math" />
+<include flag="F-ffinite-math-only" />
+<include flag="F-fno-signaling-nans" />
+</flag>
+
+<!-- How did the next flag get so simple? We've defaulted both the 
+     regexp and the example from the name; and the description is simple
+     enough not to need HTML.  Sections 2.3.1, 3.3.1 and 3.7 -->
+
+<flag name="F-malign-natural"
+      class="optimization">
+Aligns larger data types such as doubles on their natural boundaries.
+</flag>
+
+<flag name="F-mtune"
+      class="optimization">
+<example>
+-mtune=7450,
+-mtune=G5
+</example>
+<![CDATA[
+<p>Sets the instruction scheduling parameters for a particular machine type,
+but does not set the architecture type, register usage, or choice of
+mnemonics, as <tt>-mcpu=</tt><i>cpu_type</i> would.  The same values for
+<i>cpu_type</i> are used for <tt>-mtune</tt> as for <tt>-mcpu</tt>.  If both
+are specified, the code generated will use the architecture, registers, and
+mnemonics set by <tt>-mcpu</tt>, but the scheduling parameters set by
+<tt>-mtune</tt>.</p>
+]]>
+</flag>
+
+<flag name="F-mdynamic-no-pic"
+      class="optimization">
+   Compile code so that it is not relocatable, but that its external
+   references are relocatable.  The resulting code is suitable for
+   applications, but not shared libraries.
+</flag>
+
+<flag name="F-fno-trapping-math"
+      class="optimization">
+<![CDATA[
+<p>Compile code assuming that floating-point operations cannot generate
+user-visible traps.  These traps include division by zero, overflow,
+underflow, inexact result and invalid operation.  This option implies
+<tt>-fno-signaling-nans</tt>.  Setting this option may allow faster code
+if one relies on `non-stop' IEEE arithmetic, for example.</p>
+
+<p>Use of this option can result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications for
+   math functions.</p>
+]]>
+<include flag="F-fno-signaling-nans" />
+</flag>
+
+<flag name="F-fno-signaling-nans"
+      class="optimization">
+Compile code assuming that IEEE signaling NaNs may not generate
+user-visible traps during floating-point operations.  Setting this
+option enabled optimizations that may change the number of exceptions
+visible with signaling NaNs.
+</flag>
+
+<flag name="F-funsafe-math-optimizations"
+      class="optimization">
+<![CDATA[
+<p>Allow optimizations for floating-point arithmetic that
+(a) assume that arguments and results are valid and (b) may violate  
+IEEE or ANSI standards.  When used at link-time, it may include  
+libraries or startup files that change the default FPU control  
+word or other similar optimizations.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-ffinite-math-only"
+      class="optimization">
+<![CDATA[
+<p>Allow optimizations for floating-point arithmetic that assume that
+   arguments and results are not NaNs or +-Infs.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-fno-math-errno"
+      class="optimization">
+<![CDATA[
+<p>Do not set ERRNO after calling math functions that are executed
+   with a single instruction, e.g., sqrt.  A program that relies on
+   IEEE exceptions for math error handling may want to use this flag
+   for speed while maintaining IEEE arithmetic compatibility.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+]]>
+</flag>
+
+<flag name="F-frerun-cse-after-loop"
+      class="optimization">
+<![CDATA[
+<p>   Re-run common subexpression elimination after loop optimizations
+   have been performed.
+</p>
+]]>
+</flag>
+
+<flag name="F-finline-functions"
+      class="optimization">
+<![CDATA[
+<p>Integrate all simple functions into their callers.  The compiler
+   heuristically decides which functions are simple enough to be worth
+   integrating in this way.</p>
+
+<p>If all calls to a given function are integrated, and the function
+   is declared "static", then the function is normally not output as
+   assembler code in its own right.</p>
+]]>
+</flag>
+
+<flag name="F-fno-inline-functions"
+      class="optimization">
+<![CDATA[
+<p>Do not integrate all simple functions into their callers.  The compiler
+   heuristically decides which functions are simple enough to be worth
+   integrating in this way.</p>
+
+<p>If all calls to a given function are integrated, and the function
+   is declared "static", then the function is normally not output as
+   assembler code in its own right.</p>
+]]>
+</flag>
+
+<flag name="F-frename-registers"
+      class="optimization">
+   Attempt to avoid false dependencies in scheduled code by making use
+   of registers left over after register allocation.  This optimization will
+   most benefit processors with lots of registers.  It can, however, make
+   debugging impossible, since variables will no longer stay in a `home
+   register'.
+</flag>
+
+<flag name="F-fgcse-after-reload"
+      class="optimization">
+<![CDATA[
+<p>When -fgcse-after-reload is enabled, a redundant load elimination pass is 
+performed after reload. The purpose of this pass is to cleanup redundant 
+spilling.</p>
+]]>
+</flag>
+
+<flag name="F-funsigned-char"
+      class="other">
+<![CDATA[
+<p> 
+Let the type `char' be unsigned, like `unsigned char'.
+Each kind of machine has a default for what `char' should be.  It
+is either like `unsigned char' by default or like `signed char' by
+default.
+Ideally, a portable program should always use `signed char' or
+`unsigned char' when it depends on the signedness of an object.
+But many programs have been written to use plain `char' and expect
+it to be signed, or expect it to be unsigned, depending on the
+machines they were written for.  This option, and its inverse, let
+you make such a program work with the opposite default.
+The type `char' is always a distinct type from each of `signed
+char' or `unsigned char', even though its behavior is always just
+like one of those two.
+</p>
+]]>
+</flag>
+
+
+<flag name="F-include"
+      class="portability"
+      regexp="-include(\s+)([a-z]+)">
+<![CDATA[
+<p> 
+Process FILE as if `#include "file"' appeared as the first line of
+the primary source file.  However, the first directory searched
+for FILE is the preprocessor's working directory _instead of_ the
+directory containing the main source file.  If not found there, it
+is searched for in the remainder of the `#include "..."' search
+chain as normal.
+
+If multiple `-include' options are given, the files are included
+in the order they appear on the command line.</p>
+
+]]>
+</flag>
+
+<flag name="F-DSPEC_CPU_ENABLE_FORTRAN_TO_C"
+      class="other"
+      >
+<![CDATA[
+Deprecated define from the SPEC CPU2006 development kits. It was accidentally left in the benchmark runs. 
+This is not defined anywhere in the benchmark code and does not affect reproducibility of the results.
+]]>
+</flag>
+
+
+<flag name="F-funswitch-loops"
+      class="optimization">
+<![CDATA[
+<p>Move branches with loop invariant conditions out of the loop, with 
+duplicates of the loop on both branches (modified according to result 
+of the condition).</p>
+]]>
+</flag>
+
+<flag name="F-m32"
+      class="other">
+<example>
+-m32
+</example>
+<![CDATA[
+<p>Generate code for a 32-bit environment. The 32-bit environment sets int, long and pointer to 32 bits and generates code that runs on any i386 system.</p>
+]]>
+</flag>
+
+
+<flag name="F-fdefer-pop"
+      class="optimization">
+<![CDATA[
+<p> Always pop the arguments to each function call as soon as that function returns. 
+For machines which must pop arguments after a function call, the compiler 
+normally lets arguments accumulate on the stack for several function calls 
+and pops them all at once.
+
+-fnodefer-pop is disabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fdelayed-branch"
+      class="optimization">
+<![CDATA[
+<p>If supported for the target machine, attempt to reorder instructions to 
+exploit instruction slots available after delayed branch instructions.
+
+Enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fguess-branch-probability"
+      class="optimization">
+<![CDATA[
+<p>If supported for the target machine, attempt to reorder instructions to exploit 
+instruction slots available after delayed branch instructions.
+
+-fnoguess-branch-probability is enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fcprop-registers"
+      class="optimization">
+<![CDATA[
+<p>After register allocation and post-register allocation instruction 
+splitting, we perform a copy-propagation pass to try to reduce scheduling 
+dependencies and occasionally eliminate the copy.
+
+-fno-cprop-registers is disabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-floop-optimize"
+      class="optimization">
+<![CDATA[
+<p>Perform loop optimizations: move constant expressions out of loops, 
+simplify exit test conditions and optionally do strength-reduction as well.
+
+Enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fif-conversion"
+      class="optimization">
+<![CDATA[
+<p>Attempt to transform conditional jumps into branch-less equivalents. 
+This include use of conditional moves, min, max, set flags and abs instructions, 
+and some tricks doable by standard arithmetics. The use of conditional 
+execution on chips where it is available is controlled by if-conversion2.
+
+Enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fif-conversion2"
+      class="optimization">
+<![CDATA[
+<p>Use conditional execution (where available) to transform conditional 
+jumps into branch-less equivalents.
+
+Enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-ftree-ccp"
+      class="optimization">
+<![CDATA[
+<p>Perform sparse conditional constant propagation (CCP) on trees. 
+This pass only operates on local scalar variables and is 
+enabled by default at -O and higher.  </p>
+]]>
+</flag>
+
+<flag name="F-ftree-dce"
+      class="optimization">
+<![CDATA[
+<p>Perform dead code elimination (DCE) on trees. 
+This flag is enabled by default at -O and higher.  </p>
+]]>
+</flag>
+
+<flag name="F-ftree-dominator-opts"
+      class="optimization">
+<![CDATA[
+<p>Perform a variety of simple scalar cleanups (constant/copy propagation, 
+redundancy elimination, range propagation and expression simplification) 
+based on a dominator tree traversal. This also performs jump threading 
+(to reduce jumps to jumps). This flag is enabled by default at -O and higher.  </p>
+]]>
+</flag>
+
+<flag name="F-ftree-dse"
+      class="optimization">
+<![CDATA[
+<p>Not described in Manual for gcc 4.1 </p>
+]]>
+</flag>
+
+<flag name="F-ftree-ter"
+      class="optimization">
+<![CDATA[
+<p>Perform temporary expression replacement during the SSA->normal phase. 
+Single use/single def temporaries are replaced at their use location 
+with their defining expression. This results in non-GIMPLE code, but 
+gives the expanders much more complex trees to work on resulting in 
+better RTL generation. This is enabled by default at -O and higher. </p>
+]]>
+</flag>
+
+<flag name="F-ftree-lrs"
+      class="optimization">
+<![CDATA[
+<p>Perform live range splitting during the SSA->normal phase. Distinct live ranges of a variable are split into unique variables, allowing for better optimization later. This is enabled by default at -O and higher. </p>
+]]>
+</flag>
+
+<flag name="F-ftree-sra"
+      class="optimization">
+<![CDATA[
+<p>Perform scalar replacement of aggregates. This pass replaces structure references with scalars to prevent committing structures to memory too early. This flag is enabled by default at -O and higher. </p>
+]]>
+</flag>
+
+<flag name="F-ftree-copyrename"
+      class="optimization">
+<![CDATA[
+<p>Perform copy renaming on trees. This pass attempts to rename compiler temporaries to other variables at copy locations, usually resulting in variable names which more closely resemble the original variables. This flag is enabled by default at -O and higher. </p>
+]]>
+</flag>
+
+<flag name="F-ftree-fre"
+      class="optimization">
+<![CDATA[
+<p>Perform Full Redundancy Elimination (FRE) on trees. The difference between FRE and PRE is that FRE only considers expressions that are computed on all paths leading to the redundant computation. This analysis faster than PRE, though it exposes fewer redundancies. This flag is enabled by default at -O and higher. </p>
+]]>
+</flag>
+
+<flag name="F-ftree-ch"
+      class="optimization">
+<![CDATA[
+<p>Perform loop header copying on trees. This is beneficial since it increases effectiveness of code motion optimizations. It also saves one jump. This flag is enabled by default at -O and higher. It is not enabled for -Os, since it usually increases code size. </p>
+]]>
+</flag>
+
+<flag name="F-fmerge-constants"
+      class="optimization">
+<![CDATA[
+<p>Attempt to merge identical constants (string constants and floating point constants) across compilation units.
+
+This option is the default for optimized compilation if the assembler and linker support it. Use -fno-merge-constants to inhibit this behavior.
+
+Enabled at levels -O, -O2, -O3, -Os.  </p>
+]]>
+</flag>
+
+<flag name="F-fomit-frame-pointer"
+      class="optimization">
+<![CDATA[
+<p>
+Don't keep the frame pointer in a register for functions that don't need one. This avoids the instructions to save, set up and restore frame pointers; it also makes an extra register available in many functions. It also makes debugging impossible on some machines.
+
+On some machines, such as the VAX, this flag has no effect, because the standard calling sequence automatically handles the frame pointer and nothing is saved by pretending it doesn't exist. The machine-description macro FRAME_POINTER_REQUIRED controls whether a target machine supports this flag. See Register Usage.
+
+Enabled at levels -O, -O2, -O3, -Os.
+</p>
+]]>
+</flag>
+
+<flag name="F-fthread-jumps"
+      class="optimization">
+<![CDATA[
+<p>
+Perform optimizations where we check to see if a jump branches to a location where another comparison subsumed by the first is found. If so, the first branch is redirected to either the destination of the second branch or a point immediately following it, depending on whether the condition is known to be true or false.
+
+Enabled at levels -O2, -O3, -Os. 
+</p>
+]]>
+</flag>
+
+<flag name="F-fcrossjumping"
+      class="optimization">
+<![CDATA[
+<p>
+Perform cross-jumping transformation. This transformation unifies equivalent code and save code size. The resulting code may or may not perform better than without cross-jumping.
+
+Enabled at levels -O2, -O3, -Os. 
+</p>
+]]>
+</flag>
+
+<flag name="F-foptimize-sibling-calls"
+      class="optimization">
+<![CDATA[
+<p>
+Optimize sibling and tail recursive calls.
+
+Enabled at levels -O2, -O3, -Os. 
+</p>
+]]>
+</flag>
+
+<flag name="F-fcse-follow-jumps"
+      class="optimization">
+<![CDATA[
+<p>
+In common subexpression elimination, scan through jump instructions when the target of the jump is not reached by any other path. For example, when CSE encounters an if statement with an else clause, CSE will follow the jump when the condition tested is false.
+
+Enabled at levels -O2, -O3, -Os. 
+</p>
+]]>
+</flag>
+
+<flag name="F-fcse-skip-blocks"
+      class="optimization">
+<![CDATA[
+<p>
+This is similar to -fcse-follow-jumps, but causes CSE to follow jumps which conditionally skip over blocks. When CSE encounters a simple if statement with no else clause, -fcse-skip-blocks causes CSE to follow the jump around the body of the if.
+
+Enabled at levels -O2, -O3, -Os.
+</p>
+]]>
+</flag>
+
+<flag name="F-fgcse"
+      class="optimization">
+<![CDATA[
+<p>
+Perform a global common subexpression elimination pass. This pass also performs global constant and copy propagation.
+
+Note: When compiling a program using computed gotos, a GCC extension, you may get better runtime performance if you disable the global common subexpression elimination pass by adding -fno-gcse to the command line.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fgcse-lm"
+      class="optimization">
+<![CDATA[
+<p>
+When -fgcse-lm is enabled, global common subexpression elimination will attempt to move loads which are only killed by stores into themselves. This allows a loop containing a load/store sequence to be changed to a load outside the loop, and a copy/store within the loop.
+
+Enabled by default when gcse is enabled. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fexpensive-optimizations"
+      class="optimization">
+<![CDATA[
+<p>
+Perform a number of minor optimizations that are relatively expensive.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fstrength-reduce"
+      class="optimization">
+<![CDATA[
+<p>
+Perform the optimizations of loop strength reduction and elimination of iteration variables.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-frerun-loop-opt"
+      class="optimization">
+<![CDATA[
+<p>
+Run the loop optimizer twice.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fcaller-saves"
+      class="optimization">
+<![CDATA[
+<p>
+Enable values to be allocated in registers that will be clobbered by function calls, by emitting extra instructions to save and restore the registers around such calls. Such allocation is done only when it seems to result in better code than would otherwise be produced.
+
+This option is always enabled by default on certain machines, usually those which have no call-preserved registers to use instead.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fpeephole2"
+      class="optimization">
+<![CDATA[
+<p>
+Disable any machine-specific peephole optimizations. The difference between -fno-peephole and -fno-peephole2 is in how they are implemented in the compiler; some targets use one, some use the other, a few use both.
+
+-fpeephole is enabled by default. -fpeephole2 enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fschedule-insns"
+      class="optimization">
+<![CDATA[
+<p>
+If supported for the target machine, attempt to reorder instructions to eliminate execution stalls due to required data being unavailable. This helps machines that have slow floating point or memory load instructions by allowing other instructions to be issued until the result of the load or floating point instruction is required.
+
+Enabled at levels -O2, -O3, -Os
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fschedule-insns2"
+      class="optimization">
+<![CDATA[
+<p>
+Similar to -fschedule-insns, but requests an additional pass of instruction scheduling after register allocation has been done. This is especially useful on machines with a relatively small number of registers and where memory load instructions take more than one cycle.
+
+Enabled at levels -O2, -O3, -Os. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-fnosched-interblock"
+      class="optimization">
+<![CDATA[
+<p>
+	Don't schedule instructions across basic blocks. This is normally enabled by default when scheduling before register allocation, i.e. with -fschedule-insns or at -O2 or higher.
+</p>
+]]>
+</flag>
+
+<flag name="F-fsched-spec"
+      class="optimization">
+<![CDATA[
+<p>Don't allow speculative motion of non-load instructions. This is normally enabled by default when scheduling before register allocation, i.e. with -fschedule-insns or at -O2 or higher.
+</p>
+]]>
+</flag>
+
+<flag name="F-fregmove"
+      class="optimization">
+<![CDATA[
+Attempt to reassign register numbers in move instructions and as operands of other simple instructions in order to maximize the amount of register tying. This is especially helpful on machines with two-operand instructions.
+
+Note -fregmove and -foptimize-register-move are the same optimization.
+
+Enabled at levels -O2, -O3, -Os.
+<p>
+</p>
+]]>
+</flag>
+
+
+<flag name="F-fdelete-null-pointer-checks"
+      class="optimization">
+<![CDATA[
+<p>
+Use global dataflow analysis to identify and eliminate useless checks for null pointers. The compiler assumes that dereferencing a null pointer would have halted the program. If a pointer is checked after it has already been dereferenced, it cannot be null.
+
+In some environments, this assumption is not true, and programs can safely dereference null pointers. Use -fno-delete-null-pointer-checks to disable this optimization for programs which depend on that behavior.
+
+Enabled at levels -O2, -O3, -Os.
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-freorder-blocks"
+      class="optimization">
+<![CDATA[
+<p>
+Reorder basic blocks in the compiled function in order to reduce number of taken branches and improve code locality.
+
+Enabled at levels -O2, -O3. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-freorder-functions"
+      class="optimization">
+<![CDATA[
+<p>
+Reorder functions in the object file in order to improve code locality. This is implemented by using special subsections .text.hot for most frequently executed functions and .text.unlikely for unlikely executed functions. Reordering is done by the linker so object file format must support named sections and linker must place them in a reasonable way.
+
+Also profile feedback must be available in to make this option effective. See -fprofile-arcs for details.
+
+Enabled at levels -O2, -O3, -Os.
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-funit-at-a-time"
+      class="optimization">
+<![CDATA[
+<p>
+Parse the whole compilation unit before starting to produce code. This allows some extra optimizations to take place but consumes more memory (in general). There are some compatibility issues with unit-at-at-time mode:
+
+    * enabling unit-at-a-time mode may change the order in which functions, variables, and top-level asm statements are emitted, and will likely break code relying on some particular ordering. The majority of such top-level asm statements, though, can be replaced by section attributes.
+    * unit-at-a-time mode removes unreferenced static variables and functions. This may result in undefined references when an asm statement refers directly to variables or functions that are otherwise unused. In that case either the variable/function shall be listed as an operand of the asm statement operand or, in the case of top-level asm statements the attribute used shall be used on the declaration.
+    * Static functions now can use non-standard passing conventions that may break asm statements calling functions directly. Again, attribute used will prevent this behavior. 
+
+As a temporary workaround, -fno-unit-at-a-time can be used, but this scheme may not be supported by future releases of GCC.
+
+Enabled at levels -O2, -O3. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-falign-labels"
+      class="optimization">
+<![CDATA[
+<p>
+-falign-labels=n
+    Align all branch targets to a power-of-two boundary, skipping up to n bytes like -falign-functions. This option can easily make code slower, because it must insert dummy operations for when the branch target is reached in the usual flow of the code.
+
+    -fno-align-labels and -falign-labels=1 are equivalent and mean that labels will not be aligned.
+
+    If -falign-loops or -falign-jumps are applicable and are greater than this value, then their values are used instead.
+
+    If n is not specified or is zero, use a machine-dependent default which is very likely to be `1', meaning no alignment.
+
+    Enabled at levels -O2, -O3. 
+	
+</p>
+]]>
+</flag>
+
+<flag name="F-ftree-vrp"
+      class="optimization">
+<![CDATA[
+<p>
+Perform Value Range Propagation on trees. This is similar to the constant propagation pass, but instead of values, ranges of values are propagated. This allows the optimizers to remove unnecessary range checks like array bound checks and null pointer checks. This is enabled by default at -O2 and higher. Null pointer check elimination is only done if -fdelete-null-pointer-checks is enabled. 	
+</p>
+]]>
+</flag>
+
+<flag name="F-ftree-pre"
+      class="optimization">
+<![CDATA[
+<p>
+Perform Partial Redundancy Elimination (PRE) on trees. This flag is enabled by default at -O2 and -O3. 
+</p>
+]]>
+</flag>
+
+<flag name="F-f"
+      class="optimization">
+<![CDATA[
+<p>
+</p>
+]]>
+</flag>
+
+
+<!-- This ends the fun. -->
+</flagsdescription>

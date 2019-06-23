@@ -1,0 +1,1014 @@
+#!/usr/bin/perl
+#
+# index - generate an HTML index for results in a directory
+# No support is provided for this script.
+#
+# Copyright 1999-2012 Standard Performance Evaluation Corporation
+#  All Rights Reserved
+#
+# Authors: Jason Glick & Cloyce D. Spradling
+#
+# $Id: index 1879 2012-10-08 22:56:54Z CloyceS $
+#
+
+use strict;
+use IO::File;
+use IO::Dir;
+use Cwd;
+use File::Basename;
+use Data::Dumper;
+use UNIVERSAL qw(isa);
+
+eval 'use Date::Format';
+if ($@) {
+    eval 'use POSIX';
+    $::date_format_ok = 0;
+} else {
+    $::date_format_ok = 1;
+}
+
+my $output = 'index.html';
+
+my $year = '2012';
+my $suite = 'OMP'.$year;
+my $public = 1;                         # Set to 1 for public-side indexes
+my $pubdir = '.';                       # Could be somewhere else...
+my $lcsuite = lc($suite);
+my $prefix = "spec.$lcsuite";
+my $version = '$LastChangedRevision: 1879 $ '; # Make emacs happier
+$version =~ s/^\044LastChangedRevision: (\d+) \$ $/$1/;
+my $is_qtr = ($0 =~ /index\.q/) ? 1 : 0;
+my $debug = 0;
+my $atspec = 1;
+my $header_per_lines = 12;
+
+my %template = ( 'header' => 'templates/index.head.html',
+                 'footer' => 'templates/index.foot.html' );
+
+my ($cwd, $quarter) = dir_to_desc(basename(getcwd()));
+
+# Set up the pubdir (if '.' isn't it), and output filenames
+if ($public) {
+  my $base = '/spec/open/www/publish/'.$lcsuite;
+  if ($is_qtr) {
+    $pubdir = $base.'/res'.$quarter.'/*';
+    $template{'header'} = '../templates/index.q.head.html';
+    $template{'footer'} = '../templates/index.q.foot.html';
+  } else {
+    $output = $lcsuite.'.html';
+    $pubdir = $base.'/res*/*';
+  }
+}
+
+my $pubdir_exists = 0;
+foreach my $dir (glob(dirname($pubdir))) {
+  $pubdir_exists ||= -d $dir;
+}
+
+if ( ($atspec && $public && $pubdir eq '.') ||
+     $pubdir_exists == 0 ||
+     $^X =~ /specperl/ ) {
+    # Not formatting things at SPEC
+    $pubdir = '.';
+    delete $template{'header'};
+    delete $template{'footer'};
+    $output = 'index.html';
+    $is_qtr = 0;
+    $public = 0;
+    $atspec = 0;
+}
+
+# Sanity-check the current quarter name, if necessary
+if ($is_qtr) {
+  die "This isn't in a quarterly results directory!\n  dir=$cwd\n  quarter=$quarter\n" unless defined($quarter) && $quarter =~ /^\d{4}q[1-4]$/;
+}
+
+my %repl = (
+    'SPEC_DATE'             => my_time2str('%A, %e %B %Y, %R', time),
+    'SPEC_QUARTER'          => $quarter,
+    'SPEC_QUARTER_VERBOSE'  => $cwd,
+    'SPEC_TOTAL_RESULTS'    => '',
+    'SPEC_HTML_FILE'        => $output,
+    'SPEC_METRIC'           => $suite,
+    'SPEC_SUITE'            => $suite,
+    'SPEC_SUITE_PATH'       => $lcsuite,
+);
+
+my @metrics = (
+    'SPECompG',
+);
+
+my %metrics = map { $_ => {} } @metrics;
+my %count = map { $_ => 0 } @metrics;
+my %dp = ();
+
+my %metric_aliases = (
+    'SPECompG'           => "OMPG$year",
+);
+
+my %metric_base = (
+    'SPECompG'          => "ompg$year",
+);
+
+my $metric = 'units';
+my $rate   = 'rate';
+my $nc     = 'nc';
+my $na     = 'nc_is_na';
+my $cd     = 'nc_is_cd';
+my $vendor_field = 'hw_vendor';
+
+my @fields = (
+# Fields marked as "Missing ok" will cause the indexer to insert a '?' for
+# the value of the field if the .rsf file does not contain it.
+#     Field name              Missing ok?
+    [ $vendor_field,          0 ],
+    [ 'test_sponsor',         0 ],
+    [ 'tester',               0 ],
+    [ 'hw_model',             0 ],
+    [ 'hw_nchips',            0 ],
+    [ 'hw_ncores',            0 ],
+    [ 'hw_ncoresperchip',     0 ],
+    [ 'hw_nthreadspercore',   0 ],
+    [ 'basemean',             0 ],
+    [ 'peakmean',             0 ],
+    [ 'baseenergymean',       0 ],
+    [ 'peakenergymean',       0 ],
+    [ $metric,                0 ],
+    [ 'base_threads',         0 ],
+    [ $nc,                    0 ],
+    [ $na,                    0 ],
+    [ $cd,                    0 ],
+);
+
+my $fieldre = "^${prefix}\.(".join('|', map { $_->[0] } @fields).')(\d*): (.*)';
+$fieldre = qr/$fieldre/;
+
+my $sort_by = 'test_sponsor';
+
+my @fieldinfo = (
+#                                                |---- Header ---|
+#      Field name          Id                    Columns,     Rows
+    [ 'Test Sponsor',      'test_sponsor',       1,           2,   ],
+    [ 'System Name',       'hw_model',           1,           2,   ],
+    [ 'Base<br />Threads', 'base_threads',       1,           2,   ],
+    [ 'Enabled<br/>Cores', 'hw_ncores',          4,           1,   'Processor', ],
+    [ 'Enabled<br/>Chips', 'hw_nchips',          1,           1,   '',          ],
+    [ 'Cores/<br/>Chip',   'hw_ncoresperchip',   1,           1,   '',          ],
+    [ 'Threads/<br/>Core', 'hw_nthreadspercore', 1,           1,   '',          ],
+    [ 'Base',              'basemean',           2,           1,   'Results',   ],
+    [ 'Peak',              'peakmean',           1,           1,   ''           ],
+    [ 'Base',              'baseenergymean',     2,           1,   'Energy',    ],
+    [ 'Peak',              'peakenergymean',     1,           1,   ''           ],
+# This is implied when hw_model is done
+#   [ 'Full Disclosures',  'disclosures',        1,           1,   ],
+);
+if (!$public) {
+    push @fieldinfo,
+        [ '?',                'alerts',         1,           2,   ],
+        [ 'Last Modified',    'lastmod',        1,           2,   ];
+}
+
+my %roundfields = (
+    'basemean' => 1,
+    'peakmean' => 1,
+    'baseenergymean' => 1,
+    'peakenergymean' => 1
+);
+
+my @formats = (
+    [ 'HTML'     => 'html'        ],
+    [ 'CSV'      => 'csv'         ],
+    [ 'Text'     => 'txt'         ],
+    [ 'PDF'      => 'pdf'         ],
+    [ 'PS'       => 'ps'          ],
+    [ 'Config'   => 'cfg'         ],
+);
+if (!$public) {
+    push @formats, [ 'Flags'    => 'flags.html'  ];
+    push @formats, [ 'Raw'      => 'rsf' ];
+    push @formats, [ 'Sub'      => 'sub' ];
+    push @formats, [ 'FlagXML'  => 'xml' ];
+}
+
+#
+# Start reading in the result files!
+#
+my $ext = 'rsf'; # Should always be good and present
+
+foreach my $res_file ( glob( "$pubdir/*.$ext" ) ) {
+    my $ifh = new IO::File '<'.$res_file;
+    if (!defined($ifh)) {
+      warn "Couldn't open $res_file for reading: $!\n";
+      next;
+    }
+
+    # Remember when the sub file was last modified
+    my $modtime = file_date($res_file);
+    $res_file = dirname( $res_file ).'/'.basename( $res_file, ".$ext" );
+    $modtime = file_date($res_file . '.sub') if (-f "${res_file}.sub");
+    my $base_file = basename( $res_file );
+    if ( $is_qtr ) {
+        print "Indexing $base_file -> $quarter\n";
+    } elsif ( $public ) {
+        my @dir_comp = split(m#/+#, $res_file);
+        # Gymnastics to eliminate the publish date
+        $base_file = join('/', @dir_comp[-3,-1]);
+    }
+
+    my %fields = ();
+
+    # Get the info from the raw file
+    foreach my $line ( <$ifh> ) {
+        my ($field, $idx, $val) = ($line =~ /$fieldre/);
+        next unless defined($field);
+        $val =~ tr/\012\015//d; # Strip out the EOLs
+        $idx += 0;  # Make the field index a number
+        $fields{$field}->[$idx] = $val;
+    }
+    $ifh->close();
+    print "Found ".((keys %fields) + 0)." fields\n" if ($debug & 8);
+
+    # Put all the fields together
+    foreach my $field (keys %fields) {
+        next unless isa($fields{$field}, 'ARRAY');
+
+        # Put the fields back together
+        $fields{$field} = join(' ', @{$fields{$field}});
+
+        # Strip leading and trailing whitespace
+        $fields{$field} =~ s/^\s+//;
+        $fields{$field} =~ s/\s+$//;
+
+        # Make numeric fields numeric, and escape non-numeric fields
+        if ($fields{$field} =~ /^\d+(?:\.\d*)?$/) {
+            $fields{$field} += 0;
+        } else {
+            $fields{$field} = escape_HTML($fields{$field});
+        }
+
+        # Round things that should be rounded
+        if ($roundfields{$field} && $fields{$field} =~ /\d/) {
+            $fields{$field} = significant($fields{$field});
+        }
+
+    }
+
+    # Take care of non-compliant results
+    if (exists($fields{$nc}) && $fields{$nc} ne '') {
+        my $ncstr = 'NC';
+        if (exists($fields{$na}) && istrue($fields{$na})) {
+            $ncstr = 'NA';
+            $fields{$cd} = ''; # For the count
+        } elsif (exists($fields{$cd}) && istrue($fields{$cd})) {
+            $ncstr = 'CD';
+            $fields{$na} = ''; # For the count
+        } else {
+            $fields{$na} = ''; # For the count
+            $fields{$cd} = ''; # For the count
+        }
+        foreach my $field (keys %roundfields) {
+            $fields{$field} = $ncstr if exists $fields{$field};
+        }
+    } else {
+        # Ensure that it's present for the count
+        $fields{$nc} = '';
+        $fields{$na} = '';
+        $fields{$cd} = '';
+    }
+
+    # Fix up the metric name for rate runs
+    $fields{$metric} .= '_rate' if ($fields{$rate});
+
+    foreach my $field (grep { /mean$/ } keys %fields) {
+        # Remember the decimal places for the means
+        if ($field =~ /mean$/) {
+            my $dp = significant($fields{$field}, undef, 2);
+            $dp{$fields{$metric}}->{$field} = $dp if ($dp > $dp{$fields{$metric}}->{$field});
+        }
+    }
+
+    # Take care of the company name tangle
+    if ($fields{'test_sponsor'} =~ /^(|--)$/) {
+        $fields{'test_sponsor'} = $fields{$vendor_field};
+    }
+    if ($fields{'tester'} =~ /^(|--)$/) {
+        $fields{'tester'} = $fields{'test_sponsor'};
+    }
+
+    if ((keys %fields)+0 != @fields+0) {
+        my %fieldlist = map { $_->[0] => [ @{$_} ] } @fields;
+        # Figure out which fields are missing
+        my $missing_ok = 1;
+        foreach my $key (keys %fieldlist) {
+            if (exists $fields{$key}) {
+                delete $fieldlist{$key};
+            } else {
+                $missing_ok = 0 if ($fieldlist{$key}->[1] == 0);
+                print "$key field is missing (missing_ok is now $missing_ok)\n" if ($debug & 16);
+            }
+        }
+        if (keys %fieldlist > 0) {
+            if ($missing_ok) {
+                # If only missing fields are left, fill in '?' for them
+                foreach my $field (keys %fieldlist) {
+                    $fields{$field} = '?';
+                    delete $fieldlist{$field};
+                }
+            } else {
+                my $fielddiff = (keys %fieldlist)+0;
+                if ($fielddiff != 1) {
+                    $fielddiff = $fielddiff.' fields are';
+                } else {
+                    $fielddiff = $fielddiff.' field is';
+                }
+                warn "$fielddiff missing: ".join(', ', sort keys %fieldlist)."\nSkipping result in $res_file\n";
+                next;
+            }
+        }
+    }
+
+    # Find the output formats that are available, and make their links here
+    my @outputs = ();
+    foreach my $formatref ( @formats ) {
+        my ( $name, $fileext ) = @{$formatref};
+        print "File: $res_file.$fileext\n" if ($debug & 2);
+        if ( -e "$res_file.$fileext" ) {
+            push @outputs, qq{   <a href="$base_file.$fileext">$name</a>};
+        } else {
+            push @outputs, $name;
+        }
+    }
+
+    $fields{'disclosures'} = join(" | \n ", @outputs);
+    if (!$public) {
+        if ($atspec) {
+            # Strip the non-sequence info out of $base_file
+            $base_file =~ s/.*-0*(\d+)$/$1/;
+            $fields{'disclosures'} .= " : $base_file";
+        }
+
+        # Were there alerts for this submission?
+        if ( -e "$res_file.sub.alert" ) {
+            $fields{'alerts'} = "<a href=\"$res_file.sub.alert\">?</a>";
+        } else {
+            $fields{'alerts'} = '&nbsp;';
+        }
+
+        # Any changes?
+        if ( -e "$res_file.sub.diff" ) {
+            my $r  = 0;
+                while( -e "$res_file.sub.rev$r" ) { $r++; }
+                $fields{'lastmod'} = "<a href=\"$res_file.sub.diff\">$modtime</a>&nbsp;$r";
+        } else {
+                $fields{'lastmod'} = $modtime;
+        }
+    }
+
+    $metrics{$fields{$metric}}->{$res_file} = { %fields };
+
+    $count{$fields{$metric}}++;
+
+}
+
+#
+# Done reading all the results!
+#
+
+my $total = 0;
+
+foreach ( values( %count ) ) {
+    $total += $_;
+}
+$repl{'SPEC_TOTAL_RESULTS'} = "($total)";
+
+my $ofh = new IO::File '>'.$output;
+die( "\nCannot open $output for writing: $!\nStopped" ) unless defined($ofh);
+
+my $fh_list = [ $ofh ];
+
+my $links = '';
+
+HTML_head($ofh, $public, $is_qtr, %repl);
+
+print $ofh qq{<p class="linkbar">| <a href="http://www.spec.org/cgi-bin/osgresults?conf=$lcsuite">Search</a> |};
+foreach my $metric (@metrics) {
+    print $ofh " <a href=\"#$metric\">$metric_aliases{$metric}</a> |";
+}
+print $ofh "</p>\n";
+
+print $ofh "<hr />\n";
+
+foreach my $metric ( @metrics ) {
+
+    $repl{'SPEC_METRIC'} = $metric_aliases{$metric};
+    if ($public && !$is_qtr) {
+        my $fh = new IO::File '>'.$metric_base{$metric}.'.html';
+        die "Couldn't open $metric_base{$metric}.html for writing: $!\n" unless defined($fh);
+        push @{$fh_list}, $fh;
+        $repl{'SPEC_HTML_FILE'} = $metric_base{$metric}.'.html';
+        HTML_head($fh, $public, $is_qtr, %repl);
+    }
+
+    fh_print($fh_list, qq|<div class="idx_table" id="${metric}div">\n|);
+    fh_print($fh_list, qq|<h2><a name="$metric" id="$metric">$metric_aliases{$metric} ($count{$metric}):</a></h2>\n|);
+    fh_print($fh_list, qq|<p style="font-size: small">[<a href="http://www.spec.org/cgi-bin/osgresults?conf=$metric_base{$metric}">Search in |.($public ? '' : 'public ')."$metric_aliases{$metric} results</a>]</p>\n");
+
+    my $flip = 0;
+    if ($count{$metric}) {
+        fh_print($fh_list, "<table>\n");
+        fh_print($fh_list, "<thead>\n");
+        table_header($fh_list, $metric);
+        fh_print($fh_list, "</thead>\n");
+        fh_print($fh_list, "<tbody>\n");
+
+        # Output lines for each benchmark
+        my $i = 0;
+        foreach my $res_file (
+           sort {
+             $metrics{$metric}->{$a}->{$sort_by} cmp $metrics{$metric}->{$b}->{$sort_by}
+             || $a cmp $b
+           } keys( %{$metrics{$metric}} ) ) {
+            if ($flip) {
+                fh_print($fh_list, qq| <tr class="odd">\n|);
+            } else {
+                fh_print($fh_list, " <tr>\n");
+            }
+            $flip = 1 - $flip;
+
+            foreach my $field ( @fieldinfo ) {
+                my ($name, $class) = @{$field};
+                my $val = $metrics{$metric}->{$res_file}->{$class};
+
+                # Do special-case output here!
+                if ($class eq 'hw_model') {
+                    fh_print($fh_list, qq|  <td class="$class">$val<br />\n   <span class="disclosures">\n $metrics{$metric}->{$res_file}->{'disclosures'}\n   </span>\n  </td>\n|);
+
+                } elsif ($class =~ /^(?:base|peak)(?:energy)?mean$/) {
+                    $val = pad_rear($val, $dp{$metric}->{$class});
+                    fh_print($fh_list, qq|  <td class="$class">$val</td>\n|);
+
+                } elsif ($metric =~ /rate/ && $class =~ /parallel/) {
+                    # Don't output sw_auto_parallel for rate runs
+                    next;
+
+                } elsif ($metric !~ /rate/ && $class =~ /copies/) {
+                    # Don't output base_copies for non-rate runs
+                    next;
+
+                } else {
+                    # The general case
+                    fh_print($fh_list, qq|  <td class="$class">$val</td>\n|);
+                }
+            }
+
+            fh_print($fh_list, " </tr>\n");
+            $i++;
+            if ($i >= $header_per_lines && $i < $count{$metric}) {
+
+                table_header($fh_list, $metric, 'intertable'.($flip ? ' odd' : ''));
+                $i = 0;
+                $flip = 1 - $flip;
+            }
+        
+        }
+        fh_print($fh_list, "</tbody>\n");
+        fh_print($fh_list, "</table>\n");
+    } else {
+        fh_print($fh_list, "<p>No results.</p>\n");
+    }
+    fh_print($fh_list, "</div>\n");
+
+    if ($public && !$is_qtr) {
+        my $fh = pop @{$fh_list};
+        HTML_footer($fh, $public, $is_qtr, %repl);
+        $fh->close();
+    }
+}
+
+$repl{'SPEC_HTML_FILE'} = $output;
+HTML_footer($ofh, $public, $is_qtr, %repl);
+
+if (!$public && $output !~ /(HEADER|README)\.html/ && $pubdir !~ /\*/) {
+    # Generate the directory list here.  This is to keep the webserver's
+    # crummy HTML 3.2 out of the document stream and also to make things a
+    # little smaller.
+    my (@files, @dirs);
+    my $dh = new IO::Dir $pubdir;
+    if (!defined($dh)) {
+        warn "Couldn't open $pubdir for reading: $!\n";
+        print $ofh qq|\n<!-- No directory listing generated; $pubdir could not be read -->\n|;
+    } else {
+        print $ofh qq|<hr />\n|;
+        print $ofh qq|<table id="dirlist">\n|;
+        print $ofh qq| <thead>\n|;
+        print $ofh qq|  <tr><th>Name</th><th>Last modified</th><th>Size</th></tr>\n|;
+        print $ofh qq| </thead>\n|;
+        print $ofh qq| <tbody>\n|;
+        my $mod_date = file_date('..');
+        print $ofh qq|  <tr><td><a href="..">Parent Directory</a></td><td>$mod_date</td><td>-</td></tr>\n|;
+        while(my $fn = $dh->read()) {
+            next if ($fn =~ /^\./);
+            my $fullpath = $pubdir.'/'.$fn;
+            if ( -d $fullpath ) {
+                push @dirs, [ $fn.'/', file_date($fullpath), '-' ];
+            } elsif ( -f $fullpath ) {
+                my @suffixes = ('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+                my $size = -s $fullpath;
+                while ($size > 1024) {
+                    $size /= 1024;
+                    shift @suffixes;
+                }
+                $size = int($size).' '.$suffixes[0];
+                push @files, [ $fn, file_date($fullpath), $size ];
+            }
+        }
+        $dh->close();
+        foreach my $fileref ((sort { $a->[0] cmp $b->[0] } @dirs),
+                             (sort { $a->[0] cmp $b->[0] } @files)) {
+            print $ofh qq|  <tr><td><a href="$fileref->[0]">$fileref->[0]</a></td><td>$fileref->[1]</td><td>$fileref->[2]</td></tr>\n|;
+        }
+        print $ofh qq| </tbody>\n|;
+        print $ofh qq|</table>\n|;
+        print $ofh qq|<hr />\n\n|;
+    }
+}
+
+print $ofh qq| <div class="w3cbutton3">\n|;
+print $ofh qq|   <a href="http://validator.w3.org/check?uri=referer">\n|;
+print $ofh qq|     <span class="w3c">W3C</span>\n|;
+print $ofh qq|     <span class="spec">XHTML 1.0</span>\n|;
+print $ofh qq|   </a>\n|;
+print $ofh qq| </div>\n|;
+print $ofh qq| <div class="w3cbutton3">\n|;
+print $ofh qq|   <a href="http://jigsaw.w3.org/css-validator/check/referer">\n|;
+print $ofh qq|     <span class="w3c">W3C</span>\n|;
+print $ofh qq|     <span class="spec">CSS</span>\n|;
+print $ofh qq|   </a>\n|;
+print $ofh qq| </div>\n|;
+print $ofh qq|\n|;
+
+print $ofh "</body>\n";
+print $ofh "</html>\n";
+
+$ofh->close();
+
+# This is close to what's in html.pl
+sub significant {
+    my( $value, $min_log, $returnlog ) = @_;
+    return $value unless ( $value =~ /^\d+(?:\.\d*)?$/ );
+
+    my ($log);
+    $min_log = 2 if !defined $min_log;
+
+    if ($value > 0) {
+        $log = floor(log($value)/log(10));
+    } else {
+        return $value;
+    }
+
+    if ($returnlog == 1) {
+        print "  returnlog set to 1; returning \"$log\"\n" if ($debug & 4);
+        return $log;
+    }
+
+    $value = int($value / (10**($log-$min_log))+.5) * (10**($log-$min_log));
+    print "  value rounded to \"$value\"\n" if ($debug & 4);
+
+    # The number has been changed; re-figure its log (it'll change if, for
+    # example, a number less than 1 gets rounded up to 1)
+    if ($value > 0) {
+        $log = floor(log($value)/log(10));
+        print "  new log = $log\n" if ($debug & 4);
+    }
+
+    if ($log < $min_log) {
+        $value = sprintf ("%.*f", $min_log-$log, $value) if ($log < $min_log);
+        print "  reformatted value = \"$value\"\n" if ($debug & 4);
+    }
+
+    if ($returnlog == 2) {
+        # Just get the number of places after the decimal
+        return 0 unless $value =~ s/^[^\.]*\.//;
+        return length($value);
+    }
+
+    print "  returning \"$value\"\n" if ($debug & 4);
+    return $value;
+}
+
+# Also from html.pl
+sub floor {
+    my ($temp) = @_;
+    my $inttemp = int($temp);
+    if ($temp != $inttemp) { #  This is a bad test.
+        if ($temp > 0) {
+            $temp = $inttemp;
+        } else {
+            $temp = $inttemp-1;
+        }
+    }
+    return $temp;
+}
+
+# Still more from html.pl!
+sub pad_rear {
+    my ($val, $dp) = @_;
+    $val = significant($val);
+    my $my_dp = significant($val, undef, 2);
+    return $val unless defined($dp);
+    my $s = '&nbsp;' x ($dp - $my_dp);
+    $s .= '&nbsp;' if ($dp && !$my_dp); # Space for the decimal point
+    return "$val$s";
+}
+
+# This one is from util.pl
+sub escape_HTML {
+  my ($str) = @_;
+
+  $str =~ s/\&(?!#\d+;|#x[\da-fA-F]+;|[\da-zA-Z]+;)/\&amp;/g;
+  $str =~ s/</&lt;/gso;
+  $str =~ s/>/&gt;/gso;
+
+  return $str;
+}
+
+sub dir_to_desc {
+    my ($dir) = @_;
+    my $quarter = undef;
+    
+    my @q = qw(No First Second Third Fourth);
+    if ($dir =~ m/^res(\d{4})q([1-4])$/) {
+        $quarter = "${1}q$2";
+        $dir = $q[$2].' Quarter '.$1;
+    }
+    # Undo any remaining StudlyCaps
+    $dir =~ s/([a-z])([A-Z])/$1 $2/g;
+    return ($dir, $quarter);
+}
+
+sub fh_print {
+    my ($fh_list, $string, @stuff) = @_;
+
+    die "\$fh_list is not an ARRAY!\n" unless isa($fh_list, 'ARRAY');
+    die "Extra stuff passed to fh_print: '".join("','", @stuff)."'\n" if @stuff;
+
+    foreach my $fh (@{$fh_list}) {
+        die "\$fh is not a file handle!\n" unless isa($fh, 'IO::File');
+        print $fh $string;
+    }
+}
+
+sub file_date {
+    my ($file) = @_;
+    return my_time2str('%m-%d-%Y&nbsp;%H:%M', (stat( $file ))[9]);
+}
+
+sub table_header {
+    my ($fh_list, $metric, $rowclass) = @_;
+
+    $rowclass .= ' ' if ($rowclass ne '');
+    $rowclass .= 'header';
+
+    my $row = 0;
+    my $maxrows = 1;
+    while ($row < $maxrows) { 
+        fh_print($fh_list, qq| <tr class="$rowclass">\n|);
+        foreach my $fieldref (@fieldinfo) {
+            my ($name, $class, $cols, $rows, @heads) = @{$fieldref};
+            # Don't output sw_auto_parallel for rate runs
+            next if ($metric =~ /rate/ && $class =~ /parallel/);
+            # Don't output base_copies for non-rate runs
+            next if ($metric !~ /rate/ && $class =~ /copies/);
+            $maxrows = $rows if ($rows > $maxrows);
+            next if (($rows > 1) && ($row > 0));
+            my $line = qq|<th class="$class|;
+	    if ( ($class eq "test_sponsor") || ($class eq "hw_model") ) {
+                $line .= ' sortable';
+            }
+            $line .= '"';
+            $line .= qq| rowspan="$rows"| if ($rows > 1);
+            if ($cols > 1 && defined($heads[$row]) && $heads[$row] ne '') {
+                $line .= qq| colspan="$cols"|;
+            }
+            if (defined($heads[$row])) {
+                if ($heads[$row] eq '') {
+                    next;
+                } else {
+                    fh_print($fh_list, qq|  $line>$heads[$row]</th>\n|);
+                }
+            } else {
+                fh_print($fh_list, qq|  $line>$name</th>\n|);
+            }
+        }
+        fh_print($fh_list, " </tr>\n");
+        $row++;
+    }
+}
+
+sub HTML_head {
+    my ($fh, $public, $is_qtr, %repl) = @_;
+
+    print $fh <<'EOH';
+<!DOCTYPE html
+      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta name="robots" content="noindex,follow" />
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+EOH
+    if (!$public) {
+        print $fh qq|<title>$suite results: $cwd</title>\n|;
+        print $fh qq|<meta name="description" content="Index of SPEC $suite results in $cwd" />\n|;
+    } elsif ($is_qtr) {
+        print $fh qq|<title>$cwd SPEC $suite Results</title>\n|; 
+        print $fh qq|<meta name="description" content="A list of all SPEC $repl{'SPEC_METRIC'} benchmark results published on the SPEC web site during the $cwd." />\n|;
+    } else {
+        print $fh qq|<title>All Published SPEC $suite Results</title>\n|;
+        print $fh qq|<meta name="description" content="A list of SPEC $repl{'SPEC_METRIC'} results published on the SPEC web site since the benchmark debuted." />\n|;
+    }
+
+    print $fh qq|<meta name="keywords" content="SPEC, performance, benchmarks, $suite, |.join("$year, ", @metrics).qq|$year" />\n|;
+    print $fh qq|<meta name="generator" content="SPEC $suite indexer v$version" />\n|;
+
+    my $tfh = undef;
+    if (-f $template{'header'}) {
+        $tfh = new IO::File '<'.$template{'header'};
+    }
+    if (defined($tfh)) {
+        $fh->print(do_replacements($tfh, %repl));
+    } else {
+        warn "Header template file $template{'header'} could not be opened for reading.\n" if $public;
+        # Use this by default.
+        print $fh <<"EOSS";
+<link rel="stylesheet" href="/includes/printstyle.css" type="text/css" media="print" />
+<link rel="stylesheet" href="/includes/ns4style.css" type="text/css" media="screen" />
+<style type="text/css" media="screen">
+<!--
+\@import url(/includes/sitestyle.css);
+$::screen_style
+-->
+</style>
+EOSS
+        if ($public) {
+            print $fh <<"EOPUBH";
+<link rel="home" href="/" title="Home" />
+<link rel="help" href="/spec/faq/" title="FAQ" />
+<link rel="contents" href="/contents.html" title="Contents" />
+<link rel="index" href="/permuted.html" title="Site Index" />
+<link rel="glossary" href="/spec/glossary/" title="Glossary" />
+<link rel="copyright" href="/spec/copyright.html" title="Copyright" />
+<link rel="search" href="/search.html" title="Search" />
+</head>
+<body>
+<div class="speclogo">
+<a href="/$repl{'SPEC_SUITE_PATH'}/results/"><img src="/images/spec-sm.gif" alt="SPEC logo (small)" /></a>
+</div>
+EOPUBH
+            if ($is_qtr) {
+                print $fh qq|<h1>$repl{'SPEC_QUARTER_VERBOSE'} SPEC $suite Results</h1>\n|;
+            } else {
+                print $fh qq|<h1>All SPEC $repl{'SPEC_METRIC'} Results Published by SPEC</h1>\n|;
+            }
+            print $fh qq|<p>These results have been submitted to SPEC; see <a href="/spec/disclaimer.html">the disclaimer</a> before studying any results.</p>\n|;
+            print $fh "<p>Last updated: <i>$repl{'SPEC_DATE'}</i></p>\n";
+            if ($is_qtr) {
+                print $fh "<h2>Published Results $repl{'SPEC_TOTAL_RESULTS'}:</h2>\n";
+            }
+        } else {
+            print $fh "</head>\n";
+            print $fh "<body>\n";
+            if ($atspec) {
+                print $fh <<"EOPRIVH";
+<div class="speclogo">
+<a href="/"><img src="/images/spec-sm.gif" alt="SPEC logo (small)" /></a>
+</div>
+<h3 class="confidential">SPEC Confidential</h3>
+<h1>$cwd SPEC $suite Results</h1>
+<p>Last updated: <i>$repl{'SPEC_DATE'}</i></p>
+EOPRIVH
+                foreach my $type (qw(PENDING WITHDRAWN)) {
+                    if (-f $type.'_NOTES.txt') {
+                        print $ofh "<hr />\n";
+                        print $ofh "<p>\n";
+                        print $ofh '<h2 style="text-align: center">Notes about '.ucfirst(lc($type))." Results</h2>\n";
+                        print $ofh "<pre>\n";
+                        my $ifh = new IO::File '<'.$type.'_NOTES.txt';
+                        if (defined($ifh)) {
+                            while(my $line = <$ifh>) {
+                                print $ofh $line;
+                            }
+                        } else {
+                            print "${type}_NOTES.txt could not be read: $!\n";
+                        }
+                        print $ofh "</pre>\n";
+                        print $ofh "</p>\n";
+                        print $ofh "<hr />\n";
+                    }
+                }
+                print $ofh "<h2>Submitted Results $repl{'SPEC_TOTAL_RESULTS'}:</h2>\n";
+            } else {
+                print $fh <<"EOPRIVH";
+<h1>$cwd SPEC $suite Results</h1>
+<p>Last updated: <i>$repl{'SPEC_DATE'}</i></p>
+<h2>Results $repl{'SPEC_TOTAL_RESULTS'}:</h2>
+EOPRIVH
+            }
+        }
+    }
+}
+
+sub HTML_footer {
+    my ($fh, $public, $is_qtr, %repl) = @_;
+
+    my $tfh = undef;
+    if (-f $template{'footer'}) {
+        $tfh = new IO::File '<'.$template{'footer'};
+    }
+    if (defined($tfh)) {
+        $fh->print(do_replacements($tfh, %repl));
+    } else {
+        warn "Footer template file $template{'footer'} could not be opened for reading.\n" if $public;
+        # Use this by default.
+        print $fh "<hr />\n" if ($atspec);
+        print $fh qq|<!-- robots content="noindex" -->\n|;
+        if ($public) {
+            if ($is_qtr) {
+                print $fh qq|<p>[Back to <a href="/$lcsuite/results/">$suite Results</a>]</p>\n|;
+            } else {
+                print $fh qq|<p>Last update: <i>$repl{'SPEC_DATE'}</i></p>\n|;
+                print $fh qq|<p>[Back to <a href="/$lcsuite/">$suite</a>]</p>\n|;
+            }
+        } elsif ($atspec) {
+          print $fh "<p>SPEC Editor &lt;<a href=\"mailto:editor\@spec.org\">editor\@spec.org&gt;</a></p>\n";
+        }
+    }
+}
+
+sub do_replacements {
+    my ($ifh, %repl) = @_;
+
+    # Read in the file from the file handle provided, replace any instances
+    # of the strings in %repl, and return the result.
+
+    my $str = join('', $ifh->getlines());
+    foreach my $key (keys %repl) {
+        $str =~ s/<!?--\s*$key\s*-->/$repl{$key}/g;
+    }
+    return $str;
+}
+
+sub my_time2str {
+    my ($format, $time) = @_;
+
+    # Select the time formatter to use.
+    # POSIX's strftime is a drop-in replacement for how we use it,
+    # and it's always present.  So why not use it all the time?
+    # Well, there are non-maskable prototype warnings in at least 5.8.4 and
+    # 5.8.6, so that's out...
+    if ($::date_format_ok) {
+        return time2str($format, $time);
+    } else {
+        return POSIX::strftime($format, localtime($time));
+    }
+}
+
+sub istrue {
+    my $val = shift @_;
+    return 0 unless defined($val);
+    $val = lc($val);
+    return ($val eq 'y' || $val eq 'yes' || $val eq 't' || $val eq 'true' || 
+	    $val eq 'o' || $val eq 'on'  || $val+0 != 0) ? 1 : 0;
+}
+
+BEGIN {
+  $::screen_style = <<EOS;
+.confidential {
+  text-align: right;
+}
+
+.idx_table td, .idx_table th {
+  font-family: serif;
+}
+
+td.hw_nchips, td.hw_ncores, td.hw_ncoresperchip, td.hw_nthreadspercore, td.basemean, td.peakmean, td.base_copies, td.base_threads, td.baseenergymean, td.peakenergymean {
+  text-align: right;
+}
+
+td.sw_auto_parallel {
+  text-align: center;
+}
+
+th.hw_nchips, th.hw_ncores, th.hw_ncoresperchip, th.hw_nthreadspercore, th.base_copies, th.sw_auto_parallel {
+  font-size: 80%;
+}
+
+td.lastmod {
+  text-align: left;
+}
+
+.idx_table thead tr {
+  background-color: #556699;
+  color: #eeeeef;
+}
+.idx_table tbody tr.header {
+  background-color: white;
+  color: black;
+}
+.idx_table th, td.lastmod {
+  white-space: nowrap;
+}
+
+.idx_table tbody tr.odd {
+  background-color: #e8e8e8;
+  color: black;
+}
+
+table#dirlist {
+  width: auto;
+}
+
+table#dirlist tr, table#dirlist td, table#dirlist th {
+  text-align: left;
+  font-family: serif;
+}
+
+table#dirlist td, table#dirlist th {
+  border-color: white;
+  border-spacing: 0;
+  padding: 0 2em 0 2em;
+  border-collapse: collapse;
+  border-style: solid;
+}
+
+table#dirlist tbody td + td + td,
+table#dirlist thead th + th + th {
+  text-align: right;
+}
+
+span.disclosures {
+  float: right;
+  font-size: 80%;
+  white-space: nowrap;
+}
+
+.idx_table table {
+  border-width: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.idx_table td, .idx_table th {
+  border-width: 1px;
+  padding: 0 0.1em 0 0.1em;
+  border-style: solid;
+}
+
+.idx_table thead th {
+  border-color: #e8e8e8;
+}
+.idx_table td, .idx_table tbody th {
+  border-color: #556699;
+}
+
+div.speclogo {
+  float: left;
+  padding: 1em;
+}
+
+div.speclogo a:link img {
+  border: 0;
+}
+
+/* Style for the non-image W3C marking at the bottom of the page, courtesy of
+ * Marek Prokop (http://www.sovavsiti.cz/css/w3c_buttons.html)
+ */
+.w3cbutton3 {
+  margin: 1em 1em 0 0;
+  width: 9em;
+  border: 1px solid #ccc;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 70%;
+  font-weight: bold;
+  float: left;
+}
+.w3cbutton3 a {
+  display: block;
+  width: 100%;
+}
+.w3cbutton3 a:link,
+.w3cbutton3 a:visited,
+.w3cbutton3 a:hover {
+  background-color: #fc6;
+  color: #000;
+  text-decoration: none;
+  border-bottom: none;
+}
+.w3cbutton3 span.w3c {
+  padding: 0 0.4em;
+  background-color: #fff;
+  color: #0c479d;
+}
+EOS
+}

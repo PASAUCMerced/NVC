@@ -1,0 +1,134 @@
+/* In the "commentary" stuff below, we provide a margin on *both* ul and li because some browsers seem to respect
+  one and some the other and some respect both.  jh 13 feb 2006 */
+
+.commentary        { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:2pt 0pt; 
+                      padding:.2em 3%; margin:2em 2em; }
+p.commentarysnug    { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:2pt 0pt; 
+                      padding:0% 3%; margin:0em 2em; }
+p.commentarysnugtop { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:2pt 0pt; 
+                      padding:0% 3%; margin:0em 2em 2em; }
+p.commentarysnugbot { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:2pt 0pt; 
+                      padding:0% 3%; margin:2em 2em 0em; }
+p.commentarystart   { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:2pt 0pt 0pt 0pt; 
+                      padding:0% 3%; margin:2em 2em 0em; }
+p.commentarycont    { background:#ececec; 
+                      padding:.5em 3%; margin:0em 2em; }
+p.commentaryend     { background:#ececec; border-color:#c0c0c0; border-style:solid; border-width:0pt 0pt 2pt 0pt; 
+                      padding:0% 3%; margin:0em 2em 2em; }
+.commentaryul       { background:#ececec; margin:0em 2em; }
+.commentaryli       { background:#ececec; margin:0em 4em; }
+
+.annotation { color:#108010; font-family:times; font-weight:bold;  }
+
+body                { background: white; color: black; font-family: "Times New Roman"; }
+
+table        { border-style:solid; border-width:0px 0px 1px; border-color:#c0c0c0; }
+td           { vertical-align:top; padding:2px .3em 2px .2em; border-style:solid; border-width:1px 0px 0px 0px; border-color:#c0c0c0; }
+th           { vertical-align:top; text-align:left; font-family:monospace; font-weight:normal; padding:2px .3em 2px .2em;border-style:solid; border-width:1px 0px 0px 0px; border-color:#c0c0c0; }
+
+h1             { margin-top:1.75em; font-family:sans-serif; color:#eeeeef; background:#446688; padding:10px; text-align: center; }
+h2,h3,h4,h5,h6 { margin-top:1.75em; font-family:sans-serif; color:#446688; margin-bottom:.5em;  }
+
+h1 { font-size:200%; }
+h2 { font-size:150%; }
+h3 { font-size:133%; }
+h4,h5,h6 { font-size:120%; }
+
+a:link, a:visited { white-space:nowrap; text-decoration: underline; color: blue; }
+a.external:visited, a.external:link {
+        background-image:url(../images/external.png);
+        background-repeat:no-repeat;
+        background-position:right;
+        padding-right:11px;
+        margin-right:4px;
+}
+
+a.switch     {white-space:nowrap; margin-left:1.3em; }
+.u           {text-decoration: underline;}
+.alarm       {color:red;}
+
+pre          {margin:1em 0em 1em 3em; font-family:monospace;}
+
+.example      {margin: .8em +2em;       font-size: 90%; } 
+.codeexample  {margin: .4em 4em;        font-family: monospace;} 
+.ex           {margin: 1em 0em 1em 3em; font-family: monospace;}
+.exsnug       {margin: 0em 0em 0em 2em; font-family: monospace;}
+
+.snugbot     {margin-bottom:0.1em;}
+.snugtop     {margin-top:0.1em;}
+.snug        {margin-bottom:0.1em; margin-top:0.1em;}
+
+.tt          {font-family:monospace;} 
+.ttnobr      {font-family:monospace; white-space:nowrap;} 
+.nobr        {white-space:nowrap;} 
+
+p.contents       {margin:3em 2em 0em 2em; border-top:solid thin black; font-size:110%; font-weight:bold; }
+p.contentsl1     {margin:6px 2em 3px 3em; font-size:110%; line-height:1.3; }
+p.contentsl2     {margin:3px 2em 3px 5em;                 line-height:1.3; } 
+p.contentsl3     {margin:2px 2em 3px 7em; font-size: 90%; line-height:1.3; }
+p.contentsl4     {margin:1px 2em 3px 9em; font-size: 90%; line-height:1.3; }
+p.contentsl5     {margin:1px 2em 3px 11em; font-size:85%; line-height:1.3; }
+p.contentsl1last {margin:6px 2em 2em 2em; font-size:110%; line-height:1.3; padding-bottom:.5em; border-bottom: solid thin
+black; padding-left:1em;}
+p.contentsl2last {margin:3px 2em 2em 2em;                 line-height:1.3; padding-bottom:.5em; border-bottom: solid thin
+black; padding-left:3em; }
+p.contentsl3last {margin:2px 2em 2em 2em; font-size: 90%; line-height:1.3; padding-bottom:.5em; border-bottom: solid thin
+black; padding-left:5em; }
+
+.new         {color:#074015; background:#ffffc0; font-size:80%; font-style:italic;}
+.oldnews     {                                   font-size:80%; font-style:italic;}
+.l1          {margin:1em 0em 1em 2em;} 
+.l1snugtop   {margin:0.1em 0em 1em 2em;} 
+.l1snugbot   {margin:1em 0em 0.1em 2em;} 
+.l1snug      {margin:0.1em 0em 0.1em 2em;} 
+.l1ex        {margin:1em 0em 1em 4em; font-family:monospace;}
+.l1exsnug    {margin:0.1em 0em 0.1em 4em; font-family:monospace;}
+
+.l2          {margin:1em 0em 1em 4em;} 
+.l2snug      {margin:0.1em 0em 0em 4em;} 
+
+h3           {margin-top:1.5em; margin-bottom:.5em;}
+
+/* Style for the non-image W3C markings, courtesy of
+ * Marek Prokop (http://www.sovavsiti.cz/css/w3c_buttons.html)
+ */
+.w3cbutton3 {
+  margin: 1em 1em 0 0;
+  width: 9em;
+  border: 1px solid #ccc;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 70%;
+  font-weight: bold;
+  float: left;
+}
+.w3cbutton3 a {
+  display: block;
+  width: 100%;
+}
+.w3cbutton3 a:link,
+.w3cbutton3 a:visited,
+.w3cbutton3 a:hover {
+  background-color: #fc6;
+  color: #000;
+  text-decoration: none;
+  border-bottom: none;
+}
+.w3cbutton3 span.w3c {
+  padding: 0 0.4em;
+  background-color: #fff;
+  color: #0c479d;
+}
+
+
+/* OK, I admit it, I'm a beginner with style sheets.  So you can take the following with as many grains of salt as you wish.
+ * Nevertheless, an observation: when this file was linked to runspec.html via 
+ *       <link rel="STYLESHEET" href="omp2012.css" type="text/css"> 
+ * and __this__ document began with 
+ *        <style type="text/css"> (and of course ended with </style>)
+ * the result was that the _first_ definition (currently: p.commentary) would be ignored by all three of 
+ * Safari 1.3.1 (v312.3.3), 
+ * Internet Explorer 6.0.2900.2180.xpsp_sp2_gdr.050301-1519, and 
+ * "Mozilla 1.4 for Sun Java? Desktop System (Solaris Operating System Edition) Mozilla/5.0 (X11; U; SunOS sun4u; en-US;
+ * rv:1.4) Gecko/20041214".
+ * But adding a throwaway definition (p.throwaway) would make it happy.  Alternatively, NOT starting with <style was
+ * enough.  I admit it, I'm confused.  Enlightenment would be most welcome.  jh/13/feb/2005 */

@@ -1,0 +1,37 @@
+In file included from omp-tasks/sparselu/sparselu_single/sparselu.c:29:0:
+omp-tasks/sparselu/sparselu_single/read_memory.h: In function 'ReadVarriable':
+omp-tasks/sparselu/sparselu_single/read_memory.h:67:9: warning: format '%lu' expects argument of type 'long unsigned int *', but argument 4 has type 'int *' [-Wformat=]
+         if(fscanf(pinfo,"%s %lu %s\n", addr, &size, type)==EOF)
+         ^
+omp-tasks/sparselu/sparselu_single/read_memory.h:71:9: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'int' [-Wformat=]
+         printf("it = %d : %s %ld %s\n",it, addr, size, type);
+         ^
+omp-tasks/sparselu/sparselu_single/sparselu.c: In function 'sparselu_par_call':
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 1 of '__builtin_strlen' from incompatible pointer type [enabled by default]
+               if (strcmp(tmp,tmpt) == 0) {
+               ^
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 2 of '__builtin_strcmp' from incompatible pointer type [enabled by default]
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 2 of '__builtin_strcmp' from incompatible pointer type [enabled by default]
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 1 of '__builtin_strlen' from incompatible pointer type [enabled by default]
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 2 of '__builtin_strcmp' from incompatible pointer type [enabled by default]
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: warning: passing argument 2 of '__builtin_strcmp' from incompatible pointer type [enabled by default]
+omp-tasks/sparselu/sparselu_single/sparselu.c:356:15: note: expected 'const char *' but argument is of type 'float *'
+In file included from omp-tasks/sparselu/sparselu_single/sparselu.c:29:0:
+omp-tasks/sparselu/sparselu_single/read_memory.h: In function 'ReadVarriable':
+omp-tasks/sparselu/sparselu_single/read_memory.h:80:27: warning: ignoring return value of 'fscanf', declared with attribute warn_unused_result [-Wunused-result]
+                     fscanf(pmem,"%f\n", &temp_double);
+                           ^
+omp-tasks/sparselu/sparselu_single/read_memory.h:103:25: warning: ignoring return value of 'fscanf', declared with attribute warn_unused_result [-Wunused-result]
+                   fscanf(pmem,"%d\n", &temp_int);
+                         ^
+omp-tasks/sparselu/sparselu_single/read_memory.h:116:23: warning: ignoring return value of 'fscanf', declared with attribute warn_unused_result [-Wunused-result]
+                 fscanf(pconsistentvaribles,"%lf\n", &temp_double);
+                       ^
+omp-tasks/sparselu/sparselu_single/read_memory.h:123:21: warning: ignoring return value of 'fscanf', declared with attribute warn_unused_result [-Wunused-result]
+               fscanf(pconsistentvaribles,"%d\n", &temp_int);
+                     ^

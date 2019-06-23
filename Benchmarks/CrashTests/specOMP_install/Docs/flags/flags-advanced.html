@@ -1,0 +1,3304 @@
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta name="generator" content="SPEC OMP2012 Tools  (flags v1395)" />
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+<style type="text/css" id="internalScreen" media="screen">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+  white-space: nowrap;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagDescParallel, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagDescParallel::before {
+  content: "Indicates automatic parallelization: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+  white-space: nowrap;
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.resultpage_landscape {
+  width: 1200px;
+}
+
+div.logo {
+  float: left;
+  width: 38px;
+  height: 57px;
+}
+
+.titlebarcontainer, .resultstable, .ncsection {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+.ncsection {
+  background-color: white;
+  color: black;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 91%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+div.ncsection {
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+}
+
+.systembar {
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+}
+
+td.systembar {
+  padding: 0.2em;
+}
+
+.metricbar {
+  margin: 0;
+  font-size: 120%;
+}
+
+/* CSS for the old-style div-based systembar */
+
+div.systembar {
+  float: left;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+div.metricbar {
+  padding: 0.1em;
+  float: right;
+  width: 33%;
+  height: 50%;
+}
+
+.base, .metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.peak, .metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Datebar stuff for older results */
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0.1em 0 0.1em 0.5em;
+}
+
+span.value {
+  float: right;
+  padding: 0.1em 0.5em 0.1em 0;
+}
+
+div.datebar {
+  width: 100%;
+  float: left;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor         { width: 48%; }
+p#tester               { width: 48%; }
+p#license_num          { width: 24%; }
+p#test_date            { width: 23%; }
+p#hw_avail, p#sw_avail { width: 25%; }
+
+/* Table-based datebar and systembar on newer results */
+table.datebar, table.titlebarcontainer {
+  float: left;
+  width: 100%;
+  min-height: 100%;
+  border-collapse: collapse;
+  border: solid 1px black;
+  table-layout: fixed;
+}
+
+table.datebar th {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-left: 0.5em;
+  padding: 0 0.5em 0 0.25em;
+}
+
+table.datebar td {
+  text-align: left;
+  padding: 0 0.5em 0 0;
+}
+
+table.titlebarcontainer tr {
+  vertical-align: top;
+}
+table.titlebarcontainer td {
+  border-right: 1px solid black;
+}
+
+th#license_num          { width: 17%; }
+th#test_sponsor         { width: 17%; }
+th#tester               { width: 17%; }
+th#test_date            { width: 22%; }
+th#hw_avail             { width: 22%; }
+th#sw_avail             { width: 22%; }
+td#license_num_val      { width: 52%; }
+td#test_sponsor_val     { width: 52%; }
+td#tester_val           { width: 52%; }
+td#test_date_val        { width: 13%; white-space: nowrap; }
+td#hw_avail_val         { width: 13%; white-space: nowrap; }
+td#sw_avail_val         { width: 13%; white-space: nowrap; }
+
+
+div.graph {
+  margin: auto;
+}
+
+div.sysdesc > h2 {
+  text-align: center;
+  background-color: #c8c8c8;
+  color: black;
+  padding: 0.5em 0 0.5em 0;
+  margin: 0;
+} 
+  
+div.sysdesc {
+  margin: 0.5em 0 0.5em 0;
+}
+
+div.infobox, div.sysdesc {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware,
+div.infobox table#BenchmarkSoftware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox table#Systems {
+  width: 100%;
+}
+
+div.infobox table#Power {
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+div.infobox table#Systems tbody th {
+  width: 20%;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes table {
+  width: 100%;
+}
+
+div.notes table tr td {
+  text-align: right;
+  vertical-align: top;
+}
+
+/* Alas, IE6... if only you didn't suck so much...
+div.notes table tr td + td {
+*/
+div.notes table td.al {
+  text-align: left;
+  width: 85%;
+}
+
+div.notes table tr td {
+  padding-bottom: 1em;
+}
+
+div.notes table.portability tr td {
+  padding: 0em;
+}
+
+div.notes table.portability {
+  padding: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.l_edge { 
+  border-left: solid 2px black;
+}
+
+td.r_edge { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.selected a:link, .selected a:visited {
+  border-bottom: 0;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+
+/* Keep flags from being wrapped */
+span.userflag, span.flagtext {
+  white-space: nowrap;
+}
+/* Most of the screen-specific CSS is also the common CSS */
+
+/* Style for the non-image W3C marking at the bottom of the page, courtesy of
+ * Marek Prokop (http://www.sovavsiti.cz/css/w3c_buttons.html)
+ */
+.w3cbutton3 {
+  margin: 1em 1em 0 0;
+  width: 9em;
+  border: 1px solid #ccc;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 70%;
+  font-weight: bold;
+  float: left;
+}
+.w3cbutton3 a {
+  display: block;
+  width: 100%;
+}
+.w3cbutton3 a:link,
+.w3cbutton3 a:visited,
+.w3cbutton3 a:hover {
+  background-color: #fc6;
+  color: #000;
+  text-decoration: none;
+  border-bottom: none;
+}
+.w3cbutton3 span.w3c {
+  padding: 0 0.4em;
+  background-color: #fff;
+  color: #0c479d;
+}
+
+-->
+</style>
+<style type="text/css" id="internalPrint" media="print">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+  white-space: nowrap;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagDescParallel, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagDescParallel::before {
+  content: "Indicates automatic parallelization: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+  white-space: nowrap;
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.resultpage_landscape {
+  width: 1200px;
+}
+
+div.logo {
+  float: left;
+  width: 38px;
+  height: 57px;
+}
+
+.titlebarcontainer, .resultstable, .ncsection {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+.ncsection {
+  background-color: white;
+  color: black;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 91%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+div.ncsection {
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+}
+
+.systembar {
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+}
+
+td.systembar {
+  padding: 0.2em;
+}
+
+.metricbar {
+  margin: 0;
+  font-size: 120%;
+}
+
+/* CSS for the old-style div-based systembar */
+
+div.systembar {
+  float: left;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+div.metricbar {
+  padding: 0.1em;
+  float: right;
+  width: 33%;
+  height: 50%;
+}
+
+.base, .metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.peak, .metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Datebar stuff for older results */
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0.1em 0 0.1em 0.5em;
+}
+
+span.value {
+  float: right;
+  padding: 0.1em 0.5em 0.1em 0;
+}
+
+div.datebar {
+  width: 100%;
+  float: left;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor         { width: 48%; }
+p#tester               { width: 48%; }
+p#license_num          { width: 24%; }
+p#test_date            { width: 23%; }
+p#hw_avail, p#sw_avail { width: 25%; }
+
+/* Table-based datebar and systembar on newer results */
+table.datebar, table.titlebarcontainer {
+  float: left;
+  width: 100%;
+  min-height: 100%;
+  border-collapse: collapse;
+  border: solid 1px black;
+  table-layout: fixed;
+}
+
+table.datebar th {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-left: 0.5em;
+  padding: 0 0.5em 0 0.25em;
+}
+
+table.datebar td {
+  text-align: left;
+  padding: 0 0.5em 0 0;
+}
+
+table.titlebarcontainer tr {
+  vertical-align: top;
+}
+table.titlebarcontainer td {
+  border-right: 1px solid black;
+}
+
+th#license_num          { width: 17%; }
+th#test_sponsor         { width: 17%; }
+th#tester               { width: 17%; }
+th#test_date            { width: 22%; }
+th#hw_avail             { width: 22%; }
+th#sw_avail             { width: 22%; }
+td#license_num_val      { width: 52%; }
+td#test_sponsor_val     { width: 52%; }
+td#tester_val           { width: 52%; }
+td#test_date_val        { width: 13%; white-space: nowrap; }
+td#hw_avail_val         { width: 13%; white-space: nowrap; }
+td#sw_avail_val         { width: 13%; white-space: nowrap; }
+
+
+div.graph {
+  margin: auto;
+}
+
+div.sysdesc > h2 {
+  text-align: center;
+  background-color: #c8c8c8;
+  color: black;
+  padding: 0.5em 0 0.5em 0;
+  margin: 0;
+} 
+  
+div.sysdesc {
+  margin: 0.5em 0 0.5em 0;
+}
+
+div.infobox, div.sysdesc {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware,
+div.infobox table#BenchmarkSoftware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox table#Systems {
+  width: 100%;
+}
+
+div.infobox table#Power {
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+div.infobox table#Systems tbody th {
+  width: 20%;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes table {
+  width: 100%;
+}
+
+div.notes table tr td {
+  text-align: right;
+  vertical-align: top;
+}
+
+/* Alas, IE6... if only you didn't suck so much...
+div.notes table tr td + td {
+*/
+div.notes table td.al {
+  text-align: left;
+  width: 85%;
+}
+
+div.notes table tr td {
+  padding-bottom: 1em;
+}
+
+div.notes table.portability tr td {
+  padding: 0em;
+}
+
+div.notes table.portability {
+  padding: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.l_edge { 
+  border-left: solid 2px black;
+}
+
+td.r_edge { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.selected a:link, .selected a:visited {
+  border-bottom: 0;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+
+/* Keep flags from being wrapped */
+span.userflag, span.flagtext {
+  white-space: nowrap;
+}
+/* Classes that contain links - useless on paper */
+.flagTOC, .SubMenu, .NoPrint {
+  display: none;
+}
+
+/* Don't decorate links - they're not clickable */
+a {
+  text-decoration: none;
+  background: inherit;
+  color: inherit;
+}
+
+.resultpage {
+  width: 100%;
+}
+
+.w3cbutton3 {
+  display: none;
+}
+-->
+</style>
+<title>Sun Microsystems SPEC MPI Flags</title>
+</head><body>
+<h1>Sun Microsystems SPEC MPI Flags</h1>
+
+
+<p>Compilers: Sun Studio 12</p>
+<p>Operating systems: Solaris 10</p>
+<p>Last updated: 31-Mar-2008 jlh </p>
+
+<p>The text for many of the descriptions below was taken from the Sun Studio 11 Compiler Documentation, which is
+copyright &copy; 2005 Sun Microsystems, Inc.  The original documentation can be found at
+<a href="http://docs.sun.com/">docs.sun.com</a>.</p>
+
+<div class="NoPrint">
+<h3>Sections</h3>
+<p>Selecting one of the following will take you directly to that section:</p>
+<ul>
+<li><a href="#Section_optimization">Optimization Flags</a></li>
+<li><a href="#Section_portability">Portability Flags</a></li>
+<li><a href="#Section_compiler">Compiler Flags</a></li>
+<li><a href="#Section_other">Other Flags</a></li>
+<li><a href="#Section_forbidden">Forbidden Flags</a></li>
+</ul>
+</div>
+
+<hr />
+
+<div class="flagClass" id="optimization">
+<h2><a name="Section_optimization" id="Section_optimization">Optimization Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_F-Abcopy">-Abcopy</a></li>
+ <li><a href="#user_Addint:ignore_parallel">-Addint:ignore_parallel</a></li>
+ <li><a href="#user_Addint:sf">-Addint:sf=&lt;n&gt;</a></li>
+ <li><a href="#user_Ainline:cp">-Ainline:cp=&lt;n&gt;</a></li>
+ <li><a href="#user_Ainline:cs">-Ainline:cs=&lt;n&gt;</a></li>
+ <li><a href="#user_Ainline:inc">-Ainline:inc=&lt;n&gt;</a></li>
+ <li><a href="#user_Ainline:irs">-Ainline:irs=&lt;n&gt;</a></li>
+ <li><a href="#user_Ainline:mi">-Ainline:mi</a></li>
+ <li><a href="#user_Ainline:recursion">-Ainline:recursion=1</a></li>
+ <li><a href="#user_Ainline:rs">-Ainline:rs=400</a></li>
+ <li><a href="#user_F-Aivsub3">-Aivsub3</a></li>
+ <li><a href="#user_Aloop_dist:ignore_parallel">-Aloop_dist:ignore_parallel</a></li>
+ <li><a href="#user_Amemopt:arrayloc">-Amemopt:arrayloc</a></li>
+ <li><a href="#user_Apf:llist">-Apf:llist=&lt;n&gt;</a></li>
+ <li><a href="#user_Apf:noinnerllist">-Apf:noinnerllist</a></li>
+ <li><a href="#user_Apf:pdl">-Apf:pdl=1</a></li>
+ <li><a href="#user_array_pad_rows_n">-array_pad_rows,&lt;n&gt;</a></li>
+ <li><a href="#user_F-Ashort_ldst">-Ashort_ldst</a></li>
+ <li><a href="#user_Atile:skewp">-Atile:skewp[:b&lt;n&gt;]</a></li>
+ <li><a href="#user_Aujam:inner:g">-Aujam:inner=g</a></li>
+ <li><a href="#user_F-crit">-crit</a></li>
+ <li><a href="#user_F-dalign">-dalign</a></li>
+ <li><a href="#user_Dalloca:__builtin_alloca">-Dalloca=__builtin_alloca</a></li>
+ <li><a href="#user_F-depend">-depend</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-xdepend">-xdepend</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_D__MATHERR_ERRNO_DONTCARE">-D__MATHERR_ERRNO_DONTCARE</a></li>
+ <li><a href="#user_fast_CC">-fast</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-dalign">-dalign</a></li>
+   <li><a href="#user_F-fns">-fns</a></li>
+   <li><a href="#user_fsimple">-fsimple=2</a></li>
+   <li><a href="#user_ftrap_none">-ftrap=%none</a></li>
+   <li><a href="#user_xbuiltin_all">-xbuiltin=%all</a></li>
+   <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+   <li><a href="#user_F-xlibmopt">-xlibmopt</a></li>
+   <li><a href="#user_xO">-xO5</a></li>
+   <li><a href="#user_xtarget">-xtarget=native</a>
+    <ul class="SubMenu">
+     <li><a href="#user_xarch">-xarch=</a></li>
+     <li><a href="#user_xcache">-xcache=native</a></li>
+     <li><a href="#user_xchip">-xchip=native</a></li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li><a href="#user_fast_cc">-fast</a>
+  <ul class="SubMenu">
+   <li><a href="#user_D__MATHERR_ERRNO_DONTCARE">-D__MATHERR_ERRNO_DONTCARE</a></li>
+   <li><a href="#user_F-dalign">-dalign</a></li>
+   <li><a href="#user_F-fns">-fns</a></li>
+   <li><a href="#user_fsimple">-fsimple=2</a></li>
+   <li><a href="#user_F-fsingle">-fsingle</a></li>
+   <li><a href="#user_ftrap_none">-ftrap=%none</a></li>
+   <li><a href="#user_xalias_level_cc">-xalias_level=basic</a></li>
+   <li><a href="#user_xbuiltin_all">-xbuiltin=%all</a></li>
+   <li><a href="#user_F-xdepend">-xdepend</a></li>
+   <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+   <li><a href="#user_xO">-xO5</a></li>
+   <li><a href="#user_xprefetch">-xprefetch=auto,explicit</a></li>
+   <li><a href="#user_xtarget">-xtarget=native</a>
+    <ul class="SubMenu">
+     <li><a href="#user_xarch">-xarch=native</a></li>
+     <li><a href="#user_xcache">-xcache=native</a></li>
+     <li><a href="#user_xchip">-xchip=native</a></li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li><a href="#user_fast_f90">-fast</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-dalign">-dalign</a></li>
+   <li><a href="#user_F-depend">-depend</a>
+    <ul class="SubMenu">
+     <li><a href="#user_F-xdepend">-xdepend</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_F-fns">-fns</a></li>
+   <li><a href="#user_fsimple">-fsimple=2</a></li>
+   <li><a href="#user_F-fsingle">-fsingle</a></li>
+   <li><a href="#user_F-ftrap_common">-ftrap_common</a></li>
+   <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+   <li><a href="#user_F-xlibmopt">-xlibmopt</a></li>
+   <li><a href="#user_xO">-xO5</a></li>
+   <li><a href="#user_F-xpad:local">-xpad=local</a></li>
+   <li><a href="#user_xprefetch">-xprefetch=auto,explicit</a></li>
+   <li><a href="#user_xtarget">-xtarget=native</a>
+    <ul class="SubMenu">
+     <li><a href="#user_xarch">-xarch=native</a></li>
+     <li><a href="#user_xcache">-xcache=native</a></li>
+     <li><a href="#user_xchip">-xchip=native</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_xvector">-xvector=yes</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-fns">-fns</a></li>
+ <li><a href="#user_fsimple">-fsimple=&lt;n&gt;</a></li>
+ <li><a href="#user_F-fsingle">-fsingle</a></li>
+ <li><a href="#user_F-ftrap_common">-ftrap_common</a></li>
+ <li><a href="#user_ftrap_none">-ftrap=%none</a></li>
+ <li><a href="#user_F-g">-g</a></li>
+ <li><a href="#user_F-g0">-g0</a></li>
+ <li><a href="#user_F-lbsdmalloc">-lbsdmalloc</a></li>
+ <li><a href="#user_F-lfast">-lfast</a></li>
+ <li><a href="#user_F-ll2amm">-ll2amm</a></li>
+ <li><a href="#user_F-lmopt">-lmopt</a></li>
+ <li><a href="#user_F-lmvec">-lmvec</a></li>
+ <li><a href="#user_F-lstlport4">-lstlport4</a></li>
+ <li><a href="#user_F-lsunmath">-lsunmath</a></li>
+ <li><a href="#user_F-lumem">-lumem</a></li>
+ <li><a href="#user_f-m32">-m32</a></li>
+ <li><a href="#user_f-m64">-m64</a></li>
+ <li><a href="#user_F-noex">-noex</a></li>
+ <li><a href="#user_F-O">-O</a>
+  <ul class="SubMenu">
+   <li><a href="#user_xO">-xO3</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_Qdepgraph-early_cross_call">-Qdepgraph-early_cross_call=1</a></li>
+ <li><a href="#user_Qeps:do_spec_load">-Qeps:do_spec_load=1</a></li>
+ <li><a href="#user_Qeps:enabled">-Qeps:enabled=1</a></li>
+ <li><a href="#user_Qeps:rp_filtering_margin">-Qeps:rp_filtering_margin=&lt;n&gt;</a></li>
+ <li><a href="#user_Qeps:ws">-Qeps:ws=&lt;n&gt;</a></li>
+ <li><a href="#user_Qgsched-T">-Qgsched-T&lt;n&gt;</a></li>
+ <li><a href="#user_Qicache-chbab">-Qicache-chbab=1</a></li>
+ <li><a href="#user_Qipa:valueprediction">-Qipa:valueprediction</a></li>
+ <li><a href="#user_Qiselect-funcalign">-Qiselect-funcalign=&lt;n&gt;</a></li>
+ <li><a href="#user_Qiselect-sw_pf_tbl_th">-Qiselect-sw_pf_tbl_th=&lt;n&gt;</a></li>
+ <li><a href="#user_Qlp">-Qlp=&lt;n&gt;</a></li>
+ <li><a href="#user_Qlp-av">-Qlp-av=&lt;n&gt;</a></li>
+ <li><a href="#user_Qlp-fa">-Qlp-fa=&lt;n&gt;</a></li>
+ <li><a href="#user_Qlp-fl">-Qlp-fl=&lt;n&gt;</a></li>
+ <li><a href="#user_Qlp-ol">-Qlp-pt=weak</a></li>
+ <li><a href="#user_Qlp-pt_weak">-Qlp-pt=weak</a></li>
+ <li><a href="#user_Qlp-t">-Qlp-t=&lt;n&gt;</a></li>
+ <li><a href="#user_Qms_pipe_alldoall">-Qms_pipe+alldoall</a></li>
+ <li><a href="#user_Qms_pipe_intdivusefp">-Qms_pipe+intdivusefp</a></li>
+ <li><a href="#user_Qms_pipe_prefolim">-Qms_pipe+prefolim=&lt;n&gt;</a></li>
+ <li><a href="#user_Qms_pipe-pref_prolog">-Qms_pipe-pref_prolog</a></li>
+ <li><a href="#user_Qms_pipe-prefst">-Qms_pipe-prefst</a></li>
+ <li><a href="#user_Qms_pipe-prefstrong_0">-Qms_pipe-prefstrong=0</a></li>
+ <li><a href="#user_Qms_pipe_unoovf">-Qms_pipe+unoovf</a></li>
+ <li><a href="#user_Qpeep-Sh0">-Qpeep-Sh0</a></li>
+ <li><a href="#user_F-stackvar">-stackvar</a></li>
+ <li><a href="#user_X">-X[a|c]</a></li>
+ <li><a href="#user_xalias_level_cc">-xalias_level=[basic|std|strong]</a></li>
+ <li><a href="#user_xalias_level_CC">-xalias_level[=any|simple|compatible]</a></li>
+ <li><a href="#user_xarch">-xarch=[v8plusb|generic|native|native64]</a></li>
+ <li><a href="#user_F-xautopar">-xautopar</a></li>
+ <li><a href="#user_xbuiltin_all">-xbuiltin=%all</a></li>
+ <li><a href="#user_xcache">-xcache=(generic|native|native64|c) where "c" is a cache specifier of the form size:line:associativity</a></li>
+ <li><a href="#user_xchip">-xchip=[ultra3|generic|native|native64]</a></li>
+ <li><a href="#user_F-xdepend">-xdepend</a></li>
+ <li><a href="#user_xinline_">-xinline=</a></li>
+ <li><a href="#user_xipo">-xipo or -xipo=(0|1|2)</a></li>
+ <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+ <li><a href="#user_F-xlibmopt">-xlibmopt</a></li>
+ <li><a href="#user_F-xlic_lib:sunperf">-xlic_lib=sunperf</a></li>
+ <li><a href="#user_F-xlinkopt">-xlinkopt</a></li>
+ <li><a href="#user_F-xmemalign:4s">-xmemalign=4s</a></li>
+ <li><a href="#user_xO">-xO&lt;n&gt;</a></li>
+ <li><a href="#user_xpad_common">-xpad=common[:&lt;n&gt;]</a></li>
+ <li><a href="#user_F-xpad:local">-xpad=local</a></li>
+ <li><a href="#user_xpagesize">-xpagesize=&lt;n&gt;</a></li>
+ <li><a href="#user_xpagesize_stack">-xpagesize_stack=&lt;n&gt;</a></li>
+ <li><a href="#user_xprefetch">-xprefetch=auto,explicit</a></li>
+ <li><a href="#user_F-xprefetch_auto_type:indirect_array_access">-xprefetch_auto_type=indirect_array_access</a></li>
+ <li><a href="#user_xprefetch_latx">-xprefetch=latx:&lt;n&gt;</a></li>
+ <li><a href="#user_xprefetch-no_auto">-xprefetch=no%auto</a></li>
+ <li><a href="#user_xprefetch_level">-xprefetch_level=&lt;n&gt;</a></li>
+ <li><a href="#user_xprofile_collect">-xprofile=collect[:directory]</a></li>
+ <li><a href="#user_xprofile_use">-xprofile=use[:directory]</a></li>
+ <li><a href="#user_F-xreduction">-xreduction</a></li>
+ <li><a href="#user_F-xrestrict">-xrestrict</a></li>
+ <li><a href="#user_F-xsafe:mem">-xsafe=mem</a></li>
+ <li><a href="#user_xtarget">-xtarget=native</a>
+  <ul class="SubMenu">
+   <li><a href="#user_xarch">-xarch=native</a></li>
+   <li><a href="#user_xcache">-xcache=native</a></li>
+   <li><a href="#user_xchip">-xchip=native</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_xunroll">-xunroll=&lt;n&gt;</a></li>
+ <li><a href="#user_xvector">-xvector, -xvector=yes</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<!--
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_qoption_splitter" id="user_qoption_splitter">Splitter rule for qoptions: -Qoption (cg|iropt|f90comp) -switch[,-switch...] </a></li>
+<li class="flagDescRE"><span class="tt">-[qQ]option (cg|iropt|f90comp) (-[^,\s]+),(-\S+)(?=\s|$)</span></li>
+<li class="descText">
+<p>
+
+</p>
+</li>
+</ul>
+</div>
+</li>
+-->
+<!--
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Wx_splitter" id="user_Wx_splitter">Splitter rule for Wx: -W2,-switch[,-switch...] or -Wc,-switch[,-switch...]</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">-W(2|c),(-[^,\s]+),(-\S+)(?=\s|$)</span></li>
+<li class="descText">
+<p>
+
+</p>
+</li>
+</ul>
+</div>
+</li>
+-->
+<!--
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline_splitter" id="user_Ainline_splitter">Splitter rule for -Ainline</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:([^:\s]+):(\S+)(?=\s|$)</span></li>
+<li class="descText">
+<p>
+
+</p>
+</li>
+</ul>
+</div>
+</li>
+-->
+<!--
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Apf_splitter" id="user_Apf_splitter">Splitter rule for -Apf</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Apf:([^:\s]+):(\S+)(?=\s|$)</span></li>
+<li class="descText">
+<p>
+
+</p>
+</li>
+</ul>
+</div>
+</li>
+-->
+<!--
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp_splitter1" id="user_Qlp_splitter1">Splitter rule for -Qlp</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp(-|=)([^-\s]+)-(\S+)(?=\s|$)</span></li>
+<li class="descText">
+<p>
+
+</p>
+</li>
+</ul>
+</div>
+</li>
+-->
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-Abcopy" id="user_F-Abcopy">-Abcopy</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Abcopy\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Increase the probability that the compiler will perform memcpy/memset transformations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Addint:ignore_parallel" id="user_Addint:ignore_parallel">-Addint:ignore_parallel</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Addint:ignore_parallel\b</span></li>
+<li class="descText">
+<p><small>[optimizer]</small></p>
+<p>Ignore parallelization factors in loop interchange heuristics.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Addint:sf" id="user_Addint:sf">-Addint:sf=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Addint:sf=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer]</small></p>
+<p>When considering whether to interchange loops, set memory store operation weight to <kbd>n</kbd>.  A higher value of
+<kbd>n</kbd> indicates a greater performance cost for stores.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:cp" id="user_Ainline:cp">-Ainline:cp=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:cp=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; set the minimum call site frequency counter in order to consider a routine for
+inlining.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:cs" id="user_Ainline:cs">-Ainline:cs=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:cs=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Set inline callee size limit to <kbd>n</kbd>.  The unit roughly corresponds to the
+number of instructions.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:inc" id="user_Ainline:inc">-Ainline:inc=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:inc=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner;
+The inliner is allowed to increase the size of the program by up to <kbd>n</kbd>%.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:irs" id="user_Ainline:irs">-Ainline:irs=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:irs=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Allow routines to increase by up to <kbd>n</kbd>.  The unit roughly corresponds to
+the number of instructions.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:mi" id="user_Ainline:mi">-Ainline:mi</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:mi\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Perform maximum inlining (without considering code size increase).  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:recursion" id="user_Ainline:recursion">-Ainline:recursion=1</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:recursion=1\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Control the optimizer's loop inliner; Allow routines that are called recursively to still be eligible for inlining.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Ainline:rs" id="user_Ainline:rs">-Ainline:rs=400</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ainline:rs=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Inliner only considers routines smaller than n pseudo instructions as possible inline candidates.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-Aivsub3" id="user_F-Aivsub3">-Aivsub3</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Aivsub3\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p>Increase the probability that loop induction variables will replaced, so that some extraneous code can be eliminated from
+loops.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Aloop_dist:ignore_parallel" id="user_Aloop_dist:ignore_parallel">-Aloop_dist:ignore_parallel</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Aloop_dist:ignore_parallel\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p> Ignore parallelization factors in loop distribution heuristics.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Amemopt:arrayloc" id="user_Amemopt:arrayloc">-Amemopt:arrayloc</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Amemopt:arrayloc\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p>
+<p> Reconstruct array subscripts during memory allocation merging and data layout program transformation.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Apf:llist" id="user_Apf:llist">-Apf:llist=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Apf:llist=\d+\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Do speculative prefetching for link-list data structures; perform prefetching <kbd>n</kbd> iterations ahead.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Apf:noinnerllist" id="user_Apf:noinnerllist">-Apf:noinnerllist</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Apf:noinnerllist\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Do speculative prefetching for link-list data structures; do not attempt prefetching for innermost loops.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Apf:pdl" id="user_Apf:pdl">-Apf:pdl=1</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Apf:pdl=1\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Do prefetching for one-level indirect memory references.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_array_pad_rows_n" id="user_array_pad_rows_n">-array_pad_rows,&lt;n&gt;</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">(-[qQ]option f90comp )-array_pad_rows,\d+\b</span></li>
+<li class="descText">
+<p> Enable padding of arrays by <kbd>n</kbd>.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-Ashort_ldst" id="user_F-Ashort_ldst">-Ashort_ldst</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Ashort_ldst\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Convert multiple short memory operations into single long memory operations.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Atile:skewp" id="user_Atile:skewp">-Atile:skewp[:b&lt;n&gt;]</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Atile:skewp(?:b\d+)?\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Perform loop tiling which is enabled by loop skewing.  Loop skewing is a transformation that transforms a non-fully
+interchangeable loop nest to a fully interchangeable loop nest.  The optional <kbd>b&lt;n&gt;</kbd> sets the tiling block
+size to <kbd>n</kbd>.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Aujam:inner:g" id="user_Aujam:inner:g">-Aujam:inner=g</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-Aujam:inner=g\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Increase the probability that small-trip-count inner loops will be fully unrolled.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-crit" id="user_F-crit">-crit</a></li>
+<li class="flagDescRE"><span class="tt">(-W2,|-[qQ]option iropt )-crit\b</span></li>
+<li class="descText">
+<p><small>[optimizer flag]</small></p> 
+<p> Enable optimization of critical control paths </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-dalign" id="user_F-dalign">-dalign</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-dalign(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Assume data is naturally aligned.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Dalloca:__builtin_alloca" id="user_Dalloca:__builtin_alloca">-Dalloca=__builtin_alloca</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))[-/]Dalloca=__builtin_alloca(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Used for 403.gcc:  allow use of compiler's internal builtin alloca.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-depend" id="user_F-depend">-depend</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-depend(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Synonym for -xdepend.
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-xdepend">-xdepend</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_D__MATHERR_ERRNO_DONTCARE" id="user_D__MATHERR_ERRNO_DONTCARE">-D__MATHERR_ERRNO_DONTCARE</a></li>
+<li class="flagDescCompiler">sun_cc,sun_CC</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))[-/]D__MATHERR_ERRNO_DONTCARE(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p> Allows the compiler to assume that your code does not rely on setting of the <tt>errno</tt> variable.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_fast_CC" id="user_fast_CC">-fast</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">-fast\b</span></li>
+<li class="descText">
+<p>
+A convenience option, this switch selects several other options that are described in this file.
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-dalign">-dalign</a></li>
+  <li><a href="#user_F-fns">-fns</a></li>
+  <li><a href="#user_fsimple">-fsimple=2</a></li>
+  <li><a href="#user_ftrap_none">-ftrap=%none</a></li>
+  <li><a href="#user_xbuiltin_all">-xbuiltin=%all</a></li>
+  <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+  <li><a href="#user_F-xlibmopt">-xlibmopt</a></li>
+  <li><a href="#user_xO">-xO5</a></li>
+  <li><a href="#user_xtarget">-xtarget=native</a>
+   <ul class="SubMenu">
+    <li><a href="#user_xarch">-xarch=native</a></li>
+    <li><a href="#user_xcache">-xcache=native</a></li>
+    <li><a href="#user_xchip">-xchip=native</a></li>
+   </ul>
+  </li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_fast_cc" id="user_fast_cc">-fast</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">-fast\b</span></li>
+<li class="descText">
+<p>
+A convenience option, this switch selects several other options that are described in this file.
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_D__MATHERR_ERRNO_DONTCARE">-D__MATHERR_ERRNO_DONTCARE</a></li>
+  <li><a href="#user_F-dalign">-dalign</a></li>
+  <li><a href="#user_F-fns">-fns</a></li>
+  <li><a href="#user_fsimple">-fsimple=2</a></li>
+  <li><a href="#user_F-fsingle">-fsingle</a></li>
+  <li><a href="#user_ftrap_none">-ftrap=%none</a></li>
+  <li><a href="#user_xalias_level_cc">-xalias_level=basic</a></li>
+  <li><a href="#user_xbuiltin_all">-xbuiltin=%all</a></li>
+  <li><a href="#user_F-xdepend">-xdepend</a></li>
+  <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+  <li><a href="#user_xO">-xO5</a></li>
+  <li><a href="#user_xprefetch">-xprefetch=auto,explicit</a></li>
+  <li><a href="#user_xtarget">-xtarget=native</a>
+   <ul class="SubMenu">
+    <li><a href="#user_xarch">-xarch=native</a></li>
+    <li><a href="#user_xcache">-xcache=native</a></li>
+    <li><a href="#user_xchip">-xchip=native</a></li>
+   </ul>
+  </li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_fast_f90" id="user_fast_f90">-fast</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">-fast\b</span></li>
+<li class="descText">
+<p>
+A convenience option, this switch selects the following switches that are described in this file:
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-dalign">-dalign</a></li>
+  <li><a href="#user_F-depend">-depend</a>
+   <ul class="SubMenu">
+    <li><a href="#user_F-xdepend">-xdepend</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_F-fns">-fns</a></li>
+  <li><a href="#user_fsimple">-fsimple=2</a></li>
+  <li><a href="#user_F-fsingle">-fsingle</a></li>
+  <li><a href="#user_F-ftrap_common">-ftrap_common</a></li>
+  <li><a href="#user_F-xlibmil">-xlibmil</a></li>
+  <li><a href="#user_F-xlibmopt">-xlibmopt</a></li>
+  <li><a href="#user_xO">-xO5</a></li>
+  <li><a href="#user_F-xpad:local">-xpad=local</a></li>
+  <li><a href="#user_xprefetch">-xprefetch=auto,explicit</a></li>
+  <li><a href="#user_xtarget">-xtarget=native</a>
+   <ul class="SubMenu">
+    <li><a href="#user_xarch">-xarch=native</a></li>
+    <li><a href="#user_xcache">-xcache=native</a></li>
+    <li><a href="#user_xchip">-xchip=native</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_xvector">-xvector=yes</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fns" id="user_F-fns">-fns</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fns(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Selects faster (but nonstandard) handling of floating point arithmetic exceptions and gradual underflow.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_fsimple" id="user_fsimple">-fsimple=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-fsimple=\d+\b</span></li>
+<li class="descText">
+<p> Controls simplifying assumptions for floating point arithmetic: </p>
+   <ul>
+   <li><kbd>-fsimple=0</kbd> permits no simplifying assumptions.  Preserves strict IEEE 754 conformance.</li>
+   
+   <li><kbd>-fsimple=1</kbd> allows the optimizer to assume:
+   <ul>
+      <li>The IEEE 754 default rounding/trapping modes do not change after process initialization.</li>
+      <li>Computations producing no visible result other than potential floating-point exceptions may be deleted.</li>
+      <li>Computations with Infinity or NaNs as operands need not propagate NaNs to their results. For example, x*0 may be
+      replaced by 0.</li>
+      <li>Computations do not depend on sign of zero.</li>
+   </ul></li>
+   
+   <li><kbd>-fsimple=2</kbd> permits more aggressive floating point optimizations that may cause programs to produce
+   different numeric results due to changes in rounding. Even with <b><kbd>-fsimple=2</kbd></b>, the optimizer still is not
+   permitted to introduce a floating point exception in a program that otherwise produces none.</li>
+   </ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fsingle" id="user_F-fsingle">-fsingle</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fsingle(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Evaluate float expressions as single precision.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-ftrap_common" id="user_F-ftrap_common">-ftrap_common</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-ftrap_common(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Sets the IEEE 754 trapping mode to common exceptions (invalid, division by zero, and overflow).
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_ftrap_none" id="user_ftrap_none">-ftrap=%none</a></li>
+<li class="flagDescRE"><span class="tt">-ftrap=%none\b</span></li>
+<li class="descText">
+<p>
+Turns off all IEEE 754 trapping modes.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-g" id="user_F-g">-g</a></li>
+<li class="flagDescCompiler">sun_cc,sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-g(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Includes symbols in the executable.  If the optimization level is -xO3 or lower, some optimizations may be
+disabled when -g is present.  At -xO4 or higher, full optimization is performed, even when -g is present.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-g0" id="user_F-g0">-g0</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-g0(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Includes symbols in the executable.  If the optimization level is -xO3 or lower, some optimizations may be
+disabled when -g0 is present.  At -xO4 or higher, full optimization is performed, even when -g0 is present.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lbsdmalloc" id="user_F-lbsdmalloc">-lbsdmalloc</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lbsdmalloc(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Links in a library of general purpose memory allocation routines which can be faster than those found in libc, at the expense
+of more virtual memory consumed.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lfast" id="user_F-lfast">-lfast</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lfast(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+This library provides faster versions of some common functions, such as malloc/free and bcopy.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-ll2amm" id="user_F-ll2amm">-ll2amm</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-ll2amm(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Include a library containing chip-specific memory routines.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lmopt" id="user_F-lmopt">-lmopt</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lmopt(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Include the optimized math library.  This option usually generates faster code, but may produce slightly different
+results.  Usually these results will differ only in the last bit.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lmvec" id="user_F-lmvec">-lmvec</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lmvec(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Include a library with vectorized versions of some elementary mathematical functions.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lstlport4" id="user_F-lstlport4">-lstlport4</a></li>
+<li class="flagDescRE"><span class="tt">-library=stlport4</span></li>
+<li class="descText">
+<p>
+Use STLport's Standard Library implementation instead of the default libCstd.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lsunmath" id="user_F-lsunmath">-lsunmath</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lsunmath(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+The libsunmath math library contains functions that are not specified by any standard but are useful in numerical software.
+It also contains many of the functions that are in libm.so.2 but not in libm.so.1.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lumem" id="user_F-lumem">-lumem</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lumem(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Links in a library of "object caching" memory allocation routines which can be faster than those found in libc.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_f-m32" id="user_f-m32">-m32</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))[-/](?i)m32(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Specifies the memory model for the compiled binary object as 32-bit.'
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_f-m64" id="user_f-m64">-m64</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))[-/](?i)m64(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Specifies the memory model for the compiled binary object as 64-bit.'
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-noex" id="user_F-noex">-noex</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-noex(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Do not allow C++ exceptions.  A throw specification on a function is accepted but ignored; the compiler does not generate
+exception code.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-O" id="user_F-O">-O</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-O(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+A synomym for -xO3.
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_xO">-xO3</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qdepgraph-early_cross_call" id="user_Qdepgraph-early_cross_call">-Qdepgraph-early_cross_call=1</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qdepgraph-early_cross_call=1\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> There are several scheduling passes in the compiler.  This option allows early passes to move instructions across call
+instructions.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qeps:do_spec_load" id="user_Qeps:do_spec_load">-Qeps:do_spec_load=1</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qeps:do_spec_load=1\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Allow the enhanced pipeline scheduler (EPS) to use speculative (non-faulting) loads.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qeps:enabled" id="user_Qeps:enabled">-Qeps:enabled=1</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qeps:enabled=1\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Use enhanced pipeline scheduling (EPS) and selective scheduling algorithms for instruction scheduling.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qeps:rp_filtering_margin" id="user_Qeps:rp_filtering_margin">-Qeps:rp_filtering_margin=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qeps:rp_filtering_margin=\d+\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> The number of live variables allowed at any given point is n more than the number of physical registers. Setting n to a
+significantly large number (e.g., 100) will disable register pressure heuristics in EPS.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qeps:ws" id="user_Qeps:ws">-Qeps:ws=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qeps:ws=\d+\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Set the EPS window size, that is, the number of instructions it will consider across all paths when trying to find
+independent instructions to schedule a parallel group.  Larger values may result in better run time, at the cost of increased
+compile time.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qgsched-T" id="user_Qgsched-T">-Qgsched-T&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qgsched-T[456]\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Sets the aggressiveness of the trace formation, where <kbd>n</kbd> is 4, 5, or 6.  The higher the value of <kbd>n</kbd>,
+the lower the branch probability needed to include a basic block in a trace.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qicache-chbab" id="user_Qicache-chbab">-Qicache-chbab=1</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qicache-chbab=1\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Turn on optimization to reduce branch after branch penalty: nops will be inserted to prevent one branch from occupying
+the delay slot of another branch.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qipa:valueprediction" id="user_Qipa:valueprediction">-Qipa:valueprediction</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qipa:valueprediction\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Use profile feedback data to predict values and attempt to generate faster code along these control paths, even at the
+expense of possibly slower code along paths leading to different values. Correct code is generated for all paths.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qiselect-funcalign" id="user_Qiselect-funcalign">-Qiselect-funcalign=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qiselect-funcalign=\d+\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Do function entry alignment at <kbd>n</kbd>-byte boundaries.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qiselect-sw_pf_tbl_th" id="user_Qiselect-sw_pf_tbl_th">-Qiselect-sw_pf_tbl_th=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qiselect-sw_pf_tbl_th=\d+\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Peels the most frequent test branches/cases off a switch until the branch probability reaches less than 1/n. This is
+effective only when profile feedback is used </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp" id="user_Qlp">-Qlp=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp=\d+(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; turns the module on (1) or off (0) (default is on for F90; off for C/C++) </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-av" id="user_Qlp-av">-Qlp-av=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-av=\d+(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; sets the prefetch look ahead distance, in bytes.  The default is 256.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-fa" id="user_Qlp-fa">-Qlp-fa=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-fa=\d+(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; a setting of "1" means force user settings to override internally computed values.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-fl" id="user_Qlp-fl">-Qlp-fl=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-fl=\d+(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; a setting of "1" means force the optimization to be turned on for all languages.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-ol" id="user_Qlp-ol">-Qlp-pt=weak</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-ol=1(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Turns on prefetching for outer loops</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-pt_weak" id="user_Qlp-pt_weak">-Qlp-pt=weak</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-pt=weak(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; use weak prefetches in the general loop prefetch.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qlp-t" id="user_Qlp-t">-Qlp-t=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qlp-t=\d+(?=\s|$)</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p>Control irregular loop prefetching; sets the number of attempts at prefetching.  If not specified, <kbd>t=2</kbd> if
+<kbd>-xprefetch_level=3</kbd> has been set; otherwise, defaults to <kbd>t=1</kbd>.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe_alldoall" id="user_Qms_pipe_alldoall">-Qms_pipe+alldoall</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe\+alldoall\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Specifies that all loops can be pipelined without needing to be concerned about loop-carried dependencies.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe_intdivusefp" id="user_Qms_pipe_intdivusefp">-Qms_pipe+intdivusefp</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe\+intdivusefp\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> In pipelined loops, use floating point divide instructions for signed integer division.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe_prefolim" id="user_Qms_pipe_prefolim">-Qms_pipe+prefolim=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe\+prefolim=\d+\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Set number of outstanding prefetches in pipelined loops to &lt;n&gt; </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe-pref_prolog" id="user_Qms_pipe-pref_prolog">-Qms_pipe-pref_prolog</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe-pref_prolog\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Turn off prefetching in the prolog of modulo scheduled loops.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe-prefst" id="user_Qms_pipe-prefst">-Qms_pipe-prefst</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe-prefst\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Turn off prefetching for stores in the pipeliner.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe-prefstrong_0" id="user_Qms_pipe-prefstrong_0">-Qms_pipe-prefstrong=0</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe-prefstrong=0\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Turn off the use of strong prefetches in modulo scheduled loops.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qms_pipe_unoovf" id="user_Qms_pipe_unoovf">-Qms_pipe+unoovf</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qms_pipe\+unoovf\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Assert (to the pipeliner) that unsigned int computations will not overflow.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_Qpeep-Sh0" id="user_Qpeep-Sh0">-Qpeep-Sh0</a></li>
+<li class="flagDescRE"><span class="tt">(-Wc,|-[qQ]option cg )-Qpeep-Sh0\b</span></li>
+<li class="descText">
+<p><small>[code generator flag]</small></p>
+<p> Reduce the probability that the compiler will hoist sethi insructions out of loops.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-stackvar" id="user_F-stackvar">-stackvar</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-stackvar(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Allocate routine local variables on the stack.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_X" id="user_X">-X[a|c]</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">-X(a|c)</span></li>
+<li class="descText">
+<p>Specifies the degree of conformance with the ISO C standard: -Xc indicates strict conformance, whereas -Xa indicates ISO C
+plus some K&amp;R compatibility extensions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xalias_level_cc" id="user_xalias_level_cc">-xalias_level=[basic|std|strong]</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">-xalias_level=(?:basic|std|strong)\b</span></li>
+<li class="descText">
+<p> Allows the compiler to perform type-based alias analysis at the specified alias level: </p>
+<ul>
+   <li><b><kbd>basic</kbd></b> assume that memory references that involve different C basic types do not alias each
+   other.</li>
+   <li><b><kbd>std</kbd></b> assume aliasing rules described in the ISO 1999 C standard.</li>
+   <li><b><kbd>strong</kbd></b> in addition to the restrictions at the <kbd>std</kbd> level, assume that pointers of type
+   <kbd>char *</kbd> are used only to access an object of type char; and assume that there are no interior pointers.</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xalias_level_CC" id="user_xalias_level_CC">-xalias_level[=any|simple|compatible]</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">-xalias_level=(?:any|simple|compatible)?\b</span></li>
+<li class="descText">
+<p>Allows the compiler to perform type-based alias analysis:</p>
+<ul>
+  <li><b><kbd>any</kbd></b> assumes that any type can alias any other</li>
+  <li><b><kbd>simple</kbd></b> assumes that fundamental types are not aliased</li>
+  <li><b><kbd>compatible</kbd></b> assumes that layout-incompatible types are not aliased.</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xarch" id="user_xarch">-xarch=[v8plusb|generic|native|native64]</a></li>
+<li class="flagDescRE"><span class="tt">-xarch=(?:v8plusb|generic|native|native64)\b</span></li>
+<li class="descText">
+<p> Specifies which instructions can be used.  Among the choices are:</p>
+<ul>
+   <li><kbd><b>native64</b></kbd> Use the instructions available on the current processor in 64-bit mode</li>
+   <li><kbd><b>v8plusb</b></kbd> Use instructions that are available on the UltraSPARC-III/IV processors</li>
+   <li><kbd><b>native</b></kbd> Use the instructions available on the current processor</li>
+   <li><kbd><b>generic</b></kbd> Use instructions that are compatible with most SPARC processors</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xautopar" id="user_F-xautopar">-xautopar</a></li>
+<li class="flagDescCompiler">sun_cc,sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xautopar(?:=\S*)?(?=\s|$)</span></li>
+<li class="flagDescParallel"><span class="tt">Yes</span></li>
+<li class="descText">
+<p>
+Turn on automatic parallelization for multiple processors.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xbuiltin_all" id="user_xbuiltin_all">-xbuiltin=%all</a></li>
+<li class="flagDescCompiler">sun_cc,sun_CC</li>
+<li class="flagDescRE"><span class="tt">-xbuiltin=%all\b</span></li>
+<li class="descText">
+<p>
+Substitute intrinsic functions or inline system functions where profitable for performance.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xcache" id="user_xcache">-xcache=(generic|native|native64|c) where "c" is a cache specifier of the form size:line:associativity</a></li>
+<li class="flagDescRE"><span class="tt">-xcache=(generic|native|native64|\d+/\d+/\d+(\:\d+/\d+/\d+){0,2})\b</span></li>
+<li class="descText">
+<p>xcache defines the cache properties for use by the optimizer.  It can specify
+use of default assumptions ("generic"); use of whatever the compiler can assume
+about the current platform ("native"); or an explicit description of up to three 
+levels of cache, using colon-separated specifiers of the form <tt>si/li/ai</tt>, 
+where:</p>
+<ul>
+<li><tt>si</tt> is the size of the cache, in kb</li>
+<li><tt>li</tt> is the line size, in bytes</li>
+<li><tt>ai</tt> is the associativity</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xchip" id="user_xchip">-xchip=[ultra3|generic|native|native64]</a></li>
+<li class="flagDescRE"><span class="tt">-xchip=(?:ultra3|generic|native|native64)\b</span></li>
+<li class="descText">
+<p> xchip determines timing properties that are assumed by the compiler.  It does not limit which instructions are allowed
+(see xtarget for that).  Among the choices are:</p>
+<ul>
+   <li><kbd><b>native64</b></kbd> Optimize for the current processor in 64-bit mode</li>
+   <li><kbd><b>ultra3</b></kbd> Optimize for the UltraSPARC-III processor</li>
+   <li><kbd><b>native</b></kbd> Optimize for the current processor</li>
+   <li><kbd><b>generic</b></kbd> Use timing properties for good performance on most SPARC processors</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xdepend" id="user_F-xdepend">-xdepend</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xdepend(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Analyze loops for inter-iteration data dependencies, and do loop restructuring.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xinline_" id="user_xinline_">-xinline=</a></li>
+<li class="flagDescRE"><span class="tt">-xinline=(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Turn off inlining.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xipo" id="user_xipo">-xipo or -xipo=(0|1|2)</a></li>
+<li class="flagDescRE"><span class="tt">-xipo(?:=\d+)\b</span></li>
+<li class="descText">
+<p> Perform optimizations across all object files in the link step: </p>
+<ul>
+<li><kbd>0</kbd> = off</li>
+<li><kbd>1</kbd> = on</li>
+<li><kbd>2</kbd> = performs whole-program detection and analysis.</li>
+</ul>
+<p>At -xipo=2, the compiler performs inter-procedural aliasing analysis as well as optimization of memory allocation and
+layout to improve cache performance.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xlibmil" id="user_F-xlibmil">-xlibmil</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xlibmil(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Use inline expansion for math library, libm.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xlibmopt" id="user_F-xlibmopt">-xlibmopt</a></li>
+<li class="flagDescCompiler">sun_CC,sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xlibmopt(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Select the optimized math library.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xlic_lib:sunperf" id="user_F-xlic_lib:sunperf">-xlic_lib=sunperf</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xlic_lib=sunperf(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Link with Sun supplied licensed sunperf library.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xlinkopt" id="user_F-xlinkopt">-xlinkopt</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xlinkopt(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Perform link-time optimizations, such as branch optimization and cache coloring.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xmemalign:4s" id="user_F-xmemalign:4s">-xmemalign=4s</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xmemalign=4s(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Set maximum assumed data alignment to be at a 4 byte boundary and raise signal SIGBUS in the case of misaligned data
+accesses.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xO" id="user_xO">-xO&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xO\d+\b</span></li>
+<li class="descText">
+<p> Specify optimization level <kbd>n</kbd>: </p>
+<ul>
+  <li><kbd>-xO1</kbd> does only basic local optimizations (peephole.)</li>
+  <li><kbd>-xO2</kbd> Do basic local and global optimizations, such as induction variable elimination, common subexpression
+  elimination, constant propogation, register allocation, and basic block merging.</li>
+  <li><kbd>-xO3</kbd> Add global optimizations at the function level, loop unrolling, and software pipelining.</li>
+  <li><kbd>-xO4</kbd> Adds automatic inlining of functions in the same file.</li>
+  <li><kbd>-xO5</kbd> Uses optmization algorithms that may take significantly more compilation time or that do not have as
+  high a probability of improving execution time, such as speculative code motion.</li>
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xpad_common" id="user_xpad_common">-xpad=common[:&lt;n&gt;]</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">-xpad=common(?::\d+)?\b</span></li>
+<li class="descText">
+<p> If multiple arrays are placed in common, insert padding between them for better use of cache.  <tt>n</tt> specifies the
+amount of padding to apply, in units that are the same size as the array elements.  If no parameter is specified then the
+compiler selects one automatically.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xpad:local" id="user_F-xpad:local">-xpad=local</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xpad=local(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Pad local variables, for better use of cache.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xpagesize" id="user_xpagesize">-xpagesize=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xpagesize=\S+\b</span></li>
+<li class="descText">
+<p>
+Set the preferred page size for running the program.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xpagesize_stack" id="user_xpagesize_stack">-xpagesize_stack=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xpagesize_stack=\S+\b</span></li>
+<li class="descText">
+<p>
+Set the preferred stack page size for running the program.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprefetch" id="user_xprefetch">-xprefetch=auto,explicit</a></li>
+<li class="flagDescRE"><span class="tt">-xprefetch=auto,explicit\b</span></li>
+<li class="descText">
+<p> Allow generation of prefetch instructions.  <kbd>-xprefetch=yes</kbd> and <kbd>-xprefetch</kbd> are synonyms for
+<kbd>-xprefetch=auto,explicit</kbd>.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xprefetch_auto_type:indirect_array_access" id="user_F-xprefetch_auto_type:indirect_array_access">-xprefetch_auto_type=indirect_array_access</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xprefetch_auto_type=indirect_array_access(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Generate indirect prefetches for data arrays accessed indirectly.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprefetch_latx" id="user_xprefetch_latx">-xprefetch=latx:&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xprefetch=latx:\S+\b</span></li>
+<li class="descText">
+<p>
+Adjust the compiler's assumptions about prefetch latency by the specified factor.  Typically values in the range of 0.5
+to 2.0 will be useful.  A lower number might indicate that data will usually be cache resident; a higher number might
+indicate a relatively larger gap between the processor speed and the memory speed (compared to the assumptions built into the
+compiler).
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprefetch-no_auto" id="user_xprefetch-no_auto">-xprefetch=no%auto</a></li>
+<li class="flagDescRE"><span class="tt">-xprefetch=no%auto\b</span></li>
+<li class="descText">
+<p>
+Turn off prefetch instruction generation.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprefetch_level" id="user_xprefetch_level">-xprefetch_level=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xprefetch_level=[123]\b</span></li>
+<li class="descText">
+<p> Control the level of searching that the compiler does for prefetch opportunities by setting <kbd>n</kbd> to 1, 2, or 3,
+where higher numbers mean to do more searching.  The default for Fortran is 2. The default for C and C++ is 1.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprofile_collect" id="user_xprofile_collect">-xprofile=collect[:directory]</a></li>
+<li class="flagDescRE"><span class="tt">-xprofile=collect(:\S+)?\b</span></li>
+<li class="descText">
+<p>
+Collect profile data for feedback-directed optimization.  If an option  directory is named, the feedback will be stored there.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xprofile_use" id="user_xprofile_use">-xprofile=use[:directory]</a></li>
+<li class="flagDescRE"><span class="tt">-xprofile=use(:\S+)?\b</span></li>
+<li class="descText">
+<p>
+Use data collected for profile feedback.  If an option directory is named, look for the feedback data there.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xreduction" id="user_F-xreduction">-xreduction</a></li>
+<li class="flagDescCompiler">sun_cc,sun_f90</li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xreduction(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Analyze loops for reductions such as dot products, maximum and minimum finding.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xrestrict" id="user_F-xrestrict">-xrestrict</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xrestrict(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Treat pointer-valued function parameters as restricted pointers.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-xsafe:mem" id="user_F-xsafe:mem">-xsafe=mem</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-xsafe=mem(?=\s|$)</span></li>
+<li class="descText">
+<p> Enables the use of non-faulting loads when used in conjunction with <b><kbd>-xarch=v8plus</kbd></b>. Assumes that no
+memory based traps will occur.  </p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xtarget" id="user_xtarget">-xtarget=native</a></li>
+<li class="flagDescRE"><span class="tt">-xtarget=(\S+)\b</span></li>
+<li class="descText">
+<p>
+Selects options appropriate for the system where the compile is taking place, including architecture, chip, and cache
+sizes.  (These can also be controlled separately, via -xarch, -xchip, and -xcache, respectively.)
+</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_xarch">-xarch=native</a></li>
+  <li><a href="#user_xcache">-xcache=native</a></li>
+  <li><a href="#user_xchip">-xchip=native</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xunroll" id="user_xunroll">-xunroll=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xunroll=\d+\b</span></li>
+<li class="descText">
+<p>
+Enable unrolling loops n times where possible.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xvector" id="user_xvector">-xvector, -xvector=yes</a></li>
+<li class="flagDescRE"><span class="tt">-xvector(?i:=yes)?\b</span></li>
+<li class="descText">
+<p> Allow the compiler to transform math library calls within loops into calls to the vector math library.   Specifying
+<kbd>-xvector</kbd> is equivalent to <kbd>-xvector=yes</kbd>.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<div class="flagClass" id="portability">
+<h2><a name="Section_portability" id="Section_portability">Portability Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_F-lcplxsupp">-lcplxsupp</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lcplxsupp" id="user_F-lcplxsupp">-lcplxsupp</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lcplxsupp(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+This library is necessary to get full implementation of _Complex data types on Solaris 8 and Solaris 9.  It is not
+necessary (and should not be used) on Solaris 10.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<div class="flagClass" id="compiler">
+<h2><a name="Section_compiler" id="Section_compiler">Compiler Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_sun_CC">CC</a></li>
+ <li><a href="#user_sun_cc">cc</a></li>
+ <li><a href="#user_sun_f90">f90</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_sun_CC" id="user_sun_CC">CC</a></li>
+<li class="flagDescRE"><span class="tt">(?:/\S+/)?CC\b</span></li>
+<li class="descText">
+<p>
+Invoke the Sun Studio C++ Compiler
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_sun_cc" id="user_sun_cc">cc</a></li>
+<li class="flagDescRE"><span class="tt">(?:/\S+/)?cc\b</span></li>
+<li class="descText">
+<p>
+Invoke the Sun Studio C Compiler.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_sun_f90" id="user_sun_f90">f90</a></li>
+<li class="flagDescRE"><span class="tt">(?:/\S+/)?f90\b</span></li>
+<li class="descText">
+<p>
+Invoke the Sun Studio Fortran 90 Compiler
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<div class="flagClass" id="other">
+<h2><a name="Section_other" id="Section_other">Other Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_verbose_cc">-#</a></li>
+ <li><a href="#user_verbose_CC">-verbose=diags,version</a></li>
+ <li><a href="#user_verbose_diags_CC">-v</a>
+  <ul class="SubMenu">
+   <li><a href="#user_verbose_CC">-verbose=diags</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_verbose_f90">-v</a></li>
+ <li><a href="#user_version_ccf90">-V</a></li>
+ <li><a href="#user_version_CC">-V</a>
+  <ul class="SubMenu">
+   <li><a href="#user_verbose_CC">-verbose=version</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_xjobs">-xjobs=&lt;n&gt;</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_verbose_cc" id="user_verbose_cc">-#</a></li>
+<li class="flagDescCompiler">sun_cc</li>
+<li class="flagDescRE"><span class="tt">-#(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Turns on verbose mode, showing how command options expand. Shows each component as it is invoked.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_verbose_CC" id="user_verbose_CC">-verbose=diags,version</a></li>
+<li class="flagDescRE"><span class="tt">-verbose=\S+\b</span></li>
+<li class="descText">
+<p>Controls compiler verbosity.  There are several values that can be used with this flag:</p>
+<dl>
+<dt>[no%]diags</dt>
+<dd>[Do not] Print the command line for each compilation pass</dd> <dt>[no%]template</dt>
+<dd>[Do not] Turn on the template instantiation <tt>verbose</tt> mode (sometimes called the "verify" mode). The 
+<tt>verbose</tt> mode displays each phase of instantiation as it occurs during compilation.</dd>
+<dt>[no%]version</dt>
+<dd>[Do not] Direct the CC driver to print the names and version numbers of the programs it invokes.</dd>
+<dt>%all</dt>
+<dd>Invokes all of the above.</dd>
+<dt>%none</dt>
+<dd><tt>-verbose=%none</tt> is the same as <tt>-verbose=no%template,no%diags,no%version</tt>.</dd>
+</dl>
+<p>The default is <tt>-verbose=%none</tt>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_verbose_diags_CC" id="user_verbose_diags_CC">-v</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">-v\b</span></li>
+<li class="descText">
+<p>Same as <tt>-verbose=diags</tt>.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_verbose_CC">-verbose=diags</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_verbose_f90" id="user_verbose_f90">-v</a></li>
+<li class="flagDescCompiler">sun_f90</li>
+<li class="flagDescRE"><span class="tt">-v\b</span></li>
+<li class="descText">
+<p>
+This flag will cause the Fortran compiler to emit verbose messages.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_version_ccf90" id="user_version_ccf90">-V</a></li>
+<li class="flagDescCompiler">sun_cc,sun_f90</li>
+<li class="flagDescRE"><span class="tt">-V\b</span></li>
+<li class="descText">
+<p>
+Directs the compiler to print the name and version ID of each component as the compiler executes.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_version_CC" id="user_version_CC">-V</a></li>
+<li class="flagDescCompiler">sun_CC</li>
+<li class="flagDescRE"><span class="tt">-V\b</span></li>
+<li class="descText">
+<p>Same as <tt>-verbose=version</tt>.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_verbose_CC">-verbose=version</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_xjobs" id="user_xjobs">-xjobs=&lt;n&gt;</a></li>
+<li class="flagDescRE"><span class="tt">-xjobs=\d+\b</span></li>
+<li class="descText">
+<p>Specify the <tt>-xjobs</tt> option to set how many processes the compiler creates to complete its work. Currently,
+<tt>-xjobs</tt> works only with the <tt>-xipo</tt> option. When you specify <tt>-xjobs=</tt><i>n</i>, the interprocedural
+optimizer uses <i>n</i> as the maximum number of code generator instances it can invoke to compile different files.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<div class="flagClass" id="forbidden">
+<h2><a name="Section_forbidden" id="Section_forbidden">Forbidden Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_F-lnsl">-lnsl</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-lnsl" id="user_F-lnsl">-lnsl</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-lnsl(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+This library is necessary to get functions used for accessing name services.  As there are no network-enabled MPI2007
+benchmarks, this flag should not be used.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<h2><a name="otherTuningInfo">System and Other Tuning Information</a></h2>
+
+
+
+<p><b>Platform settings</b></p>
+
+<p>One or more of the following settings may have been applied to the testbed.  If so, the "Platform Notes" section of the
+report will say so; and you can read below to find out more about what these settings mean.</p>
+
+<p><b><kbd>autoup=&lt;n&gt;</kbd></b> (Unix)
+<br />When the file system flush daemon <tt>fsflush</tt> runs, it writes to disk all modified file buffers that are more
+than <kbd>n</kbd> seconds old.  </p>
+
+<p><b><kbd>cpu_bringup_set=&lt;n&gt;</kbd></b> (Unix /etc/system)
+<br /> Specifies which processors are enabled at boot time.  <kbd><b>&lt;n&gt;</b></kbd> represents a bitmap of the
+processors to be brought online.  </p>
+
+<p><b><kbd>disablecomponent</kbd></b> (System Management Services)
+<br />This command can be used prior to booting the system for a 1-cpu test.  The tester uses <kbd>disablecomponent</kbd> to
+add all other CPUs to the "blacklist", which is a list of components that cannot be used at boot time.  </p>
+
+<p><b><kbd>LD_LIBRARY_PATH=&lt;directories&gt;</kbd></b> (linker)
+<br />LD_LIBRARY_PATH controls the search order for both the compile-time and run-time linkers.  Usually, it can be
+defaulted; but testers may sometimes choose to explicitly set it (as documented in the notes in the submission), in order to
+ensure that the correct versions of libraries are picked up.  </p>
+
+<p><b><kbd>PARALLEL=&lt;n&gt;</kbd></b> (Unix)
+<br />If programs have been compiled with <kbd>-xautopar</kbd>, this environment variable can be set to the number of
+processors that programs should use.
+</p>
+
+<p><b><kbd>STACKSIZE=&lt;n&gt;</kbd></b> (Unix)
+<br /> Set the size of the stack (temporary storage area) for each slave thread of a multithreaded program.  </p>
+
+<p><b><kbd>submit=echo 'pbind -b...' > dobmk; sh dobmk</kbd></b> (SPEC tools, Unix)
+<br /> When running multiple copies of benchmarks, the SPEC config file feature <kbd><b>submit</b></kbd> is sometimes used to
+cause individual jobs to be bound to specific processors.  If so, the specific command may be found in the config file; here
+is a brief guide to understanding that command: </p>
+   <ul>
+   <li><kbd><b>submit=</b></kbd> causes the SPEC tools to use this line when submitting jobs.</li>
+   <li><kbd><b>echo ...&gt; dobmk</b></kbd> causes the generated commands to be written to a file, namely
+       <kbd>dobmk</kbd>.</li>
+   <li><kbd><b>pbind -b</b></kbd> causes this copy's processes to be bound to the CPU specified by the expression that
+       follows it.  See the config file used in the submission for the exact syntax, which tends to be cumbersome because of
+       the need to carefully quote parts of the expression.  When all expressions are evaluated, each core ends up with
+       exactly one copy of each benchmark.  The pbind expression may include:
+       <ul>
+       <li><kbd><b>$SPECCOPYNUM</b></kbd>: the SPEC tools-assigned number for this copy of the benchmark.</li>
+       <li><kbd><b>psrinfo</b></kbd>: find out what processors are available</li>
+       <li><kbd><b>grep on-line</b></kbd>: search the <kbd>psrinfo</kbd> output for information regarding on-line cpus</li>
+       <li><kbd><b>expr</b></kbd>: Calculate simple arithmetic expressions.  For example, the effect of binding jobs to a
+           (quote-resolved) expression such as: <br /><tt>expr ( $SPECCOPYNUM / 4 ) * 8 + ($SPECCOPYNUM % 4 ) )</tt>
+           <br />would be to send the jobs to processors whose numbers are:
+           <br /><tt>0,1,2,3, 8,9,10,11, 16,17,18,19 ...</tt></li>
+       <li><kbd><b>awk...print \$1</b></kbd>: Pick out the line corresponding to this copy of the benchmark and use the CPU
+           number mentioned at the start of this line.</li>
+       </ul></li>
+   <li><kbd><b>sh dobmk</b></kbd> actually runs the benchmark.</li>
+   </ul>
+
+<p><b><kbd>tune_t_fsflushr=&lt;n&gt;</kbd></b> (Unix)
+<br /> Controls the number of seconds between runs of the file system flush daemon, <tt>fsflush</tt>.  </p>
+
+<p><b><kbd>ulimit -s &lt;n&gt;</kbd></b> (Unix)
+<br /> Sets the stack size to <kbd>n</kbd> kbytes, or "<kbd>unlimited</kbd>" to allow the stack size to grow without limit.
+</p>
+
+
+<hr />
+</body>
+</html>

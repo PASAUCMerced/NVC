@@ -1,0 +1,29 @@
+
+#botsspar.cfg
+ runlist         = 367.imagick
+ size            = test
+ iterations      = 1
+ sysinfo_program = specperl $[top]/Docs/sysinfo 
+ ext             = 0406
+ output_format   = text,config
+
+ default=default:
+ CC              = /usr/bin/gcc 
+ OPTIMIZE        = -O2 
+ PORTABILITY     = -DSPEC_LP64
+ COPTIMIZE	   = -fopenmp
+
+__MD5__
+367.imagick=base=0406=default:
+# Last updated Mon Oct 22 01:07:24 2018
+optmd5=11f8f4c11f82edd2dbbf0c502051deb1
+baggage=
+compile_options=\
+@eNrtkk1PhDAQhu/9FU3vgG6MiWTZBAruVgttXDjohbhYDAqU8GHiv7ewoEiM8eBxG5KWtzOdd55M\
+IEuteHwVaZYLKKs2k2Vjgqats6SN6658yur4TdRZ+m6hMwTUsVEhFjq/QgAzn5vQ6JraOGSl8Zwk\
+UFOfnN7RJdTcPffwuMUq/vPIvWD4C1zPibZQIzqEGltBLZWVKIsKHtcYTvnlBZzWupFdnYgNwCbE\
+2EJzB2gQmXPDeGihb3YQUG4xj66pvd2ruz9aG9IcL8C7eMokOgLMhKoE8cmDpxS2GhQ8k8Y+hnTO\
+7kLbIZSE91PhoSUEKAluFwwXGH4gsJaHF5G0zaYHlBeT/NVqD4G6SzL/ZFm97dvhLqbE6WHkBTqW\
+Y1FPfIb7NB+n+fhtPj4A4EY7kA==
+exemd5=4dc8e4d61cb25d553a76382bfec143d2
+

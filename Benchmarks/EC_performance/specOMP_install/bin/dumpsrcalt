@@ -1,0 +1,453 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+
+# dumpsrcalt - Dump the contents of a src.alt in a more human-readable form
+#
+# Copyright 2008-2011 Standard Performance Evaluation Corporation
+# All Rights Reserved
+#
+# $Id: dumpsrcalt 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use IO::Dir;
+use IO::File;
+use File::Temp qw(tempfile tempdir);
+use File::Find;
+use Cwd;
+use File::Copy;
+use File::Basename;
+use Scalar::Util qw(reftype);
+use Data::Dumper;
+use MIME::Base64;
+use Getopt::Long;
+eval 'use Date::Format';
+if ($@) {
+    eval 'use POSIX';
+    $::date_format_ok = 0;
+} else {
+    $::date_format_ok = 1;
+}
+
+my ($srcaltpm, $srcaltdir, %opts);
+
+%opts = ( 'skip_changed' => 0,  # Skip output of diffs?
+          'skip_new'     => 0,  # Skip output of new files?
+          'summarize'    => 0,  # No diff output at all?
+          'summary'      => 1,  # Output stats?
+          'help'         => 0,
+        );
+
+Getopt::Long::config("ignore_case");
+my $rc = GetOptions(\%opts, qw(
+                   skip_new|skip-new|no_new|no-new
+                   skip_changed|skip-changed|no_changed|no-changed
+                   summarize
+                   summary!
+                   help|h|?
+                   ));
+
+if ($opts{'summarize'} && !$opts{'summary'}) {
+  die "You have selected summary-only output (--summarize) with no\n".
+      "summary (--no-summary).\n";
+}
+
+if ($opts{'summarize'}) {
+  $opts{'skip_changed'} = $opts{'skip_new'} = 1;
+}
+
+usage(0) if $opts{'help'};
+
+my $SPEC = $ENV{'SPEC'};
+
+if ($SPEC eq '' || $SPEC =~ /^\s*$/) {
+    die "$0: The SPEC environment variable is not set.  Please ".
+        (($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\n".
+        "and re-run this program.\n";
+}
+
+if ((!-d $SPEC) || (!-f "${SPEC}/bin/runspec")) {
+    die "$0: The SPEC environment variable is set incorrectly.  Please ".
+        (($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\n".
+        "and re-run this program.\n";
+}
+
+my $orig_dir = getcwd;
+chdir $SPEC || die "$0: Couldn't cd into $SPEC\n";
+
+# Arrange to get _out_ of any temporary directories before exiting
+$SIG{__DIE__} = sub { chdir $SPEC; die $_[0]; };
+
+require "${SPEC}/bin/setup_common.pl";
+
+# Arguments will be either a single file (src.alt tarball or srcalt.pm file),
+# or a benchmark/src.alt combo.  This will migrate to after the GetOptions
+# later...
+if (@ARGV <= 0) {
+  usage(0);
+} elsif (@ARGV == 1) {
+  my ($file) = @ARGV;
+  # Make the path absolute, if it isn't already
+  $file = "${orig_dir}/${file}" unless $file =~ m#^[/\\]#;
+  if (! -f $file) {
+    print "\nCouldn't find src.alt archive or description file named \"$file\"\n";
+    usage(1);
+  } elsif ($file =~ /srcalt.pm$/i) {
+    $srcaltpm = $file;
+  } else {
+    ($srcaltpm, $srcaltdir) = unpack_archive($file);
+  }
+} elsif (@ARGV == 2) {
+  ($srcaltpm, $srcaltdir) = find_srcalt(@ARGV);
+}
+
+if ($srcaltpm eq '') {
+  die "No src.alt control file was found!\n";
+}
+
+my $srcalt = read_srcalt($srcaltpm, $srcaltdir);
+
+# Make some lists
+my @newfiles = grep { !exists($srcalt->{'diffs'}->{$_}) } sort keys %{$srcalt->{'filesums'}};
+my @difffiles = sort keys %{$srcalt->{'diffs'}};
+
+if ($opts{'summary'}) {
+  #
+  # Dump the human-readable part of the diff
+  #
+  print "This is src.alt \"$srcalt->{'name'}\" for $srcalt->{'forbench'}.\n";
+  print "It is usable with version";
+  if (reftype($srcalt->{'usewith'}) eq 'ARRAY') {
+    print 's '.join(' to ', @{$srcalt->{'usewith'}})." (inclusive)";
+  } else {
+    print " $srcalt->{'usewith'}";
+  }
+  print " of the benchmark.\n";
+  print 'It contains';
+  if (@newfiles > 0) {
+    print ' '.(@newfiles+0).' new file'.(@newfiles > 1 ? 's' : '');
+    print ' and' if (@difffiles > 0);
+  }
+  if (@difffiles > 0) {
+    print ' changes to '.(@difffiles+0).' existing file'.(@difffiles > 1 ? 's' : '');
+  }
+  print ".\n";
+  print "------------------------------------------------------------------------------\n";
+}
+
+if (!$opts{'skip_new'}) {
+  #
+  # Dump the new files (easy part)
+  #
+  foreach my $newfile (@newfiles) {
+    if (!-f "${srcaltdir}/$newfile") {
+      # This can happen when dumping _just_ the srcalt.pm
+      print "New file \"$newfile\" isn't present, and can't be dumped.\n";
+      next;
+    } else {
+      my @lines = read_file("${srcaltdir}/$newfile");
+      if (@lines > 0) {
+          print "Index: $newfile\n";
+          print "===================================================================\n";
+          print "--- original/$newfile\t".my_time2str('%Y-%m-%d %T.000000000 %z', 0)."\n";
+          print "+++ $srcalt->{'name'}/$newfile\t".my_time2str('%Y-%m-%d %T.000000000 %z', time)."\n";
+          print "@@ -0,0 +1,".(@lines+0)." @@\n";
+          print '+'.join('+', @lines);
+      } else {
+          # Empty file!
+          print "New file \"$newfile\" is empty, and diff has no way to represent that.\n";
+      }
+    }
+  }
+}
+
+# Now get out of the temporary directory so that it can be removed without
+# trouble...
+chdir $SPEC;
+
+if (!$opts{'skip_changed'}) {
+  #
+  # Dump the modified files (hard part)
+  #
+  foreach my $file (@difffiles) {
+    print "Index: $file\n";
+    print "===================================================================\n";
+    print "--- original/$file\t".my_time2str('%Y-%m-%d %T.000000000 %z', 0)."\n";
+    print "+++ $srcalt->{'name'}/$file\t".my_time2str('%Y-%m-%d %T.000000000 %z', time)."\n";
+    my $hunks;
+    my $difftext = decode_base64($srcalt->{'diffs'}->{$file});
+    eval $difftext;
+    die "The diff hunk for $file is malformed: $@\n" if $@;
+    my $total_offset = 0;
+    foreach my $hunk (@$hunks) {
+      die "The diff hunk for $file is malformed.\n" unless (reftype($hunk) eq 'HASH');
+      $total_offset += dump_hunk($hunk, $total_offset);
+    }
+  }
+}
+
+sub usage {
+  my ($rc) = @_;
+  print "Usage: $0 [options] <benchmark> <srcaltname>\n" .
+        "       $0 [options] <path to srcalt tarball>\n" .
+        "       $0 [options] <path to srcalt.pm>\n" .
+        "Options:\n" .
+        "   --skip-changed         -- Do not output diffs of files that have changed\n" .
+        "   --skip-new             -- Do not output diffs for new files\n".
+        "   --summarize            -- Do not output any diffs at all\n".
+        "   --no-summary           -- Do not output the summary for the src.alt\n" .
+        "\n" .
+        "<benchmark> must be the full nnn.name form\n" .
+        "<srcaltname> must match the name of the subdirectory in the benchmark's\n".
+        "  src.alt directory\n";
+  exit($rc);
+}
+
+sub unpack_archive {
+  my ($srcalt_archive) = @_;
+  my ($srcaltpm, $srcaltdir);
+
+  # Make a temporary directory in which to unpack the archive
+  my $dir = tempdir( CLEANUP => 1 );
+  chdir($dir);
+  copy($srcalt_archive, '.');
+  $srcalt_archive = basename($srcalt_archive);
+
+  # Figure out how to unpack it... it _should_ only be a bzipped tar file,
+  # but we can (try to) deal with other stuff too
+  my @commands = ();
+  my $new_file = $srcalt_archive;
+  if ($new_file =~ s/\.(?:tar.xz|txz)$/.tar/) {
+    push @commands, [ 'specxz', '-d', $srcalt_archive ],
+                    [ 'spectar', '-xf', $new_file ];
+  } elsif ($new_file =~ s/\.(?:tar.bz2|tbz)$/.tar/) {
+    push @commands, [ 'bzip2', '-d', $srcalt_archive ],
+                    [ 'spectar', '-xf', $new_file ];
+  } elsif ($new_file =~ s/\.(?:tar.gz|tgz)$/.tar/) {
+    push @commands, [ 'gzip', '-d', $srcalt_archive ],
+                    [ 'spectar', '-xf', $new_file ];
+  } elsif ($new_file =~ /\.tar/) {
+    push @commands, [ 'spectar', '-xf', $srcalt_archive ];
+  } elsif ($new_file =~ /\.zip/) {
+    push @commands, [ 'unzip', $srcalt_archive ];
+  } else {
+    die "Can't determine type of archive file \"$srcalt_archive\".\n".
+        "I understand how to deal with XZ tar files (.tar, .tar.xz, .txz) on all\n".
+        "platforms, and bzipped or gzipped tar files and zipped tar files on many others.\n";
+  }
+
+  foreach my $cmdset (@commands) {
+    system @{$cmdset};
+    if ($? != 0) {
+      die "Error unpacking src.alt with\n".
+          ' '.join(' ', @{$cmdset})."\n".
+          "The process exited with return code $?\n".
+          "The error might have been \"$!\".\n";
+    }
+  }
+
+  # At this point, the current directory _should_ contain an unpacked src.alt,
+  # so find srcalt.pm and set the other locations
+  sub wanted {
+    if (/^srcalt.pm$/) {
+      $srcaltpm  = $File::Find::name;
+      $srcaltdir = $File::Find::dir;
+      $File::Find::prune = 1;
+    }
+  }
+  find(\&wanted, $dir);
+
+  return($srcaltpm, $srcaltdir);
+}
+
+sub find_srcalt {
+  my ($bench, $srcalt) = @_;
+  usage(1) if ($bench eq '' || $srcalt eq '');
+
+  my $benchdir = undef;
+  for my $suite (<benchspec/*>) {
+    next unless (-d $suite);
+    my $dh = new IO::Dir $suite;
+    die "Can't open $suite for reading: $!\nStopped" unless defined($dh);
+    if (grep { $bench eq $_ } $dh->read) {
+      $benchdir = joinpaths($suite, $bench);
+      undef $dh;
+      last;
+    }
+  }
+  die "$0: Couldn't find benchmark \"$bench\" in any suite!\n" unless defined($benchdir);
+  die "$0: The benchmark directory $benchdir does not exist.\n" unless (-d $benchdir);
+
+  $srcaltdir = joinpaths($benchdir, 'src', 'src.alt', $srcalt);
+  die "$0: src.alt directory \"$srcaltdir\" does not exist.\n" unless (-d $srcaltdir);
+  $srcaltpm = joinpaths($srcaltdir, 'srcalt.pm');
+  die "$0: src.alt control file \"$srcaltpm\" does not exist.\n" unless (-f $srcaltpm);
+
+  return ($srcaltpm, $srcaltdir);
+}
+
+sub read_srcalt {
+  my ($srcaltpm, $srcaltdir) = @_;
+  my $infoptr;
+
+  eval "package Spec::Benchmark::srcalt; require '$srcaltpm';";
+  if ($@) {
+    die "\nERROR in src.alt control file '$srcaltpm': $@\n";
+  } else {
+    {
+      no strict 'refs';
+      $infoptr = ${"Spec::Benchmark::srcalt::info"};
+    }
+    foreach my $member (qw(name forbench usewith filesums diffsums diffs)) {
+      if (!exists $infoptr->{$member}) {
+        die "\nERROR: src.alt in $srcaltdir has an incomplete control file;\n".
+            " '$member' is missing\n";
+      }
+    }
+    if (reftype($infoptr->{'filesums'}) ne 'HASH') {
+        die "\nERROR: src.alt in $srcaltdir has corrupt file sums!\n";
+    }
+    # Fix up the file paths
+    foreach my $filepath (keys %{$infoptr->{'filesums'}}) {
+      next unless $filepath =~ m#benchspec/.*src/src.alt/$infoptr->{'name'}/(.*)#;
+      $infoptr->{'filesums'}->{$1} = $infoptr->{'filesums'}->{$filepath};
+      delete $infoptr->{'filesums'}->{$filepath};
+    }
+  }
+
+  return $infoptr;
+}
+
+sub my_time2str {
+  my ($format, $time) = @_;
+
+  # Select the time formatter to use.
+  # POSIX's strftime is a drop-in replacement for how we use it,
+  # and it's always present.  So why not use it all the time?
+  # Well, there are non-maskable prototype warnings in at least 5.8.4 and
+  # 5.8.6, so that's out...
+  if ($::date_format_ok) {
+      return time2str($format, $time);
+  } else {
+      return POSIX::strftime($format, localtime($time));
+  }
+}
+
+sub read_file {
+  my ($path) = @_;
+
+  my $fh = new IO::File "<$path";
+  die "\nCouldn't open $path for reading: $!\n" unless defined($fh);
+  my @lines = <$fh>;
+  $fh->close();
+
+  return @lines;
+}
+
+sub dump_hunk {
+  my ($diff, $offset) = @_;
+
+  my $oldstart = $diff->{'base'} + 1;
+  my $newstart = $oldstart + $offset;
+  my $oldlen = @{$diff->{'context'}}+0;
+  my $newlen = $oldlen;
+  my $newoffset = $offset;
+
+  # This is the index into the context line array of the last line that was
+  # dumped from it.
+  my $oldpos = 0; # Current position in the "context" array
+  my $added = 0; # Number of added lines
+
+  # Figure out how many lines are added or removed
+  foreach my $change (@{$diff->{'diffs'}}) {
+    my ($newline, $text, $oldline);
+    if (reftype($change) eq 'ARRAY') {
+      # Add or replace
+      ($newline, $text, $oldline) = @{$change};
+    } elsif (ref($change) eq '' && $change <= 0) {
+      # Delete only
+      $oldline = $change;
+    } else {
+      die "Bad diff hunk \"$change\"\n";
+    }
+    if (defined($newline)) {
+      $newlen++;
+      $newoffset++;
+    }
+    if (defined($oldline)) {
+      $newlen--;
+      $newoffset--;
+    }
+  }
+
+  print "@@ -$oldstart,$oldlen +$newstart,$newlen @@\n";
+
+  $oldlen--;    # We'll use it for array indexing later
+
+  my $full_context = (@{$diff->{'context'}} >= ($diff->{'clines'} * 2));
+  my $newline_adj = 0;
+  # Dump the changed lines
+  foreach my $change (@{$diff->{'diffs'}}) {
+      my ($newline, $text, $oldline);
+      if (reftype($change) eq 'ARRAY') {
+        # Add, maybe with delete
+        ($newline, $text, $oldline) = @{$change};
+
+        # Now make the newline postition relative to the context array
+        $newline += $diff->{'base'} - $newstart + 1;
+
+        if ($full_context && $newline_adj == 0 && $newline <= $diff->{'clines'} - 1) {
+          # This should not happen (but it does).
+          # $newline specifies a position that _should_ be within the context
+          # lines, but there are enough context lines to print, so adjust this
+          # and all following newline positions by the amount of the error
+          $newline_adj = $diff->{'clines'} - $newline;
+        }
+        $newline += $newline_adj;
+
+      } elsif (ref($change) eq '' && $change <= 0) {
+        # Delete only
+        $oldline = abs($change);
+      }
+
+      # Print lines from the context array until it's time to output a removed
+      # or added line
+      if (defined($newline) && defined($oldline)) {
+        while (   $oldpos + $added < $newline
+               && $oldpos < $oldline) {
+          print ' '.$diff->{'context'}->[$oldpos]."\n";
+          $oldpos++;
+        }
+      } else {
+        while (   (defined($newline) && $oldpos + $added < $newline)
+               || (defined($oldline) && $oldpos < $oldline)) {
+          print ' '.$diff->{'context'}->[$oldpos]."\n";
+          $oldpos++;
+        }
+      }
+
+      my $bump_oldpos = 0;
+      if (defined($oldline) && $oldpos <= $oldline + 1) {
+        # Stopped because there's a line that needs to be removed
+        print '-'.$diff->{'context'}->[$oldpos]."\n";
+        $bump_oldpos = 1;       # Don't increment here, or the test below fails
+        $added--;
+      }
+
+      if (defined($newline) && $oldpos + $added <= $newline + 1) {
+        # Insert the new line here
+        print '+'.$text."\n";
+        $added++;
+      }
+
+      $oldpos++ if $bump_oldpos;
+  }
+
+  # Dump the trailing context lines
+  if ($oldpos <= $oldlen) {
+    my $endlines = join("\n", map { ' '.$_ } grep { defined } @{$diff->{'context'}}[$oldpos..$oldlen]);
+    print "$endlines\n" if $endlines ne '';
+  }
+  
+  return $newoffset;
+}

@@ -1,0 +1,10 @@
+include ../common.mk
+
+EXE  = bfs
+
+.PHONY: all
+all: $(EXE) my_include.o
+
+.PHONY: clean
+clean:
+	$(RM) $(EXE) output.txt

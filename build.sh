@@ -27,12 +27,13 @@ case $os_type in
 	*) ;;
 esac
 
-
-WWW_PIN_LOC=${PIN_WWW_PREFIX}${PIN_FILE_NAME}
-echo ${PIN_WWW_PREFIX}${PIN_FILE_NAME}
-PIN_FILE_BASE=`basename ${PIN_FILE_NAME} .tar.gz`
+#WWW_PIN_LOC=${PIN_WWW_PREFIX}${PIN_FILE_NAME}
+#echo ${PIN_WWW_PREFIX}${PIN_FILE_NAME}
+#PIN_FILE_BASE=`basename ${PIN_FILE_NAME} .tar.gz`
 
 #PIN_ROOT="/home/mc29/CCTLIB_ALL/cctlib/pin-2.14-67254-gcc.4.4.7-linux/"
+
+PIN_ROOT=${CUR_DIR}'/pin-2.14-71313-gcc.4.4.7-linux/'
 if [ -z "$PIN_ROOT" ]
 then
 echo "PIN_ROOT is NOT set!"
@@ -55,6 +56,9 @@ echo "PIN_ROOT is set to '$PIN_ROOT'"
 else
 echo "PIN_ROOT is set to '$PIN_ROOT'"
 fi
+
+#PIN_ROOT = ${CUR_DIR}"/pin-2.14-71313-gcc.4.4.7-linux/"
+#echo "PIN_ROOT is set to "$PIN_ROOT
 
 ############## libelf #################################
 cd $CUR_DIR/externals/

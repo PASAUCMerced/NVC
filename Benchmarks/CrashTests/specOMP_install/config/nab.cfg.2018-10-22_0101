@@ -1,0 +1,29 @@
+
+#nab.cfg
+ runlist         = 352.nab
+ size            = test
+ iterations      = 1
+ sysinfo_program = specperl $[top]/Docs/sysinfo 
+ ext             = 0406
+ output_format   = text,config
+
+ default=default:
+ CC              = /usr/bin/gcc 
+ OPTIMIZE        = -O2 
+ PORTABILITY     = -DSPEC_LP64
+ COPTIMIZE	   = -fopenmp
+
+__MD5__
+352.nab=base=0406=default:
+# Last updated Mon Oct 22 00:55:16 2018
+optmd5=df243ae7506e7fd7cd4a57e19291cf81
+baggage=
+compile_options=\
+@eNqtUV1PgzAUfe+vaPqOmMVoQsYSKN2GAm0YPOgLcQgGBUoomPjvLR1sSPbggzdNenp7P849N+C1\
+Vr1+ZnlRZpA3XcFrYQDRtUXaJW1fvxVt8pW1Rf5tolsEJBQyxEQPCGDqMwPqvWj1Y1Hr72kKNXn4\
+VOaGQ805MILHK5HxZ8hIoF6BQ+x4NwAaEifGREFGwq3n2hBCja6glvMmq6sGnmws4bH7OzjZWvC+\
+TbMNwAbE2ERzVkg5qf1IWWSiXxQRkBNgFm89a3eQf3+kq9JsEuB9cs68yh8BakDZ1vXdFyKj6Ep5\
+8Mw1zqZKMhpGlu16bvQ8kVFjIuC5wdNC64U0V1RZ8+NHlnZiM4hWVpP7Mv4gjOcs1fonyrK2b0X7\
+ROowCFRW6NSOxsMWZiv4AdPdsxQ=
+exemd5=04afd5c79eabae2cc61f3014b4139c4c
+

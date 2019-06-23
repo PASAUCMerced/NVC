@@ -1,0 +1,478 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<!--
+     This file is
+       Copyright 2011 Standard Performance Evaluation Corporation
+       All Rights Reserved
+     
+     This file may be freely modified and redistributed, provided that the
+     copyright notice above and this notice remain unaltered.
+
+     $Id: Example-visualstudio.xml 6738 2011-08-10 21:52:54Z CloyceS $
+-->
+
+<flagsdescription>
+
+<filename>Example-visualstudio</filename>
+
+<title>Visual Studio C++ Flags</title>
+
+<header>
+<![CDATA[
+<p>Compilers: Microsoft Visual Studio 2010</p>
+<p>Last updated: 6-Jul-2011</p>
+]]>
+</header>
+
+<flag
+      name="cc"
+      class="compiler"
+      regexp="(?:[/\\]\S+[/\\])?cl\b">
+<example>cl</example>
+<![CDATA[
+<p>
+Invoke the command-line version of the Microsoft C++ compiler.
+</p>
+]]>
+</flag>
+
+<flag
+      name="link"
+      class="compiler"
+      regexp="(?:[/\\]\S+[/\\])?link\b">
+<example>link</example>
+<![CDATA[
+<p>
+Invoke the command-line version of the Microsoft linker.
+</p>
+]]>
+</flag>
+
+<flag
+      name="F-EH"
+      class="other"
+      regexp="-EH[sa]c?-?(?=\s|$)">
+<example>-EHsc</example>
+<![CDATA[
+<p>
+Specifies the model of exception handling to be used by the compiler and
+destroys C++ objects that will go out of scope as a result of the exception.
+If /EH is not specified, the compiler will catch structured and C++ exceptions,
+but will not destroy C++ objects that will go out of scope as a result of the
+exception.</p>
+<p>Options:</p>
+<ul>
+ <li><strong>a</strong>Use the exception-handling model that catches
+     asynchronous (structured) and synchronous (C++) exceptions.</li>
+ <li><strong>s</strong>Use the exception-handling model that catches
+     C++ exceptions only and tells the compiler to assume that 'extern C'
+     functions do throw an exception.</li>
+ <li><strong>c</strong>If used with "s" (/EHsc), catches C++ exceptions only
+     and tells the compiler to assume that 'extern C' functions never throw a
+     C++ exception. /EHca is equivalent to /EHa.</li>
+</ul>
+]]>
+</flag>
+
+<flag
+      name="F-debug"
+      regexp="[/-](?i:debug)\b"
+      class="optimization">
+<example>/DEBUG</example>
+<![CDATA[
+<p>The /DEBUG option creates debugging information for the .exe file.</p>
+<p>The linker puts the debugging information into a program database (PDB). It
+   updates the PDB during subsequent builds of the program.</p>
+]]>
+<include flag="F-incremental" />
+<include text="-opt:noicf,noref" />
+</flag>
+
+<flag name="F-incremental"
+      class="other"
+      regexp="(?i:[/-]incremental(?::no)?\b)">
+<example>/INCREMENTAL:NO</example>
+<![CDATA[
+<p>The /INCREMENTAL option controls how the linker handles incremental
+   linking.</p>
+
+<p>By default, the linker runs in incremental mode. To override a default
+   incremental link, specify /INCREMENTAL:NO.</p>
+]]>
+</flag>
+
+<!-- /OPT:REF,ICF -->
+<flag name="opt_splitter"
+      class="optimization"
+      regexp="(?i:([/-]opt:)([^,]+),(\S+)(?=\s|$))">
+<example>Splitter rule for /OPT</example>
+<include text="$1$2" />
+<include text="$1$3" />
+<display enable="0" />
+</flag>
+
+<flag name="F-opt"
+      class="optimization"
+      regexp="(?i:[/-]opt:(?:no)?(ref|icf))\b"
+/>
+
+<flag name="F-Zi"
+      class="other">
+<example>/Zi</example>
+<![CDATA[
+<p>Produces a program database (PDB) that contains type information and
+   symbolic debugging information for use with the debugger. The symbolic
+   debugging information includes the names and types of variables, as well
+   as functions and line numbers.</p>
+<p>/Zi does not affect optimizations.</p>
+]]>
+<include flag="F-debug" />
+</flag>
+
+<flag name="F-Ox"
+      class="optimization">
+<example>/Ox</example>
+<![CDATA[
+<p>The /Ox compiler option produces code that favors execution speed over smaller size.</p>
+]]>
+<include text="/Ob2" />
+<include flag="F-Og" />
+<include flag="F-Oi" />
+<include flag="F-Ot" />
+<include flag="F-Oy" />
+</flag>
+
+<flag name="F-O2"
+      class="optimization">
+<example>/O2</example>
+<![CDATA[
+<p>The /O2 compiler option creates the fastest code in the majority of cases.</p>
+]]>
+<include flag="F-Og" />
+<include flag="F-Oi" />
+<include flag="F-Ot" />
+<include flag="F-Oy" />
+<include text="/Ob2" />
+<include flag="F-Gs" />
+<include flag="F-GF" />
+<include flag="F-Gy" />
+</flag>
+
+<flag name="F-GL"
+      class="optimization">
+<example>/GL</example>
+<![CDATA[
+<p>Enables whole program optimization, which allows the compiler to perform
+   optimizations with information on all modules in the program. Without whole
+   program optimization, optimizations are performed on a per module basis.</p>
+<p>With information on all modules, the compiler can:</p>
+<ul>
+ <li>Optimize the use of registers across function boundaries.</li>
+ <li>Do a better job of tracking modifications to global data, allowing a
+     reduction in the number of loads and stores.</li>
+ <li>Do a better job of tracking the possible set of items modified by a
+     pointer dereference, reducing the numbers of loads and stores.</li>
+ <li>Inline a function in a module even when the function is defined in another
+     module.</li>
+</ul>
+<p>/ZI cannot be used with /GL</p>
+]]>
+</flag>
+
+<flag name="F-GS"
+      class="optimization"
+      regexp="[/-]GS-?">
+<example>/GS or /GS-</example>
+<![CDATA[
+<p>Enables (/GS) or disables (/GS-) detection of some buffer overruns that
+   overwrite a function's return address, exception handler address, or
+   certain types of parameters.</p>
+<p>/GS is on by default. If you expect your application to have no security exposure, use /GS-.</p>
+]]>
+</flag>
+
+<flag name="secure_scl"
+      class="optimization"
+      regexp="[/-]D_SECURE_SCL=[01]\b">
+<example>-D_SECURE_SCL=0</example>
+Defines whether Checked Iterators are enabled. If defined as 1, unsafe
+iterator use causes a runtime error. If defined as 0, checked iterators
+are disabled. The exact behavior of the runtime error depends on the
+value of _SECURE_SCL_THROWS. In debug mode, the default value for
+_SECURE_SCL is 1, meaning checked iterators are enabled. In release mode,
+the default value for _SECURE_SCL is 0.
+</flag>
+
+<flag name="stack"
+      class="other"
+      regexp="^(?i:[/-]stack:\d+(?:,\d+)?)\b">
+<example>/STACK:10000000</example>
+Sets the stack size in bytes.  The first value (reserve) specifies the total
+stack allocation in virtual memory.  The second value (commit; optional) is
+subject to interpretation by the operating system. In Windows NT and Windows
+2000 it specifies the amount of physical memory to allocate at a time.
+Committed virtual memory causes space to be reserved in the paging file.
+</flag>
+
+<flag name="out"
+      class="other"
+      regexp="^(?i:[/-]out:\S+)(?=\s|$)">
+<example>/OUT:foo.exe</example>
+This option is used to specify the output filename.
+</flag>
+
+<flag name="F-ltcg"
+      class="optimization"
+      regexp="(?i:[/-]LTCG(?::NOSTATUS|:STATUS|:PGI(?:NSTRUMENT)?|:PGO(?:PTIMIZE)?|:PGUPDATE)?)\b">
+<example>/LTCG</example>
+<![CDATA[
+<p>The /LTCG option tells the linker to call the compiler and perform whole
+   program optimization and optionally profile guided feedback optimization.
+   The option takes zero or one of the following arguments:</p>
+<ul>
+ <li>:NOSTATUS or :STATUS -- Specifies whether the linker should display a
+     progress indicator showing what percentage of the link is complete.
+     :NOSTATUS is the default.</li>
+ <li>:PGINSTRUMENT -- Specifies that the linker should output a .pgd file in
+     preparation for instrumented test runs on the application.</li>
+ <li>:PGOPTIMIZE -- Specifies that the linker should use the profile data
+     created after running the instrumented binary to create an optimized
+     image.</li>
+ <li>:PGUPDATE -- Allows list of input files to be added or modified from what
+     was specified in the :PGINSTRUMENT phase.</li>
+</ul>
+
+<p>When /LTCG is used with either /Og, /O1, /O2, or /Ox, the following optimizations are performed:</p>
+<ul>
+ <li>Cross-module inlining</li>
+ <li>Interprocedural register allocation (64-bit operating systems only)</li>
+ <li>Custom calling convention</li>
+ <li>Small TLS displacement</li>
+ <li>Stack double alignment</li>
+ <li>Improved memory disambiguation (better interference information for
+     global variables and input parameters)</li>
+</ul>
+
+<p>If the compiler can identify all the call sites of a function, the compiler will ignore explicit calling-convention modifiers on a function and try to optimize the function's calling convention:</p>
+<ul>
+ <li>pass parameters in registers</li>
+ <li>reorder parameters for alignment</li>
+ <li>remove unused parameters</li>
+</ul>
+]]>
+</flag>
+
+<flag name="no-wchar_t-native"
+      class="portability"
+      regexp="[/-]Zc:wchar_t-(?=\s|$)">
+<example>/Zc:wchar_t-</example>
+This flag causes the compiler to not recognize wchar_t as a native type.
+</flag>
+
+<flag name="F-TP"
+      class="portability">
+<example>-TP</example>
+This option causes the compiler to treat all source files as C++, regardless
+of their file extensions.
+</flag>
+
+<flag name="favor"
+      class="optimization"
+      regexp="[/-]favor:(?:blend|AMD64|INTEL64)(?=\s|$)">
+<example>/favor:blend</example>
+<![CDATA[
+<p>/favor:&lt;option&gt; is available only in the x64 compiler and produces the
+   code that is optimized for a specific x64 architecture or for the specifics
+   of micro-architectures in both the AMD64 and Intel64 architectures.</p>
+
+<p>There are three possible values for &lt;option&gt;:</p>
+<ul>
+ <li>blend produces the code that is optimized for the specifics of micro-
+     architectures in both the AMD64 and Intel64 architectures. While
+     /favor:blend may not give the best performance possible on a specific
+     processor, it is designed to give the best performance across a broad
+     range of x64 processors. By default /favor:blend is in effect.</li>
+ <li>AMD64 optimizes the generated code for the AMD Opteron, and Athlon
+     processors that support 64-bit extensions. The optimized code can run on
+     all x64 compatible platforms. Code that is generated by using /favor:AMD64
+     could cause worse performance on Intel processors that support
+     Intel64.</li>
+ <li>INTEL64 is available only in the x64 compiler and optimizes the generated
+     code for Intel processors that support Intel64, which typically yields
+     better performance for that platform. The resulting code can run on any x64
+     platform. Code generated with /favor:INTEL64 could cause worse performance
+     on AMD Opteron, and Athlon processors that support 64-bit extensions.</li>
+</ul>
+]]>
+</flag>
+
+<flag name="arch"
+      class="optimization"
+      regexp="[/-]arch:(?:SSE|SSE2|AVX)(?=\s|$)">
+<example>/arch:SSE</example>
+<![CDATA[
+<p>This option specifies the architecture for code generation by using the
+   Streaming SIMD Extensions (SSE), Streaming SIMD Extensions 2 (SSE2), and
+   Advanced Vector Extension (AVX) instructions.</p>
+<p>/arch:SSE enables the compiler to use the SSE instructions. /arch:SSE2
+   enables the compiler to use the SSE2 instructions. /arch:AVX directs the
+   compiler to use the AVX instruction encodings.</p>
+<p>In addition to using the SSE and SSE2 instructions, the compiler also uses
+   other instructions that are present on the processor revisions that support
+   SSE and SSE2. An example is the CMOV instruction that first appeared on the
+   Pentium Pro revision of the Intel processors.</p>
+<p>In particular, if the user does not use _controlfp to modify the FP control
+   word, then the run-time startup code will set the x87 FPU control word
+   precision-control field to 53-bits. Therefore, every float and double
+   operation in an expression occurs with a 53-bit significand and a 15-bit
+   exponent. However, every SSE single-precision operation uses a 24-bit
+   significand/8-bit exponent, and SSE2 double-precision operations use a
+   53-bit significand/11-bit exponent.</p>
+]]>
+</flag>
+
+<flag name="F-fp"
+      class="optimization"
+      regexp="[/-]fp:(?:precise|except-?|fast|strict)(?=\s|$)">
+<example>/fp:&lt;option&gt;</example>
+<![CDATA[
+<p>Specifies floating-point behavior in a source code file.  &lt;option&gt;
+   must be one of the following values:</p>
+<ul>
+  <li>precise (the default) - Improves the consistency of floating-point tests
+  for equality and inequality by disabling optimizations that could change the
+  precision of floating-point calculations, which is required for strict ANSI
+  conformance. By default, the compiler uses the coprocessor's 80-bit registers
+  to hold the intermediate results of floating-point calculations. This
+  increases program speed and decreases program size. Because the calculation
+  involves floating-point data types that are represented in memory by less
+  than 80 bits, however, carrying the extra bits of precision (80 bits minus
+  the number of bits in a smaller floating-point type) through a lengthy
+  calculation can produce inconsistent results.
+  With /fp:precise on x86 processors, the compiler will perform rounding on
+  variables of type float to the proper precision for assignments and casts and
+  when passing parameters to a function. This rounding guarantees that the data
+  does not retain any significance greater than the capacity of its type. A
+  program compiled with /fp:precise can be slower and larger than one compiled
+  without /fp:precise. /fp:precise disables intrinsics; the standard run-time
+  library routines are used instead.</li>
+  <li>fast - Creates the fastest code in the majority of cases.</li>
+  <li>except - Enable reliable floating-point exception model.  Exceptions will
+      be raised immediately after they are triggered.</li>
+  <li>except- - Disable reliable floating-point exception model.  Exceptions may
+      not be raised immediately after they are triggered.</li>
+  <li>strict - The strictest floating-point model. /fp:strict causes
+      fp_contract to be OFF and fenv_access to be ON. /fp:except is implied and
+      can be disabled by explicitly specifying /fp:except-. When used with
+      /fp:except-, /fp:strict enforces strict floating-point semantics but
+      without respect for exceptional events.</li>
+</ul>
+]]>
+</flag>
+
+<!-- Implicitly included flags go here -->
+<flag name="F-Ob"
+      class="optimization"
+      regexp="[/-]Ob(\S+)(?=\s|$)">
+<example>/Ob(0|1|2)</example>
+<![CDATA[
+<p>Control inline expansion of functions.  Possible values:</p>
+<ul>
+ <li>0: Disables inline expansion, which is on by default.</li>
+ <li>1: Expands only functions marked as inline, __inline, __forceinline or
+        __inline or, in a C++ member function, defined within a class
+        declaration.</li>
+ <li>2: Expands functions marked as inline or __inline and any other function
+        that the compiler chooses. (This is often referred to as
+        "auto-inlining").</li>
+</ul>
+]]>
+</flag>
+
+<flag name="F-Og"
+      class="optimization">
+<example>/Og</example>
+<![CDATA[
+<p>Provides local and global optimizations, automatic-register allocation, and loop optimization.</p>
+<p>The following optimizations are available:</p>
+<ul>
+ <li>Local and global common subexpression elimination</li>
+ <li>Automatic register allocation</li>
+ <li>Loop invariant subexpression removal</li>
+</ul>
+]]>
+</flag>
+
+<flag name="F-Oi"
+      class="optimization">
+<example>/Oi</example>
+<![CDATA[
+<p>Replaces some function calls with intrinsic or otherwise special forms of
+   the function that have increased performance.</p>
+<p>Programs that use intrinsic functions are faster because they do not have
+   the overhead of function calls, but may be larger because of the additional
+   code created.</p>
+<p>/Oi is only a request to the compiler to replace some function calls with
+   intrinsics; the compiler may not replace the function call with an intrinsic
+   if it will result in better performance.</p>
+<p>The intrinsic floating-point functions do not perform any special checks on
+   input values and so work in restricted ranges of input, and have different
+   exception handling and boundary conditions than the library routines with
+   the same name. Using the true intrinsic forms implies loss of IEEE
+   exception handling, and loss of _matherr and errno functionality; the
+   latter implies loss of ANSI conformance. However, the intrinsic forms can
+   considerably speed up floating-point-intensive programs, and for many
+   programs, the conformance issues are of little practical value.</p>
+]]>
+</flag>
+
+<flag name="F-Ot"
+      class="optimization">
+<example>/Ot</example>
+/Ot (Favor Fast Code) maximizes the speed of executables by instructing the
+compiler to favor speed over size. This is the default. The compiler can
+reduce many C and C++ constructs to functionally similar sequences of machine
+code. Occasionally, these differences offer tradeoffs of size versus speed.
+</flag>
+
+<flag name="F-Oy"
+      class="optimization">
+<example>-Oy</example>
+Suppresses creation of frame pointers on the call stack. This option speeds
+function calls, because no frame pointers need to be set up and removed. It
+also frees one more register for storing frequently used variables and sub-
+expressions.
+</flag>
+
+<flag name="F-Gs"
+      class="optimization"
+      regexp="[/-]Gs\d*\b">
+<example>/Gs[size]</example>
+<![CDATA[
+<p>This option is an advanced feature to control stack probes. When activated,
+   a stack probe reaches benignly into memory by the amount of space required
+   to store the associated function's local variables.</p>
+<p>If a function requires more than size bytes of stack space for local
+   variables, its stack probe is activated. The default value of size is the
+   size of one page (4 KB).</p>
+]]>
+</flag>
+
+<flag name="F-GF"
+      class="optimization">
+<example>/GF</example>
+This option enables the compiler to create a single copy of identical strings
+in the program image and in memory during execution.
+</flag>
+
+<flag name="F-Gy"
+      class="optimization">
+<example>/Gy</example>
+This option allows the compiler to package individual functions in the form of
+packaged functions (COMDATs).
+</flag>
+
+</flagsdescription>

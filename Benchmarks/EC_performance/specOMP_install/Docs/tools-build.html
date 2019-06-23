@@ -1,0 +1,612 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Tools Build SPEC OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+body { background: white; color: black; }
+</style>
+
+</head>
+<body>
+
+<h1 style="margin-bottom:0"> Building the SPEC OMP2012 Tool Suite</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-11 18:56:09 -0400 (Thu, 11 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+
+<p class="contents">Contents</p>
+
+<p class="contentsl1"><a href="#intro">          1. </a>Introduction</p>
+<p class="contentsl2"><a href="#what">              a. </a>What are the tools?</p>
+<p class="contentsl2"><a href="#precompiled">       b. </a>Pre-compiled binaries</p>
+<p class="contentsl2"><a href="#when2build">        c. </a>When to build the tools yourself</p>
+<p class="contentsl1"><a href="#how">            2. </a>How to build the tools</p>
+<p class="contentsl2"><a href="#unix">              a. </a>Notes specific to Unix systems</p>
+<p class="contentsl2"><a href="#windows">           b. </a>Notes specific to Windows systems</p>
+<p class="contentsl1"><a href="#verify">         3. </a>How to verify that your build succeeded</p>
+<p class="contentsl1"><a href="#describe">       4. </a>Describing your newly-built tools</p>
+<p class="contentsl2"><a href="#presentation">      a. </a>Toolset presentation</p>
+<p class="contentsl3"><a href="#exclusion">           1. </a>Excluding otherwise valid candidates</p>
+<p class="contentsl3"><a href="#order">               2. </a>Affecting presentation order</p>
+<p class="contentsl1"><a href="#package">        5. </a>Packagetools</p>
+<p class="contentsl2"><a href="#PackageExample">    a. </a> Example: use packagetools</p>
+<p class="contentsl2"><a href="#PackageTestExample"> b.</a> Example: test the newly packaged tools </p>
+<p class="contentsl1"><a href="#troubleshooting">6. </a>Troubleshooting: What to do if something goes wrong</p>
+<p class="contentsl2"><a href="#hand">             a. </a>Try it by hand</p>
+<p class="contentsl2"><a href="#known">            b. </a>Known problems</p>
+<p class="contentsl2"><a href="#justpart">         c. </a>Executing just part of buildtools</p>
+<p class="contentsl1last"><a href="#support">     7.</a>Support</p>
+
+<h2 id="intro">1. Introduction</h2>
+
+<p>SPEC supplies various tools that are used to ensure consistent operation of benchmarks across a variety of platforms.  In
+order to generate a valid result file which can be submitted to SPEC, you must use the SPEC supplied tools.</p>
+
+<h3 id="what">1.a. What are the tools?</h3>
+
+<p>The tools include (but are not limited to):</p>
+
+  <table>
+  <tr> <th>specdiff    </th><td> examines results to see if the correct answer was obtained</td></tr>
+  <tr> <th>specinvoke  </th><td> invokes benchmarks for OMP2012</td></tr>
+
+  <tr> <th>specmake    </th> 
+                  <td> GNU <tt>make</tt> (Calling it "<tt>specmake</tt>" avoids possible conflicts with versions of
+                  <tt>make</tt> that may already be on your system.  SPEC requires that published results use the versions of
+                  the tools that it supplies, so that if SPEC applies patches or extensions from time to time, all users run
+                  with a consistent tool set.  Similar considerations apply to other tools in this list.)</td></tr>
+
+  <tr> <th>specxz      </th><td> The <tt>xz</tt> compression program     </td></tr>
+  <tr> <th>specmd5sum  </th><td> <tt>md5sum</tt> from GNU coreutils, with enhancements</td></tr>
+  <tr> <th>spectar     </th><td> GNU <tt>tar</tt>   </td></tr>
+  <tr> <th>specperl    </th><td> Perl </td></tr>
+  <tr> <td colspan="2">Various Perl modules such as Algorithm::Diff, GD, HTML::Parser, PDF::API2, URI, XML::SAX, etc.</td></tr>
+  </table>
+
+<p>Many of these tools are based on the freely available programs of the same name.  </p>
+
+<p>Note: In this document, "Unix" is used to describe Unix and all Unix-like systems such as Linux.</p>
+
+<h3 id="precompiled">1.b. Pre-compiled binaries</h3>
+
+<p>You will find pre-compiled binaries for the tools in the directories:</p>
+
+    <p class="l1ex">$SPEC/tools/bin/&lt;archname&gt;</p>
+
+<p>The term <tt>$SPEC</tt> designates the top directory where you installed the benchmark suite.  (On a Windows system, it
+would be called <tt>%SPEC%</tt>.)</p>
+
+<p>The precompiled binaries will be automatically installed when you run
+    <span class="ttnobr">install.sh</span>  (Unix) or 
+    <span class="ttnobr">install.bat</span> (Windows).</p>
+
+
+<h3 id="when2build">1.c. When to build the tools yourself</h3>
+
+<p>Sometimes it may be necessary to rebuild the tools, for example if a change in an operating system renders a precompiled
+binary inoperable, or if you are the first person to add support for a new architecture.</p>
+
+<p>It is generally not possible to do cross-compilation of Perl, as Perl's build process involves running binaries generated
+during the build.  Therefore, getting a toolset onto an embedded platform without a native compiler is most likely impossible.</p>
+
+<p id="logit"><span class="alarm"><b>NOTICE: </b></span>If you are adding support for a new architecture, and intend to submit results
+to SPEC, you must ask SPEC to review your tool build.  Please <span class="alarm"><b>turn on your operating system's session
+recorder</b></span> (e.g. in Unix, typically the <span class="ttnobr">script</span> command) prior to doing
+<tt>buildtools</tt>.  In Windows, you might have to do repetitious tedious repeated cut/paste clicking and clicking (so make
+that command window as big as possible).  Also, you will be expected to provide the output from <span class="ttnobr">runspec
+-V</span> and <span class="ttnobr">runspec --test</span> on a system OTHER than the build system, where you have installed
+your new tools build.</p>
+
+
+<h2 id="how">2. How to build the tools</h2>
+
+<p>If the directory <span class="ttnobr">$SPEC/tools/src</span> (Unix) or <span class="ttnobr">%SPEC%\tools\src</span> (Windows)
+does not yet exist, use xz and tar to expand <span class="ttnobr">install_archives/omp2012.tar.xz</span> into a writable directly
+local to the build system.  (Building tools on networked filesystems can work, but it's more likely to make some of GNU tar's
+tests fail, so it's safer to build on a local filesystem.)</p>
+
+<p class="l1ex">xz -dc install_archives/omp2012.tar.xz | tar -xf - tools/src</p>
+
+<p>The scripts <span class="ttnobr">$SPEC/tools/src/buildtools</span>     (Unix) or <span
+class="ttnobr">%SPEC%\tools\src\buildtools.bat</span> (Windows) will build the tools.  But you may need to invoke the
+<tt>buildtools</tt> script with appropriate environment variables set first - see the sections immediately following that
+provide notes about specific platforms.</p>
+
+<p>You will need a C99 compiler.  Most of the tools are C++ or C89, but XZ is C99.</p>
+
+<p>If everything goes right, you won't have to do very much at all, other than watch build commands fly by.  </p>
+
+
+<h3 id="unix">2.a. Notes specific to Unix systems</h3>
+
+<p>When building the tools under Unix, the following warnings appear to be harmless as of May 2012:</p>
+
+   <ul>
+   <li> Any message generated by a "make clean", especially the first time that you build, since there's nothing to
+   clean!</li>
+
+   <li> Warnings about missing 'makeinfo', 'alocal', 'automake', 'autoconf'.</li>
+   </ul>
+
+<p>You may find the following flags useful on the listed systems:</p>
+
+  <ul>
+  <li><p>AIX (32-bit): 
+    <br /><tt>CC=xlc CFLAGS='-O -qarch=ppc -D_LARGE_FILES -D_ILS_MACROS' PERLFLAGS="-Doptimize='-O' -Accflags='-D_LARGE_FILES'" OBJECT_MODE=32 ./buildtools</tt></p></li>
+  <li><p>AIX (64-bit): 
+    <br /><tt>CC=xlc CFLAGS='-O3 -qarch=ppc64 -q64 -D_ILS_MACROS' PERLFLAGS="-Doptimize='-O' -Aoptimize='-qarch=ppc64 -q64'" OBJECT_MODE=64 ./buildtools</tt></p></li>
+
+  <li><p>HPUX:
+    <br /><tt>CC="/opt/ansic/bin/cc" CFLAGS="-Ae +O2 +z -D_FILE_OFFSET_BITS=64 -AC99" XZCFLAGS=-AC99 PERLFLAGS="-Doptimize=+O1 -Dlibpth=/usr/lib/hpux32 -Dldflags=-lm -Dcppstdin=cc -Acppstdin=-E -Acppstdin=-Aa -Acppstdin=-D__STDC_EXT__ -Acppstdin=-AC89" ./buildtools</tt></p></li>
+
+  <li><p>IRIX:
+    <br /><tt>ulimit -s 128000; CFLAGS="-c99 -D_FILE_OFFSET_BITS=64" MD5CFLAGS="-O2" PERLFLAGS="-Doptimize=-O3 -Uloclib -Dlibpth=/usr/lib32" XZFLAGS="--disable-assembler --disable-shared" XZCFLAGS="-O1" ./buildtools</tt></p></li>
+   </ul>
+
+<p><b>Check out those who have gone before.</b>  If the system for which you're attempting to build tools is similar to one
+for which a tools build exists, you may gain insight by looking at the top of the build logs in <span
+class="ttnobr">tools/src/buildtools.log</span>.   Even if your system is very unusual and very different than previous
+systems, it is probably still worth your while to look over the previous logs.   You don't have to read all 20,000 lines;
+just check out the environment variables and path settings and so forth from the top of previous builds.</p>
+
+
+<h3 id="windows">2.b. Notes specific to Windows systems</h3>
+
+<p>Because XZ is written in C99, no version of Visual Studio (as of May 2012) can be used to build the tools.  Instead,
+the Windows version of buildtools is designed to use the MinGW GCC compiler.  It has been tested successfully with both 4.3 and
+4.5 versions of GCC; the latest version available should be used.  The tools are not yet ported to be built with a 64-bit compiler;
+use the 32-bit tools instead.</p>
+
+<p>The builds use makefiles to be processed with either mingw-make.exe (which is GNU make) or dmake.exe (which is built in the
+process of building tools).  The full MSYS environment is not used, so all of the makefiles are pre-generated; the GNU autoconf
+system is not used.  Compiler flags are defined in those pre-generated makefiles.<br />
+Building tools under Cygwin is not supported and probably won't work.</p>
+
+<p>If it is necessary to unzip and untar the sources of the tools in Windows, open a Command-Prompt window, cd to
+<tt>%SPEC%</tt> (i.e. the top directory of SPEC). Then execute:</p>
+
+<pre>
+  cd tools
+  bin\windows-i386\specxz.exe -d install_archives/omp2012.tar.xz
+  ooo\windows-i386\spectar.exe -xvf install_archives/omp2012.tar
+</pre>
+
+<p>Then go ahead and execute </p>
+
+      <p class="l1ex">%SPEC%\tools\src\buildtools.bat </p>
+
+<p>You can ignore warnings about objects that are not found, especially at the beginning of each tool build, when cleanup is
+attempted from previous builds.  Some tools may not know how to make '<tt>clean</tt>', '<tt>distclean</tt>', or
+'<tt>realclean</tt>'; don't worry about it.</p>
+
+<p>In Windows XP with Service Pack 2 or later, there may be a Security Alert, depending on the Firewall settings. "Windows Firewall
+has blocked this program from accepting connections from the Internet or a network." You may ignore this warning.</p>
+
+<p>All compiler warnings seen as of May 2012 appear to be harmless.</p>
+
+<h2 id="verify">3. How to verify that your build succeeded</h2>
+
+<p>After a tool build, you should: </p>
+
+<pre>
+  cd $SPEC (Unix) or %SPEC% (Windows)
+
+  shrc.bat (Windows)
+  . ./shrc (Unix, if you are in an sh-compatible shell.  
+                  If not, start one!)  
+
+  See if you can at least get as far as asking the major tools
+  to identify themselves:
+
+       runspec -V 
+
+  Or you can ask individual tools about themselves:
+
+       specmake -v 
+       specxz -h
+       specperl -v
+       specdiff -h
+       runspec -h 
+       specinvoke -h 
+
+</pre>
+
+<p>Running <span class="ttnobr">runspec --test</span> will run more comprehensive tests on specperl.</p>
+
+<h2 id="describe">4. Describing your newly-built tools</h2>
+
+<p>As a courtesy to others who might like to know which systems you intended your new tools to work on, and to describe the
+environment in which they were built, you may write a short description file.  The contents of this file will be displayed
+when <tt>install.sh</tt> is run.  Windows users only have one choice, and thus no description is printed.  The file is <span
+class="ttnobr">$SPEC/tools/bin/&lt;archname&gt;/description</span>.  If that directory does not exist, you should create it.  (If
+the directory does not exist, <tt>packagetools</tt> will create it, but in order for the description to be packaged, it must
+be present <span class="u">before</span> <tt>packagetools</tt> is run.)  See the <a href="#package">"Packagetools"</a> section
+below for guidance about picking "<span class="ttnobr">&lt;archname&gt;</span>".</p>
+
+<p>The format is very simple; in order to avoid wrapping on an 80-column screen, the first line must be no longer than 50
+characters.  In order to line up properly, subsequent lines should begin with 30 spaces and be no longer than 80 columns
+total.</p>
+
+<p>For example, given <span class="ttnobr">$SPEC/tools/bin/turboblaster-m68k/description</span> with
+the following contents</p>
+
+<pre>
+For TurboBlaster v2.1+ systems running on M68010
+                             hardware.
+                             Built on TurboBlaster v2.0 with GCC 1.81.
+</pre>
+
+<p>A user using a TurboBlaster system when running install.sh would see in the list of toolset choices, something that looks
+approximately like</p>
+
+<pre>
+turboblaster-m68k            For TurboBlaster v2.1+ systems running on M68010
+                             hardware.
+                             Built on TurboBlaster v2.0 with GCC 1.81.
+</pre>
+
+<p>There are plenty of examples on the install media in <span class="ttnobr">tools/bin/*/description</span>.</p>
+
+<h3 id="presentation">4.a. Toolset presentation</h3>
+
+<p>If the toolset you're building isn't the only one that will work on a particular system, you may want to adjust where in the
+list of toolsets it appears, or even whether it appears at all.  By default toolsets are presented in lexical ASCII order. However,
+it is possible to both adjust the position of a toolset in the list of candidates, as well as keeping it from appearing at all.</p>
+
+<p>Let's assume that the TurboBlaster systems mentioned in the <a href="#describe">last section</a> have migrated to PowerPC and
+have an emulation layer so that they can run old M68K binaries.  Given two toolsets called
+<span class="ttnobr">turboblaster-m68k</span> and <span class="ttnobr">turboblaster-ppc</span>, normally the
+<span class="ttnobr">turboblaster-m68k</span> would be presented and attempted first.  And the emulation layer is so good that it
+would work, but it'd be slower than it needs to be.</p>
+
+<h4 id="exclusion">4.a.1. Excluding otherwise valid candidates</h4>
+
+<p>There are several files that can be used to prevent <span class="ttnobr">install.sh</span> from even attempting to use a
+toolset.  The exclusion is silent, and for all intents and purposes makes the affected toolset behave just as one from another OS
+or architecture &mdash; it doesn't even show up on the candidate list.</p>
+
+<p>To effect this exclusion, <span class="ttnobr">install.sh</span> looks for signatures of the current system in files in each
+toolset's directory.  A toolset is excluded from consideration if any of the following are true:</p>
+
+<table>
+<tr> <th>Output from...</th> <th>Appears in...</th> </tr>
+<tr> <td><span class="ttnobr">uname -m</span></td> <td><span class="ttnobr">tools/bin/&lt;archname&gt;/excludearch</span></td> </tr>
+<tr> <td><span class="ttnobr">uname -s</span></td> <td><span class="ttnobr">tools/bin/&lt;archname&gt;/excludearch</span></td> </tr>
+<tr> <td><span class="ttnobr">uname -r</span></td> <td><span class="ttnobr">tools/bin/&lt;archname&gt;/excluderev</span></td> </tr>
+<tr> <td><span class="ttnobr">uname -p</span></td> <td><span class="ttnobr">tools/bin/&lt;archname&gt;/excludeproc</span></td> </tr>
+</table>
+
+<p>On a PPC-based TurboBlaster system, <span class="ttnobr">uname -m</span> returns "PowerPC".  Putting "PowerPC" into
+<span class="ttnobr">tools/bin/turboblaster-m68k/excludearch</span> would ensure that TurboBlaster/PPC users never even saw the
+TurboBlaster/M68K tools.</p>
+
+<p>This is most useful for preventing cross-OS confusion.  FreeBSD, for example, used to try to execute Solaris binaries.  Putting
+"FreeBSD" (the output from <span class="ttnobr">uname -s</span> on a FreeBSD system) into
+<span class="ttnobr">tools/bin/solaris-x86/excludearch</span> fixed that problem and kept the unmaskable and alarming failure
+messages from appearing during installation.</p>
+
+<h4 id="order">4.a.2. Affecting presentation order</h4>
+
+<p>In the case where there may be two equally valid toolsets (as might be the case when there's a 32-bit and 64-bit build for the
+same OS), it's possible to change the order in which they're presented.  Each toolset has a file named
+<span class="ttnobr">order</span> in its directory.  If it doesn't exist, <span class="ttnobr">packagetools</span> will create this
+file with contents that are simply:</p>
+
+<pre>
+1:&lt;archname&gt;
+</pre>
+
+<p>(See the <a href="#package">packagetools</a> section for guidelines on picking <span class="ttnobr">&lt;archname&gt;</span>.)  The
+"priority" of a toolset decreases as that number increases.  Continuing with the TurboBlaster example, if we wanted the PowerPC
+toolset to be preferred, we'd put</p>
+
+<pre>
+2:turboblaster-m68k
+</pre>
+
+<p>into <span class="ttnobr">tools/bin/turboblaster-m68k/order</span>.  That would ensure that
+<span class="ttnobr">turboblaster-ppc</span> would appear first in the menu, as the number in its <span class="ttnobr">order</span>
+file is "1".  Since it appears first in the menu, it's installed before <span class="ttnobr">turboblaster-m68k</span>.</p>
+
+<h2 id="package">5. Packagetools</h2>
+
+<p>If everything has succeeded, and you intend to submit results using your new tools, you should submit the tools to SPEC.
+To do so:</p>
+
+<pre>
+     cd $SPEC (Unix) or cd %SPEC% (Windows)
+     packagetools &lt;archname&gt;
+</pre>
+
+<p>Pick an architecture name that other users will recognize.  Check on the install media in tools/bin for some examples.</p>
+
+<p>The packagetools script will create: </p>
+<pre>
+    $SPEC/tools/bin/&lt;archname&gt;/specxz
+    $SPEC/tools/bin/&lt;archname&gt;/spectar
+    $SPEC/tools/bin/&lt;archname&gt;/specmd5sum
+    $SPEC/tools/bin/&lt;archname&gt;/tools-&lt;archname&gt;.tar.xz
+</pre>
+
+<p>Having created a large tarfile with everything in it, <tt>packagetools</tt> will then proceed to create an even larger
+tarfile with <tt>specxz</tt> and <tt>spectar</tt> it in too.  This even bigger file is known as:</p>
+
+<pre>
+    $SPEC/&lt;archname&gt;-&lt;version&gt;.tar
+</pre>
+
+<p>and is to be submitted to SPEC. (See also the example below.)</p>
+
+<p>You can optionally add components to your platform's toolset.  For example, if you would like <span
+class="ttnobr">$SPEC/config/default.cfg</span> to be set in an appropriate way, you can add the relative path to default.cfg
+as a parameter to packagetools:</p>
+
+<pre>
+(on non-Windows systems)
+     cd $SPEC
+     packagetools &lt;archname&gt; config/default.cfg
+</pre>
+
+<p>More than one file may be specified in this way.</p>
+
+<p>Operation on Windows is substantially similar; just provide the relative paths with backslashes instead of forward slashes.</p>
+
+<p>Please submit the resulting tarfile to SPEC for review, along with the recording of your tool build session.
+SPEC will review your tools, and assuming that they pass review, will add the tools you have built to its patch library, for
+possible distribution to future users of your interesting new architecture.</p>
+
+<p>NOTE 1: If your operating system is unable to execute the packagetools script, please have a look at what the script does
+and enter the corresponding commands by hand.  Again, you will need to submit the results to SPEC.</p>
+
+<p>NOTE 2: Be sure to test your packaged tools on a different system, preferably one with a different disk layout.  If the
+destination system is unable to invoke <tt>libperl.so,</tt> check that <tt>libperl.so</tt> exists in one of the locations
+where <tt>shrc</tt> expects to find it.</p>
+
+<h3 id="PackageExample">5.a. Example: use packagetools</h3>
+
+<p>Here is an example use of <span class="ttnobr">packagetools</span>.  In the example below, notice that:</p>
+<ul>
+<li>At lines 1-3, we start by verifying that the correct environment has been set.</li>
+<li>At line 7, a decription is provided for the toolset.</li>
+<li>SPEC will want the log, and verification that 
+<span class="ttnobr">runspec -V</span> and <span class="ttnobr">runspec --test</span> 
+are working.  At lines 11 to 13, these are created.</li>
+<li>At line 15, the <span class="ttnobr">packagetools</span> command is entered.  Since SPEC will want the other three files,
+for convenience, they have been added to packagetools. </li> 
+<li><b>Note</b> that basic sanity checking of a toolset <a href="#PackageTestExample">also requires</a> demonstration of
+<span class="ttnobr">runspec -V</span> and <span class="ttnobr">runspec --test</span> on a second system, as shown in the
+next section.</li>
+</ul>
+
+<pre>
+  1  $ <b>. ./shrc</b>
+  2  $ <b>which runspec</b>
+  3  /spec/omp2012/kit117/bin/runspec
+  4  $ 
+  5  $ <b>export MYTOOLS=myOS-myHW</b>
+  6  $ <b>mkdir tools/bin/$MYTOOLS</b>
+  7  $ <b>echo \
+  8     "For systems running myOS.  Note: works only with V12 or later" \
+  9     tools/bin/$MYTOOLS/description</b>
+ 10  $ 
+ 11  $ <b>cp typescript $MYTOOLS.buildlog.txt</b>
+ 12  $ <b>runspec -V &gt; $MYTOOLS.runspec-V.txt 2&gt;&amp;1</b>
+ 13  $ <b>runspec --test &gt; $MYTOOLS.runspec--test.txt 2&gt;&amp;1</b>
+ 14  $ 
+ 15  $ <b>packagetools $MYTOOLS $MYTOOLS.buildlog.txt $MYTOOLS.runsp*txt </b>
+ 16  Preparing /spec/omp2012/kit117/tools/bin/myOS-myHW
+ 17  Generating MD5 checksums for the tools
+ 18  Generating the tools installation tarball
+ 19   100 %         12.0 MiB / 80.1 MiB = 0.149   1.0 MiB/s       1:17             
+ 20  Making the distribution tarball
+ 21  tools/bin/myOS-myHW/
+ 22  tools/bin/myOS-myHW/order
+ 23  tools/bin/myOS-myHW/tools-myOS-myHW.tar.xz
+ 24  tools/bin/myOS-myHW/description
+ 25  tools/bin/myOS-myHW/unbundled
+ 26  tools/bin/myOS-myHW/specxz
+ 27  tools/bin/myOS-myHW/specmd5sum
+ 28  tools/bin/myOS-myHW/spectar
+ 29  
+ 30  *******************************************************************
+ 31  
+ 32  The tarball to submit for inclusion in the distribution is
+ 33  
+ 34  myOS-myHW-117.tar
+ 35  
+ 36  ABSOLUTELY DO NOT submit the tarball in tools/bin/myOS-myHW
+ 37  as it is not complete.
+ 38  
+ 39  *******************************************************************
+ 40
+ 41  $ <b>specmd5sum myOS-myHW-117.tar &gt; myOS-myHW-117.tar.md5</b>
+</pre>
+
+
+<h3 id="PackageTestExample">5.b. Example: test the newly packaged tools</h3>
+
+<p>Testing a newly-built toolset on the system where it was built is not enough to ensure basic sanity of the tools.
+Test for unintended dependencies by installing on an entirely different system. For example:</p>
+
+<ul>
+<li>At line 1, below, it is assumed that a SPEC OMP tree exists on the destination system, and that it lacks a SPEC
+toolset.</li>
+<li>Line 2 uses NFS (<span class="ttnobr">/net</span>) to copy the new tar file from the build system.  Use whatever method
+is convenient for you, such as <span class="ttnobr">scp</span> or <span class="ttnobr">ftp</span>, provided that you are sure
+that it does not damage the file.  </li>
+<li>Lines 3 and 4 bring over the recently built <span class="ttnobr">spectar</span> and <span
+class="ttnobr">specmd5sum</span>, which are used to verify that the copy worked correctly, and then to unpack the file.</li>
+</ul>
+
+<pre>
+  1  $ <b>cd /spec/omp2012</b>
+  2  $ <b>cp /net/(buildsys)/spec/omp2012/kit117/myOS-myHW-117.tar* .</b>
+  3  $ <b>cp /net/(buildsys)/spec/omp2012/kit117/bin/spectar .</b>
+  4  $ <b>cp /net/(buildsys)/spec/omp2012/kit117/bin/specmd5sum .</b>
+  5  $ <b>ls</b>
+  6  myOS-myHW-117.tar      myOS-myHW-117.tar.md5  specmd5sum             spectar
+  7  $ <b>./specmd5sum -c myOS-myHW-117.tar.md5 </b>
+  8  myOS-myHW-117.tar: OK
+  9  $ <b>./spectar -xvf myOS-myHW-117.tar</b>
+ 10  tools/bin/myOS-myHW/
+ 11  tools/bin/myOS-myHW/spectar
+ 12  tools/bin/myOS-myHW/tools-myOS-myHW.tar.xz
+ 13  tools/bin/myOS-myHW/unbundled
+ 14  tools/bin/myOS-myHW/description
+ 15  tools/bin/myOS-myHW/specxz
+ 16  tools/bin/myOS-myHW/order
+ 17  tools/bin/myOS-myHW/specmd5sum
+ 18  $
+</pre> 
+
+<ul>
+<li>Having unpacked the new tools, at line 19, <span class="ttnobr">install.sh -u</span> is entered to request use of this
+toolset, and to skip trying any other toolsets.</li>
+<li>At lines 29 and 30, runspec is verified on the new system.</li>
+<li>A quick check at line 32 shows that the same number of tests passed on both the build system and the new system.</li>
+<li>At line 36, the output of the new system's tests are packaged up so that they can also be provided to SPEC.</li>
+</ul>
+
+<pre>
+ 19  $ <b>install.sh -u myOS-myHW</b>
+ 20  .
+ 21  .
+ 22  .
+ 23  Installation successful.  Source the shrc or cshrc in
+ 24  /spec/omp2012/kit117
+ 25  to set up your environment for the benchmark.
+ 26  
+ 27  
+ 28  $ <b>. ./shrc</b>
+ 29  $ <b>runspec -V &gt; newsys.runspec-V.txt 2&gt;&amp;1</b>
+ 30  $ <b>runspec --test &gt; newsys.runspec--test.txt 2>&amp;1</b>
+ 31  $
+ 32  $ <b>grep -c "...ok" *runspec--test*</b>
+ 33  myOS-myHW.runspec--test.txt:215
+ 34  newsys.runspec--test.txt:215
+ 35  $                                                                     
+ 36  $ <b>spectar cvf - newsys.runspec* | specxz > newsys.tests.tar.xz</b> 
+</pre>
+
+<h2 id="troubleshooting">6. Troubleshooting: What to do if something goes wrong</h2>
+
+<p>If something goes wrong, unfortunately, you're probably just going to have to take it apart and figure out what.  Here are
+some hints on how to go about doing that.</p>
+
+<h3 id="hand">6.a. Try it by hand</h3>
+
+<p>If something goes wrong, you probably do NOT want to make some random adjustment (like: reinstall a compiler, fix an
+environment variable, or adjust your path) and start all over again.  That's going to be painful and take a lot of your time.
+Instead, you should temporarily abandon the <tt>buildtools</tt> script at that point and just try to build the offending
+tool, until you understand exactly why that particular tool is failing.</p>
+
+<p>Consider turning on verbose diagnostics if your system has a way to do that.  Make a huge terminal window (e.g. 200
+columns wide by 84 lines tall, with 9999 lines recorded off the top), so you can see what is going on.</p>
+
+<p>Read what <tt>buildtools</tt> (or <tt>buildtools.bat</tt>) does for you, then cd to <span
+class="ttnobr">tools/src/&lt;tool&gt;</span> and try the commands by hand. For example, you might do something like this:</p>
+<pre>
+    cd $SPEC/tools/src/&lt;toolname&gt;
+    ./configure
+    make (or build.sh or whatever you note buildtools would have done)
+</pre>
+
+<p>Now, try fixing that environment variable or reinstalling that compiler, and rebuild the single tool.  Does it look
+better?</p>
+
+<p>If not, have a close look at the error messages and the <tt>Makefile</tt>.  Does the <tt>Makefile</tt> use a feature that
+is not present in your version of <tt>make</tt>?  If so, can you get it to work with <tt>GNU make</tt>?  </p>
+
+
+<p>Note that for GNU configure based tools (everything except Perl and its modules) you may specify your compiler by setting
+the <tt>CC</tt> environment variable. For compiler flags, set <tt>CFLAGS</tt>.</p>
+
+<p>When building <tt>perl</tt>, note that:</p>
+
+<ul>
+ <li> If you want to force the compiler use <tt>-Dcc=yourcompiler</tt></li>
+ <li> If you want to force a compiler option use <tt>-Doptimize=youroption.</tt>  If you
+   have more than one option to use, do
+
+<pre>
+       -Doptimize=-option1 -Aoptimize=-option2 -Aoptimize=option3 ...
+</pre></li>
+</ul>
+
+<p>Many of the build logs in <span class="ttnobr">tools/src/buildtools.log</span> have examples of
+settings used for <tt>PERLFLAGS</tt>.</p>
+
+<p>If you want to see more about what buildtools is doing for you, turn on your shell's verbose mode.  For example:</p>
+<pre>
+   sh -x ./buildtools
+</pre>
+
+<h3 id="known">6.b. Known problems</h3>
+
+<p>Try doing a web search to see if there are known problems with the tool on your architecture.</p>
+
+<p>If SPEC supplies Version X.Y of a tool and it just won't build on your operating system, you might check whether there is
+a new Version X.Y+1 available.  If so, download the new version to a scratch directory outside of the SPEC tree and try
+building it there.  If that version succeeds, try to deduce why.  Narrow it down to a one-line fix, won't you please?  Then
+tell SPEC that you'd like the same one-line fix applied to its variant of the tool.  Or, if you just can't narrow the fix
+down, ask SPEC whether it will approve use of Version X.Y+1 instead of X.Y on your system.</p>
+
+<h3 id="justpart">6.c. Executing just part of buildtools</h3>
+
+<p>Once you believe that you understand how to fix the problem tool, and
+can build it by hand, see whether the <tt>buildtools</tt> script can build it.
+You can execute just a portion of <tt>buildtools</tt> by defining environment
+variables.  Please read the script itself to see what variables are
+allowed; the following are just some examples:</p>
+<pre>
+  SKIPALL      - turns off everything.  If you like, set this, then
+                   turn individual phases on by setting them.
+  DOTOOLSRM    - Remove previously installed tools
+  DOCLEAN      - Run 'make clean', 'make distclean', and
+                   'make realclean' in all source directories.
+  DOMAKE       - build make
+  DOXZ         - build xz
+  DOTAR        - build tar
+  DOMD5        - build specmd5sum
+  DOSPECINVOKE - build specinvoke
+  DORXP        - build rxp
+  DOEXPAT      - build the expat XML parser, used by XML::SAX::ExpatXS
+  DOPERL       - build perl
+  DOPERL2      - build perl modules
+  DOCOPY       - copy the results to $SPEC/bin and fix shbangs
+</pre>
+
+<p>It doesn't matter what you set the environment variables to -- any non-zero-length string will do.  In all cases,
+"<tt>DO</tt>" can be replaced with "<tt>SKIP</tt>" to reverse the sense of the setting.</p>
+
+<p>If you are using Windows, be sure to note the <span class="alarm">WARNING</span> in <tt>buildtools.bat</tt> about how the
+variables work.</p>
+
+<p>If you can now build the (formerly misbehaving) tool using just part of <tt>buildtools</tt>, then you can try building the
+whole set (i.e. a build of all tools from start to finish).  It should work now, so be sure to <a href="#logit">turn on your
+logging facility</a>.</p>
+
+<h2 id="support">7. Support</h2>
+
+<p>You'll find information about technical support in <tt>techsupport.html</tt>, either in <a class="external"
+href="techsupport.html"> the same directory</a> where you are found the document you are reading now, or <a class="external"
+href="http://www.spec.org/omp2012/Docs/techsupport.html">at www.spec.org/omp2012</a>.</p> 
+
+<p>
+Copyright 1999-2012 Standard Performance Evaluation Corporation
+<br />All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:1900px;">&nbsp;</p>
+
+
+
+</body></html>

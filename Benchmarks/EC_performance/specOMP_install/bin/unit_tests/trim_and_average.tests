@@ -1,0 +1,88 @@
+#!specperl
+
+use strict;
+require 'util.pl';
+require 'log_common.pl';
+$|=1;
+
+package Spec::Config;
+sub verbose { return 0 }
+sub line_width { return 999 }
+sub log_line_width { return 999 }
+sub log_timestamp { return time }
+
+package main;
+$::global_config = bless {}, 'Spec::Config';
+
+my @samples = (3,3,3);
+test('fail (only 3 samples)', 1, @samples);
+
+@samples = (3,3,3,3);
+test('good (4 samples, no change)', 1, @samples);
+
+@samples = (0,3,3,0);
+test('good (min change)', 1, @samples);
+
+@samples = (1,2,3,1);
+test('good (avg, min change)', 1, @samples);
+
+@samples = (1,2,3,4);
+test('good (min,max change)', 1, @samples);
+
+for(my $disc = 1; $disc <= 4; $disc += $disc) {
+  for(my $i = 0; $i < 20; $i++) {
+    test("$i, discard $disc", $disc, (rand 10)x$i);
+  }
+}
+
+
+sub test {
+  my ($label, $discard, @in) = @_;
+
+  my ($old_avg, $old_min, $old_max, $total);
+  my ($exp_avg, $exp_min, $exp_max);
+  my ($avg, $min, $max, $samples, @samples);
+  my $ok = 1;
+  @samples = @in;
+  Log(27, "----------------------------------------\n");
+  if (@samples+0 >= ($discard * 2 * 2)) {
+      my @trimmed = splice @in, 0, $discard;
+      push @trimmed, splice @in, -$discard, $discard;
+
+      $total = 0;
+      foreach my $samp (@in) {
+        $total += $samp;
+        $exp_min = $samp if !defined($exp_min) || $samp < $exp_min;
+        $exp_max = $samp if !defined($exp_max) || $samp > $exp_max;
+      }
+      $exp_avg = $total / (@in+0);
+      Log(27, "$label: in: ".join(', ', @samples)."\n");
+      Log(27, sprintf("%*s out: %*s  %s\n", length($label), ' ', length($samples[0]), ' ', join(', ', @in)));
+      Log(27, sprintf("%*s  expecting avg=%g min=%g, max=%g\n", length($label), ' ', $exp_avg, $exp_min, $exp_max));
+      $old_min = $exp_min;
+      $old_max = $exp_max;
+      foreach my $samp (@trimmed) {
+        $total += $samp;
+        $old_min = $samp if !defined($old_min) || $samp < $old_min;
+        $old_max = $samp if !defined($old_max) || $samp > $old_max;
+      }
+      $old_avg = $total / (@in + @trimmed + 0);
+  } else {
+      Log(27, "$label: expecting not-enough-samples failure\n");
+  }
+
+  my @rc = trim_and_average($label, $discard, $old_avg, $old_min, $old_max, @samples);
+  if (defined($rc[0])) {
+    $ok = 0, warn "bad avg ($label) (expected $exp_avg, got $rc[0])\n" unless $rc[0] == $exp_avg;
+    $ok = 0, warn "bad min ($label) (expected $exp_min, got $rc[1])\n" unless $rc[1] == $exp_min;
+    $ok = 0, warn "bad max ($label) (expected $exp_max, got $rc[2])\n" unless $rc[2] == $exp_max;
+    $ok = 0, warn "bad num_samples ($label) (expected ".(@in+0).", got $rc[3])\n" unless $rc[3] == (@in + 0);
+    for(my $i = 0; $i < $rc[3]; $i++) {
+      $ok = 0, warn "bad value[$i] ($label) (expected $in[$i], got ".$rc[$i+4].")\n" unless $rc[$i+4] == $in[$i];
+    }
+  } elsif (defined($exp_avg)) {
+    $ok = 0;
+  }
+
+  print "$label: ".($ok ? '' : 'NOT ')."ok\n";
+}

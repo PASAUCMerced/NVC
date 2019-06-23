@@ -1,0 +1,460 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+
+# makesrcalt - Create the control file for a new src.alt
+#
+# Copyright 2004-2011 Standard Performance Evaluation Corporation
+# All Rights Reserved
+#
+# $Id: makesrcalt 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use Digest::MD5;
+use IO::Dir;
+use IO::File;
+use Getopt::Long;
+use File::Copy;
+use Algorithm::Diff qw(traverse_balanced);
+use Data::Dumper;
+use MIME::Base64;
+require 'util.pl';
+require 'vars_common.pl';
+
+if (!defined($::suite) || $::suite eq '') {
+    die "Can't determine benchmark suite name from vars_common.pl\nStopped";
+}
+my $basename = $::lcsuite;
+
+my %opts = ('usewith' => -1, 'tarball' => 1, 'context' => 3, 'help' => 0,
+            'verbose' => 0);
+
+my $rc = GetOptions(\%opts, qw(
+                     tarball!
+                     context|c=i
+                     usewith=s
+                     help
+                     verbose|v
+                   ));
+
+my $context = $opts{'context'} || 3;
+
+my $SPEC = $ENV{'SPEC'};
+
+if ($SPEC eq '' || $SPEC =~ /^\s*$/) {
+    die "$0: The SPEC environment variable is not set.  Please ".(($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\nand re-run this program.\nStopped";
+}
+
+if ((!-d $SPEC) || (!-f joinpaths($SPEC, 'bin', 'runspec'))) {
+    die "$0: The SPEC environment variable is set incorrectly.  Please ".(($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\nand re-run this program.\nStopped";
+}
+
+chdir $SPEC || die "$0: Couldn't cd into $SPEC\nStopped";
+my $ifh = new IO::File 'version.txt';
+die "Can't open $SPEC/version.txt for reading: $!\nStopped" unless defined($ifh);
+my $suitever = <$ifh>;
+$ifh->close();
+chomp($suitever);
+
+my ($bench, $srcalt) = @ARGV;
+
+if ($opts{'help'} ||
+    ($bench eq '') || ($bench =~ /^\s*$/) ||
+    ($srcalt eq '') || ($srcalt =~ /^\s*$/)) {
+  die "Usage: $0 [options] <benchmark> <srcaltname>\n" .
+      "Options:\n" .
+      "   --usewith <min>:<max>  -- Set the versions of the suite that will accept\n" .
+      "                             this src.alt (defaults to $suitever)\n" .
+      "   --notarball            -- Skip packaging the src.alt as a tarball (created\n" .
+      "                             by default)\n" .
+      "   --context <lines>      -- Set lines of context for the diff.  This defaults\n" .
+      "                             to 3 and should not be changed.\n" .
+      "   --help                 -- Print this message\n" .
+      "\n" .
+      "<benchmark> must be the full nnn.name form\n" .
+      "<srcaltname> must match the name of the subdirectory in the benchmark's\n".
+      "  src.alt directory\n";
+}
+
+if ($srcalt =~ /[^0-9a-zA-Z_]/) {
+  die "The src.alt name may only contain letters, digits, and underscores.  Please\nchange the name and try again.";
+}
+
+# What's it useful with?
+my @usewith = map { $_ + 0 } split(/:/, $opts{'usewith'}, 2);
+
+foreach my $ver (@usewith) {
+  if ($ver > $suitever) {
+    die "\nCannot create a src.alt for future versions of the benchmark.\n";
+  } elsif ($ver == 0 || $ver eq '') {
+    print STDERR "Bad 'usewith' version; setting to $suitever\n";
+    $ver = $suitever + 0;
+  } elsif ($ver < 0) {
+    # The default. :)
+    $ver = $suitever + 0;
+  }
+}
+# Make sure they're in the correct order
+@usewith = sort { $a <=> $b } @usewith;
+@usewith = ($usewith[0]) if ($usewith[0] == $usewith[1]);
+
+# Pretty up the values
+foreach my $ver (@usewith) {
+  if ($ver < 4) {
+    $ver = sprintf('%.2f', $ver);
+  }
+  $ver =~ s/(\d+\.\d)0$/$1/;       # Strip trailing 0 in hundredths place
+}
+my $nice_usewith = 'v'.join('-', @usewith);
+
+my $benchdir = undef;
+for my $benchsuite (<benchspec/*>) {
+  next unless (-d $benchsuite);
+  my $dh = new IO::Dir $benchsuite;
+  die "Can't open $benchsuite for reading: $!\nStopped" unless defined($dh);
+  if (grep { $bench eq $_ } $dh->read) {
+    $benchdir = joinpaths($benchsuite, $bench);
+    undef $dh;
+    last;
+  }
+}
+die "$0: Couldn't find benchmark \"$bench\" in any suite!\n" unless defined($benchdir);
+
+die "$0: The benchmark directory $benchdir does not exist.\n" unless (-d $benchdir);
+
+my $srcaltdir = joinpaths($benchdir, 'src', 'src.alt', $srcalt);
+my $srcdir = joinpaths($benchdir, 'src');
+
+die "$0: the src.alt does not exist in $srcaltdir\n" unless (-d $srcaltdir);
+
+my $dh = new IO::Dir $srcaltdir;
+die "Can't open $srcaltdir for reading: $!\nStopped" unless defined($dh);
+my (@files, @readmefiles, @tarfiles);
+while (defined(my $filename = $dh->read())) {
+  next if ($filename eq '.' || $filename eq '..');
+  my $path = joinpaths($srcaltdir, $filename);
+  # Skip CVS and SubVersion directories and files
+  next if ($filename eq '.cvsignore' ||
+	   ($filename =~ /^(?:CVS|\.svn)$/o && -d $path));
+  # Skip the control file, if it's already there
+  next if ($filename eq 'srcalt.pm');
+  if (-d $path) {
+    push @files, read_dir($path);
+    next;
+  }
+  if ($filename =~ /^README/io) {
+    push @readmefiles, $filename;
+  } else {
+    push @files, $path;
+  }
+}
+die "$0: There is no README file for the src.alt.\n" if (@readmefiles+0 == 0);
+
+my ($username, $date) = (undef, scalar(localtime));
+eval { $username = getpwuid($>); };
+$username = 'unknown user' unless defined($username);
+
+# Set the umask so that created files will be readable by everyone
+umask 0002;
+
+print "\nMaking '$srcalt' src.alt for $bench\n";
+print "This will be usable with version";
+if (@usewith == 1) {
+  print " $usewith[0]";
+} else {
+  print "s $usewith[0] to $usewith[1] (inclusive)";
+}
+print " of the suite.\n\n";
+my $t1 = time;
+print "Making differences and computing checksums...\n";
+my @filesums = ( "\t 'filesums' => {" );
+my @diffsums = ("\t 'diffsums' => {" );
+my @diffs = ( "\t 'diffs'    => {" );
+my @rawdiffs = ( "\t 'rawdiffs'    => {" );
+for my $srcaltpath (sort (@files,
+			  map { joinpaths($srcaltdir, $_) } @readmefiles)) {
+    my ($filename, $srcpath) = ($srcaltpath, $srcaltpath);
+    $srcpath =~ s{/src.alt/$srcalt}{};
+    $filename =~ s{^.*/src.alt/$srcalt/}{};
+    my $md5sum;
+    if ( -B $srcpath && ! -T $srcpath ) {
+	print "  WARNING: $srcpath: binary diff is not supported\n";
+    }
+    # If the file exists and is text, diff it
+    if (-f $srcpath && (! -B $srcpath || -T $srcpath)) {
+	$md5sum = md5diffdigest($srcaltpath);
+	push @filesums, "\t\t\t'$filename' => '$md5sum',\n";
+	# Do the diff
+	my $diff = diff_files($srcpath, $srcaltpath);
+	if ($diff ne '') {
+	    $md5sum = md5scalardigest($diff);
+            # To completely avoid quoting problems, just Base64-encode the
+            # whole diff data structure.
+	    push @diffs, "\t\t\t'$filename' => q{".encode_base64($diff)."},\n";
+	    push @rawdiffs, "\t\t\t'$filename' => q{\n$diff\n} },\n";
+	    # Store the MD5 sum of the diff
+	    push @diffsums, "\t\t\t'$filename' => '$md5sum',\n";
+	}
+    } else {
+	# New file; store just the sum
+	$md5sum = md5filedigest($srcaltpath);
+	push @filesums, "\t\t\t'$srcaltpath' => '$md5sum',\n";
+	push @tarfiles, $srcaltpath;
+        # Make sure that the new file is at least world-readable
+        my $oldmode = (stat($srcaltpath))[2];
+        $oldmode |= 0644;
+        chmod $oldmode, $srcaltpath;
+    }
+}
+push @filesums, "\t\t       },";
+push @diffsums, "\t\t       },";
+push @diffs, "\t\t       },";
+push @rawdiffs, "\t\t       },";
+
+print "Writing control file...\n";
+my $ofh = new IO::File '>'.joinpaths($srcaltdir, 'srcalt.pm');
+print $ofh <<"EOF";
+#
+# Automatically generated src.alt description file
+#
+# Alternate source "$srcalt" for $bench
+# FOR USE WITH SPEC $::suite $nice_usewith ONLY!
+#
+# Generated by $username on $date
+#
+\$info = {
+         'name'     => '$srcalt',
+         'forbench' => '$bench',
+EOF
+if (@usewith == 1) {
+    $ofh->print("         'usewith'  => '$usewith[0]',\n");
+} else {
+    $ofh->print("         'usewith'  => [ '$usewith[0]', '$usewith[1]' ],\n");
+}
+
+$ofh->print(join("\n", @filesums)."\n");
+$ofh->print(join("\n", @diffsums)."\n");
+$ofh->print(join("\n", @diffs)."\n");
+print $ofh <<"EOF";
+        };
+1;
+__END__
+# These are here because quoting Perl code with quotes is hard.
+# The Base64 encoding above is not meant to obfuscate; here's the raw text:
+
+EOF
+$ofh->print(join("\n", @rawdiffs)."\n");
+$ofh->close();
+chmod 0644, joinpaths($srcaltdir, 'srcalt.pm');
+unshift @tarfiles, joinpaths($srcaltdir, 'srcalt.pm');
+
+if ($opts{'tarball'}) {
+    my $dest;
+    my @orig_readme = @readmefiles;
+    @readmefiles = ();
+    for my $filename (@orig_readme) {
+	if ($filename eq 'README') {
+            my $fname = "README.${bench}.src.alt.${srcalt}.txt";
+	    $dest = joinpaths($SPEC, $fname);
+	    unshift @tarfiles, $fname;
+            push @readmefiles, $fname;
+	} else {
+	    $dest = $SPEC;
+	    unshift @tarfiles, $filename;
+            push @readmefiles, $filename;
+	}
+	copy(joinpaths($srcaltdir, $filename), $dest) or die "Could not copy $filename to $dest.\nThe error was $!\n";
+    }
+
+    print "Gathering files...\n";
+    my $tar_basename = joinpaths($SPEC, "${bench}.${srcalt}.${basename}.${nice_usewith}.tar");
+    system('spectar', $opts{'verbose'} ? '-cvf' : '-cf', $tar_basename,
+            @tarfiles);
+    foreach my $ext (qw(xz bz2)) {
+        if (-e "${tar_basename}.$ext") {
+            unlink "${tar_basename}.$ext";
+        }
+    }
+    system('specxz', $opts{'verbose'} ? '-9v' : '-9', $tar_basename);
+    for my $filename (@readmefiles) {
+      unlink $filename;
+    }
+
+    print "Wrote ${tar_basename}.xz\n";
+}
+
+print "\nFinished making '$srcalt' src.alt for $bench.  Elapsed time: ".(time - $t1)." seconds\n";
+
+sub joinpaths {
+    # Not in util.pl; thus the duplication here
+    my @dirs;
+    for my $tmp (@_) {
+        # Replace all backslashes with forward slashes (for NT)
+        my $a = $tmp;
+        $a =~ s|\\|/|go;
+        next if $a eq '';
+        # If this is the start of an absolute path, remove what's already there
+        @dirs = () if ($a=~m/^([^:\[]*):?\[(\S*)\]/o || $a =~ m|^/|o || $a =~ m|
+^[a-zA-Z]:|o);
+
+        if ($a=~m/^([^:\[]*):?\[(\S*)\]/o) { # VMS path - make it a UNIX-alike
+            push (@dirs, $1, split('.', $2));
+        } else { # Unix PATH
+            push (@dirs, $a);
+        }
+    }
+    my $result = join('/',@dirs);
+    return $result;
+}
+
+sub md5filedigest {
+    # Not in util.pl; thus the duplication here
+    my ($file) = @_;
+    my $md5 = new Digest::MD5;
+
+    my $fh  = new IO::File $file, O_RDONLY|O_BINARY;
+    if (!defined($fh)) {
+        if ($file !~ s/\.xz$//) {
+            $fh = new IO::File "${file}.xz", O_RDONLY|O_BINARY;
+        } else {
+            $fh = new IO::File $file, O_RDONLY|O_BINARY;
+        }
+    }
+    if (!defined($fh)) {
+        die "$0: can't open '$file' for reading: $!\n";
+    } else {
+        $md5->addfile($fh);
+        $fh->close();
+    }
+    return $md5->hexdigest();
+}
+
+sub read_dir {
+  my ($top) = @_;
+  my (@files);
+
+  my $dh = new IO::Dir $top;
+  die "Can't open $top for reading: $!\nStopped" unless defined($dh);
+  while (defined(my $filename = $dh->read())) {
+    next if ($filename eq '.' || $filename eq '..');
+    my $path = joinpaths($top, $filename);
+    # Skip CVS and SubVersion directories and files
+    next if ($filename eq '.cvsignore' ||
+	     ($filename =~ /^(?:CVS|\.svn)$/o && -d $path));
+    # Skip the control file, if it's already there
+    next if ($filename eq 'srcalt.pm');
+    if (-d $path) {
+      push @files, read_dir($path);
+      next;
+    }
+    push @files, $path;
+  }
+  return @files;
+}
+
+sub diff_files {
+    my ($path1, $path2) = @_;
+    my ($curr_hunk, @context, @hunks) = (undef);
+    
+    # Get Data::Dumper set up
+    my $dd = new Data::Dumper([\@hunks], [qw(hunks)]);
+    $dd->Purity(1);
+    $dd->Indent(1);
+    $dd->Useqq(1);
+    $dd->Deepcopy(1);		# Shouldn't make any difference
+    $dd->Sortkeys(1);		# This is essential, because we're taking MD5s
+
+    my $oldfh = new IO::File '<'.$path1;
+    die "Couldn't open $path1 for reading: $!\nStopped" unless defined($oldfh);
+    my $newfh = new IO::File '<'.$path2;
+    die "Couldn't open $path2 for reading: $!\nStopped" unless defined($newfh);
+
+    # Suck the contents of both files into arrays
+    # This will take more memory (two copies of each file instead of just one),
+    # but is pretty necessary to ensure that we have arrays of lines no matter
+    # which OS happens to be running the script.
+    local $/ = undef;		# Slurp mode
+    my $contents = <$oldfh>;
+    # Don't use [\r\n]+ for the split because that removes sequences of
+    # blank lines.
+    my @oldfile = map { tr{\012\015}{\012\012}s; $_ } split(/(?:\n|\r\n)/, $contents);
+    $contents = <$newfh>;
+    my @newfile = map { tr{\012\015}{\012\012}s; $_ } split(/(?:\n|\r\n)/, $contents);
+
+    my $deal = sub {
+	# Handle the context, etc.
+	my ($dir, $ptr_old, $ptr_new) = @_;
+	return if ($dir ne '-' && $dir ne '+' && $dir ne '!');
+
+	if (@context + 0 > 0) {
+	    # A diff has been found, and there is some context, so it means
+	    # that this call is not for the next in a long string of
+	    # consecutive diffs.
+	    if (@context + 0 <= ($context * 2)) {
+		# If there's less than 6 lines of context AND a hunk is in
+		# progress, it's a continuation.  Otherwise just use the last
+		# $context lines for the new hunk.
+		if (defined($curr_hunk)) {
+		    push @{$curr_hunk->{'context'}}, @context;
+		} else {
+		    my $clines = (@context+0 > $context) ? $context : @context+0;
+		    $curr_hunk = { 'context' => [ splice(@context, -$clines) ],
+				   'base'    => @context+0,
+				   'diffs'   => [],
+			           'clines'  => $context };
+		}
+	    } else {
+		if (defined($curr_hunk)) {
+		    # This is the start of a new hunk; put more context on
+		    # the old one and save it
+                    push @{$curr_hunk->{'context'}}, grep { defined } @context[0..($context-1)];
+		    push @hunks, $curr_hunk;
+		}
+		$curr_hunk = { 'context' => [ splice(@context, -$context) ],
+			       'base'    => $ptr_old - $context,
+			       'diffs'   => [],
+			       'clines'  => $context };
+	    }
+	    @context = ();
+	} elsif (!defined($curr_hunk)) {
+	    # Two files differ right from the start...
+	    $curr_hunk = { 'context' => [],
+			   'base'    => 0,
+			   'diffs'   => [],
+                           'clines'  => $context };
+	}
+	my $base = $curr_hunk->{'base'}; # To make things neater
+	if ($dir eq '-') {
+	    # An old line being replaced is also part of the context
+	    push @{$curr_hunk->{'context'}}, $oldfile[$ptr_old];
+	    push @{$curr_hunk->{'diffs'}}, -1 * ($ptr_old - $base);
+	} elsif ($dir eq '+') {
+	    push @{$curr_hunk->{'diffs'}}, [ $ptr_new - $base,
+					     $newfile[$ptr_new] ];
+	} elsif ($dir eq '!') {
+	    push @{$curr_hunk->{'context'}}, $oldfile[$ptr_old];
+	    push @{$curr_hunk->{'diffs'}}, [ $ptr_new - $base,
+					     $newfile[$ptr_new],
+					     $ptr_old - $base ];
+	}
+    };
+
+    # Make a diff!
+    traverse_balanced( \@oldfile, \@newfile,
+		       {
+			   'MATCH'  => sub { push @context, $oldfile[$_[0]]; },
+			   'DISCARD_A' => sub { &$deal('-', @_); },
+			   'DISCARD_B' => sub { &$deal('+', @_); },
+			   'CHANGE'    => sub { &$deal('!', @_); }
+		       } );
+
+    if (defined($curr_hunk)) {
+	# Take care of the last one
+	push @{$curr_hunk->{'context'}}, grep { defined } @context[0..($context-1)];
+	push @hunks, $curr_hunk;
+    }
+
+    return '' if (@hunks + 0 <= 0); # No hunks == nothing to return
+
+    return($dd->Dump);		# Stringify the data structure
+}

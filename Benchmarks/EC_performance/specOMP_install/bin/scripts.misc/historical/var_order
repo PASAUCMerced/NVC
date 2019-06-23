@@ -1,0 +1,123 @@
+#!/usr/bin/perl
+
+use strict;
+use Data::Dumper;
+use Text::Wrap;
+
+my @varlists = ();
+
+while(my $line = <DATA>) {
+  next unless $line =~ /^source:\s*(.+)/;
+  push @varlists, [ split(/\s+/, $1) ];
+}
+
+my $current = 0;
+my @final = ();
+
+# Seed the list with the first varlist
+foreach my $item (@{$varlists[0]}) {
+  $final[$current++] = $item;
+}
+
+# Go through the other varlists, splicing their sections in where appropriate
+my @waiting = ();
+for(my $i = 1; $i < @varlists; $i++) {
+  my $elem = shift @{$varlists[$i]};
+  next unless defined($elem);
+  # Let's get stupid
+  foreach my $elem (@{$varlists[$i]}) {
+    my $found = 0;
+    for(my $j = 0; $j < @final; $j++) {
+      if ($final[$j] eq $elem) {
+        # Found it!  Splice in waiting elements before the found element
+        splice @final, $j, 0, @waiting;
+        @waiting = ();
+        $found = 1;
+      }
+    }
+    if (!$found) {
+      push @waiting, $elem;
+    }
+  }
+  if (@waiting) {
+    # Just push any leftovers
+    push @final, @waiting;
+    @waiting = ();
+  }
+}
+
+my %final = ();
+my @final_varlists = ();
+
+# Convert the final array to a hash
+for(my $i = 0; $i < @final; $i++) {
+  next unless defined($final[$i]);
+  $final{$final[$i]} = $i + 1;
+
+  # CXX is special
+  if ($final[$i] eq 'CXXC') {
+    $final{'CXX'} = $final{'CXXC'};
+  }
+}
+
+# Generate the check lists
+for(my $i = 0; $i < @varlists; $i++) {
+  foreach my $item (@{$varlists[$i]}) {
+    push @{$final_varlists[$i]}, $final{$item};
+  }
+
+  # Check through the lists
+  my $orig = @{$varlists[$i]} + 0;
+  my $final = @{$final_varlists[$i]} + 0;
+  my $bad = $orig != $final;
+  print "$i: orig: $orig; final: $final: ";
+  for(my $j = 1; $j < $orig; $j++) {
+    if ($varlists[$i]->[$j-1] > $varlists[$i]->[$j]) {
+      print "MISMATCH \@ $j --";
+      $bad = 1;
+      last;
+    }
+  }
+  print ''.($bad ? 'FAIL!' : 'ok')."\n";
+}
+
+#print Data::Dumper->Dump([\%final, \@final_varlists ],[qw(final varlist)])."\n";
+
+print "\nPut the following into by_variable() in flagutils.pl:\n";
+print "-------------------------------------------------------------------\n\n";
+print "# Variable order:\n".wrap('# ', '# ', join(' ', sort { $final{$a} <=> $final{$b} } keys %final))."\n";
+print "\nmy %variable_order = (\n";
+foreach my $key (sort { $final{$a} <=> $final{$b} } keys %final) {
+  printf "  %-22s => %d,\n", "'$key'", $final{$key};
+}
+print ");\n";
+print "\n-------------------------------------------------------------------\n";
+
+__DATA__
+
+# When inserting new variables that depend on or contain $(BENCHLANG), just
+# do the expansion by hand.  Below, the order is C, C++, Fortran, but it
+# really doesn't matter.
+
+# ONESTEP build
+source: CC CXXC FC LD CPUFLAGS BENCH_FLAGS BENCH_CFLAGS BENCH_CXXFLAGS BENCH_FFLAGS LDCFLAGS LDCXXFLAGS LDFFLAGS PASSn_FLAGS PASSn_CFLAGS PASSn_CXXFLAGS PASSn_FFLAGS PASSn_LDFLAGS PASSn_LDCFLAGS PASSn_LDCXXFLAGS PASSn_LDFFLAGS OPTIMIZE COPTIMIZE CXXOPTIMIZE FOPTIMIZE FDO_OPTIMIZE FDO_COPTIMIZE FDO_CXXOPTIMIZE FDO_FOPTIMIZE PORTABILITY CPORTABILITY CXXPORTABILITY FPORTABILITY LDPORTABILITY EXTRA_CFLAGS EXTRA_CXXFLAGS EXTRA_FFLAGS EXTRA_LDFLAGS EXTRA_OPTIMIZE EXTRA_COPTIMIZE EXTRA_CXXOPTIMIZE EXTRA_FOPTIMIZE EXTRA_PORTABILITY EXTRA_CPORTABILITY EXTRA_CXXPORTABILITY EXTRA_FPORTABILITY LIBS OS_LIBS MATH_LIBS OPTIMIZATION_LIBS OPTIMIZATION_CLIBS OPTIMIZATION_CXXLIBS OPTIMIZATION_FLIBS PORTABILITY_LIBS PORTABILITY_CLIBS PORTABILITY_CXXLIBS PORTABILITY_FLIBS EXTRA_LIBS EXTRA_CLIBS EXTRA_CXXLIBS EXTRA_FLIBS PASSn_LDOPT LDOPT LDOUT
+
+# Normal, non-ONESTEP build
+#specpp:
+source: FPPFLAGS BENCH_FPPFLAGS CPUFLAGS PORTABILITY CPORTABILITY CXXPORTABILITY FPORTABILITY EXTRA_PORTABILITY FPPPORTABILITY EXTRA_FPPFLAGS
+
+# Compilation:
+source: CC CXXC FC COBJOPT CXXOBJOPT FOBJOPT CPUFLAGS BENCH_FLAGS BENCH_CFLAGS BENCH_CXXFLAGS BENCH_FFLAGS LDCFLAGS LDCXXFLAGS LDFFLAGS PASSn_FLAGS PASSn_CFLAGS PASSn_CXXFLAGS PASSn_FFLAGS PASSn_LDFLAGS PASSn_LDCFLAGS PASSn_LDCXXFLAGS PASSn_LDFFLAGS OPTIMIZE COPTIMIZE CXXOPTIMIZE FOPTIMIZE FDO_OPTIMIZE FDO_COPTIMIZE FDO_CXXOPTIMIZE FDO_FOPTIMIZE PORTABILITY CPORTABILITY CXXPORTABILITY FPORTABILITY LDPORTABILITY EXTRA_CFLAGS EXTRA_CXXFLAGS EXTRA_FFLAGS EXTRA_LDFLAGS EXTRA_OPTIMIZE EXTRA_COPTIMIZE EXTRA_CXXOPTIMIZE EXTRA_FOPTIMIZE EXTRA_PORTABILITY EXTRA_CPORTABILITY EXTRA_CXXPORTABILITY EXTRA_FPORTABILITY
+
+# C comp:
+#CC COBJOPT CPUFLAGS BENCH_FLAGS BENCH_CFLAGS   LDCFLAGS   PASSn_FLAGS PASSn_CFLAGS   PASSn_LDFLAGS PASSn_LDCFLAGS   OPTIMIZE COPTIMIZE   FDO_OPTIMIZE FDO_COPTIMIZE   PORTABILITY CPORTABILITY   LDPORTABILITY EXTRA_CFLAGS   EXTRA_LDFLAGS EXTRA_OPTIMIZE EXTRA_COPTIMIZE   EXTRA_PORTABILITY EXTRA_CPORTABILITY
+
+#C++ comp:
+#CXXC CXXOBJOPT CPUFLAGS BENCH_FLAGS BENCH_CXXFLAGS LDCXXFLAGS PASSn_FLAGS PASSn_CXXFLAGS PASSn_LDFLAGS PASSn_LDCXXFLAGS OPTIMIZE CXXOPTIMIZE FDO_OPTIMIZE FDO_CXXOPTIMIZE PORTABILITY CXXPORTABILITY LDPORTABILITY EXTRA_CXXFLAGS EXTRA_LDFLAGS EXTRA_OPTIMIZE EXTRA_CXXOPTIMIZE EXTRA_PORTABILITY EXTRA_CXXPORTABILITY
+
+#FORTRAN comp:
+#FC FOBJOPT BENCH_FLAGS BENCH_FFLAGS   LDFFLAGS   PASSn_FLAGS PASSn_FFLAGS   PASSn_LDFLAGS PASSn_LDFFLAGS   OPTIMIZE FOPTIMIZE   FDO_OPTIMIZE FDO_FOPTIMIZE   PORTABILITY FPORTABILITY   LDPORTABILITY EXTRA_FFLAGS   EXTRA_LDFLAGS EXTRA_OPTIMIZE EXTRA_FOPTIMIZE   EXTRA_PORTABILITY EXTRA_FPORTABILITY
+
+# Linkage:
+source: CC CXXC FC LD LDCFLAGS LDCXXFLAGS LDFFLAGS OPTIMIZE COPTIMIZE CXXOPTIMIZE FOPTIMIZE FDO_OPTIMIZE PORTABILITY CPORTABILITY CXXPORTABILITY FPORTABILITY LDPORTABILITY EXTRA_OPTIMIZE EXTRA_COPTIMIZE EXTRA_CXXOPTIMIZE EXTRA_FOPTIMIZE EXTRA_LDFLAGS FDO_LDFLAGS FDO_LDCFLAGS FDO_LDCXXFLAGS FDO_LDFFLAGS LIBS OS_LIBS MATH_LIBS OPTIMIZATION_LIBS OPTIMIZATION_CLIBS OPTIMIZATION_CXXLIBS OPTIMIZATION_FLIBS PORTABILITY_LIBS PORTABILITY_CLIBS PORTABILITY_CXXLIBS PORTABILITY_FLIBS EXTRA_LIBS EXTRA_CLIBS EXTRA_CXXLIBS EXTRA_FLIBS PASSn_LDOPT LDOPT LDOUT
+

@@ -1,0 +1,609 @@
+#!/usr/bin/perl
+
+# add_new_benchmark -  Handle details of adding a completely new benchmark to
+#   the harness.  Looks for common mistakes (like not renaming docs, leaving
+#   generated files in, etc), fixes them, makes the necessary adjustments to
+#   the tools, and checks it all in to Subversion with correct properties set.
+#
+#  Copyright 2009-2012 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: add_new_benchmark 1568 2012-04-05 18:20:11Z CloyceS $
+
+BEGIN {
+    if ($ENV{'SPEC'} ne '') {
+        require "$ENV{'SPEC'}/bin/vars_common.pl";
+        die "The SPEC environment variable is not set correctly.\nStopped" unless $::suite ne '';
+        $::fullsuite = $::suite;
+        $::suite = $::suitebase;
+        chdir $ENV{'SPEC'}.'/benchspec/'.$::fullsuite;
+    } else {
+        die "The SPEC environment variable is not set.\n";
+    }
+}
+
+use strict;
+use IO::File;
+use File::Glob;
+use File::Copy;
+use File::Basename;
+use Getopt::Long;
+
+my $stdkeywords = 'Author Date Id Revision LastChangedRevision';
+my %ignore = ();
+my %keywords = ();
+my %mimetype = ();
+my %eol = ();
+
+my $default_bs = $::suite;
+
+my %opts = ( 'clone' => 0,
+             'check' => 0
+           );
+my $rc = GetOptions(\%opts, qw(
+                               clone!
+                               check!
+                              ));
+die "GetOptions failed\n" unless $rc;
+
+my $bm = shift(@ARGV);
+my $benchset = shift(@ARGV) || $default_bs;
+
+my ($num, $name) = '';
+
+# Figure out which benchset file the new benchmark will go in
+my $bs_file = '';
+foreach my $try ($benchset, $benchset.$::year,
+                 'C'.$benchset, 'C'.$benchset.$::year) {
+    if (-f $try.'.bset') {
+        $bs_file = $try.'.bset';
+        last;
+    } elsif (-f uc($try).'.bset') {
+        $bs_file = uc($try).'.bset';
+        $benchset = uc($benchset);
+        last;
+    }
+}
+die "Can't find benchset file for '$benchset'\n" unless $bs_file ne '';
+print "Benchmark list for $benchset is in $bs_file.\n";
+
+if ($bm eq '') {
+    die "Provide the benchmark number.name, please.\n";
+} else {
+    if ($bm =~ /^(\d{3})\.(\S{1,9})(.*)/) {
+        ($num, $name) = ($1, $2);
+        my $rest = $3;
+        if ($::suite =~ /^(OMP|ACCEL)/) {
+            $name .= $rest;
+        } elsif ($rest ne '') {
+            die "Benchmark name '$name' is too long; must be 9 characters or less.\n";
+        }
+    } else {
+        die "Expecting num.name; num must be 3 digits, and name must be 9 chars or less\n";
+    }
+}
+if (! -d $bm) {
+    die "There is no benchmark in benchspec/$::fullsuite/$bm\n";
+}
+
+if ( -d "$bm/.svn" && $opts{'check'} == 0 ) {
+    warn "$bm is already in Subversion!\n";
+    if (!ask("Continue anyway?")) {
+      exit 1;
+    }
+}
+
+# Load the benchmark config
+eval "package BM; do '$bm/Spec/object.pm';";
+die "Couldn't load benchmark config: $@\n" if ($@ ne '');
+my $benchlang = determine_overall_benchlang($bm);
+print "Benchmark: $bm ($num . '$name'; lang is '$benchlang') will be put into $benchset\n";
+
+if ($num != $BM::benchnum || $name ne $BM::benchname) {
+    die "\nBenchmark name/number is not configured correctly in object.pm.\nobject.pm says $BM::benchnum.$BM::benchname; should be $num.$name\n";
+}
+
+if (! -f "$bm/Spec/flags.xml") {
+    die "The benchmark flags file ($bm/Spec/flags.xml) is missing!\n";
+}
+my $tmp = qx{specrxp -Vs $bm/Spec/flags.xml};
+if ($? != 0) {
+    die "The benchmark flags file could not be validated! RXP output:\n$tmp\n";
+}
+$keywords{"$bm/Spec/flags.xml"} = $stdkeywords;
+$eol{"$bm/Spec/flags.xml"} = 'native';
+$mimetype{"$bm/Spec/flags.xml"} = 'text/xml';
+push @{$ignore{"$bm/Docs"}}, 'flags.html';
+print "Flags file validates\n";
+
+my $no_docs = 0;
+if ( -f "$bm/Docs/$bm.html" ) {
+    $keywords{"$bm/Docs/$bm.html"} = $stdkeywords;
+    $eol{"$bm/Docs/$bm.html"} = 'native';
+} else {
+    $no_docs = 1;
+}
+
+# Get a pointer to the start of the benchmark list in the formatter
+my ($formatter_fh, $locate_text) = find_benchmark_list($::fullsuite, $benchset);
+die "Couldn't find start of benchmark list for $benchset in bin/vars_common.pl\n" unless defined($formatter_fh);
+
+# Grunt work
+
+# 0. Set permissions so that files can be removed or changed as necessary
+# It's quick and dirty with find
+system "find $bm -type d -print | xargs chmod 775";
+system "find $bm -type f -print | xargs chmod u+rw,go+r";
+
+# 1. Clean up build or run leftovers
+system 'rm', '-rf', "$bm/run", "$bm/exe", "$bm/build";
+push @{$ignore{$bm}}, qw(build exe run);
+
+# 2. Check docs
+my $bad = '0123456789';
+substr($bad, substr($num, 0, 1), 1) = ''; # Remove the number corresponding
+                                          # to our own benchmark
+my @olddocs = glob "$bm/Docs/[$bad][0-9][0-9].$name.html";
+my @oldtext = map { my $t = $_; $t =~ s/\.html/\.txt/; $t } @olddocs;
+if (@olddocs) {
+  warn "Found potentially mismatched documentation files:\n   ".join("\n   ", @olddocs)."\n";
+  if ($no_docs == 0) {
+      if (ask("Nuke them?")) {
+          system 'rm', '-f', @olddocs;
+      }
+  } else {
+      if (ask("Try to \"update\" them?")) {
+          @olddocs = update_docs($bm, @olddocs);
+      } else {
+          die "Old docs found and no new docs are present.\n";
+      }
+  }
+  foreach $tmp (@olddocs) {
+      $eol{$tmp} = 'native';      # They're HTML, after all
+  }
+} elsif ($no_docs) {
+  die "Benchmark description is missing!\n";
+}
+
+# 3. Remove auto-generated versions of docs
+if ($opts{'check'} == 0) {
+    @oldtext = map { my $t = $_; $t =~ s/\.html/\.txt/; $t } @olddocs;
+    push @oldtext, "$bm/Docs/flags.html", "$bm/Docs/$bm.txt";
+    system 'rm', '-f', @oldtext;
+    push @{$ignore{"$bm/Docs"}}, @oldtext;
+}
+
+# 4. Remove objects, etc from src directory
+my @badfiles = glob "$bm/src/*.o";
+push @badfiles, glob "$bm/src/*.obj";
+push @badfiles, glob "$bm/src/*.exe";
+push @badfiles, glob "$bm/src/*.a";
+push @badfiles, glob "$bm/src/*.lib";
+push @badfiles, glob "$bm/src/*.so";
+push @badfiles, glob "$bm/src/*.pdb";
+push @badfiles, glob "$bm/src/*.orig";
+push @badfiles, glob "$bm/src/*.dSYM";
+push @badfiles, "$bm/src/$BM::exename" if (-f "$bm/src/$BM::exename");
+if (@badfiles) {
+    print "I would be " if $opts{'check'};
+    print "Removing non-source files from src:\n  ".join("\n  ", @badfiles)."\n";
+    if ($opts{'check'} == 0) {
+        my $count = unlink @badfiles;
+        die "Not all bad files could be removed: $!\n" if ($count != @badfiles);
+    }
+}
+
+# 5. Check workloads for reftime and refpower files and at least one of
+#    'input' or 'output'
+if ($opts{'clone'} == 0 || -d "$bm/data" ) {
+    my @workloads = sort by_workload glob "$bm/data/*";
+    my $all_outputs = 0;
+    foreach my $workload (@workloads) {
+        if (!-d $workload) {
+            die "Non-directory found in $bm/data: $workload\n" unless ($workload =~ /ref(?:time|power)$/);
+        }
+
+        # Check for reftime and refpower files
+        foreach my $reffile (qw(reftime refpower)) {
+            if ($workload !~ m#/all$#) {
+                if (!-f "$workload/$reffile" && $workload !~ m#/all$#) {
+                    if ($opts{'check'}) {
+                        warn "No $reffile file found in $workload; would make one up\n";
+                    } else {
+                        warn "No $reffile file found in $workload -- making one up!\n";
+                        my ($where) = ($workload =~ m#/([^/]+)$#);
+                        if ($where !~ /(ref|test|train)$/) {
+                            die "Can't figure out workload class from directory name ($where does not end with 'test', 'train', or 'ref')!\nCreate $workload/$reffile file manually.\n";
+                        }
+                        my $tmp = $where;
+                        # 1 is a special value in reftime and refpower files
+                        my $tmpval = ($reffile eq 'reftime') ? 2.0 : 1000;
+                        $tmp .= " $1" unless ($1 eq $where || $reffile ne 'reftime');
+                        my $fh = new IO::File ">$workload/$reffile";
+                        die "Couldn't open $workload/$reffile for writing: $!\n" unless defined($fh);
+                        $fh->print("$tmp\n$tmpval\n");
+                        $fh->close();
+                    }
+                } else {
+                    my $fh = new IO::File "<$workload/$reffile";
+                    my $tmp = <$fh>;
+                    if ($tmp !~ /(?:^|\s)(test|train|ref)$/) {
+                        die "The workload class on the first line of $workload/$reffile must be 'test',\n'train', or 'ref'.";
+                    }
+                    chomp($tmp = <$fh>);
+                    if ($tmp + 0 <= 1) {
+                        die "The value on the second line of $workload/$reffile must be a positive\nnumber greater than 1.\n";
+                    }
+                    $fh->close();
+                }
+            }
+        }
+
+        # Check for presence of input/output directories.  If both are missing
+        # the tools will report that the benchmark does not support that workload
+        if (!-d "$workload/input" && !-d "$workload/output") {
+            if ($opts{'check'}) {
+                warn "Neither input nor output directories found in $workload; would make them\n";
+            } else {
+                warn "Neither input nor output directories found in $workload -- making them!\n";
+                mkdir "$workload/input", 0777 || die "Couldn't create '$workload/input': $!\n";
+                if ($workload !~ m#/all$#) {
+                    mkdir "$workload/output", 0777 || die "Couldn't create '$workload/output': $!\n";
+                }
+            }
+        }
+
+        # Check for presence of files in the output directory.  If the 'all'
+        # directory has output files, it's not necesary to have one per
+        # workload.
+        if (-d "$workload/output" && $all_outputs == 0) {
+            my @files = glob "$workload/output/*";
+            if (@files > 0) {
+                $all_outputs = @files+0 if ($workload =~ m#/all$#);
+            } elsif ($workload !~ m#/all$#) {
+                if ($opts{'check'}) {
+                    warn "No output files in $workload; would make one up\n";
+                } else {
+                    warn "No output files in $workload!  Making one for now...\n";
+                    my $fh = new IO::File ">$workload/output/dummy";
+                    if (defined($fh)) {
+                        $fh->print("Guaranteed to fail!\n");
+                        $fh->close();
+                    } else {
+                        die "Couldn't open $workload/output/dummy for writing: $!\n";
+                    }
+                }
+            }
+        }
+
+        # Check to see that the reftime and refpower files which are present
+        # are correct
+        foreach my $reffile (qw(reftime refpower)) {
+            if ($workload !~ m#/all$#) {
+                my $fh = new IO::File "<$workload/$reffile";
+                die "Couldn't open $workload/$reffile for reading: $!\n" unless defined($fh);
+                $tmp = <$fh>;
+                chomp($tmp);
+                my ($size, $class) = split(/\s+/, $tmp);
+                $class = $size unless $class ne '';
+                if ($class !~ /^(?:ref|test|train)$/) {
+                    die "Bad workload class ($class) in $workload/$reffile; needs to be test, train, or ref!\n";
+                }
+                $tmp = <$fh>;
+                chomp($tmp);
+                if ($tmp !~ /^\d+(?:\.\d+)?$/) {
+                    die "Value listed ($tmp) in $workload/$reffile isn't a proper number!\n";
+                }
+                $fh->close();
+            }
+        }
+    }
+}
+
+if ($opts{'check'}) {
+    print "ERROR: Missing version.txt file\n" unless -f "$bm/version.txt";
+    print "ERROR: Benchmark not listed in benchsets\n" unless update_benchset_list($bs_file, $bm, 1);
+    print "ERROR: Benchmark not in formatter list\n" unless update_benchmark_list($formatter_fh, $locate_text, $bm, $benchlang, 1);
+    print "Check completed\n\n";
+    exit;
+}
+
+# 6. Set up the version.txt file
+unlink "$bm/version" if -f "$bm/version";
+copy("../../version.txt", "$bm/version.txt");
+$eol{"$bm/version.txt"} = 'native';
+$mimetype{"$bm/version.txt"} = 'text/plain';
+delete $keywords{"$bm/version.txt"};
+
+# 7. Set props for various files
+if ($opts{'clone'} == 0 || -d "$bm/src") {
+    die "No src/ directory!\n" unless -d "$bm/src";
+    foreach my $srcfile (deep_read_dir("$bm/src")) {
+        $eol{$srcfile} = 'native';
+        delete $keywords{$srcfile}; # Don't want to mess up author's tags
+    }
+    $keywords{"$bm/src/Makefile"} = $stdkeywords;
+}
+foreach my $docfile (glob "$bm/Docs/*html") {
+    $eol{$docfile} = 'native';
+    $mimetype{$docfile} = 'text/html';
+}
+$eol{"$bm/Spec/object.pm"} = 'native';
+$keywords{"$bm/Spec/object.pm"} = $stdkeywords;
+
+# 8. Add everything to Subversion
+if (-d "$bm/../.svn" ) {
+
+    $tmp = qx{svn add $bm};
+    die "'svn add' failed:\n$tmp\n" if ($? != 0);
+
+    # 9. Set all the props
+    # EOL styles
+    foreach my $file (sort keys %eol) {
+        svn_propset('svn:eol-style', $eol{$file}, $file);
+    }
+    # MIME types
+    foreach my $file (sort keys %mimetype) {
+        svn_propset('svn:mime-type', $mimetype{$file}, $file);
+    }
+    # Keyword replacement
+    foreach my $file (sort keys %keywords) {
+        svn_propset('svn:keywords', $keywords{$file}, $file);
+    }
+    # Ignores
+    foreach my $dir (sort keys %ignore) {
+        if (!-d $dir) {
+            die "Can't set ignore properties on non-directories; '$dir' isn't!\n";
+        }
+        svn_propset('svn:ignore', join("\n", uniq_basename(@{$ignore{$dir}})), $dir);
+    }
+
+} else {
+    print "Not a Subversion working tree; skipping 'svn add' and friends\n";
+}
+
+# 10. Update the files elsewhere in the suite that need it
+update_benchset_list($bs_file, $bm);
+update_benchmark_list($formatter_fh, $locate_text, $bm, $benchlang);
+
+sub uniq_basename {
+    my (@paths) = @_;
+    my %names = map { basename($_) => 1 } @paths;
+
+    return sort keys %names;
+}
+
+sub svn_propset {
+    my ($prop, $value, @targets) = @_;
+
+    system 'svn', 'propset', $prop, $value, @targets;
+    die "'svn propset' failed for $prop on ".join(',', @targets)."\n" if ($? != 0);
+}
+
+sub update_docs {
+    my ($bm, @olddocs) = @_;
+    my $newfile = "$bm/Docs/$bm.html";
+    $eol{$newfile} = 'native';
+    $keywords{$newfile} = $stdkeywords;
+
+    @olddocs = sort { $b cmp $a } @olddocs; # lexical is okay
+
+    # Attempt to only update the "newest" one
+    my $oldfile = shift(@olddocs);
+    my ($oldname) = ($oldfile =~ m#/([^/]+)\.html$#);
+    my $ifh = new IO::File '<'.$oldfile;
+    if (!defined($ifh)) {
+        die "Couldn't open $oldfile for reading: $!\n";
+    }
+    my $ofh = new IO::File '>'.$newfile;
+    if (!defined($ofh)) {
+        die "Couldn't open $newfile for writing: $!\n";
+    }
+    push @olddocs, $newfile;
+    while(defined(my $line = <$ifh>)) {
+        $line =~ s/(?:CPU95|CPU2000|CPU2006|CPUv6|OMP2001|OMP2012|MPI2007|ACCELv1|HANDHELDv1)/$::fullsuite/gi;
+        $line =~ s/$oldname/$bm/gi;
+        $line =~ s/Last updated:[^<]+/Last updated: \$Date\$/i;
+        $ofh->print($line);
+    }
+    $ifh->close();
+    $ofh->close();
+    system 'rm', '-f', $oldfile;
+    $oldfile =~ s/\.html/\.txt/;
+    system 'rm', '-f', $oldfile;
+
+    return @olddocs;
+}
+
+sub find_benchmark_list {
+    my ($suite, $bs) = @_;
+    my $locate = '';
+
+    my $fh = new IO::File '<../../bin/vars_common.pl';
+    die "Couldn't open vars_common.pl for reading: $!\n" unless defined($fh);
+    while(defined(my $line = <$fh>)) {
+        $locate .= $line;
+        return ($fh, $locate) if $line =~ /# $suite $bs benchset benchmark list begins here$/i;
+    }
+    $fh->close();
+    return undef;
+}
+
+sub update_benchmark_list {
+    my ($fh, $file, $benchmark, $lang, $check) = @_;
+    my $newline = sprintf("[ %-15s,     %-5s ],\n", "'$benchmark'", "'$lang'");
+    my $prefix = '';
+    
+    # Build up the whole file in memory (it's small) before writing it all out
+    while(defined(my $line = <$fh>)) {
+        if ($line =~ /^(\s+)\[/) {
+            $prefix = $1 if defined($prefix) && $prefix eq '';
+            if ($newline ne '' && defined($prefix)) {
+                $newline = $prefix.$newline;
+                $prefix = undef;
+            }
+        } elsif ($newline ne '') {
+            if ($line =~ /^\s+\],\s*$/) {
+                # Last benchmark in the list
+                print "Inserting $benchmark at last position in the list\n" unless $check;
+                $file .= $newline.$line;
+                $newline = '';
+                last;
+            } else {
+                # Found a non-benchmark list line and we didn't put ourselves in
+                # anywhere.  That's bad.
+                die "Couldn't find insertion point for $benchmark\n";
+            }
+        }
+        if ($newline eq $line) {
+            # Done!  It's already there, so no need to add anything
+            return 1;
+        } elsif (($newline cmp $line) < 0) {
+            # Higher benchmark number; insert ourselves here
+            $line =~ /'([^']+)'/;
+            print "Inserting $benchmark before $1 in format list\n" unless $check;
+            $file .= $newline.$line;
+            $newline = '';
+            last;
+        } else {
+            $file .= $line;
+        }
+    }
+    $file .= join('', <$fh>);   # Slurp the rest of the file
+    $fh->close();
+
+    return 0 if $check; # No need to continue if the line isn't there...
+
+    $fh = new IO::File '>../../bin/vars_common.pl';
+    die "Couldn't open vars_common.pl for writing: $!\n" unless defined($fh);
+    $fh->print($file);
+    $fh->close();
+    # Remove the copy of vars_common.pl in the formatter directory so it'll
+    # pick up the modified copy
+    unlink '../../bin/formatter/vars_common.pl';
+}
+
+sub update_benchset_list {
+    my ($bs_file, $benchmark, $check) = @_;
+    my $newline = $benchmark."\n";
+    my $contents = '';
+    my $prefix = '';
+
+    my $fh = new IO::File '<'.$bs_file;
+    my $bmlist = 0;
+    while(defined(my $line = <$fh>)) {
+        if ($bmlist == 0) {
+            $contents .= $line;
+            $bmlist = 1 if ($line =~ /\@benchmarks =/);
+        } elsif ($line =~ /^(\s+)(\d{3}\.\S+)/) {
+            my ($ws, $curbm) = ($1, $2);
+            if (defined($prefix) && $prefix eq '' && $ws ne '') {
+                $prefix = undef;
+                $newline = $ws.$newline;
+            }
+            if ($newline eq $line || $benchmark eq $curbm) {
+                # It's already in there, so we can just tquit
+                return 1;
+            } elsif (($newline cmp $line) < 0) {
+                print "Inserting $benchmark before $2 in benchset\n" unless $check;
+                $contents .= $newline;
+                $newline = '';
+                $bmlist = 0;
+            }
+            $contents .= $line;
+        } elsif ($line =~ m#\);#) {
+            $bmlist = 0;
+            if ($newline ne '') {
+                print "Inserting $benchmark at last position in benchset\n" unless $check;
+                $contents = $newline;
+                $newline = '';
+            }
+            $contents .= $line;
+        } else {
+            die "THIS shouldn't happen...\nStopped";
+        }
+    }
+    $fh->close();
+
+    return 0 if $check; # No need to continue if we're just checking...
+
+    # Now rewrite the benchset file
+    $fh = new IO::File '>'.$bs_file;
+    die "Couldn't open $bs_file for writing: $!\n" unless defined($fh);
+    $fh->print($contents);
+    $fh->close();
+}
+
+sub determine_overall_benchlang {
+    my ($bm) = @_;
+
+    # Check to see that CXX is listed first in benchlangs in which it appears
+    check_cxx_position($bm, 'default' => $BM::benchlang, %BM::benchlang);
+
+    if (defined($BM::benchlang) && $BM::benchlang ne '') {
+        # Scalar; easy
+        return $BM::benchlang;
+    } else {
+        my @langs = map { $BM::benchlang{$_} } keys %BM::benchlang;
+        @langs = sort { length($b) <=> length($a) } @langs;
+        if ($langs[0] ne '') {
+            return $langs[0]; # Longest == most languages == the one we want
+        } else {
+            die "Couldn't determine benchlang for $bm\n";
+        }
+    }
+}
+
+sub check_cxx_position {
+    # If CXX isn't listed first, then linkage will fail on the mangled C++
+    # names.
+    my ($bm, %langs) = @_;
+    my $do_die = 0;
+
+    foreach my $binary (sort keys %langs) {
+        if ($langs{$binary} =~ /CXX/ && $langs{$binary} !~ /^CXX/) {
+            print STDERR "Language for '$binary' must list CXX first; currently $langs{$binary}\n";
+            $do_die = 1;
+        }
+    }
+    die "Benchlang needs to be fixed for $bm\n" if $do_die;
+
+}
+
+sub ask {
+    my ($q) = @_;
+
+    print "$q (y/n) ";
+    my $answer = <>;
+    if ($answer =~ /^y/i) {
+        return 1;
+    }
+    return 0;
+}
+
+sub deep_read_dir {
+    my ($top) = @_;
+
+    return () unless -d $top;
+
+    my @files = ();
+
+    foreach my $file (glob "$top/*") {
+        if (-d $file) {
+            push @files, deep_read_dir($file);
+        } else {
+            push @files, $file;
+        }
+    }
+
+    return @files;
+}
+
+sub by_workload {
+  # Lexically sort workload list, except for all, which must come first
+  return -1 if $a =~ m#/all$#;
+  return 1 if $b =~ m#/all$#;
+  return $a cmp $b;
+}

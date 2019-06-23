@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+   SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<flagsdescription>
+
+<!-- #############  FILENAME  ########### -->
+<filename>Intel-ic11.1-linux64-ia64-revA</filename>
+
+<!-- #############   TITLE  ############# -->
+<title>Intel COmpiler 11.1 for Linux64 IA64 Flags Description</title> 
+
+<!-- #############   STYLE  ############# -->
+<style>
+  <![CDATA[
+     body { background: white; }
+  ]]>
+</style>
+
+<!-- #############  HEADER ########### -->
+<header>
+  <![CDATA[
+     <p>Compilers: Intel Compilers for C++ and Fortran, Version  10.1 for IPF Linux64<br />
+         Operating system: Red Hat Enterprise Linux 5.1 (for Intel Itanium)
+     </p>
+     <hr />
+  ]]>
+</header>
+
+
+<!-- #############  PORTABILITY ########### -->
+<flag name="no_for_main" class="portability" regexp="(?:/\S+/)?-nofor_main\b">
+   <![CDATA[
+      <p>Specifies the main program is not written in Fortran, and prevents the compiler
+           from linking for_main.o into applications.
+     </p>
+   ]]>
+</flag>
+
+<!-- #############  OPTIMIZATION ########### -->
+
+<flag name="f-fast" class="optimization" regexp="-fast\b">
+   <![CDATA[
+      <p>Maximizes speed across the entire program.</p>
+      <p>Sets the following options:</p>
+      <ul>
+          <li>-O3</li>
+          <li>-ipo</li>
+          <li>-static</li>
+      </ul>
+   ]]> 
+   <include flag="f-O3" />
+   <include flag="f-ipo" />
+   <include flag="f-static"  />
+ </flag>
+
+<flag name="f-O3" class="optimization" regexp="-O3\b">
+   <![CDATA[
+      <p>Enables O2 optimizations plus more aggressive optimizations, such as
+           prefetching, scalar replacement, and loop and memory access 
+           transformations. Enables optimizations for maximum speed, such as: 
+      </p>
+      <ul>
+          <li>Loop unrolling, including instruction scheduling</li>
+          <li>Code replication to eliminate branches</li>
+          <li>Padding the size of certain power-of-two arrays to allow 
+           more efficient cache use.</li>
+      </ul>
+      <p>On Intel Itanium processors, the O3 option enables optimizations 
+           for technical computing applications (loop-intensive code): 
+           loop optimizations and data prefetch.
+      </p>
+      <p>The O3 optimizations may not cause higher performance unless loop and 
+           memory access transformations take place. The optimizations may slow 
+           down code in some cases compared to O2 optimizations. <br />
+           The O3 option is recommended for applications that have loops that heavily 
+           use floating-point calculations and process large data sets. 
+      </p>
+   ]]> 
+   <include flag="f-O2" />
+</flag>
+
+<flag name="f-O2" class="optimization" regexp="-O2\b">
+   <![CDATA[
+      <p>Enables optimizations for speed. This is the generally recommended 
+           optimization level. <br />
+           This option enables optimizations for speed, including global code scheduling,
+           software pipelining,predication, and speculation.<br />
+           This option also enables:
+      </p>
+      <ul>
+          <li>Inlining of intrinsics</li>
+          <li>Intra-file interprocedural optimizations, which include:
+             <ul>
+                 <li>inlining</li>
+                 <li>constant propagation</li>
+                 <li>forward substitution</li>
+                 <li>routine attribute propagation</li>
+                 <li>variable address-taken analysis</li>
+                 <li>dead static function elimination</li>
+                 <li>removal of unreferenced variables</li>
+             </ul>
+          </li>
+          <li>The following capabilities for performance gain:
+             <ul>
+                 <li>constant propagation</li>
+                 <li>copy propagation</li>
+                 <li>dead-code elimination</li>
+                 <li>global register allocation</li>
+                 <li>global instruction scheduling and control speculation</li>
+                 <li>loop unrolling</li>
+                 <li>optimized code selection</li>
+                 <li>partial redundancy elimination</li>
+                 <li>strength reduction/induction variable simplification</li>
+                 <li>variable renaming</li>
+                 <li>exception handling optimizations</li>
+                 <li>tail recursions</li>
+                 <li>peephole optimizations</li>
+                 <li>structure assignment lowering and optimizations</li>
+                 <li>dead store elimination</li>
+             </ul>
+          </li>
+      </ul>
+   ]]> 
+   <include flag="f-O1" />
+</flag>
+
+<flag name="f-O1" class="optimization" regexp="-O1\b">
+   <![CDATA[
+      <p>Enables optimizations for speed and disables some optimizations that
+         increase code size and affect speed.<br />
+         To limit code size, this option: 
+      </p>
+      <ul>
+          <li>Enables global optimization; this includes data-flow analysis, 
+              code motion, strength reduction and test replacement, split-lifetime
+              analysis, and instruction scheduling. </li>
+          <li>Disables intrinsic recognition and intrinsics inlining. </li>
+          <li>On Itanium-based systems, it disables software pipelining, loop unrolling, 
+               and global code scheduling.</li>
+      </ul>
+      <p>
+         On Intel Itanium processors, this option also enables optimizations for server
+         applications (straight-line and branch-like code with a flat profile). 
+      </p>
+      <p>
+         The O1 option may improve performance for applications with very large 
+         code size, many branches, and execution time not dominated by code within loops.
+      </p>
+      <p style="margin-left: 25px">
+         -unroll0, -fbuiltin, -mno-ieee-fp, -fomit-frame-pointer (same as -fp), -ffunction-sections
+      </p>
+   ]]>
+
+   <include flag="f-unrolln"/>
+   <include flag="f-fbuiltin"/>
+   <include flag="f-mno-ieee-fp"/>
+   <include flag="f-fomit-frame-pointer"/>
+   <include flag="f-ffunction-sections"/>
+</flag>
+
+<flag name="f-unrolln" class="optimization" regexp="-unroll\d+\b">
+   <![CDATA[
+      <p>Tells the compiler the maximum number of times to unroll loops.</p>
+   ]]>
+</flag>
+
+<flag name="f-fbuiltin" class="optimization" regexp="-fbuiltin\b">
+   <![CDATA[
+      <p>Enables inline expansion of all intrinsic functions. 
+     </p>
+   ]]>
+</flag>
+
+<flag name="f-mno-ieee-fp" class="optimization" regexp="-mno-ieee-fp\b">
+   <![CDATA[
+      <p>Disables conformance to the ANSI C and IEEE 754 standards for 
+           floating-point arithmetic.
+      </p>
+   ]]> 
+</flag>
+
+<flag name="f-fomit-frame-pointer" class="optimization" 
+       regexp="-formit-frame-pointer\b">
+   <![CDATA[
+      <p>Enables EBP to be used as a general-purpose register.</p>
+   ]]>
+</flag>
+
+<flag name="f-ffunction-sections" class="optimization"
+       regexp="-ffunction-sections\b">
+   <![CDATA[
+      <p>Places each function in its own COMDAT section.</p>
+   ]]> 
+</flag>
+
+<flag name="f-ipo" class="optimization" regexp="-ipo\b">
+   <![CDATA[
+      <p>Enables multifile interprocedural optimizations between files.</p>
+   ]]> 
+</flag>
+
+<flag name="f-static" class="optimization" regexp="-static\b">
+   <![CDATA[
+      <p>Prevents linking with shared libraries.</p>
+   ]]> 
+</flag>
+
+<flag name="f-prof-gen" class="optimization" regexp="-prof-gen\b">
+   <![CDATA[
+      <p>Instruments a program for profiling to get the execution count of 
+          each basic block. It also creates a new static profile information file.
+      </p>
+   ]]> 
+</flag>
+
+<flag name="f-prof-use" class="optimization" regexp="-prof-use\b">
+   <![CDATA[
+      <p>Enables use of profiling information (including function splitting and 
+           function grouping) during optimization. It enables option -fnsplit.
+      </p>
+   ]]>
+   <include flag="f-fnsplit"/>
+</flag>
+
+<flag name="f-fnsplit" class="optimization" regexp="-fnsplit\b">
+   <![CDATA[
+      <p>Enables function splitting. This option is enabled automatically if you
+           specify -prof-use.
+      </p>
+   ]]>
+</flag>
+
+<flag name="IPF-fp-relaxed" class="optimization" regexp="-IPF[-_]fp[-_]relaxed\b">
+   <![CDATA[
+      <p>Enables use of faster but slightly less accurate code sequences for
+           math functions, such as divide and sqrt. When compared to strict IEEE* 
+           precision, this option slightly reduces the accuracy of floating-point
+           calculations performed by these functions, usually limited to the least
+           significant digit.
+      </p>
+      <p>This option also enables the performance of more aggressive 
+           floating-point transformations, which may affect accuracy.
+      </p>
+   ]]> 
+</flag>
+
+<flag name="f-no-prefetch" class="optimization" regexp="-no-prefetch\b">
+   <![CDATA[
+      <p>Disables prefetch insertion optimization..</p>
+   ]]> 
+</flag>
+
+<flag name="f-fno-alias" class="optimization" regexp="-fno-alias\b">
+   <![CDATA[
+      <p>Specifies that aliasing should not be assumed in the program.</p>
+   ]]> 
+</flag>
+
+<flag name="f-no-alias-args" class="optimization" 
+       regexp="-no-alias-args\b" compilers="intel_icc,intel_icpc">
+   <![CDATA[
+      <p>Do not assume arguments may be aliased.</p>
+   ]]> 
+</flag>
+
+<flag name="f-ansi-alias" class="optimization" 
+       regexp="-ansi[-_]alias\b" compilers="intel_icc,intel_icpc">
+   <![CDATA[
+      <p>Tells the compiler to assume that the program adheres to ISO C Standard. 
+           aliasability.<br />
+           If your program adheres to these rules, then this option allows the compiler
+           to optimize more aggressively. If it doesn't adhere to these rules, then it
+           can cause the compiler to generate incorrect code.
+      </p>
+   ]]> 
+</flag>
+
+<!-- check  -->
+<flag name="f-ansi" class="optimization" regexp="-ansi\b" compilers="intel_icc">
+   <![CDATA[
+      <p>Enables language compatibility with the gcc option -ansi and provides the
+           same level of ANSI standard comformance as that option.</p>
+      <p>This option sets option -fmath-errno.</p>
+   ]]> 
+   <include flag="f-fmath-errno"/>
+</flag>
+
+<flag name="f-fmath-errno" class="optimization" regexp="-fmath-errno\b">
+   <![CDATA[
+      <p>Tells the compiler to assume that the program test errno after calls to
+          math library functions. This restricts optimization because it causes the
+          compiler to treat most math functions as having side effects.
+      </p>
+   ]]> 
+</flag>
+
+<flag name="linker_muldefs" class="optimization" regexp="-Wl,-z,muldefs\b">
+   <![CDATA[
+      <p>The -Wl option directs the compiler to pass a list of arguments
+       to the linker.  In this case, "-z muldefs" is passed to the 
+       linker.  For the Gnu linker (ld), the  "-z keyword" option accepts
+       several recognized keywords. Keyword "muldefs" allows multiple 
+       definitions.   The muldefs keyword will enable, for example, 
+       linking with third party libraries like SmartHeap from
+       Microquill.</p>
+   ]]> 
+</flag>
+
+<flag name="SmartHeap" class="optimization"
+       regexp="/opt/SmartHeap_8/lib/libsmartheap64.a\b">
+   <![CDATA[
+      <p>MicroQuill SmartHeap Library available from http://www.microquill.com/<br />
+         To link SmartHeap with C   applications, you must link with libsmartheap64.a<br />
+         To link SmartHeap with C++ applications, you must link with libsmartheap64.a and libsmartheapC64.a</p>
+   ]]>
+</flag>
+
+<flag name="SmartHeapC" class="optimization"
+       regexp="/opt/SmartHeap_8/lib/libsmartheapC64.a\b">
+   <![CDATA[
+      <p>MicroQuill SmartHeap Library available from http://www.microquill.com/<br />
+         To link SmartHeap with C   applications, you must link with libsmartheap64.a<br />
+         To link SmartHeap with C++ applications, you must link with libsmartheap64.a and libsmartheapC64.a</p>
+   ]]>
+</flag>
+
+
+<flag name="f-mtune" class="optimization" regexp="-mtune=(\S+)\b">
+<example>-mtune=cpu</example>
+   <![CDATA[
+      <p>Performs optimizations for a specified CPU. On Itanium(R)-based Linux 
+           systems, you can specify one of the following values.</p>
+      <ul>
+          <li>itanium: Optimizes for Intel(R) Itanium(R) processors.</li>
+          <li>itanium2: Optimizes for Intel(R) Itanium(R) 2 processors..</li>
+          <li>itanium2-p9000: Optimizes for Dual-Core Intel(R) Itanium(R) 2 
+              Processor 9000 Sequence processors.</li>
+      </ul>
+   ]]> 
+</flag>
+
+<flag name="f-auto-ilp32" class="optimization" 
+       regexp="-auto-ilp32\b" compilers="intel_icc,intel_icpc">
+   <![CDATA[
+      <p>Instructs the compiler to analyze and transform the program so that 
+           64-bit pointers are shrunk to 32-bit pointers, and 64-bit longs 
+           (on Linux) are shrunk into 32-bit longs wherever it is legal and safe 
+           to do so. In order for this option to be effective the compiler must be
+           able to optimize using the -ipo option and must be able to analyze all
+           library or external calls the program makes.</p>
+   ]]> 
+</flag>
+
+<flag name="f-opt-mem-bandwidth" class="optimization" 
+       regexp="-opt-mem-bandwidth\d+\b">
+<example>-opt-mem-bandwidthn</example>
+   <![CDATA[
+      <p>Enables or disables performance tuning and heuristics that control 
+           memory bandwidth use among processors. It allows the compiler to be
+           less aggressive with optimizations that might consume more bandwidth,
+           so that the bandwidth can be well-shared among multiple processors
+           for a parallel program.  For values of n greater than 0, the option tells 
+           the compiler to enable a set of performance tuning and heuristics in
+           compiler optimizations such as prefetching, privatization, aggressive code
+           motion, and so forth,  for reducing memory bandwidth pressure and 
+           balancing memory bandwidth traffic among threads. The n value is the
+           level of optimizing for memory bandwidth usage. You can specify one of
+           the  following values for n:</p> 
+      <ul>
+          <li>0 -- Disables a set of performance tuning and heuristics in compiler 
+           optimizations for parallel code. This is the default for serial code.</li>
+          <li>1-- Enables a set of performance tuning and heuristics in compiler 
+           optimizations for multithreaded code generated by the compiler.  This is
+           the default if compiler option -parallel or -openmp is specified, or Cluster
+           OpenMP option -cluster-openmp  is specified  (see the Cluster OpenMP
+           documentation).</li>
+          <li>2 -- Enables a set of performance tuning and  heuristics in compiler 
+           optimizations for parallel code such as Windows Threads, pthreads, and
+           MPI code,  besides  multithreaded code generated by the compiler.</li>
+      </ul>
+   ]]> 
+</flag>
+
+<flag name="f-inline-factor" class="optimization" regexp="-inline-factor=(\S+)\b">
+<example>-inline-factor=n</example>
+   <![CDATA[
+      <p>Specifies the percentage multiplier that should be applied to all inlining 
+           options that define upper limits: -inline-max-size,  -inline-max-total-size,
+           -inline-max-per-routine,  and -inline-max-per-compile.
+      </p>
+      <p>This option takes the default value for each of the above options and
+           multiplies it by n divided by 100. For example, if 200 is specified, all inlining
+           options that define upper limits are multiplied by a factor of 2. This option
+           is usuful if you do not want to individually increase each option limit.
+      </p>
+      <p>n is a positive integer specifying the percentage value. The default value 
+           is 100 (a factor of 1).
+      </p>
+   ]]> 
+</flag>
+
+<flag name="f-inline-max-size" class="optimization"
+       regexp="-inline-max-size=(\S+)\b">
+<example>-inline-max-size=n</example>
+   <![CDATA[
+      <p>Specifies the lower limit for the size of what the inliner considers to be a
+          large routine. It specifies the boundary between what the inliner considers
+          to be medium and large-size routines. 
+      </p>
+      <p>The inliner prefers to inline small routines. It has a preference against 
+           inlining large routines. So, any large routine is highly unlikely to be inlined.
+      </p>
+      <p>n is a positive integer that specifies the minimum size of a large routine.</p>
+   ]]> 
+</flag>
+
+<flag name="f-inline-max-per-routine" class="optimization"
+       regexp="-inline-max-per-routine=(\S+)\b">
+<example>-inline-max-per-routine=n</example>
+   <![CDATA[
+      <p>Specifies the maximum number of times the inliner may inline into a 
+          particular routine. It limits the number of times that inlining can be applied
+          to any routine.
+      </p>
+      <p>n is a positive integer that specifies the maximum number.</p>
+   ]]> 
+</flag>
+
+<flag name="f-inline-max-total-size" class="optimization"
+       regexp="-inline-max-total-size=(\S+)\b">
+<example>-inline-max-total-size=n</example>
+   <![CDATA[
+      <p>Specifies how much larger a routine can normally grow when inline expansion
+           is performed. It limits the potential size of the routine. For example, if 2000 is
+           specified for n, the size of any routine will normally not increase by more
+           than 2000.
+      </p>
+      <p>n is a positive integer that specifies the permitted increase in the size of the
+           routine.
+      </p>
+   ]]> 
+</flag>
+
+<flag name="f-inline-min-size" class="optimization"
+       regexp="-inline-min-size=(\S+)\b">
+<example>-inline-min-size=n</example>
+   <![CDATA[
+      <p>Specifies the upper limit for the size of what the inliner considers to be a
+           small routine. It specifies the boundary between what the inliner considers to
+           be small and medium-size routines. n is a positive integer that specifies the
+           maximum size of a small routine.</p>
+
+      <p>The inliner has a preference to inline small routines. So, when a routine is 
+           smaller than or equal to the specified size, it is very likely to be inlined.</p>
+   ]]> 
+</flag>
+
+<flag name="opt-mod-versioning" class="optimization" regexp="-opt-mod-versioning\b">
+
+      This option turns on versioning of modulo operations for 
+      certain types of operands (e.g. x%y where y is dynamically 
+      determined to be a power of 2).  The default is modulo 
+      versioning off.  This option may improve performance.   
+      Versioning of modulo operations commonly results in possibly 
+      large speedups for x%y where y is a power of 2.  However, 
+      the optimization could hurt performance slightly if y is 
+      not a power of 2.
+
+</flag>
+
+<flag name="unroll-aggressive" class="optimization" regexp="-unroll-aggressive\b">
+
+      This option tells the compiler to use more aggressive unrolling 
+      for certain loops.  The default is -no-unroll-aggressive 
+      (the compiler uses less aggressive default heuristics when 
+      unrolling loops).  This option may improve performance.
+      On the Itanium architecture, this option enables additional 
+      complete unrolling for loops that have multiple exits or outer 
+      loops that have a small constant trip count.
+
+</flag>
+
+<flag name="opt-prefetch-next-iteration" class="optimization" regexp="-opt-prefetch-next-iteration\b">
+
+      This option controls the prefetches that are issued for a 
+      memory access in the next iteration, typically done in a 
+      pointer-chasing loop.  This option should improve performance.
+      The default is -no-opt-prefetch-next-iteration (next iteration 
+      prefetch off).
+
+</flag>
+
+<flag name="no-opt-prefetch-initial-values" class="optimization" regexp="-no-opt-prefetch-initial-values\b">
+
+      This option controls the prefetches that are issued before 
+      the loop is entered.  These prefetches target the initial 
+      iterations of the loop.  The default is -opt-prefetch-initial-values 
+      (prefetch for initial iterations on) at -O1 and higher optimization 
+      levels.
+
+</flag>
+
+
+<flag name="no-opt-loadpair" class="optimization" regexp="-no-opt-loadpair\b">
+
+      This option controls the loadpair optimization.  The loadpair
+      optimization is enabled by default when -O3 is used for
+      Itanium.  -no-opt-loadpair turns the loadpair optimization off.
+
+</flag>
+
+
+<flag name="opt-prefetch-issue-excl-hint" class="optimization" regexp="-opt-prefetch-issue-excl-hint\b">
+
+   <![CDATA[
+    <p>Enables or disables use of the "exclusive hint" when generating
+    prefetch instructions. (IA-64 architecture only, default: off)</p>
+
+    <p>The Itanium architecture provides mechanisms, such as instruction
+    templates, branch hints, and cache hints to enable the compiler 
+    to communicate compile-time information to the processor.
+    "exclusive hint" is one of the cache hints and tells the processor
+     to bring the prefetched cache line into the cache in exclusive state. </p>
+   ]]>
+
+</flag>
+
+
+
+
+
+<!-- #############  COMPILER ########### -->
+
+<flag name="intel_icc" class="compiler" regexp="(?:/\S+/)?icc\b">
+  <![CDATA[
+     <p>Invoke the Intel C++ compiler for IPF Linux64 to compile C applications</p>
+  ]]>
+</flag>
+
+<flag name="intel_icpc" class="compiler" regexp="(?:/\S+/)?icpc\b">
+   <![CDATA[
+      <p>Invoke the Intel C++ compiler for IPF Linux64 to compile C++ applications</p>
+   ]]>
+</flag>
+
+<flag name="intel_ifort" class="compiler" regexp="(?:/\S+/)?ifort\b">
+   <![CDATA[
+      <p>Invoke the Intel Fortran compiler for IPF Linux64</p>
+   ]]>
+</flag>
+
+<!-- #############  OTHER ########### -->
+
+</flagsdescription>

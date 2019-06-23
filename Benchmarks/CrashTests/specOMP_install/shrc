@@ -1,0 +1,340 @@
+#!/bin/sh
+
+#
+#  shrc - sets up the environment to run SPEC OMP2012
+#  Copyright 1995-2011 Standard Performance Evaluation Corporation
+#
+#  Author:  Christopher Chan-Nui
+#
+# $Id: shrc 74 2011-08-23 14:10:02Z BrianWhitney $
+#
+
+umask 002
+# Find top of SPEC heirarchy
+
+# Pacify our favorite shell
+if test -n "${ZSH_VERSION+set}" && (setopt NONOMATCH) >/dev/null 2>&1; then
+  # Don't fail a glob just because part of the list doesn't match
+  setopt NONOMATCH
+elif test -n "${BASH_VERSION+set}" && (set -o hashall) >/dev/null 2>&1; then
+  # Bash probably has a similar thing, but I don't know what it is yet.
+  # Maybe it's not necessary
+  set -o hashall
+fi
+
+# Ignore preset SPEC variable
+SPEC=""
+
+# Set the locale, if it isn't already set and the user hasn't forbidden it
+if [ -z "${SPEC_LOCALE_OK+set}" ]; then
+    if [ -z "${LC_ALL+set}" -o -z "${LC_LANG+set}" ]; then
+        LC_ALL=C
+        LC_LANG=C
+        export LC_ALL LC_LANG
+    fi
+fi
+
+# must have dirname
+
+dirnametest=`dirname . 2>/dev/null`
+if [ "$dirnametest" != '.' ]
+then
+    echo "Your OS must have a dirname program!  Please check your path!\n";
+    unset dirnametest
+    false # don't use exit; the user's shell will do it!
+else
+  unset dirnametest
+  if [ "$SPEC" = "" ] 
+  then
+      SPEC=""
+      TEMPSPEC=`pwd`
+      while [ ! -f "$TEMPSPEC/bin/runspec" ] && [ "$TEMPSPEC" != "/" ] && [ "$TEMPSPEC" != "." ]
+      do 
+	  TEMPSPEC=`dirname "$TEMPSPEC"`
+      done
+      if [ -f "$TEMPSPEC/bin/runspec" ]
+      then
+	  SPEC=$TEMPSPEC
+      fi
+  fi
+  if [ "$SPEC" = "" ]
+  then
+      echo "Can't find the top of your SPEC tree: "`pwd`"/bin/runspec"
+      echo "was not found!  Please change to your OMP2012 directory and source the"
+      echo "shrc again."
+      false
+  else
+    # In order to discourage folks from sourcing the shrc on the CD (and thereby
+    # getting the wrong values for $SPEC and friends), make sure that the
+    # config directory is writable.
+
+    if [ ! -x "$SPEC/bin/specperl" -a ! -x "$SPEC/bin/specperl.exe" ]; then
+	echo ""
+	echo "WARNING: this benchmark tree has not yet been installed.  Please"
+        echo "         run install.sh before continuing."
+        echo ""
+    fi
+
+    if touch "$SPEC/config/shrc$$writetest" >/dev/null 2>&1; then
+      rm -f "$SPEC/config/shrc$$writetest" >/dev/null 2>&1
+
+      go_usage() {
+        ME=$1
+        if [ "x$ME" = "xgo" -o "x$ME" = "xogo" ]; then
+            if [ "x$ME" = "xgo" ]; then
+                MYTOP='$SPEC'
+            else
+                MYTOP='$GO'
+            fi
+            echo "Usage: $ME <destination>"
+            echo "Destinations:"
+            echo " top              : $MYTOP"
+            echo " docs             : \$SPEC/Docs"
+            echo " config           : \$SPEC/config"
+            echo " result           : $MYTOP/result"
+            echo " <benchmark> [...]: $MYTOP/benchspec/OMP2012/<benchmark>"
+            echo " benchmark can be abbreviated: e.g. '$ME perlbench'"
+            echo "See utility.html#$ME for more information."
+            echo
+            echo "\$SPEC is currently set to \"$SPEC\""
+            if [ "x$ME" = "xogo" ]; then
+                echo "\$GO is currently set to \"$GO\""
+            fi
+            echo
+        fi
+      }
+
+      go() {
+        SHRC_NO_GO=1
+        if [ "x$SPEC" != "x" ]; then
+            if [ "x$1" = "x--help" -o "x$1" = "x-h" ]; then
+                # Help time
+                go_usage 'go'
+            else
+                do_go $SPEC $*
+                pwd
+            fi
+        else
+            echo;
+            echo "The SPEC environment variable is not set! Please source the shrc and try again."
+            echo;
+        fi
+      }
+
+      ogo() {
+          SHRC_NO_GO=0
+          TOP=$SPEC
+          if [ "x$TOP" != "x" ]; then
+              if [ "x$1" = "x--help" -o "x$1" = "x-h" ]; then
+                  # Help time
+                  go_usage 'ogo'
+              else
+                  if [ "x$GO" != "x" ]; then
+                    case "$1" in
+                      top|"")
+                        if [ "x$OGO_NO_WARN" = "x" ]; then
+                          echo "Using value in GO for output_root: $GO"
+                        fi
+                        TOP=`echo $GO | sed "s#^\([^/~]\)#$SPEC/\1#"`             ;;
+                      bin|config|doc|Doc|docs|Docs|int|fp|cpu|mpi|src|data)       ;;
+                      *) case "$2" in
+                           data|src|Spec) ;;
+                           *) if [ "x$OGO_NO_WARN" = "x" ]; then
+                                echo "Using value in GO for output_root: $GO"
+                              fi
+                              TOP=`echo $GO | sed "s#^\([^/~]\)#$SPEC/\1#"`       ;;
+                          esac
+                    esac
+                  fi
+                  do_go $TOP $*
+                  pwd
+              fi
+          else
+              echo
+              echo "The SPEC environment variable is not set! Please source the shrc and try again."
+              echo
+          fi
+      }
+
+      do_go() {
+          ROOT=$1
+          shift
+	  case "$1" in
+	      top|"")	cd "$ROOT"    			;;
+	      bin)	cd "$ROOT"/bin			;;
+	      config)	cd "$ROOT"/config		;;
+	      doc)	cd "$ROOT"/Docs			;;
+	      Doc)	cd "$ROOT"/Docs			;;
+	      docs)	cd "$ROOT"/Docs			;;
+	      Docs)	cd "$ROOT"/Docs			;;
+	      result)	cd "$ROOT"/result		;;
+	      results)	cd "$ROOT"/result		;;
+	      int)	cd "$ROOT"/benchspec/CPU*	;;
+	      fp)	cd "$ROOT"/benchspec/CPU*	;;
+	      cpu)	cd "$ROOT"/benchspec/CPU*	;;
+	      mpi)	cd "$ROOT"/benchspec/MPI*	;;
+	      omp)	cd "$ROOT"/benchspec/OMP*	;;
+              src|run|data|exe|Spec)
+	        	whichbench $ROOT
+                        if [ ! -z "$SPECTMP" -a "x$SPECTMP" != "x." ]; then
+                          cd "$SPECTMP"
+                          if [ -d "$1" ]; then
+                            cd "$1"
+                          else
+                            echo "No directory named \"$1\""
+                            false
+                          fi
+                        elif [ ! -z "$2" -a -z "$DO_GO_NO_RECURSE" ]; then
+                          DO_GO_NO_RECURSE=1
+                          TMPDEST=$1
+                          TMPBENCH=$2
+                          shift 2 
+                          do_go $ROOT $TMPBENCH $TMPDEST $*
+                        else
+                          echo Not in a benchmark tree
+                          false
+                        fi
+                                                        ;;
+	      *)	whichbench $ROOT $1
+                        if [ ! -z "$SPECTMP" ]; then
+                          cd "$SPECTMP"
+                        else
+                          # No benchmark found; do not attempt to do subdirs
+                          shift $#
+                        fi                      ;;
+	  esac
+          if [ $# -gt 1 ]; then
+            shift
+            for subdir in $*; do
+              if [ -d "$subdir" ]; then
+                cd "$subdir"
+              else
+                echo "No directory named \"$subdir\""
+                false
+              fi
+              if [ $? -ne 0 ]; then
+                break
+              fi
+            done
+          fi
+          DO_GO_NO_RECURSE=
+      }
+
+      whichbench() {
+	  SPECTMP=
+          TOP=$1
+          BENCH=$2
+          if [ $SHRC_NO_GO -eq 1 ]; then
+              ME=go
+          else
+              ME=ogo
+          fi
+          if [ "x$BENCH" = "x" ]; then
+            # No benchmark specified; try to figure out what the current one
+            # (if any) is and Do The Right Thing.
+            # For the purposes of this exercise, try all of $TOP, $GO, and
+            # $SPEC.  It may be that the user is in an output root and wishes
+            # to indirectly visit a subdirectory in the main tree (or vice-
+            # versa).
+            # But in any case, don't pay attention to GO unless the user is
+            # using "ogo"
+            if [ $SHRC_NO_GO -eq 1 ]; then
+              GOGO=$SPEC
+            else
+              GOGO=$GO
+            fi
+            for i in "$TOP" "$GOGO" "$SPEC"; do
+              BENCH=`pwd | sed "s#$i//*benchspec/[^/][^/]*/##; s#/.*##;"`
+              if [ "x$BENCH" != "x" ]; then
+                break
+              fi
+            done
+              if [ "x$BENCH" = "x" ]; then
+                SPECTMP=.
+                return
+              fi
+          fi
+	  for i in "$TOP"/benchspec/*/$BENCH* "$TOP"/benchspec/*/0$BENCH* \
+		   "$TOP"/benchspec/*/00$BENCH* "$TOP"/benchspec/*/*.$BENCH*
+	  do
+	      if [ -d "$i" ]
+	      then
+		  SPECTMP=$i
+		  return
+	      fi
+	  done
+	  echo "Can't resolve \"$BENCH\" into a benchmark name"
+          echo
+          echo "Try '$ME --help' for options"
+          echo
+      }
+
+      SPECBIN="${SPEC}/bin"
+      case "$PATH:" in
+	  ${SPECBIN}:*) ;;
+	  *)              PATH=$SPECBIN:$PATH ;;
+      esac
+      export SPEC PATH
+
+      setperlspeclib() {
+	  SPECPERLLIB=""
+	  for i in "$SPEC"/bin "$SPEC"/bin/lib "$SPEC"/bin/lib/5* \
+		  "$SPEC"/bin/lib/site_perl "$SPEC"/bin/lib/site_perl/5*; do
+	      if [ -d "$i" ]; then
+		  if [ "$SPECPERLLIB" = '' ]; then
+		      SPECPERLLIB=$i
+		  else
+		      case ":$SPEC:" in
+			  *:$i:*)                             ;;
+			  *)      SPECPERLLIB=$SPECPERLLIB:$i ;;
+		      esac
+		  fi
+	      fi
+	  done
+	  export SPECPERLLIB
+      }
+      setperlspeclib
+
+      setldlibrarypath() {
+	  for i in "$SPEC/bin" "$SPEC/bin/lib"; do
+	      if [ -r "$i"/libperl.dylib* ]; then
+		  if [ "$DYLD_LIBRARY_PATH" = '' ]; then
+		      DYLD_LIBRARY_PATH="$i"
+		  else
+		      case ":$DYLD_LIBRARY_PATH:" in
+			  *:$i:*)                             ;;
+			  *)      DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$i" ;;
+		      esac
+		  fi
+	      fi
+	      if [ -r "$i"/libperl.so* ]; then
+		  if [ "$LD_LIBRARY_PATH" = '' ]; then
+		      LD_LIBRARY_PATH="$i"
+		  else
+		      case ":$LD_LIBRARY_PATH:" in
+			  *:$i:*)                             ;;
+			  *)      LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$i" ;;
+		      esac
+		  fi
+	      fi
+	  done
+	  export LD_LIBRARY_PATH DYLD_LIBRARY_PATH
+      }
+      setldlibrarypath
+    else
+	echo "You are not allowed to write into $SPEC/config."
+        echo "That may be because you are attempting to source the shrc on your distribution"
+        echo "media."
+        echo
+        echo "It may also be that a different user installed the benchmark tree and"
+        echo "has not set permissions that allow you to use it for runs.  See the"
+        echo "output_root section of runspec.html for information on how an installed"
+        echo "benchmark tree may be used by multiple users."
+        echo
+        echo "Please try again after correcting the problem."
+        SPEC=""
+        export SPEC
+        false
+    fi
+  fi
+fi

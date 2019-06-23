@@ -1,0 +1,125 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  convert_to_development - make the current installation into a "development"
+#                           version with all safety interlocks off and no
+#                           ability to make reportable runs
+#  Copyright 2007-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: convert_to_development 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use IO::File;
+
+my $SPEC = $ENV{'SPEC'};
+
+if ($SPEC eq '' || $SPEC =~ /^\s*$/) {
+    die "$0: The SPEC environment variable is not set.  Please ".(($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\nand re-run this program.\nStopped";
+}
+
+if ((!-d $SPEC) || (!-f join('/', $SPEC, 'bin', 'runspec'))) {
+    die "$0: The SPEC environment variable is set incorrectly.  Please ".(($^O =~ /Win32/) ? 'run shrc.bat' : 'source the shrc')."\nand re-run this program.\nStopped";
+}
+
+print <<"EOB";
+
+Development tree conversion: $SPEC
+
+After this conversion, the benchmark tree named above will no longer be
+usable for reportable runs.  In return, all of the safety features that
+ensure that sources, data, and tools are not changed are removed.
+
+This conversion is not reversable.  In order to regain the ability to do
+reportable runs, it will be necessary to do a complete new reinstallation in
+another location; re-running install.sh or install.bat will not be sufficient.
+
+Do you still want to continue with this conversion?
+EOB
+
+my $choice = <>;
+if ($choice !~ /^(?:y|yes|si|hai|ja|of course|do it!|please|go ahead|da)\s*$/i) {
+  print "Conversion aborted\n";
+  exit;
+}
+
+# Set the umask to something sane
+umask 022;
+
+# All the important work will happen in $SPEC/bin
+chdir join('/', $SPEC, 'bin');
+
+my @fixup = qw(
+                formats/raw.pl
+                formatter/setup_common.pl
+                setup_common.pl
+                util.pl
+                formatter/vars_common.pl
+                vars_common.pl
+                rawformat
+                runspec
+                benchmark.pm
+              );
+
+foreach my $file (@fixup) {
+    if (!-f $file) {
+        print STDERR "$file is missing!  This installation is corrupt.\n";
+        rollback_and_die();
+    }
+    my $ifh = new IO::File "<${file}";
+    if (!defined($ifh)) {
+        print STDERR "Couldn't open $file for reading: $!\n";
+        rollback_and_die();
+    }
+    my $ofh = new IO::File ">${file}.$$";
+    if (!defined($ofh)) {
+        print STDERR "Couldn't open $file.$$ for writing: $!\n";
+        rollback_and_die();
+    }
+    while(defined(my $line = <$ifh>)) {
+        $line =~ s/# CVT2DEV: //;
+        $ofh->print($line);
+    }
+    $ifh->close();
+    $ofh->close();
+
+    # Fix up permissions and modification times
+    my $oldmode = (stat($file))[2];
+    $oldmode |= 0644;
+    chmod $oldmode, "$file.$$";
+    utime ((stat(_))[8,9], "$file.$$");
+}
+
+# If we got this far without croaking, all the files are fixed up, and it's
+# just a matter of moving them around.
+foreach my $file (@fixup) {
+    if (!unlink $file) {
+        print STDERR "Couldn't remove old version of $file; this benchmark tree is probably\n";
+        print STDERR "permanently corrupt.\n";
+        rollback_and_die();     # Try anyway
+    }
+    if (!rename "$file.$$", $file) {
+        print STDERR "Couldn't move new version of $file into place; this benchmark tree is probably\n";
+        print STDERR "permanently corrupt.\n";
+        rollback_and_die();     # Try anyway
+    }
+}
+
+print "Successfully performed development tree conversion.\n";
+
+sub rollback_and_die {
+    # Attempt to un-do what's been done
+    foreach my $file (@fixup) {
+        if (-f $file && -f "$file.$$") {
+            unlink $file;
+        }
+        if (-f "$file.$$") {
+            rename "$file.$$", $file;
+        }
+        unlink "$file.$$";
+    }
+    exit 1;
+}

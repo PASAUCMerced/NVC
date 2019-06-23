@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd">
+<flagsdescription>
+
+<!-- filename to begin with "flags.xml" -->
+<filename>flags.xml</filename>
+
+<title>SPEC CPU2006 Flag Description for the MIPSpro Compiler 7.4.4m </title>
+<header>
+<![CDATA[
+<p style="text-align: left; color: red; font-size: larger; background-color: black">
+ Copyright &copy; 2006 SGI.  All Rights Reserved.</p>
+]]>
+</header>
+
+
+<!--
+******************************************************************************************************
+* Compilers
+******************************************************************************************************
+-->
+
+
+<flag name="CC" class="compiler" regexp="(?=\s|^)cc.*">
+
+   <![CDATA[
+      <p> The cc command invokes the MIPS and MIPSpro C compiler and the source preprocessor on source files that contain C code.</p>
+   ]]>
+
+</flag>
+<flag name="CXX" class="compiler" regexp="(?=\s|^)CC.*">
+
+   <![CDATA[
+      <p> The CC command invokes the MIPSpro C++ compiler.</p>
+   ]]>
+
+</flag>
+
+<flag name="f90" class="compiler" regexp="(?=\s|^)f90.*">
+
+   <![CDATA[
+      <p> The f90 command invokes the the MIPSpro Fortran 90 compiler.</p>
+   ]]>
+
+</flag>
+
+
+<!--
+******************************************************************************************************
+* Optimizations
+******************************************************************************************************
+-->
+
+<flag name="n32" class="optimization" regexp="-n32">
+
+   <![CDATA[
+      <p>Generates a (new) 32-bit object.  This defaults to -mips3 if -mips4 has not been specified.</p>
+   ]]>
+
+</flag>
+
+<flag name="mips4" class="optimization" regexp="-mips4">
+
+   <![CDATA[
+      <p>Generates a (new) 32-bit object.  This defaults to -mips3 if -mips4 has not been specified.</p>
+   ]]>
+
+</flag>
+
+<flag name="O3" class="optimization" regexp="-O3">
+
+   <![CDATA[
+      <p>Full optimization.</p>
+   ]]>
+
+</flag>
+
+<flag name="c99" class="optimization" regexp="-c99">
+
+   <![CDATA[
+      <p>The c99 command invokes the MIPSpro C compiler with C99 standard features. </p>
+   ]]>
+
+</flag>
+
+<flag name="n64" class="optimization" regexp="-64">
+
+   <![CDATA[
+      <p> Generates a 64-bit object.  This defaults to -mips4 if -mips3 has not been specified. </p>
+   ]]>
+
+</flag>
+
+<!--
+******************************************************************************************************
+* Portability
+******************************************************************************************************
+-->
+
+<flag name="signed" class="portability" regexp="-signed">
+
+   <![CDATA[
+      <p> Causes values of type char to be treated as if they had
+                 type signed char (which can affect the result of integer
+                 promotions), but the values of CHAR_MIN and CHAR_MAX are
+                 not affected.  The default is to treat values of type char
+                 as if they had type unsigned char.
+</p>
+    ]]>
+</flag>
+
+</flagsdescription>

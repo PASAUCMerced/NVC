@@ -1,0 +1,139 @@
+<!--
+   SPEC CPU Flag Description File 1.1 DTD
+
+   This DTD describes the XML used to describe compilation flags for
+   benchmark suites using the SPEC CPU benchmark harness.
+
+   For further information, see
+       http://www.spec.org/mpi2007/Docs/flag-description.html
+
+   Copyright 2005-2008 Standard Performance Evaluation Corporation
+   All Rights Reserved. 
+
+   This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+
+   PUBLIC "-//SPEC//DTD SPEC CPU Flags Description 1.1//EN"
+   SYSTEM "http://www.spec.org/dtd/cpuflags1.dtd"
+
+   ...is what I'd like to say, but we don't have a SPEC entry in any of
+   the catalogs, so we'll just have to make do with SYSTEM for now.
+
+   $Id: cpuflags1.dtd 1017 2008-02-26 01:59:56Z keeper $
+
+-->
+
+  <!-- The list of allowable classes for flags and headers           -->
+  <!-- This list also lives in CPUFlagParser.pm and flags.pl; if you -->
+  <!-- change it, do not forget to update those files.               -->
+<!ENTITY % Classes "mandatory | forbidden |
+                    portability | optimization |
+                    compiler | other |
+                    unknown" >
+
+  <!-- The list of allowable ways to say "yes" and "no" -->
+<!ENTITY % YesNo "(0 | 1 | no | yes | off | on |
+                           No | Yes | Off | On |
+                           NO | YES | OFF | ON)" >
+
+<!-- flagsdescription is the root element -->
+<!ELEMENT flagsdescription (filename?,title,style?,header*,platform_settings?,flag*,dumpit?)>
+
+<!-- The filename element allows the flag description writer to SUGGEST
+     a filename to use when storing a flag description that has been
+     transmitted via a non-name-preserving channel (encoded into a raw file,
+     flags file upload to SPEC, etc).
+-->
+<!ELEMENT filename (#PCDATA)>
+
+<!-- The title element contains the text that will be used in the
+     <title>...</title> section of the HTML flag dump.
+-->
+<!ELEMENT title (#PCDATA)>
+
+<!-- style is an optional element which may contain CSS code to be
+     inserted at the bottom of the local <style>..</style> section.
+     This can be used to define new classes (which you can use in your
+     header section and flag descriptions), or to override the supplied
+     default styles.  For ease of use, the CSS code should probably be
+     contained within a CDATA section:
+     !<[CDATA[
+     ...CSS goes here...
+     ]]>
+-->
+<!ELEMENT style (#PCDATA)>
+
+<!-- header is an optional element which may contain HTML code to be
+     inserted at the top of the HTML flag dump and (default class only)
+     at the top of the per-result flag report.  For ease of use, the HTML
+     markup should be contained within a CDATA section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT header (#PCDATA)>
+<!ATTLIST header
+      class (%Classes;) #IMPLIED
+>
+
+<!-- platform_settings is an optional element which may contain HTML code to
+     be inserted at the bottom of the HTML flags dump and the per-result flags
+     report.
+     For ease of use, the HTML markup should be contained within a CDATA
+     section:
+     !<[CDATA[
+     ...HTML goes here...
+     ]]>
+-->
+<!ELEMENT platform_settings (#PCDATA)>
+
+<!-- The flag element describes one single flag.  Documentation for its
+     attributes and their values is long and has already been written.  See
+     the reference at the top of the page.
+-->
+<!ELEMENT flag (#PCDATA | include | ex_replacement | display | example)*>
+<!ATTLIST flag
+      name ID #REQUIRED
+      class (%Classes;) #REQUIRED
+      regexp CDATA #IMPLIED
+      compilers CDATA #IMPLIED
+      parallel %YesNo; "0"
+>
+
+<!-- example is used to specify example flag text when the name is not
+     appropriate for display.
+-->
+<!ELEMENT example (#PCDATA)>
+
+<!-- ex_replacement is used to specify one or more values for replacing
+     $1, $2, etc in description text when that text is to be output and
+     no replacement text from a match is available (as when formatting the
+     whole list of flags as HTML).
+-->
+<!ELEMENT ex_replacement (#PCDATA)>
+
+<!-- The include element is used to note that a flag either implies the
+     presence of another flag (the 'flag' attribute) or should insert
+     some text back into the variable in which it matched (the 'text'
+     attribute.  The 'flagtext' attribute is used ONLY in conjunction with
+     the 'flag' attribute to specify the text of a flag that should be used
+     for display.
+-->
+<!ELEMENT include EMPTY>
+<!ATTLIST include
+      flag IDREF #IMPLIED
+      flagtext CDATA #IMPLIED
+      text CDATA #IMPLIED
+>
+
+<!-- The display element is used to specify whether or not a particular
+     flag description should be displayed.  A flag must be marked for
+     display (the default) unless it contains ONLY text includes.  The
+     DTD does not enforce this, but runspec and friends will.
+-->
+<!ELEMENT display EMPTY>
+<!ATTLIST display
+      enable %YesNo; "1"
+>
+
+<!-- dumpit is an undocumented element.  It might cause something to happen. -->
+<!ELEMENT dumpit (#PCDATA)>

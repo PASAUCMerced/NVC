@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -ue
+
+./nn filelist.txt 5 30 90

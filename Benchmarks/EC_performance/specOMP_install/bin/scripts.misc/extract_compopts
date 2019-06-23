@@ -1,0 +1,76 @@
+#!/spec/omp2001/bin/specperl
+#!/spec/omp2001/bin/specperl -d
+#!/usr/bin/perl
+#
+#  extract_compopts - a tool for extracting encoded compilation option dumps
+#                     from raw result files and config files
+#  Copyright 2006-2008 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+# No support is provided for this script.
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: extract_compopts 708 2010-05-21 21:27:29Z cloyce $
+
+use IO::File;
+use strict;
+require 'vars.pl';
+require 'util.pl';
+
+use vars qw(@config);
+@config = ();
+
+if (@ARGV < 3) {
+  print "Usage:\n";
+  print "  (from raw file): $0 <raw file> <benchmark> <tune>\n";
+  print "  (from config file): $0 <config file> <benchmark> <tune> <ext> <mach>\n";
+  die "Stopped";
+}
+my ($file, $bm, $tune, $ext, $mach) = @ARGV;
+$tune = lc($tune);
+$ext = 'none' unless defined($ext) && $ext ne '';
+$mach = 'default' unless defined($mach);
+
+die "\"$file\" does not exist or cannot be read.\nStopped" unless -r $file;
+my $ifh = new IO::File '<'.$file;
+my $line = <$ifh>;
+my $mode = 0;   # Raw file
+my $linere = qr/^(?:spec\.${main::lcsuite}\.)?compopts(\d*)\.*$bm[^.]*\.$tune(?: =|:) (.*)$/o;  # Match the lines themselves
+if ($line !~ /^(?:spec\.${main::lcsuite}\.)/) {
+  $mode = 1;  # Config file
+  $linere = qr/^[^=]*${bm}[^=]*=${tune}=${ext}=${mach}:/o; # Match the section
+}
+
+my ($tmpidx, $data);
+while ($line = <$ifh>) {
+    $line =~ tr/\015\012//d;
+    next unless $line =~ /$linere/;
+    if ($mode == 0) {
+      # Raw file
+      # Backrefs come from setting of $linere above
+      ($tmpidx, $data) = ($1+0, $2);
+      $config[$tmpidx] = $data;
+    } else {
+      # Found the section; find compile_options and string them together
+      while (defined($line) && $line !~ /^(?:compile_options|\s*$)/) {
+        ($line = <$ifh>) =~ tr/\015\012//d;
+      }
+      if (!defined($line) || $line =~ /^\s*$/) {
+        print "No stored compile options found!\n";
+        exit;
+      }
+      $tmpidx = 0;
+      $line =~ s/^compile_options=(.*?)\\?$/$1/;
+      if ($line ne '') {
+        $config[$tmpidx++] = $line;
+      }
+      ($line = <$ifh>) =~ tr/\015\012//d;
+      while(defined($line) && $line =~ s/\\$//) {
+        $config[$tmpidx++] = $line;
+        ($line = <$ifh>) =~ tr/\015\012//d;
+      }
+      $config[$tmpidx] = $line if defined($line);
+    }
+}
+print scalar(decode_decompress(join('', @config)));

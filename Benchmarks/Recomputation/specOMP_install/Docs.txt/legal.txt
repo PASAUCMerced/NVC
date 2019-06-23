@@ -1,0 +1,57 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                          Legal Notices, SPEC OMP2012
+
+Copyright
+
+   Copyright (c) 2001-2012
+   Standard Performance Evaluation Corporation (SPEC)
+   SPEC OMP2012
+
+   This media contains benchmarks acquired from several sources who
+   understand and agree with SPEC's goal of creating fair and objective
+   benchmarks to measure computer performance.
+
+   The source code and tools are provided to the user or company under the
+   license agreement for the SPEC Benchmark Suite for this media.
+
+Regarding the SPEC License
+
+   The SPEC license contains the terms and conditions of your agreement with
+   SPEC and must be carefully read before opening the benchmark program and
+   accompanying documentation (collectively identified as the "materials").
+   The license represents the entire agreement between you and SPEC
+   concerning the materials. This supercedes any prior proposal,
+   representations or understanding between the parties. By opening the
+   package containing the materials, you have accepted the terms of the
+   license, including that of properly following the SPEC Run and Reporting
+   Rules.
+
+Other Licenses
+
+   Note that in some cases programs which have been licensed to SPEC for
+   distribution with SPEC OMP2012 are also available separately under other
+   licenses, such as the GNU GPL, the QPL, or a commercial license. Some
+   individual files on this distribution may carry notices that mention their
+   original license rather than their SPEC license. Notwithstanding such
+   notices, you are hereby informed that all files on the SPEC OMP2012
+   benchmark are covered by SPEC's license, unless specificallly noted
+   otherwise in the file redistributable_sources/licenses/README.txt

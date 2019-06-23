@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Tech Support, SPEC OMP2012</title>
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+<style type="text/css">
+p.l2 { font-family:sans-serif; margin-right:4em;}
+</style>
+
+</head>
+<body>
+
+<h1 style="margin-bottom:0">Technical Support for SPEC OMP2012</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by $Author: 
+CloyceS $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <
+a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  
+) </p> 
+
+<p class="contents">Contents</p>
+
+<p class="contentsl1"><a href="#intro">1. </a>Introduction</p>
+<p class="contentsl1"><a href="#before">2. </a>Before contacting SPEC</p>
+<p class="contentsl1"><a href="#contact">3. </a>Contact Information</p>
+<p class="contentsl1"><a href="#limits">4. </a>Limitations on support</p>
+<p class="contentsl1"><a href="#include">5. </a>Useful information to include when contacting SPEC</p>
+<p class="contentsl1last"><a href="#source">6. </a>Benchmark source code change requests</p>
+
+      <p class="commentarystart" style="margin-top:.5em"> <i>Note:</i> links to 
+SPEC OMP2012 documents on this web page
+      assume that you are reading the page from a directory that also contains the other SPEC OMP2012 documents.  If by
+      some chance you are reading this web page from a location where the links 
+do not work, try accessing the referenced
+      documents at one of the following locations:</p>
+      <ul class="commentaryul">
+      <li class="commentaryli"><a class="external" href="http://www.spec.org/omp2012/Docs/">www.spec.org/omp2012/Docs/</a></li> 
+      <li class="commentaryli">The <span class="ttnobr">$SPEC/Docs/</span> 
+(Unix) or <span class="ttnobr">%SPEC%\Docs\</span>
+      (Windows) directory on a system where SPEC OMP2012 has been installed.</li>
+      <li class="commentaryli">The <span class="tt">Docs/</span> directory on your SPEC CPU2006 distribution media.</li>
+      </ul>
+      <p class="commentaryend"></p>
+
+
+<h2 id="intro">1. Introduction</h2>
+
+<p>Reminder: SPEC OMP2012 is a source code benchmark. Using SPEC OMP2012 requires access to a computer system running a
+supported operating system with the necessary compilers and tools needed for generating executable binaries for the system.
+It is assumed that the person using SPEC OMP2012 is comfortable using compiler commands as well as other commands via 
+a shell (aka "command window", "terminal window", "console", "terminal emulator", etc.)</p>
+
+<p>If you are not familiar with the terms above, it is suggested that you research those topics.
+ One useful reference can be
+found in the file <a class="external" href="readme1st.html">readme1st.html</a>.</p>
+
+
+<p>SPEC can provide limited technical support for:</p>
+
+<ul>
+<li> Installing OMP2012 on a UNIX/Linux, Windows or Mac OS X system.</li>
+<li> Building the OMP2012 tools.</li>
+<li> Using the OMP2012 tools to run the benchmarks.</li>
+<li> Updates for known issues.</li>
+</ul>
+
+
+<h2 id="before">2. Before contacting SPEC</h2>
+
+<p>Before contacting SPEC for support, it is suggested that you check the SPEC OMP2012 benchmark web site:</p>
+
+<p style="text-align:center"><a class="external" href="http://www.spec.org/omp2012">http://www.spec.org/omp2012</a></p>
+
+
+<p>for a list of questions that are frequently asked by users of the 
+benchmark suite.  Also, please see the section "Troubleshooting" in 
+<a class="external" href="config.html#sectionIX">config.html</a></p>
+
+
+<h2 id="contact">3. Contact Information</h2>
+
+<p>SPEC OMP2012 technical support can be reached by sending email to:</p>
+
+<p style="text-align:center"><a href="mailto:omp2012support@spec.org">omp2012support@spec.org</a></p>
+
+<p>Additional/updated contact information can also be found at SPEC's primary Web Site: <a
+href="http://www.spec.org">www.spec.org</a></p>
+
+
+<h2 id="limits">4. Limitations on support</h2>
+
+<p>SPEC can provide only limited advice regarding:</p>
+  <ul>
+
+  <li><p><b>Miscompares.</b>  If your system gets an answer that the tools consider to be incorrect, the usual advice is try
+  asking your optimizer to be less aggressive.  If you do report a miscompare, and if we recognize it, we can tell you so.
+  But if the miscompare requires digging through the entrails, you'll probably have to use a debugger, and you may have
+  to report a bug to your compiler vendor. </p></li>
+
+  <li><p><b>New platforms.</b>  The list of supported platforms is in <a
+  href="system-requirements.html">system-requirements.html</a>.
+  If you install on a platform that does not have tools, you'll find guidance in the document
+  <a class="external" href="tools-build.html">tools-build.html</a> about what to do.  If you report problems with the build, we might be able
+  to help you; but usually the problem is something that needs to be taken apart on the system where the build is being
+  attempted - i.e. your system, not a system at SPEC.  You will find troubleshooting suggestions in
+  <tt>tools-build.html</tt>.</p></li>
+  </ul>
+
+<p>In general, SPEC can provide technical assistance with its benchmarks, but SPEC does not have the ability to provide
+support on other vendor's products. Examples of support that SPEC can not provide include:</p>
+
+   <ul>
+   <li> Hardware installation issues.</li>
+   <li> Hardware problems.</li>
+   <li> Non-SPEC software installation issues.</li>
+   <li> Non-SPEC software problems.</li>
+   <li> Hardware specific tuning.</li>
+   </ul>
+
+<p>If known, SPEC will provide a pointer to the appropriate source of information.  Otherwise for these and similar issues,
+it is suggested that the hardware or software vendor be contacted directly.</p>
+
+
+<h2 id="include">5. Useful information to include when contacting SPEC</h2>
+
+<p>The following information should be provided to SPEC when requesting 
+help with an issue:</p>
+
+<ol> 
+<li id="ex1"> The revision of the benchmark suite that you're using - please say "<span class="ttnobr">runspec
+-V</span>"</li>
+
+<li id="ex2"> The specific nature of the problem and the symptoms.  Please give the exact error message.  If the message says
+"<span class="ttnobr">see file x/y/z.err</span>", then please include the contents of z.err.</li>
+
+<li id="ex3"> Type of hardware/name of system being used.</li>
+<li id="ex4"> Name and version of the operating system.</li>
+<li id="ex5"> Name and version of the compiler.</li>
+<li id="ex7"> If a compilation issue:
+        <ul>
+	<li> list of flags being used</li>
+	<li> check if problems exist at lowest level of optimization.</li>
+        </ul></li>
+<li id="ex8"> Has this issue been tried or seen on other systems?</li>
+</ol>
+
+<p>Additional details related to the problem are also appreciated.</p>
+
+<h2 id="source">6. Benchmark source code change requests</h2>
+
+<p>Although the SPEC OMP2012 suite underwent extensive portability testing prior to release, it is possible that new systems, or
+changes in language standards, might cause there to be a need for source code modifications.  Under the run rules, no
+publication of results may be done using modified source code, unless SPEC has approved the change.  This section describes how
+to go about creating a request for approval of a source change.</p>
+
+<p>By including all the relevant information,  you improve the chances that SPEC will approve your request.  Nevertheless, please 
+note that SPEC is not obliged to approve your request.  SPEC will consider a request for a source change in a similar manner to
+how it considers <a class="external" href="runrules.html#section2.3.6">portability flags</a>, weighing aspects such as performance neutrality, 
+amount of code affected, and impact on the original intent of the program.
+</p>
+
+<p> Proposals for changes to benchmark source code should include the information mentioned in the previous section, plus:</p>
+<ol> 
+
+   <li id="ex8" value="8">A "context diff", typically via <span class="ttnobr">diff -u</span>, or, if that is unavailable, <span
+   class="ttnobr">diff -C</span>.  Specify the original file FIRST.  If the changes are extensive, or if you do not have access to a 
+   decent diff utility, an alternative would be to attach the files.   You can package them up and compress them by saying 
+   something like this:  <span class="ttnobr">spectar cvf - newsrc/* | specxz &gt; proposed.tar.xz</span></li>
+
+   <li id="ex9">A clear statement of what happens without the proposed change.</li>
+
+   <li id="ex10">A clear statement of whether a workaround exists.  Are there any conditions under which the benchmark can be
+   made to work <b>without</b> the proposed change?   </li>
+
+   <li id="ex11">If at all possible, a specific reference to the relevant portion of the compiler language standard.   </li>
+
+   <li id="ex12">If at all possible, results of testing for both correctness and performance when the same change is applied on
+   some hw/sw platform <b>other</b> than the one where the problem was observed.</li>
+
+   <li id="ex13">If the problem has been reported to the compiler vendor, a reference to a specific case number, mail archive
+   message number, web forum address, or compiler developer email address.</li>
+
+   <li id="ex14">If the problem has not been reported to the compiler vendor, a brief statement as to why not.</li>
+
+   <li id="ex15">If the problem needs to be solved by a certain date, please say so, and why.</li>
+
+</ol>
+
+<p class="l1"><b>Example change request:</b> with <tt>[cross
+references]</tt> to above list</p>
+<p class="l2">I would like to propose a change to benchmark 997.oldfort</p>
+
+<p class="l2"> Using SPEC OMP2012 V1.3 <a href="#ex1">[1]</a>, benchmark 997.oldfort fails to compile with "<tt>FATAL ERROR:
+foo.f, line 1814: DO loops must end with CONTINUE or END DO</tt>"<a href="#ex2">[2]</a>.  The error occurs on the TurboBlaster
+Mark I system <a href="#ex3">[3]</a> using TurboBlasterUnix V1.0 <a href="#ex4">[4]</a> and TurboBlaster Fortran V1.0 <a
+href="#ex5">[5]</a>.  The compiler supports only two language dialects; neither one will compile the benchmark: "<span
+class="ttnobr">--standard:Fortran2003</span>" and "<span class="ttnobr">--standard:Fortran2008</span>".  Lower optimization
+levels have no effect.</a></p>
+ 
+<p class="l2"> The problem occurs only on the TurboBlaster.  Other compilers (on other systems) issue a warning about the same
+line of source code, but not a fatal error.<a href="#ex7">[7]</a>.</p> 
+
+<p class="l2">
+With the following change to <tt>997.oldfort/src/foo.f</tt>, I can compile the
+benchmark:<a href="#ex8">[8]</a> </p>
+<pre style="margin-left:6em;">
+   $ diff -u foo.f.orig foo.f
+   --- foo.f.orig       Fri Jul 15 14:09:28 2011
+   +++ foo.f    Sat Jul 29 10:06:34 2009
+   @@ -1811,7 +1811,8 @@
+          FFY(I) = ZERO
+          DDT(I) = ZERO
+          DDQ(I) = ZERO
+   -  100 DDE(I) = ZERO
+   +      DDE(I) = ZERO
+   +  100 CONTINUE
+          NYQBTTS = 20
+          IF(QPM) NYQBTTS=21
+    C
+   $ 
+</pre>
+<p class="l2">
+Without the change, the compiler complains <a href="#ex9">[9]</a>:</p>
+<pre style="margin-left:6em;">
+    FATAL ERROR: foo.f, line 1814: DO loops must end  either with CONTINUE or END DO 
+      100 DDE(I) = ZERO
+    --^
+</pre>
+<p class="l2"> I am unable to workaround the problem on this system, because no other Fortran compiler is available, and
+TurboBlaster Fortran is quite insistent about this point <a href="#ex10">[10]</a>.  </p>
+
+
+<p class="l2"> Although I do not have a copy of the standard, a Fortran 95 compiler on another system does warn about the same
+statement and specifically claims that it is nonstandard <a href="#ex11">[11]</a>.   On that other system, the above source
+change was tested, and performance was the same (within run-to-run variation - much less than 1% different).  <a
+href="#ex12">[12]</a>.  The problem has been reported to the compiler vendor, at <span class="ttnobr">
+www.turboblasterfortran.com/emailforum/msg00416.html</span> <a href="#ex13">[13]</a>, and you can see in the replies attached
+to that message that the vendor seems quite proud of its assertion that it has a fully compliant Fortran2008 compiler with no
+support for older variations of the language.</p>
+
+<p class="l2">It would be very much appreciated if you could approve this change request within the next month, so that I can
+publish my PhD dissertation before my parents arrive from overseas for a six-month visit <a href="#ex15">[15]</a>.</p>
+
+
+<hr />
+<p>Copyright &copy; 2007-2012 Standard Performance Evaluation Corporation
+All Rights Reserved</p>
+
+</body></html>
+

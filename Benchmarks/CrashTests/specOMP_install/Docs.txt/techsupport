@@ -1,0 +1,256 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                       Technical Support for SPEC OMP2012
+
+   Last updated: $Date: 2012-10-05 11:09:09 -0400 (Fri, 05 Oct 2012) $ by
+   $Author: CloyceS $
+
+   (To check for possible updates to this document, please see < a
+   class="external"
+   href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/
+   )
+
+   Contents
+
+   1. Introduction
+
+   2. Before contacting SPEC
+
+   3. Contact Information
+
+   4. Limitations on support
+
+   5. Useful information to include when contacting SPEC
+
+   6. Benchmark source code change requests
+
+   Note: links to SPEC OMP2012 documents on this web page assume that you are
+   reading the page from a directory that also contains the other SPEC
+   OMP2012 documents. If by some chance you are reading this web page from a
+   location where the links do not work, try accessing the referenced
+   documents at one of the following locations:
+
+     * www.spec.org/omp2012/Docs/
+     * The $SPEC/Docs/ (Unix) or %SPEC%\Docs\ (Windows) directory on a system
+       where SPEC OMP2012 has been installed.
+     * The Docs/ directory on your SPEC CPU2006 distribution media.
+
+1. Introduction
+
+   Reminder: SPEC OMP2012 is a source code benchmark. Using SPEC OMP2012
+   requires access to a computer system running a supported operating system
+   with the necessary compilers and tools needed for generating executable
+   binaries for the system. It is assumed that the person using SPEC OMP2012
+   is comfortable using compiler commands as well as other commands via a
+   shell (aka "command window", "terminal window", "console", "terminal
+   emulator", etc.)
+
+   If you are not familiar with the terms above, it is suggested that you
+   research those topics. One useful reference can be found in the file
+   readme1st.html.
+
+   SPEC can provide limited technical support for:
+
+     * Installing OMP2012 on a UNIX/Linux, Windows or Mac OS X system.
+     * Building the OMP2012 tools.
+     * Using the OMP2012 tools to run the benchmarks.
+     * Updates for known issues.
+
+2. Before contacting SPEC
+
+   Before contacting SPEC for support, it is suggested that you check the
+   SPEC OMP2012 benchmark web site:
+
+                          http://www.spec.org/omp2012
+
+   for a list of questions that are frequently asked by users of the
+   benchmark suite. Also, please see the section "Troubleshooting" in
+   config.html
+
+3. Contact Information
+
+   SPEC OMP2012 technical support can be reached by sending email to:
+
+                            omp2012support@spec.org
+
+   Additional/updated contact information can also be found at SPEC's primary
+   Web Site: www.spec.org
+
+4. Limitations on support
+
+   SPEC can provide only limited advice regarding:
+
+     * Miscompares. If your system gets an answer that the tools consider to
+       be incorrect, the usual advice is try asking your optimizer to be less
+       aggressive. If you do report a miscompare, and if we recognize it, we
+       can tell you so. But if the miscompare requires digging through the
+       entrails, you'll probably have to use a debugger, and you may have to
+       report a bug to your compiler vendor.
+
+     * New platforms. The list of supported platforms is in
+       system-requirements.html. If you install on a platform that does not
+       have tools, you'll find guidance in the document tools-build.html
+       about what to do. If you report problems with the build, we might be
+       able to help you; but usually the problem is something that needs to
+       be taken apart on the system where the build is being attempted - i.e.
+       your system, not a system at SPEC. You will find troubleshooting
+       suggestions in tools-build.html.
+
+   In general, SPEC can provide technical assistance with its benchmarks, but
+   SPEC does not have the ability to provide support on other vendor's
+   products. Examples of support that SPEC can not provide include:
+
+     * Hardware installation issues.
+     * Hardware problems.
+     * Non-SPEC software installation issues.
+     * Non-SPEC software problems.
+     * Hardware specific tuning.
+
+   If known, SPEC will provide a pointer to the appropriate source of
+   information. Otherwise for these and similar issues, it is suggested that
+   the hardware or software vendor be contacted directly.
+
+5. Useful information to include when contacting SPEC
+
+   The following information should be provided to SPEC when requesting help
+   with an issue:
+
+    1. The revision of the benchmark suite that you're using - please say
+       "runspec -V"
+    2. The specific nature of the problem and the symptoms. Please give the
+       exact error message. If the message says "see file x/y/z.err", then
+       please include the contents of z.err.
+    3. Type of hardware/name of system being used.
+    4. Name and version of the operating system.
+    5. Name and version of the compiler.
+    6. If a compilation issue:
+
+          * list of flags being used
+          * check if problems exist at lowest level of optimization.
+
+    7. Has this issue been tried or seen on other systems?
+
+   Additional details related to the problem are also appreciated.
+
+6. Benchmark source code change requests
+
+   Although the SPEC OMP2012 suite underwent extensive portability testing
+   prior to release, it is possible that new systems, or changes in language
+   standards, might cause there to be a need for source code modifications.
+   Under the run rules, no publication of results may be done using modified
+   source code, unless SPEC has approved the change. This section describes
+   how to go about creating a request for approval of a source change.
+
+   By including all the relevant information, you improve the chances that
+   SPEC will approve your request. Nevertheless, please note that SPEC is not
+   obliged to approve your request. SPEC will consider a request for a source
+   change in a similar manner to how it considers portability flags, weighing
+   aspects such as performance neutrality, amount of code affected, and
+   impact on the original intent of the program.
+
+   Proposals for changes to benchmark source code should include the
+   information mentioned in the previous section, plus:
+
+    8. A "context diff", typically via diff -u, or, if that is unavailable,
+       diff -C. Specify the original file FIRST. If the changes are
+       extensive, or if you do not have access to a decent diff utility, an
+       alternative would be to attach the files. You can package them up and
+       compress them by saying something like this: spectar cvf - newsrc/* |
+       specxz > proposed.tar.xz
+    9. A clear statement of what happens without the proposed change.
+   10. A clear statement of whether a workaround exists. Are there any
+       conditions under which the benchmark can be made to work without the
+       proposed change?
+   11. If at all possible, a specific reference to the relevant portion of
+       the compiler language standard.
+   12. If at all possible, results of testing for both correctness and
+       performance when the same change is applied on some hw/sw platform
+       other than the one where the problem was observed.
+   13. If the problem has been reported to the compiler vendor, a reference
+       to a specific case number, mail archive message number, web forum
+       address, or compiler developer email address.
+   14. If the problem has not been reported to the compiler vendor, a brief
+       statement as to why not.
+   15. If the problem needs to be solved by a certain date, please say so,
+       and why.
+
+   Example change request: with [cross references] to above list
+
+   I would like to propose a change to benchmark 997.oldfort
+
+   Using SPEC OMP2012 V1.3 [1], benchmark 997.oldfort fails to compile with
+   "FATAL ERROR: foo.f, line 1814: DO loops must end with CONTINUE or END
+   DO"[2]. The error occurs on the TurboBlaster Mark I system [3] using
+   TurboBlasterUnix V1.0 [4] and TurboBlaster Fortran V1.0 [5]. The compiler
+   supports only two language dialects; neither one will compile the
+   benchmark: "--standard:Fortran2003" and "--standard:Fortran2008". Lower
+   optimization levels have no effect.
+
+   The problem occurs only on the TurboBlaster. Other compilers (on other
+   systems) issue a warning about the same line of source code, but not a
+   fatal error.[7].
+
+   With the following change to 997.oldfort/src/foo.f, I can compile the
+   benchmark:[8]
+
+    $ diff -u foo.f.orig foo.f
+    --- foo.f.orig       Fri Jul 15 14:09:28 2011
+    +++ foo.f    Sat Jul 29 10:06:34 2009
+    @@ -1811,7 +1811,8 @@
+           FFY(I) = ZERO
+           DDT(I) = ZERO
+           DDQ(I) = ZERO
+    -  100 DDE(I) = ZERO
+    +      DDE(I) = ZERO
+    +  100 CONTINUE
+           NYQBTTS = 20
+           IF(QPM) NYQBTTS=21
+     C
+    $
+
+   Without the change, the compiler complains [9]:
+
+     FATAL ERROR: foo.f, line 1814: DO loops must end  either with CONTINUE or END DO
+       100 DDE(I) = ZERO
+     --^
+
+   I am unable to workaround the problem on this system, because no other
+   Fortran compiler is available, and TurboBlaster Fortran is quite insistent
+   about this point [10].
+
+   Although I do not have a copy of the standard, a Fortran 95 compiler on
+   another system does warn about the same statement and specifically claims
+   that it is nonstandard [11]. On that other system, the above source change
+   was tested, and performance was the same (within run-to-run variation -
+   much less than 1% different). [12]. The problem has been reported to the
+   compiler vendor, at www.turboblasterfortran.com/emailforum/msg00416.html
+   [13], and you can see in the replies attached to that message that the
+   vendor seems quite proud of its assertion that it has a fully compliant
+   Fortran2008 compiler with no support for older variations of the language.
+
+   It would be very much appreciated if you could approve this change request
+   within the next month, so that I can publish my PhD dissertation before my
+   parents arrive from overseas for a six-month visit [15].
+
+   --------------------------------------------------------------------------
+
+   Copyright (c) 2007-2012 Standard Performance Evaluation Corporation All
+   Rights Reserved

@@ -1,0 +1,497 @@
+#!specperl
+# ^^^^^^^^ Edit above line for your location of specperl (or a system
+# perl with the various modules listed in the "use" statements, below)
+#
+#  group_configs - read compilation options from multiple raw files and report
+#                  on which raw files have identical compilation options
+#
+#  Copyright 2010-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+# No support is provided for this script.
+#
+#  Authors: Cloyce D. Spradling, John L. Henning
+#
+# $Id: group_configs 1164 2011-08-19 19:20:01Z CloyceS $
+
+BEGIN {
+  if ($ENV{'SPEC'} eq '' || ! -d $ENV{'SPEC'}) {
+    die "Please ensure that the SPEC environment variable is set correctly, so that\nbenchmark lists can be built.  Ideally source the shrc or cshrc, or run shrc.bat.\n";
+  }
+}
+
+$extended_usage = <<EOF
+
+Usage: $0 [options] [rawfile...] [directory....]
+  If a directory is provided, 'find' is used to locate all rawfiles under it.
+
+Options:
+  --basepeak_ok, -b Ignore diffs due to basepeak (causes many fewer groups) 
+  --diff, -d        Print diffs seen.  Use this with a small number of files!
+  --help, -h        Show this message
+  --html=url        Print html report (mostly for committee use).  The URL is 
+                    the directory where reports are posted.
+  --linksfrom       Make ext field clicky (use with --html)
+  --linksto         Make ext field into a destination (use with --html)
+  --submitdir=url   Submission directory.  The URL is used when creating links 
+                    to rawfiles; therefore, it is required when using --html.
+  --move            Move the rawfiles to subdirectories based on grouping
+EOF
+;
+
+use IO::File;
+use File::Temp;
+use File::Copy;
+use File::Basename;
+use Getopt::Long;
+use strict;
+require "$ENV{'SPEC'}/bin/vars.pl";
+require "$ENV{'SPEC'}/bin/util.pl";
+
+use vars qw(@config @rawfiles %tunes %opts %files $do_diff $basepeak_ok %metric %runtype %ext %report $mutterwhilematching
+            $html $linksto $linksfrom $submitdir $outdir $extended_usage $move %movefiles %counts);
+@config = ();
+%tunes = ();
+%opts = ();
+%files = ();
+%movefiles = ();
+$move = 0;
+
+$do_diff = $basepeak_ok = $linksto = $linksfrom = $html = 0;
+my $show_usage = 0;
+my $rc = GetOptions('diff|d' => \$do_diff,
+                    'basepeak_ok|basepeak-ok|basepeakok|b' => \$basepeak_ok,
+                    'help|h' => \$show_usage,
+                    'html=s' => \$html,
+                    'linksto' => \$linksto,
+                    'linksfrom' => \$linksfrom,
+                    'submitdir=s' => \$submitdir,
+                    'move' => \$move,
+                    );
+
+if (!$rc) {
+  $show_usage = 2;
+}
+
+if ($html) {
+  print "Please include a URL with --html option\n" unless ($html =~ m@^http@);
+  print "When html is used, please also include --submitdir=url\n" unless ($submitdir =~ m@^http@);
+}
+
+if ($show_usage) {
+  print "$0: Group rawfiles by compilation option.";
+  if ($show_usage == 1) {
+    print "\n$extended_usage";
+  } else {
+    print "  Say --help for list of options\n";
+  }
+  exit ($show_usage - 1);
+}
+
+
+foreach my $arg (@ARGV) {
+  if ( -f $arg ) {
+    push @rawfiles, $arg;
+  } elsif ( ! -d $arg ) {
+    warn "\"$arg\" does not exist or cannot be read.\nSkipping";
+    next;
+  } else {
+    die "--move cannot be used when processing whole directories" if $move;
+    # XXX Convert to File::Find so it'll work on Windows
+    push @rawfiles, `find $arg -type f -name '*rsf'`;
+  }
+}
+
+if ($#rawfiles < 1) {
+  die "Need to specify at least two rawfiles, or a directory that has at least 2\n";
+}
+
+# ===== Read compilations options from the rawfiles ======
+
+foreach my $file (@rawfiles) {
+
+  chomp $file;
+  $file =~ s@^./@@;                 # omit leading ./, typically prepended from 'find ."
+  next if defined $files{$file};    # don't read twice, it's bad enough gulping all these once
+  my $ifh = new IO::File '<'.$file;
+  if ( !defined($ifh) ) {
+    warn "\"$file\" cannot be opened for reading: $!\nSkipping";
+    next;
+  }
+
+  $runtype{$file} = "speed";
+  while (defined(my $line = <$ifh>)) {
+      $line =~ tr/\015\012//d;
+      if ($line =~ /^spec\.\S+\.metric:\s+(\S+)/) {
+         $metric{$file} = $1;
+      }
+      if ($line =~ /^spec\.\S+\.rate:\s+(\d)/) {
+         $runtype{$file} = "rate" if $1 == 1;
+      }
+      # spec.cpu2006.results.400_perlbench.base.000.ext: amd1002mc-rate-revC
+      if ($line =~ /^spec\.\S+\.base.000.ext: (\S+)/) {
+         my $ext = $1;
+         die "differing extensions found in $file: $ext $ext{$file}\n" if (defined($ext{$file}) && $ext ne $ext{$file});
+         $ext{$file} = $ext;
+      }
+      # spec.cpu2006.results.416_gamess.peak.000.basepeak: 1
+      if ($basepeak_ok && $line =~ /^spec\.\S+.results\.([^.]+)\.peak.000.basepeak: 1/) {
+         my $bm = $1;
+         $opts{$file}->{$bm}->{"peak"}->[0] = "basepeaked";
+      }
+      # spec.cpu2006.compopts008.464_h264ref.peak: g5zKj7Pq2c6De/kxNGHL+E14kIPh8QeGwLfc
+      next unless $line =~ /^(?:spec\.\S+.)?compopts(\d*)\.*([^.]+)\.([^:]+)(?: =|:) (.*)$/o;
+      my ($tmpidx, $bm, $tune, $data) = ($1+0, $2, $3, $4);
+      $tunes{$tune}++;
+      if ($opts{$file}->{$bm}->{$tune}->[0] ne "basepeaked") {
+         $opts{$file}->{$bm}->{$tune}->[$tmpidx] = $data;
+      }   
+  }
+
+  # store the compilation options as plaintext
+
+  foreach my $tune (sort keys %tunes) {
+    foreach my $bm (sort keys %{$opts{$file}}) {
+      next unless exists($opts{$file}->{$bm}->{$tune});
+      if ($opts{$file}->{$bm}->{$tune}->[0] eq "basepeaked") {
+         $opts{$file}->{$bm}->{$tune} = scalar((join('', @{$opts{$file}->{$bm}->{$tune}})));
+      } else {
+         $opts{$file}->{$bm}->{$tune} = scalar(decode_decompress(join('', @{$opts{$file}->{$bm}->{$tune}})));
+      }
+      # Compress sequences of whitespace
+      $opts{$file}->{$bm}->{$tune} =~ tr/ \t/  /s;
+    }
+  }
+  $files{$file}++;
+}
+
+# ===== Compare compilation options =======
+
+$mutterwhilematching = 0;
+while (keys %files) {
+  my $current = (sort byid keys %files)[0];
+  print "\n$current " if $mutterwhilematching;
+  delete $files{$current};
+  my @matchlist = ();
+
+  my @bm_list = keys %{$opts{$current}};
+  foreach my $candidate (sort byid keys %files) {
+  # If the extension is different, consider the tuning to be different.
+  next unless ($ext{$current} eq $ext{$candidate});
+  # Int vs. fp disqualifies match; but rate vs. speed does NOT disqualify.
+  next unless ($metric{$current} eq $metric{$candidate});
+
+  my $matches = 1;
+    foreach my $tune (sort keys %tunes) {
+      last unless $matches || $do_diff;
+      foreach my $bm (@bm_list) {
+        last unless $matches || $do_diff;
+
+        # don't worry about basepeaked benchmarks
+        next if (($opts{$current}->{$bm}->{$tune} eq "basepeaked")
+              || ($opts{$candidate}->{$bm}->{$tune} eq "basepeaked"));
+
+        # If the candidate doesn't have the current benchmark, they can't
+        # match.
+        if (!exists($opts{$candidate}->{$bm})) {
+          print "." if $mutterwhilematching;
+          $matches = 0;
+
+        # If one has a result for a tuning level that the other doesn't, they
+        # can't match.
+        } elsif (    exists($opts{$current}->{$bm}->{$tune})
+                 && !exists($opts{$candidate}->{$bm}->{$tune})
+                ) {
+          print "!" if $mutterwhilematching;
+          $matches = 0;
+        } elsif (   !exists($opts{$current}->{$bm}->{$tune})
+                 &&  exists($opts{$candidate}->{$bm}->{$tune})
+                ) {
+          print "|" if $mutterwhilematching;
+          $matches = 0;
+
+        # If the flags don't match, they don't match (duh)
+        } elsif ($opts{$current}->{$bm}->{$tune} ne $opts{$candidate}->{$bm}->{$tune}) {
+          if ($do_diff) {
+            do_diff($bm, $tune, $current, $candidate);
+          }
+          print "#" if $mutterwhilematching;
+          $matches = 0;
+        }
+      }
+    }
+    if ($matches) {
+      push @matchlist, $candidate;
+      delete $files{$candidate};
+    }
+  }
+
+  my $reportkey = "$ext{$current} $runtype{$current} $metric{$current}";
+  $counts{$reportkey}++;
+  for my $f ($current, @matchlist) {
+    my $name_to_report;
+    if ($html) {
+      $name_to_report = link_result($f);
+    } else {
+      $name_to_report = simplify_name($f);
+    }
+    $report{$reportkey} .= " $name_to_report";
+    push @{$movefiles{$reportkey.'-'.$counts{$reportkey}}}, $f;
+  }
+  $report{$reportkey} .= "\n";
+}
+
+# ============== If html, print a boatload of header info ===============
+
+my $tobpornotbp = "ARE NOT";
+$tobpornotbp    = "ARE" if ($basepeak_ok); 
+my $now = localtime();
+my $outdir = $html;
+my $htmltop = <<EOF
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Results grouped by tuning</title>
+<base href="$submitdir" />
+<style type="text/css">
+
+th { text-align:left; font-size:80%; vertical-align:top; border:thin solid gray;}
+td { vertical-align:top; border-top:thin solid gray;}
+td.noborder {vertical-align:top; border:none;}
+
+.Pending     { color:#ff0000; text-decoration:none; }
+.UnderReview { color:blue;    text-decoration:none; }
+.Accepted    { color:black;   text-decoration:none; }
+.PreReview   { color:#b31b12; text-decoration:none; }
+.ext         { color:black; text-decoration:none; }
+
+
+</style>
+
+</head>
+<body>
+<h1>Which submissions used the same compiler options?</h1>
+<h3>Updated: $now </h3>
+
+<p>When reviewing results, it can be helpful to know which submissions use the same tuning as others.  This report shows you
+that answer.   It is sorted first by the line "<tt>ext=</tt>" from the config file, then by metric, and finally by
+tuning.</p>
+
+<p><b>Complication:</b> What should be done if "basepeak" is applied to one run, but not to another?</p>
+<ol>
+<li>One way to look at it: there was only one set of binaries, so maybe they should be grouped together.</li>
+<li>Yet, basepeak has made the runs different, so maybe they should be grouped separately.</li>
+</ol>
+<p>The perl
+procedure that generated this report lets you choose whether to group them together.  For the report that you are reading
+right now, 
+results that differ only by use of basepeak<br /><b>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$tobpornotbp
+</b><br />reported on the same line.</p>
+
+<p>Several reports are available:</p>
+<ul>
+<li><a href="$outdir/tuning-groups.html">Unpublished submissions</a> (with choice #1 from above).</li>
+<li><a href="$outdir/tuning-groups-nobp.html">Unpublished, with choice #2</a> - that is, basepeak differences reported separately.</li>
+<li><a href="$outdir/tuning-groups-all.html">Both published and unpbublished submissions</a> (i.e. full history - a long report!).</li>
+</ul>
+
+<p>All numbers in the table below are clickable.</p>
+<ul>
+<li><span class="Accepted">This color for  Accepted</span></li>
+<li><span class="Pending"> This color for Pending </span></li>
+<li><span class="UnderReview"> This color for UnderReview</span></li>
+<li><span class="PreReview"> This color for PreReview</span></li>
+</ul>
+EOF
+;
+if ($html) {
+   print $htmltop; 
+   if ($linksfrom) {
+      print "<p>You can also click on the extensions in column 1, which will take you into the full history report.</p>"
+   }
+   print "<table>\n";
+}
+
+# ============== At long last, print report ===============
+
+my $prevext = "";
+my $first = 1;
+for my $key (sort keys %report) {
+  my ($ext, $runtype, $metric) = split " ", $key;
+  if ($ext ne $prevext) {
+    if (!$first) {
+      print "</table>\n</td></tr>" if $html; 
+      print "\n\n"; 
+    }
+    $first = 0;
+    if (!$html) {
+      print "$ext\n";
+    } else { 
+      print "<tr><th";
+      print " id=\"$ext\"" if $linksto;
+      print ">";
+      print "<a class=\"ext\" href=\"$outdir/tuning-groups-all.html#$ext\">" if $linksfrom;
+      print break_at_punct($ext);
+      print "</a>" if $linksfrom;
+      print "</th>\n<td class=\"noborder\"><table>";
+   }
+  }
+  $prevext = $ext;
+  my @lines = (split "\n", $report{$key});
+  my $rowspan = $#lines + 1;
+  if ($html) {
+    printf "<tr><td rowspan=\"$rowspan\"><tt>%s&nbsp;%s</tt></td>  ", $runtype, $metric;
+  } else {
+    printf "%-5s %-8s ", $runtype, $metric;
+  }
+  if ($#lines == 0) {
+    if ($html) {
+      printf "<td colspan=\"2\">%s\n</td></tr>", $lines[0];
+    } else {
+      print "$lines[0]\n";
+    }
+  } else {
+    if ($html) {
+      printf "<td>tuning:&nbsp;%d</td><td>%s</td></tr>\n", 1, $lines[0];
+      for my $n (1..$#lines) {
+        printf "<tr><td>tuning:%2d</td><td>%s</td></tr>\n", $n+1, $lines[$n];
+      }
+    } else {
+      printf "tuning: %2d  %s\n", 1, $lines[0];
+      for my $n (1..$#lines) {
+        printf "%-5s %-8s tuning: %2d  %s\n", "", "", $n+1, $lines[$n];
+      }
+    }
+  }
+}
+print "</table>\n</td></tr>" if $html; 
+print "</table>\n</body>\n</html>\n" if $html;
+
+# Now make directory hierarchies and move files
+if ($move) {
+  for my $key (sort keys %movefiles) {
+    my $dir = join('/', (split ' ', $key));
+    $dir = "basepeak/$dir" if $basepeak_ok;
+    mkdir_p($dir);
+    foreach my $file (@{$movefiles{$key}}) {
+      if (!move($file, $dir.'/'.$file)) {
+        warn "Could not move $file to $dir: $!\n";
+      }
+    }
+  }
+}
+exit;
+
+sub do_diff {
+  my ($bm, $tune, $file1, $file2) = @_;
+  my $basenamefile1 = $file1;
+  my $basenamefile2 = $file2;
+  $basenamefile1 =~ s@.*\/@@;
+  $basenamefile2 =~ s@.*\/@@;
+
+  my $tmpdir = "/tmp/$ENV{'USER'}";
+  mkdir_p($tmpdir);
+  my $tmp1 = new File::Temp( TEMPLATE => "$tmpdir/${bm}_${tune}_${basenamefile1}_XXXXX", SUFFIX => '.txt' );
+  die "Couldn't make temporary file!\nStopped" unless defined($tmp1);
+  my $tmp2 = new File::Temp( TEMPLATE => "$tmpdir/${bm}_${tune}_${basenamefile2}_XXXXX", SUFFIX => '.txt' );
+  die "Couldn't make temporary file!\nStopped" unless defined($tmp2);
+
+  $tmp1->print($opts{$file1}->{$bm}->{$tune});
+  $tmp1->close();
+  $tmp2->print($opts{$file2}->{$bm}->{$tune});
+  $tmp2->close();
+
+  print "Diffs for $bm($tune) between $file1 and $file2:\n";
+  system "diff -U0 $tmp1 $tmp2";
+  print "\n";
+}
+
+# for text reports, shorten names to just the interesting part
+sub simplify_name {
+  my ($name) = @_;
+  $name =~ s@Pending/\d+/@p/@;
+  $name =~ s@PreReview/@pr/@;
+  $name =~ s@UnderReview/@u/@;
+  $name =~ s@Accepted/res\d\d\d\dq\d/appr(\d){8}/@a/@;
+  $name =~ s/[a-z]+(\d){4}-(\d){8}-//;
+  $name =~ s/.rsf//;
+  $name =~ s@^\./@@;
+  return $name;
+}
+
+# for html reports, names get turned into links
+sub link_result {
+  my ($name) = @_;
+  my $href = "<a href=\"$name\" ";
+  $href =~ s/.rsf/.html/;
+  if ($name =~ /Pending/) {
+    $href .= "class=\"Pending\" ";
+    $name =~ s@Pending/\d+/@@;
+  } elsif ($name =~ /PreReview/) {
+    $href .= "class=\"PreReview\" ";
+    $name =~ s@PreReview/@@;
+  } elsif ($name =~ /UnderReview/) {
+    $href .= "class=\"UnderReview\" ";
+    $name =~ s@UnderReview/@@;
+  } elsif ($name =~ m@Accepted/res\d\d\d\dq\d/appr(\d){8}@) {
+    $href .= "class=\"Accepted\" ";
+    $name =~ s@Accepted/res\d\d\d\dq\d/appr(\d){8}/@@;
+  }
+  $name =~ s/[a-z]+(\d){4}-(\d){8}-//;
+  $name =~ s/.rsf//;
+  $name =~ s@^\./@@;
+  $name = "${href}>${name}</a>";
+  return $name;
+}
+
+# break string (with <br />) on punctuation marks
+sub break_at_punct {
+  my $desired_width = 15;
+  my ($string) = @_;
+  my $inchars = $string;
+  my $outchars = '';
+  while (length $inchars) {
+    if ((length $inchars) < $desired_width) {
+      $outchars .= $inchars;
+      $inchars = '';
+    } else {
+      my $punct;
+      for my $lookfor (".", "-", "_") {
+        $punct = rindex ($inchars, $lookfor, $desired_width);
+        last if $punct > 1;
+      }
+      $punct = $desired_width if $punct < 1;
+      $outchars .= substr ($inchars, 0, $punct+1);
+      $outchars .= "<br />\n";
+      $inchars = substr ($inchars, $punct+1);
+    }
+  }
+  return $outchars;
+}
+
+# For sorting, if the file name looks like:
+# cpu2006-20101207-13913.rsf
+# the sort key is "13913".
+sub byid {
+  my $anum;
+  my $bnum;
+  if ($a =~ /[a-z]+\d{4}-(\d){8}-(\d+).rsf/) {
+    $anum = $2;
+    if ($b =~ /[a-z]+\d{4}-(\d){8}-(\d+).rsf/) {
+      $bnum = $2;
+      return $anum <=> $bnum;
+    }  
+  }
+  return $a <=> $b;
+}
+
+# Make a string of directories
+sub mkdir_p {
+  my ($dir) = @_;
+
+  return if -d $dir;
+  mkdir_p(dirname($dir));
+  mkdir $dir, 0777;
+}

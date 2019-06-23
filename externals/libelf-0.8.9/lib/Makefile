@@ -20,7 +20,7 @@
 
 instroot =
 
-prefix = /home/cc/NVC/libelf-0.8.9-install
+prefix = /home/cc/NVCT/libelf-0.8.9-install
 exec_prefix = ${prefix}
 libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include

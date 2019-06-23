@@ -1,0 +1,1222 @@
+# SPEC Submission Syntax File           OMP2012 Results
+#
+# Required Variables:
+#       syntax  - assoc-array of
+#                   keys => array (numeric indices) or hash (text keys) of
+#                   0 or 'regexp':
+#                       regexps to define acceptable values,
+#                   1 or 'text':
+#                       explanatory messages to use in case of mismatch, 
+#                   2 or 'one_match':
+#                       whether only one match is acceptable to pass,
+#                       (IOW, if the rule matches for foo000, is it okay for it
+#                        to NOT match for foo001, foo002, etc?)
+#                   3 or 'complain_once':
+#                       whether to complain only once for this rule,
+#                   4 or 'custom_test':
+#                       code ref to do other, more complicated tests
+#                       (The code ref gets the current line, the matched key,
+#                        the value, the regexp, whether the rule matched,
+#                        whether one match is acceptable to pass, whether the
+#                        value was already complained about, whether to
+#                        complain only once for this rule, and a hash ref to
+#                        (key, value) pairs for all the lines in the raw file.)
+#                   5 or 'conditions':
+#                       whether/how to restrict application of this rule
+#                        It's an array of the form
+#                        [
+#                          [ field_to_use,
+#                            [ $min, $max ]     # if numeric
+#                            regular_expression # if not
+#                            ...
+#                          ],
+#                          ...
+#                        ]
+#                        The conditions for each field (if multiple are
+#                        specified) are ORed.  All fields (if multiple are
+#                        specified) must match or the rule will be skipped.
+#        (items 2-5 are optional and default to false or undef)
+# and
+#       first   - pattern to recognize first line of submission text
+#       last    - pattern to recognize the last line (rest of mail is tossed)
+#     or
+#       prefix  - pattern to recognize a line in the result file
+#
+# Note: everything is in Perl syntax, so beware...
+#
+# Note 2: The explanatory messages may either be one line of text, or an
+#         array reference containing multiple lines.  They are evaluated
+#         in the context of an interpolated string.  What's that mean?
+#         Just that if you want to use double quotes (") in your text,
+#         escape them with a backslash.  Also, you may use $key to refer to
+#         the key that matched, $k to refer to the specific line that matched,
+#         and $value to refer to the value that is in error.
+#
+# For nicer editing, make your window this wide: ---------------------------------------------------->
+
+undef $first;
+undef $last;
+$prefix = 'spec.omp2012.';
+
+# Canned error messages for date format fields
+my $datere = [ qr/^(:?Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{4}$/, 
+               [ 
+                 '    It must be MMM-YYYY, where YYYY is the full four digit',
+                 '    year, and MMM may be any of \"Jan\", \"Feb\", \"Mar\",',
+                 '    \"Apr\", \"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\", \"Nov\",',
+                 '    or \"Dec\".',
+                 '   The current value is \"$value\".'
+               ],
+               0,
+               1
+             ];
+
+# Yes/No fields
+my $yesno = [ qr/^(:?Yes|No)$/,
+              [ 
+                '    It must be either \"Yes\" or \"No\".',
+                '   The current value is \"$value\".'
+              ],
+              0,
+              0,
+              undef,
+            ];
+
+# Yes/No/unset fields
+my $yesnounset = [ qr/^(:?Yes|No|--)$/,
+                   [ 
+                     '    It must be either \"Yes\" or \"No\" or \"--\".',
+                     '   The current value is \"$value\".'
+                   ],
+                   0,
+                   0,
+                   undef,
+                 ];
+
+# Results (generic stuff)
+my %result = ( 'regexp' => qr/^[\d\.]+$/,
+               'text' => '- Submittable results must include a valid \"$k\" field.',
+               'one_match' => 0,
+               'complain_once' => 1,
+             );
+
+my $gross_base = { %result,
+                 'conditions' => [
+                   [ 'metric', qr/^OMPG2012$/ ],
+                   [ 'basemean', qr/^[\d\.]+$/ ],
+                 ]
+               };
+my $gross_peak = { %result,
+                 'conditions' => [
+                   [ 'metric', qr/^OMPG2012$/ ],
+                   [ 'peakmean', qr/^[\d\.]+$/ ],
+                 ]
+               };
+my $gross_power_base = { %result,
+                         'text' => '- Submittable power results must include a valid \"$k\" field.',
+                         'conditions' => [
+                           [ 'power', qr/^1$/ ],
+                           [ 'metric', qr/^OMPG2012$/ ],
+                           [ 'basemean', qr/^[\d\.]+$/ ],
+                         ]
+                       };
+my $gross_power_peak = { %result,
+                         'text' => '- Submittable power results must include a valid \"$k\" field.',
+                         'conditions' => [
+                           [ 'power', qr/^1$/ ],
+                           [ 'metric', qr/^OMPG2012$/ ],
+                           [ 'peakmean', qr/^[\d\.]+$/ ],
+                         ]
+                       };
+
+# This is a sub to do a little extra checking for the memory size.  It's
+# a lot like $cachesub below, but simpler.
+my $memsub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    return () unless $matched;
+
+    # Check for easily-reduceable numbers and units.  If the regexp didn't
+    # match in the main code, it won't match here; thus the check above.
+    my @gripes = ();
+    my %nextunit = ( 'K'=>'M', 'M'=>'G', 'G'=>'T', 'T'=>'P' );
+    my %prevunit = ( 'M'=>'K', 'G'=>'M', 'T'=>'G', 'P'=>'T' );
+    if ($value =~ /$re/) {
+      my ($size, $unit) = ($1, $2);
+      if ($size > 1023 && int($size / 1024) == ($size / 1024)) {
+          my $newsize = $size / 1024;
+          my $newunits = $unit;
+          $newunits =~ s/^([KMGT])/$nextunit{$1}/;
+          push @gripes, "- Unreduced memory size in the \"$k\" field.";
+          push @gripes, '   Please do not use values greater than 1023.';
+          push @gripes, "   \"$size $unit\" should be changed to \"$newsize $newunits\"";
+          push @gripes, '';
+      }
+      if ($size < 1024 && ($size < 1 || int($size) != $size)) {
+          my $newsize = int($size * 1024);
+          my $newunits = $unit;
+          $newunits =~ s/^([KMGT])/$prevunit{$1}/;
+          push @gripes, "- Fractional memory size in the \"$k\" field.";
+          push @gripes, '   Please do not use fractional sizes.';
+          push @gripes, "   \"$size $unit\" should be changed to \"$newsize $newunits\"";
+          push @gripes, '';
+      }
+    }
+    return @gripes;
+};
+
+# Memory.  This is a the basis for the cache
+my $memory = [ qr/^([.\d]+) ([KMGT]B)/,
+               [ 
+                 '    It must contain leading digits, followed by a space,',
+                 '    and a standard unit abbreviation.  Acceptable',
+                 '    abbreviations are KB, MB, GB, and TB.',
+                 '   The current value is \"$value\".'
+               ],
+               1, # Not all fields need match
+               1, # Don't complain more than once
+               $memsub,
+             ];
+
+# This is a sub to do a little extra checking for cache lines
+my $cachesub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    return () unless $matched;
+
+    # Check for easily-reduceable numbers and units.  If the regexp didn't
+    # match in the main code, it won't match here; thus the check above.
+    my @gripes = ();
+    my %nextunit = ( 'K'=>'M', 'M'=>'G', 'G'=>'T', 'T'=>'P' );
+    my %prevunit = ( 'M'=>'K', 'G'=>'M', 'T'=>'G', 'P'=>'T' );
+    my ($per, @place, @sizes, @units) = ('');
+    my @vals = ($value =~ /$re/);
+    if ($value !~ /;/) {
+      # Business as was usual
+      ($sizes[0], $units[0], $sizes[1], $units[1], $place[0], $per) = @vals[0..5];
+    } else {
+      # The "new" split cache format
+      ($sizes[0], $units[0], $place[0], $sizes[1], $units[1], $place[1]) = @vals[6..11];
+    }
+    for(my $i = 0; $i < 2; $i++) {
+        next unless defined($sizes[$i]) && $sizes[$i] ne '';
+        if ($sizes[$i] > 1023 && int($sizes[$i] / 1024) == ($sizes[$i] / 1024)) {
+            my $newsize = $sizes[$i] / 1024;
+            my $newunits = $units[$i];
+            $newunits =~ s/^([KMGT])/$nextunit{$1}/;
+            push @gripes, "- Unreduced cache size in the \"$k\" field.";
+            push @gripes, '   Please do not use values greater than 1023.';
+            push @gripes, "   \"$sizes[$i] $units[$i]\" should be changed to \"$newsize $newunits\"";
+            push @gripes, '';
+        }
+        if ($sizes[$i] < 1024 && ($sizes[$i] < 1 || int($sizes[$i]) != $sizes[$i])) {
+            my $newsize = int($sizes[$i] * 1024);
+            my $newunits = $units[$i];
+            $newunits =~ s/^([KMGT])/$prevunit{$1}/;
+            push @gripes, "- Fractional cache size in the \"$k\" field.";
+            push @gripes, '   Please do not use fractional sizes.';
+            push @gripes, "   \"$sizes[$i] $units[$i]\" should be changed to \"$newsize $newunits\"";
+            push @gripes, '';
+        }
+    }
+    my $coresperchip = undef;
+    $coresperchip = $values->{'hw_ncoresperchip0'} if exists($values->{'hw_ncoresperchip0'});
+    $coresperchip = $values->{'hw_ncoresperchip'} if exists($values->{'hw_ncoresperchip'});
+    if (defined($coresperchip) && $coresperchip == 1 && $per eq 'core') {
+        push @gripes, "- Invalid \"per\" specification for \"$k\".";
+        push @gripes, '    Please do not describe caches as "per core"';
+        push @gripes, '    for systems that have only one core per chip.';
+        push @gripes, '    Instead, please use "per chip".';
+        push @gripes, '';
+    }
+
+    return @gripes;
+};
+
+# This is a sub to do a little extra explaining for the 'invalid' field.
+my $invalidsub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    # Return no gripes if the original regexp matched or if we're running
+    # in the harness, since there are more specific checks for
+    # forbiddenused and unknownused later on.
+    return () if ($matched || $value == 0 || defined( $::global_config ));
+
+    my @gripes;
+    # If invalid is 1, suggest that the user check for flags
+    if ($value == 2) {
+        push @gripes, '- The result may have been marked invalid because one or more',
+                      '  flags in the "unknown" or "forbidden" categories were used.',
+                      '  If this is the case, you may be able to resolve this problem',
+                      '  without re-running your test; see',
+                      '    http://www.spec.org/omp2012/Docs/runspec.html#flagsurl',
+                      '  for more information.';
+    }
+
+    return @gripes;
+};
+
+# This just checks to make sure that the value matched is not just "--"
+my $issetsub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    return () unless $matched;
+
+    # Check for '--'.
+    my @gripes = ();
+    if ($value =~ /^\s*--/) {
+        push @gripes, "- The \"$k\" field must be set to something other than \"--\".";
+        push @gripes, '';
+    }
+
+    return @gripes;
+};
+
+# Yet another common case (must contain _something_ that's not whitespace or --):
+my $nonempty = [ qr/\S+/,
+                 [
+                   '- The $k field must not be empty.'
+                 ],
+                 1, # Not all fields need match
+                 1, # Don't complain more than once
+                 $issetsub,
+               ];
+
+# This just checks to make sure that the value matched is not just "Default"
+my $defaultsub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    return () unless $matched;
+
+    # Check for 'default'.
+    my @gripes = ();
+    if ($value =~ /^\s*default/i) {
+        push @gripes, "- The \"$k\" field must not be set to \"default\".";
+        push @gripes, '';
+    }
+
+    return (@gripes, &{$issetsub}($line, $k, $value, $re, $matched, $one_match_sufficient, $complained, $complain_once, $values));
+};
+
+# Not empty, and not "default"
+my $nodefault = [ qr/\S+/,
+                  [
+                    '- The $k field must not be empty.'
+                  ],
+                  1, # Not all fields need match
+                  1, # Don't complain more than once
+                  $defaultsub,
+                ];
+
+# There are a few of these too (empty or digits only)
+my $emptyordigits = [ qr/^(?:--|\d*)$/,
+                      [ 
+                        '    It must be either empty or entirely numeric.',
+                        '   The current value is \"$value\".'
+                      ]
+                    ];
+
+my $digitsonly = [ qr/^\d+$/,
+                   [ 
+                     '    It must be entirely numeric.',
+                     '   The current value is \"$value\".'
+                   ]
+                 ];
+
+# Here's a canned message for all "shouldn't happen" errors:
+my $canthappen = [
+                   '    This is not under user control, and should not happen.',
+                   '   The current value is \"$value\".'
+                 ];
+
+# Here's the sub that checks for (R), (TM), and "processor"
+my $tradesub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+    my @gripes = ();
+
+    # Check for trademark-like characters
+    if ($value =~ /(?:\xAE|\x21\x22|\x84\xA2|\x99|\((?i:r|tm|sm)\))/) {
+        push @gripes, "- Use of trademark marking in \"$k\" field.";
+        push @gripes, '   Please do not use trademark markings like "(R)",';
+        push @gripes, '   "(TM)", and "(SM)".  The bottom of each result has';
+        push @gripes, '   a footer that explains that these marks are your';
+        push @gripes, '   property.  If you must use these markings, do so in';
+        push @gripes, '   the notes section.';
+        push @gripes, '';
+    }
+
+    if ($k =~ /hw_cpu_name/ && $value =~ /processor/i) {
+        push @gripes, "- Use of redundant \"processor\" in \"$k\" field.";
+        push @gripes, '   Please do not use the word "processor" in the CPU';
+        push @gripes, '   name field.  It is implied by context.';
+        push @gripes, '';
+    }
+
+    return @gripes;
+};
+
+# This is a sub to do a little extra checking for license numbers
+my $licensesub = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+    my @gripes = ();
+
+    return () unless $matched;
+
+    if ($value eq '--') {
+        push @gripes, '- License field is blank.  Please use your non-zero';
+        push @gripes, '   license number here.';
+    } elsif ($value+0 <= 0) {
+        push @gripes, '- Unreasonable value for license.  Please use your';
+        push @gripes, '   non-zero license number here.';
+    }
+
+    return @gripes;
+};
+
+# This is a sub to look for the old "Evironment variables" bug
+my $evironment = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+    my @gripes = ();
+
+    return () unless $matched;
+
+    if ($value =~ /Evironment variables/) {
+        push @gripes, '- Tools-generated notes contain the misspelling "Evironment".';
+        push @gripes, '  Apologies for the error, which is not your fault, but it';
+        push @gripes, '  must be fixed before the result will be accepted.';
+    }
+
+    return @gripes;
+};
+
+# Temps for multiline fields
+my $compiler_re = qr{(
+                      (C|C\+\+|(?i:Fortran))(/C\+\+)?(?i:/Fortran)? # C/C++/Fortran in that order
+                      |Libraries                                    # Or libraries for same
+                     ):\sVersion 
+                     \s([\d_.-]+)                                 # Versions (0-9, '_', '.', or '-')
+                     (?i:\sUpdate\s[\d_.-]+)?                     # Optional "Update" info
+                     \sof
+                     \s[^;]{3,60}                                 # The name (3-60 characters)
+                     (?i:\sBuild [^;]{1,20})?                     # Optional build vers (1-20 chars)
+                    }x;
+
+# All non-L1 caches have the following format (from osgcpu-18620):
+#     number      a string of digits
+#     space
+#     unit        KB, MB, GB, TB
+#     space
+#     type        I or I+D
+#     [optional
+#        " + "
+#        number   a string of digits
+#        space
+#        unit     KB, MB, GB, TB
+#        space
+#        type     D
+#     ]
+#     location    "on chip" or "off chip"
+#     count       "per" whatever
+# Or, as amended by the 1 Nov 2011 minutes:
+#     number      a string of digits
+#     space
+#     unit        KB, MB, GB, TB
+#     space
+#     type        I
+#     location    "on chip" or "off chip"
+#     count       "per <whatever>"
+#     optional    other text added by tester
+#     semicolon   ;
+#     space
+#     number      a string of digits
+#     space
+#     unit        KB, MB, GB, TB
+#     space
+#     type        D
+#     location    "on chip" or "off chip"
+#     count       "per <whatever>"
+#     optional    other text added by tester
+my $cache_re = qr{^(?:None$
+                   # "old" split or unified format
+                   |([.\d]+)\ ([KMGT]B)\ I(?:\+D|\ \+\ ([.\d]+)\ ([KMGT]B)\ D)\ (on|off)\ chip\ per\ (\S+))
+                   # "new" split format
+                   |([.\d]+)\ ([KMGT]B)\ I\ (on|off)\ chip\ per\ \w+[^;]*;\ ([.\d]+)\ ([KMGT]B)\ D\ (on|off)\ chip\ per\ \w+
+                 }x;
+my $cache_format = [
+                    '    It must either be set to "None" or conform to the',
+                    '    following format (in-line spaces are literal):',
+                    '       <digits> <unit> I+D <on|off> chip per <whatever>',
+                    '    for a unified cache, or',
+                    '       <digits> <unit> I + <digits> <unit> D <on|off> chip per <whatever>',
+                    '    or',
+                    '       <digits> <unit> I <on|off> chip per <whatever>[optional text]; <digits> <unit> D <on|off> chip per <whatever>[optional text]',
+                    '    for split caches.',
+                    '    Acceptable values for <unit> are KB, MB, GB, or TB.',
+                   ];
+
+# Error messages and regexps for each of the multi-line fields
+my %multiline_info = (
+      'sw_compiler' => {
+          'format' => [
+                        '- The compiler description (sw_compiler) is not in the required format.',
+                        '  The required format is',
+                        '      <language>: Version <n.n.n> of <name> [Build <id>] [; ...]',
+                        '    where:',
+                        '    [] indicates optional content;',
+                        '    <language> is any combination of C, C++, or Fortran, in that order,',
+                        '      separated by forward slashes, or the word "Libraries";',
+                        '    <n.n.n> is a version string which may consist of numbers, "_", "-",',
+                        '      and ".", and may optionally be followed by the word "Update" and',
+                        '      another version string;',
+                        '    <name> may be up to 60 characters;',
+                        '    and <ID> may be up to 20 characters.',
+                      ],
+          'regexp' => qr/^$compiler_re(?:; $compiler_re)*;?$/,  # Trailing ; okay
+      },
+      'hw_pcache' => {
+          'format' => [
+                        '- The primary cache description (hw_pcache) is not in the required format.',
+                        '    It must either be set to "None" or conform to the',
+                        '    following format (in-line spaces are literal):',
+                        '       <digits> <unit> I+D <on|off> chip per <chip|core>',
+                        '    for a unified cache, or',
+                        '       <digits> <unit> I + <digits> <unit> D <on|off> chip per <chip|core>',
+                        '    or',
+                        '       <digits> <unit> I <on|off> chip per <whatever>[optional text]; <digits> <unit> D <on|off> chip per <whatever>[optional text]',
+                        '    for split caches.',
+                        '    Acceptable values for <unit> are KB, MB, GB, TB,',
+                        '    or "<prefix> micro-ops", and [] indicates optional content.',
+                      ],
+          # Here's the text from osgcpu-18620 which is the basis for the L1 cache memory
+          # regexp.
+          #     number      a string of digits
+          #     space
+          #     unit        KB, MB, GB, TB, or "<prefix> micro-ops"
+          #     space
+          #     type        I or I+D
+          #     [optional
+          #        " + "
+          #        number   a string of digits
+          #        space
+          #        unit     KB, MB, GB, TB
+          #        space
+          #        type     D
+          #     ]
+          #     location    "on chip" or "off chip"
+          #     count       "per core" or "per chip"
+          #     optional    other text added by tester
+          # Amended by the minutes from the 1 Nov 2011 meeting to also allow
+          #     number      a string of digits
+          #     space
+          #     unit        KB, MB, GB, TB, or "<prefix> micro-ops"
+          #     space
+          #     type        I
+          #     location    "on chip" or "off chip"
+          #     count       "per <whatever>"
+          #     optional    other text added by tester
+          #     semicolon   ;
+          #     space
+          #     number      a string of digits
+          #     space
+          #     unit        KB, MB, GB, TB
+          #     space
+          #     type        D
+          #     location    "on chip" or "off chip"
+          #     count       "per <whatever>"
+          #     optional    other text added by tester
+          'regexp' => qr{^(?:None$
+                         # "old" split or unified format
+                         |([.\d]+)\ ([KMGT](?:B|\ micro-ops))\ I(?:\+D|\ \+\ ([.\d]+)\ ([KMGT]B)\ D)\ (on|off)\ chip\ per\ (core|chip))
+                         # "new" split format
+                         |([.\d]+)\ ([KMGT](?:B|\ micro-ops))\ I\ (on|off)\ chip\ per\ \w+[^;]*;\ ([.\d]+)\ ([KMGT]B)\ D\ (on|off)\ chip\ per\ \w+
+                        }x,
+          'logic'  => $cachesub,
+      },
+      'hw_scache' => {
+          'format' => [
+                        '- The secondary cache description (hw_scache) is not in the required format.',
+                        @{$cache_format},
+                      ],
+          'regexp' => $cache_re,
+          'logic'  => $cachesub,
+      },
+      'hw_tcache' => {
+          'format' => [
+                        '- The tertiary cache description (hw_tcache) is not in the required format.',
+                        @{$cache_format},
+                      ],
+          'regexp' => $cache_re,
+          'logic'  => $cachesub,
+      },
+      'hw_ocache' => {
+          'format' => [
+                        '- The other cache description (hw_ocache) is not in the required format.',
+                        @{$cache_format},
+                      ],
+          'regexp' => $cache_re,
+          'logic'  => $cachesub,
+      },
+);
+my $multiline_re = '(?:' . join('|', sort keys %multiline_info) . ')';
+$multiline_re = qr/$multiline_re/;
+
+# This is a sub to check for proper format in fields where the entire correct
+# format may span multiple lines.
+# This is complicated because the syntax checker goes line-by-line,
+# the tools break long lines, and the format is to be applied to the field
+# as a whole.
+my $multiline_check = sub {
+    my ($line, $k, $value, $re, $matched, $one_match_sufficient, $complained,
+        $complain_once, $values) = @_;
+
+    if ($k =~ /^($multiline_re)([\d_]*)/) {
+        my ($basefield, $idx) = ($1, $2 + 0);
+        # Assemble the value that will eventually be checked.  This is pretty
+        # much how the formatter will do it.
+        $TMPSTR::ml{$basefield}->[$idx] = $value;
+        return ();
+    }
+
+    # Since $k doesn't start with one of the multi-line fields, now is the
+    # time to check the accumulated values.
+    my @gripes = ();
+    foreach my $field (sort keys %TMPSTR::ml) {
+        if (!exists($multiline_info{$field})) {
+            # This shouldn't be possible
+            push @gripes, "- Values for $field were recorded for multiline analysis,",
+                          '   but there is no multiline criteria for this field. This',
+                          '   is not user error, and should be reported to support.';
+            next;
+        }
+        my @format = @{$multiline_info{$field}->{'format'}};
+        my $regexp = $multiline_info{$field}->{'regexp'};
+        my $logic = $multiline_info{$field}->{'logic'};
+
+        my @lines = grep { defined } @{$TMPSTR::ml{$field}};
+        my $complete_val = join(' ', @lines);
+        my $did_match = 1;
+        if ($complete_val !~ /$regexp/) {
+            # Since the assembled string didn't match together, check each line
+            # separately.  If they all match, then that's okay.
+            foreach my $line (@lines) {
+                $did_match = 0 if ($line !~ /$regexp/);
+            }
+
+            if (!$did_match) {
+                # Okay, there has been a failure.
+                push @gripes, @format,
+                              '  The current value is:',
+                              (map { '  "'.$_.'"' } @lines),
+                              '';
+            }
+        }
+
+        # Let the custom logic have a crack at it
+        if (ref($logic) eq 'CODE') {
+            push @gripes, &{$logic}("$k: $complete_val", $field, $complete_val, $regexp, $did_match, $one_match_sufficient, $complained, $complain_once, $values); 
+        }
+
+        delete $TMPSTR::ml{$field};
+    }
+
+    return @gripes;
+};
+
+# These fields should be checked during review.  (As always.)
+%syntax = (
+    ##
+    ## Settings that the tools insert:
+    ##
+        'basemean:'     => [ qr/^[.\d]+$/,
+                             [ '- Submittable results must include a base run.',
+                               '    The basemean ($value) is missing or invalid.'
+                             ]
+                           ],
+        'units:'        => [ qr/^SPEC/, $canthappen ],
+        'metric:'       => [ qr/^OMPG2012$/, $canthappen ],
+        'size:'         => [ qr/(?:\(ref\)$|^ref(?: |$))/,
+                             [ '- Submittable runs must use the reference workload.',
+                               '    Runs using the \"$value\" workload are not submittable.'
+                             ]
+                           ],
+        'rawconfig000:' => [ qr/^[\*\@\&]\S{76}$/,
+                             [ '- The stored config file is corrupt.',
+                               '    This is not under user control, and should not happen.'
+                             ]
+                           ],
+        'invalid:'      => {
+                             'regexp'      => qr/^0$/,
+                             'text'        => '- The invalid field is set to \"$value\"; it must be 0.',
+                             'custom_test' => $invalidsub,
+                           },
+        'suitever:'     => [ qr/^(?:22|1\.0)$/,        # YYY
+                             [ '- Submittable runs may only be done with v1.0.',
+                               '    The result was run with v$value.'
+                             ]
+                           ],
+
+    ##
+    ## Dates (all set by the user):
+    ##
+        'test_date\d*:' => $datere,
+        'hw_avail\d*:'  => $datere,
+        'sw_avail\d*:'  => $datere,
+
+    ##
+    ## Suite information (set by the user):
+    ##
+        'license_num\d*:' => [ qr/^\d+[aA]?$/,
+                               [ 
+                                 '    It must be numeric, with or without a trailing \"A\".',
+                                 '   The current value is \"$value\".'
+                               ],
+                               0, # All fields must match
+                               0, # Complain more than once if necessary
+                               $licensesub
+                             ],
+
+    ##
+    ## Hardware information for the SUT
+    ##
+        'hw_cpu_name\d*:'       => [ qr/\S+/,
+                                     '- The $k field must not be empty.',
+                                     0,
+                                     0,
+                                     $tradesub
+                                   ],
+        'hw_cpu_mhz\d*:'        => $digitsonly,
+        'hw_cpu_max_mhz\d*:'    => $digitsonly,
+        'hw_disk\d*:'           => $nonempty,
+        'hw_fpu\d*:'            => [ qr/\S+/,
+                                     [
+                                       '    The value must be non-blank.  This field is often',
+                                       '    set to \"Integrated\".',
+                                     ]
+                                   ],
+        'hw_memory\d*:'         => $memory,
+        'hw_model\d*:'          => $nonempty,
+        'hw_psu\d*:'		=> { 'regexp' => qr/^\d+ [xX] [\d.]+ [KMGT]?W/,
+                                     'text' =>
+                                     [ '    It must describe the number and capacity of power supplies connected',
+                                       '    to the SUT and conform to the following format:',
+                                       '       <digits> x <digits> <unit> [...]',
+                                       '    where <unit> may be one of W, KW, MW, GW, TW.',
+                                       '   The current value is \"$value\".'
+                                     ],
+				     'conditions' => [
+				       [ 'power', qr/^1$/ ],
+				     ]
+                                   },
+        'hw_nchips\d*:'         => $digitsonly,
+        'hw_ncores\d*:'         => $digitsonly,
+        'hw_ncoresperchip\d*:'  => $digitsonly,
+        'hw_nthreadspercore\d*:'=> $digitsonly,
+        'hw_ncpuorder\d*:'      => [ qr/(?:\d+[-,]*)+ \S+/,
+                                     [
+                                        '    The value must contain a number, list of',
+                                       '    numbers, or range of numbers, followed by a unit.',
+                                        '   The current value is \"$value\".'
+                                     ]
+                                   ],
+        'hw_other\d*:'          => [ qr/\S+/,
+                                     [
+                                       '    The value must be non-blank.  If you are not using',
+                                       '    any other hardware relevant to SPEC OMP performance,',
+                                       '    you can say \"None\" here.'
+                                     ]
+                                   ],
+        'hw_pcache\d*:'         => { 'regexp' => qr/./,  # See $multiline_check
+                                     'text' => [
+                                                 (map { my $t = $_; $t =~ s/"/\\"/g; $t } @{$multiline_info{'hw_pcache'}->{'format'}}),
+                                                 '  No value for hw_pcache was specified.',
+                                                 ''
+                                               ],
+                                    'custom_test' => $multiline_check,
+                                    'one_match'   => 0, # Check every line
+                                  },
+        'hw_scache\d*:'         => { 'regexp' => qr/./,  # See $multiline_check
+                                     'text' => [
+                                                 (map { my $t = $_; $t =~ s/"/\\"/g; $t } @{$multiline_info{'hw_scache'}->{'format'}}),
+                                                 '  No value for hw_scache was specified.',
+                                                 ''
+                                               ],
+                                    'custom_test' => $multiline_check,
+                                    'one_match'   => 0, # Check every line
+                                  },
+        'hw_tcache\d*:'         => { 'regexp' => qr/./,  # See $multiline_check
+                                     'text' => [
+                                                 (map { my $t = $_; $t =~ s/"/\\"/g; $t } @{$multiline_info{'hw_tcache'}->{'format'}}),
+                                                 '  No value for hw_tcache was specified.',
+                                                 ''
+                                               ],
+                                    'custom_test' => $multiline_check,
+                                    'one_match'   => 0, # Check every line
+                                  },
+        'hw_ocache\d*:'         => { 'regexp' => qr/./,  # See $multiline_check
+                                     'text' => [
+                                                 (map { my $t = $_; $t =~ s/"/\\"/g; $t } @{$multiline_info{'hw_ocache'}->{'format'}}),
+                                                 '  No value for hw_ocache was specified.',
+                                                 ''
+                                               ],
+                                    'custom_test' => $multiline_check,
+                                    'one_match'   => 0, # Check every line
+                                  },
+        'hw_vendor\d*:'         => $nonempty,
+
+    ##
+    ## Software information and system state for the SUT
+    ##
+        'sw_compiler\d*:'      => { 'regexp' => qr/./,  # See $multiline_check
+                                    'text' => [
+                                                (map { my $t = $_; $t =~ s/"/\\"/g; $t } @{$multiline_info{'sw_compiler'}->{'format'}}),
+                                                '  No value for sw_compiler was specified.',
+                                                ''
+                                              ],
+                                    'custom_test' => $multiline_check,
+                                    'one_match'   => 0, # Check every line
+                                  },
+
+        # This is a hack to make sure the final check on multi-line fields
+        # (like sw_compiler and hw_[opst]cache) is done; 'time' is an arbitrary
+        # selection; the only criteria are that 1) it must be present in every
+        # raw file, 2) it must be "below the fence", and 3) must have a name
+        # that sorts lexically after the last multi-line field (currently
+        # 'sw_compiler').  Acutally #2 isn't absolutely necessary since the
+        # keys are currently sorted before checking, but the combination of #2
+        # and #3 ensure that the check will be done after all sw_compiler
+        # fields have been seen even if that sorting isn't done beforehand.
+        'time:'                => { 'regexp' => qr/^\d+$/,
+                                    'custom_test' => $multiline_check, # Not a mistake
+                                    'text' => 'The time field is missing.',
+                                  },
+
+        'sw_file\d*:'          => $nodefault,
+        'sw_os\d*:'            => $nonempty,
+        'sw_base_ptrsize\d*:'  => [ qr#^(?:32|64|32/64)-bit$#,
+                                    [
+                                      '    The value must be either \"32-bit\",',
+                                      '    \"64-bit\", or \"32/64-bit\".',
+                                      '   The current value is \"$value\".'
+                                    ],
+                                  ],
+        'sw_other\d*:'         => [ qr/^(?!--)\S+/,
+                                    [
+                                      '    The value must be non-blank and may not begin with \"--\".',
+                                      '    If you are not using any other software relevant to SPEC',
+                                      '    OMP performance, you must say \"None\" here.'
+                                    ]
+                                  ],
+        'sw_peak_ptrsize\d*:'  => [ qr#^(?:(?:32|64|32/64)-bit|Not Applicable)$#,
+                                    [
+                                      '    The value must be either \"32-bit\",',
+                                      '    \"64-bit\", \"32/64-bit\", or \"Not Applicable\".',
+                                      '   The current value is \"$value\".'
+                                    ],
+                                  ],
+        'sw_state\d*:'         => $nonempty,
+
+    ##
+    ## Look for tools errors
+    ##
+#        'notes\S+:'           => [ qr/.?/,
+#                                   [],
+#                                   0,
+#                                   1,
+#                                   $evironment,
+#                                 ],
+    ##
+    ## General restrictions
+    ##
+        '[hs]w_\S+:'           => [ qr/.?/,
+                                    [],
+                                    0,
+                                    0,
+                                    $tradesub,
+                                  ],
+
+    ##
+    ## Ensure that there are results for all iterations of all
+    ## benchmarks
+    ##
+        'results.350_md.base.000.reported_time:'	=> $gross_base,
+        'results.350_md.base.000.avg_power:'		=> $gross_power_base,
+        'results.350_md.base.000.min_temp:'		=> $gross_power_base,
+        'results.350_md.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.350_md.base.001.reported_time:'	=> $gross_base,
+        'results.350_md.base.001.avg_power:'		=> $gross_power_base,
+        'results.350_md.base.001.min_temp:'		=> $gross_power_base,
+        'results.350_md.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.350_md.base.002.reported_time:'	=> $gross_base,
+        'results.350_md.base.002.avg_power:'		=> $gross_power_base,
+        'results.350_md.base.002.min_temp:'		=> $gross_power_base,
+        'results.350_md.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.350_md.peak.000.reported_time:'	=> $gross_peak,
+        'results.350_md.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.350_md.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.350_md.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.350_md.peak.001.reported_time:'	=> $gross_peak,
+        'results.350_md.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.350_md.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.350_md.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.350_md.peak.002.reported_time:'	=> $gross_peak,
+        'results.350_md.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.350_md.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.350_md.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.351_bwaves.base.000.reported_time:'	=> $gross_base,
+        'results.351_bwaves.base.000.avg_power:'	=> $gross_power_base,
+        'results.351_bwaves.base.000.min_temp:'		=> $gross_power_base,
+        'results.351_bwaves.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.351_bwaves.base.001.reported_time:'	=> $gross_base,
+        'results.351_bwaves.base.001.avg_power:'	=> $gross_power_base,
+        'results.351_bwaves.base.001.min_temp:'		=> $gross_power_base,
+        'results.351_bwaves.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.351_bwaves.base.002.reported_time:'	=> $gross_base,
+        'results.351_bwaves.base.002.avg_power:'	=> $gross_power_base,
+        'results.351_bwaves.base.002.min_temp:'		=> $gross_power_base,
+        'results.351_bwaves.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.351_bwaves.peak.000.reported_time:'	=> $gross_peak,
+        'results.351_bwaves.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.351_bwaves.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.351_bwaves.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.351_bwaves.peak.001.reported_time:'	=> $gross_peak,
+        'results.351_bwaves.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.351_bwaves.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.351_bwaves.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.351_bwaves.peak.002.reported_time:'	=> $gross_peak,
+        'results.351_bwaves.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.351_bwaves.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.351_bwaves.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.352_nab.base.000.reported_time:'	=> $gross_base,
+        'results.352_nab.base.000.avg_power:'		=> $gross_power_base,
+        'results.352_nab.base.000.min_temp:'		=> $gross_power_base,
+        'results.352_nab.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.352_nab.base.001.reported_time:'	=> $gross_base,
+        'results.352_nab.base.001.avg_power:'		=> $gross_power_base,
+        'results.352_nab.base.001.min_temp:'		=> $gross_power_base,
+        'results.352_nab.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.352_nab.base.002.reported_time:'	=> $gross_base,
+        'results.352_nab.base.002.avg_power:'		=> $gross_power_base,
+        'results.352_nab.base.002.min_temp:'		=> $gross_power_base,
+        'results.352_nab.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.352_nab.peak.000.reported_time:'	=> $gross_peak,
+        'results.352_nab.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.352_nab.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.352_nab.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.352_nab.peak.001.reported_time:'	=> $gross_peak,
+        'results.352_nab.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.352_nab.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.352_nab.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.352_nab.peak.002.reported_time:'	=> $gross_peak,
+        'results.352_nab.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.352_nab.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.352_nab.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.357_bt331.base.000.reported_time:'	=> $gross_base,
+        'results.357_bt331.base.000.avg_power:'		=> $gross_power_base,
+        'results.357_bt331.base.000.min_temp:'		=> $gross_power_base,
+        'results.357_bt331.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.357_bt331.base.001.reported_time:'	=> $gross_base,
+        'results.357_bt331.base.001.avg_power:'		=> $gross_power_base,
+        'results.357_bt331.base.001.min_temp:'		=> $gross_power_base,
+        'results.357_bt331.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.357_bt331.base.002.reported_time:'	=> $gross_base,
+        'results.357_bt331.base.002.avg_power:'		=> $gross_power_base,
+        'results.357_bt331.base.002.min_temp:'		=> $gross_power_base,
+        'results.357_bt331.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.357_bt331.peak.000.reported_time:'	=> $gross_peak,
+        'results.357_bt331.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.357_bt331.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.357_bt331.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.357_bt331.peak.001.reported_time:'	=> $gross_peak,
+        'results.357_bt331.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.357_bt331.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.357_bt331.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.357_bt331.peak.002.reported_time:'	=> $gross_peak,
+        'results.357_bt331.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.357_bt331.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.357_bt331.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.358_botsalgn.base.000.reported_time:'	=> $gross_base,
+        'results.358_botsalgn.base.000.avg_power:'	=> $gross_power_base,
+        'results.358_botsalgn.base.000.min_temp:'	=> $gross_power_base,
+        'results.358_botsalgn.base.000.avg_uncertainty:'=> $gross_power_base,
+        'results.358_botsalgn.base.001.reported_time:'	=> $gross_base,
+        'results.358_botsalgn.base.001.avg_power:'	=> $gross_power_base,
+        'results.358_botsalgn.base.001.min_temp:'	=> $gross_power_base,
+        'results.358_botsalgn.base.001.avg_uncertainty:'=> $gross_power_base,
+        'results.358_botsalgn.base.002.reported_time:'	=> $gross_base,
+        'results.358_botsalgn.base.002.avg_power:'	=> $gross_power_base,
+        'results.358_botsalgn.base.002.min_temp:'	=> $gross_power_base,
+        'results.358_botsalgn.base.002.avg_uncertainty:'=> $gross_power_base,
+        'results.358_botsalgn.peak.000.reported_time:'	=> $gross_peak,
+        'results.358_botsalgn.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.000.avg_uncertainty:'=> $gross_power_peak,
+        'results.358_botsalgn.peak.001.reported_time:'	=> $gross_peak,
+        'results.358_botsalgn.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.001.avg_uncertainty:'=> $gross_power_peak,
+        'results.358_botsalgn.peak.002.reported_time:'	=> $gross_peak,
+        'results.358_botsalgn.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.358_botsalgn.peak.002.avg_uncertainty:'=> $gross_power_peak,
+
+        'results.359_botsspar.base.000.reported_time:'	=> $gross_base,
+        'results.359_botsspar.base.000.avg_power:'	=> $gross_power_base,
+        'results.359_botsspar.base.000.min_temp:'	=> $gross_power_base,
+        'results.359_botsspar.base.000.avg_uncertainty:'=> $gross_power_base,
+        'results.359_botsspar.base.001.reported_time:'	=> $gross_base,
+        'results.359_botsspar.base.001.avg_power:'	=> $gross_power_base,
+        'results.359_botsspar.base.001.min_temp:'	=> $gross_power_base,
+        'results.359_botsspar.base.001.avg_uncertainty:'=> $gross_power_base,
+        'results.359_botsspar.base.002.reported_time:'	=> $gross_base,
+        'results.359_botsspar.base.002.avg_power:'	=> $gross_power_base,
+        'results.359_botsspar.base.002.min_temp:'	=> $gross_power_base,
+        'results.359_botsspar.base.002.avg_uncertainty:'=> $gross_power_base,
+        'results.359_botsspar.peak.000.reported_time:'	=> $gross_peak,
+        'results.359_botsspar.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.000.avg_uncertainty:'=> $gross_power_peak,
+        'results.359_botsspar.peak.001.reported_time:'	=> $gross_peak,
+        'results.359_botsspar.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.001.avg_uncertainty:'=> $gross_power_peak,
+        'results.359_botsspar.peak.002.reported_time:'	=> $gross_peak,
+        'results.359_botsspar.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.359_botsspar.peak.002.avg_uncertainty:'=> $gross_power_peak,
+
+        'results.360_ilbdc.base.000.reported_time:'	=> $gross_base,
+        'results.360_ilbdc.base.000.avg_power:'		=> $gross_power_base,
+        'results.360_ilbdc.base.000.min_temp:'		=> $gross_power_base,
+        'results.360_ilbdc.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.360_ilbdc.base.001.reported_time:'	=> $gross_base,
+        'results.360_ilbdc.base.001.avg_power:'		=> $gross_power_base,
+        'results.360_ilbdc.base.001.min_temp:'		=> $gross_power_base,
+        'results.360_ilbdc.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.360_ilbdc.base.002.reported_time:'	=> $gross_base,
+        'results.360_ilbdc.base.002.avg_power:'		=> $gross_power_base,
+        'results.360_ilbdc.base.002.min_temp:'		=> $gross_power_base,
+        'results.360_ilbdc.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.360_ilbdc.peak.000.reported_time:'	=> $gross_peak,
+        'results.360_ilbdc.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.360_ilbdc.peak.001.reported_time:'	=> $gross_peak,
+        'results.360_ilbdc.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.360_ilbdc.peak.002.reported_time:'	=> $gross_peak,
+        'results.360_ilbdc.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.360_ilbdc.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.362_fma3d.base.000.reported_time:'	=> $gross_base,
+        'results.362_fma3d.base.000.avg_power:'		=> $gross_power_base,
+        'results.362_fma3d.base.000.min_temp:'		=> $gross_power_base,
+        'results.362_fma3d.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.362_fma3d.base.001.reported_time:'	=> $gross_base,
+        'results.362_fma3d.base.001.avg_power:'		=> $gross_power_base,
+        'results.362_fma3d.base.001.min_temp:'		=> $gross_power_base,
+        'results.362_fma3d.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.362_fma3d.base.002.reported_time:'	=> $gross_base,
+        'results.362_fma3d.base.002.avg_power:'		=> $gross_power_base,
+        'results.362_fma3d.base.002.min_temp:'		=> $gross_power_base,
+        'results.362_fma3d.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.362_fma3d.peak.000.reported_time:'	=> $gross_peak,
+        'results.362_fma3d.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.362_fma3d.peak.001.reported_time:'	=> $gross_peak,
+        'results.362_fma3d.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.362_fma3d.peak.002.reported_time:'	=> $gross_peak,
+        'results.362_fma3d.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.362_fma3d.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.363_swim.base.000.reported_time:'	=> $gross_base,
+        'results.363_swim.base.000.avg_power:'		=> $gross_power_base,
+        'results.363_swim.base.000.min_temp:'		=> $gross_power_base,
+        'results.363_swim.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.363_swim.base.001.reported_time:'	=> $gross_base,
+        'results.363_swim.base.001.avg_power:'		=> $gross_power_base,
+        'results.363_swim.base.001.min_temp:'		=> $gross_power_base,
+        'results.363_swim.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.363_swim.base.002.reported_time:'	=> $gross_base,
+        'results.363_swim.base.002.avg_power:'		=> $gross_power_base,
+        'results.363_swim.base.002.min_temp:'		=> $gross_power_base,
+        'results.363_swim.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.363_swim.peak.000.reported_time:'	=> $gross_peak,
+        'results.363_swim.peak.000.avg_power:'		=> $gross_power_peak,
+        'results.363_swim.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.363_swim.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.363_swim.peak.001.reported_time:'	=> $gross_peak,
+        'results.363_swim.peak.001.avg_power:'		=> $gross_power_peak,
+        'results.363_swim.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.363_swim.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.363_swim.peak.002.reported_time:'	=> $gross_peak,
+        'results.363_swim.peak.002.avg_power:'		=> $gross_power_peak,
+        'results.363_swim.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.363_swim.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.367_imagick.base.000.reported_time:'	=> $gross_base,
+        'results.367_imagick.base.000.avg_power:'	=> $gross_power_base,
+        'results.367_imagick.base.000.min_temp:'	=> $gross_power_base,
+        'results.367_imagick.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.367_imagick.base.001.reported_time:'	=> $gross_base,
+        'results.367_imagick.base.001.avg_power:'	=> $gross_power_base,
+        'results.367_imagick.base.001.min_temp:'	=> $gross_power_base,
+        'results.367_imagick.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.367_imagick.base.002.reported_time:'	=> $gross_base,
+        'results.367_imagick.base.002.avg_power:'	=> $gross_power_base,
+        'results.367_imagick.base.002.min_temp:'	=> $gross_power_base,
+        'results.367_imagick.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.367_imagick.peak.000.reported_time:'	=> $gross_peak,
+        'results.367_imagick.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.367_imagick.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.367_imagick.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.367_imagick.peak.001.reported_time:'	=> $gross_peak,
+        'results.367_imagick.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.367_imagick.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.367_imagick.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.367_imagick.peak.002.reported_time:'	=> $gross_peak,
+        'results.367_imagick.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.367_imagick.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.367_imagick.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.370_mgrid331.base.000.reported_time:'	=> $gross_base,
+        'results.370_mgrid331.base.000.avg_power:'	=> $gross_power_base,
+        'results.370_mgrid331.base.000.min_temp:'	=> $gross_power_base,
+        'results.370_mgrid331.base.000.avg_uncertainty:'=> $gross_power_base,
+        'results.370_mgrid331.base.001.reported_time:'	=> $gross_base,
+        'results.370_mgrid331.base.001.avg_power:'	=> $gross_power_base,
+        'results.370_mgrid331.base.001.min_temp:'	=> $gross_power_base,
+        'results.370_mgrid331.base.001.avg_uncertainty:'=> $gross_power_base,
+        'results.370_mgrid331.base.002.reported_time:'	=> $gross_base,
+        'results.370_mgrid331.base.002.avg_power:'	=> $gross_power_base,
+        'results.370_mgrid331.base.002.min_temp:'	=> $gross_power_base,
+        'results.370_mgrid331.base.002.avg_uncertainty:'=> $gross_power_base,
+        'results.370_mgrid331.peak.000.reported_time:'	=> $gross_peak,
+        'results.370_mgrid331.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.000.avg_uncertainty:'=> $gross_power_peak,
+        'results.370_mgrid331.peak.001.reported_time:'	=> $gross_peak,
+        'results.370_mgrid331.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.001.avg_uncertainty:'=> $gross_power_peak,
+        'results.370_mgrid331.peak.002.reported_time:'	=> $gross_peak,
+        'results.370_mgrid331.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.370_mgrid331.peak.002.avg_uncertainty:'=> $gross_power_peak,
+
+        'results.371_applu331.base.000.reported_time:'	=> $gross_base,
+        'results.371_applu331.base.000.avg_power:'	=> $gross_power_base,
+        'results.371_applu331.base.000.min_temp:'	=> $gross_power_base,
+        'results.371_applu331.base.000.avg_uncertainty:'=> $gross_power_base,
+        'results.371_applu331.base.001.reported_time:'	=> $gross_base,
+        'results.371_applu331.base.001.avg_power:'	=> $gross_power_base,
+        'results.371_applu331.base.001.min_temp:'	=> $gross_power_base,
+        'results.371_applu331.base.001.avg_uncertainty:'=> $gross_power_base,
+        'results.371_applu331.base.002.reported_time:'	=> $gross_base,
+        'results.371_applu331.base.002.avg_power:'	=> $gross_power_base,
+        'results.371_applu331.base.002.min_temp:'	=> $gross_power_base,
+        'results.371_applu331.base.002.avg_uncertainty:'=> $gross_power_base,
+        'results.371_applu331.peak.000.reported_time:'	=> $gross_peak,
+        'results.371_applu331.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.371_applu331.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.371_applu331.peak.000.avg_uncertainty:'=> $gross_power_peak,
+        'results.371_applu331.peak.001.reported_time:'	=> $gross_peak,
+        'results.371_applu331.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.371_applu331.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.371_applu331.peak.001.avg_uncertainty:'=> $gross_power_peak,
+        'results.371_applu331.peak.002.reported_time:'	=> $gross_peak,
+        'results.371_applu331.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.371_applu331.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.371_applu331.peak.002.avg_uncertainty:'=> $gross_power_peak,
+
+        'results.372_smithwa.base.000.reported_time:'	=> $gross_base,
+        'results.372_smithwa.base.000.avg_power:'	=> $gross_power_base,
+        'results.372_smithwa.base.000.min_temp:'	=> $gross_power_base,
+        'results.372_smithwa.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.372_smithwa.base.001.reported_time:'	=> $gross_base,
+        'results.372_smithwa.base.001.avg_power:'	=> $gross_power_base,
+        'results.372_smithwa.base.001.min_temp:'	=> $gross_power_base,
+        'results.372_smithwa.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.372_smithwa.base.002.reported_time:'	=> $gross_base,
+        'results.372_smithwa.base.002.avg_power:'	=> $gross_power_base,
+        'results.372_smithwa.base.002.min_temp:'	=> $gross_power_base,
+        'results.372_smithwa.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.372_smithwa.peak.000.reported_time:'	=> $gross_peak,
+        'results.372_smithwa.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.000.min_temp:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.001.reported_time:'	=> $gross_peak,
+        'results.372_smithwa.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.001.min_temp:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.002.reported_time:'	=> $gross_peak,
+        'results.372_smithwa.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.002.min_temp:'	=> $gross_power_peak,
+        'results.372_smithwa.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+        'results.376_kdtree.base.000.reported_time:'	=> $gross_base,
+        'results.376_kdtree.base.000.avg_power:'	=> $gross_power_base,
+        'results.376_kdtree.base.000.min_temp:'		=> $gross_power_base,
+        'results.376_kdtree.base.000.avg_uncertainty:'	=> $gross_power_base,
+        'results.376_kdtree.base.001.reported_time:'	=> $gross_base,
+        'results.376_kdtree.base.001.avg_power:'	=> $gross_power_base,
+        'results.376_kdtree.base.001.min_temp:'		=> $gross_power_base,
+        'results.376_kdtree.base.001.avg_uncertainty:'	=> $gross_power_base,
+        'results.376_kdtree.base.002.reported_time:'	=> $gross_base,
+        'results.376_kdtree.base.002.avg_power:'	=> $gross_power_base,
+        'results.376_kdtree.base.002.min_temp:'		=> $gross_power_base,
+        'results.376_kdtree.base.002.avg_uncertainty:'	=> $gross_power_base,
+        'results.376_kdtree.peak.000.reported_time:'	=> $gross_peak,
+        'results.376_kdtree.peak.000.avg_power:'	=> $gross_power_peak,
+        'results.376_kdtree.peak.000.min_temp:'		=> $gross_power_peak,
+        'results.376_kdtree.peak.000.avg_uncertainty:'	=> $gross_power_peak,
+        'results.376_kdtree.peak.001.reported_time:'	=> $gross_peak,
+        'results.376_kdtree.peak.001.avg_power:'	=> $gross_power_peak,
+        'results.376_kdtree.peak.001.min_temp:'		=> $gross_power_peak,
+        'results.376_kdtree.peak.001.avg_uncertainty:'	=> $gross_power_peak,
+        'results.376_kdtree.peak.002.reported_time:'	=> $gross_peak,
+        'results.376_kdtree.peak.002.avg_power:'	=> $gross_power_peak,
+        'results.376_kdtree.peak.002.min_temp:'		=> $gross_power_peak,
+        'results.376_kdtree.peak.002.avg_uncertainty:'	=> $gross_power_peak,
+
+);
+
+# These fields are internally-generated "dummy" fields, and never exist in
+# any file.  They should not be included when the syntax file is used by
+# the website submission handler.
+if( defined( $::global_config ) ) {
+
+    $syntax{'forbiddenused:'}   = [ qr/^0$/,
+                                    [
+                                      '- Forbidden flags were used!',
+                                    ],
+                                  ];
+    $syntax{'unknownused:'}     = [ qr/^0$/,
+                                    [
+                                      '- Your run was marked invalid because it has one or more flags',
+                                      '  in the \"unknown\" category. You might be able to resolve this',
+                                      '  problem without re-running your test; see',
+                                      "    http://www.spec.org/${main::lcsuite}/Docs/runspec.html#flagsurl",
+                                      '  for more information.',
+                                    ],
+                                  ];
+}
+
+1;

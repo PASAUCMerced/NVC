@@ -1,0 +1,43 @@
+#!/spec/omp2001/bin/specperl
+#!/spec/omp2001/bin/specperl -d
+#!/usr/bin/perl
+#
+#  extract_misc - a tool for extracting encoded sections from a raw file
+#                 No support is provided for this script. 
+
+#  Copyright 2006-2008 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id$
+
+use MIME::Base64;
+use IO::File;
+use strict;
+require 'vars.pl';
+require 'util.pl';
+
+use vars qw(@config);
+
+@config = ();
+
+if (@ARGV != 2) {
+  die "Usage: $0 <section> <file>\n";
+}
+my ($section, $file) = @ARGV;
+
+if (!-r $file) {
+  die "\"$file\" is not readable: $!\nStopped";
+}
+
+my $ifh = new IO::File '<'.$file;
+die "\"$file\" could not be opened: $!\nStopped" unless defined($ifh);
+
+while (<$ifh>) {
+    tr/\015\012//d;
+    next unless /^(spec\.${main::lcsuite}\.)?$section(\d+)(:| =) (.*)$/o;
+    my ($tmpidx, $data) = ($2+0, $4);
+    $config[$tmpidx] = $data;
+}
+print scalar(decode_decompress(join('', @config)));

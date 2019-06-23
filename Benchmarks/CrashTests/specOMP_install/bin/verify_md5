@@ -1,0 +1,60 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  verify_md5 - a tool to verify that the "untouchable" part of a raw file
+#               hasn't been touched
+#  Copyright 1999-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: verify_md5 1640 2012-05-09 20:12:09Z CloyceS $
+
+use strict;
+use Digest::MD5;
+require 'vars.pl';
+
+my $ctx = new Digest::MD5;
+my $recording = 0;
+my ($genmd5, $savedmd5) = (undef, undef);
+my $debug = 0;
+
+# This will only produce good results when processing one result at a time.
+
+while(defined(my $line = <>)) {     # Raw file input
+  $line =~ tr/\015\012//d; # Lose line endings
+  if ($line =~ /^# === do not edit below this point ===$/o) {
+    $recording = 1;
+    next;
+  }
+  if ($line =~ /^spec\.${main::lcsuite}\.rawhash: ([0-9a-f]{32})$/o) {
+    $savedmd5 = $1;
+    $recording = 1;
+    next;
+  }
+  next unless ($recording == 1);
+  last if $line =~ /^-SUBMIT-$/;
+  $ctx->add($line);
+}
+$genmd5 = $ctx->hexdigest;
+
+if ($savedmd5 ne '') {
+  my $rc = 0;
+  if ($savedmd5 !~ /^$genmd5$/i) {
+    print "Raw file MD5 is inconsistent with stored data!\n";
+    $debug = 1;	# So that the hashes are printed
+    $rc = 1;
+  } else {
+    print "Hashes match - raw file data looks intact.\n";
+  }
+  if ($debug) {
+    print "    Stored MD5 hash: $savedmd5\n";
+    print "Calculated MD5 hash: $genmd5\n";
+  }
+  exit $rc;
+} else {
+  print "There was no saved MD5 in the raw file.\n";
+  exit 2;
+}
+

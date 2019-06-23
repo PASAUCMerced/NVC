@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta name="Author" content="$Id: result-fields.html 516 2012-10-11 22:50:40Z BrianWhitney $" />
+<!-- You'll want a nice wide screen when editing this .......................................................................... -->
+<title>SPEC OMP2012 Result File Fields</title>
+
+<link rel="STYLESHEET" href="css/omp2012docs.css" type="text/css" />
+</head>
+
+<body>
+<!-- This should be a pretty complete list of links that are likely to come
+     out of any OMP2012 result.
+-->
+<div class="center">
+<h1>SPEC OMP2012 Result File Fields</h1>
+<p class="snug"><span style="font-size:80%;">
+Last updated: $Date: 2012-10-11 18:50:40 -0400 (Thu, 11 Oct 2012) $ by $Author: BrianWhitney $</span> </p>
+<p class="snugtop">(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/Docs/">http://www.spec.org/omp2012/Docs/</a>  ) </p> 
+
+<p><strong>ABSTRACT</strong><br />
+This document describes the various fields in a SPEC OMP2012 result disclosure.</p>
+</div>
+
+<hr /> <p>(To check for possible updates to this document, please see <a class="external"
+href="http://www.spec.org/omp2012/">http://www.spec.org/omp2012/</a>)</p> 
+
+<h3>Overview</h3>
+<p>Selecting one of the following will take you to the detailed table of
+contents for that section:</p>
+
+<p class="overview">1. <a href="#Dtoc_1">Benchmarks           </a></p>
+<p class="overview">2. <a href="#Dtoc_2">Major sections       </a></p>
+<p class="overview">3. <a href="#Dtoc_3">Hardware description </a></p>
+<p class="overview">4. <a href="#Dtoc_4">Software description </a></p>
+<p class="overview">5. <a href="#Dtoc_5">Power and Temperature information    </a></p>
+<p class="overview">6. <a href="#Dtoc_6">Other information    </a></p>
+
+<h3>Detailed Contents</h3>
+  <p class="contentsl1"><a name="Dtoc_1" href="#benchmarks">1.</a> Benchmarks</p>
+  <p class="contentsl2"><a href="#sec_suite"    >1.1 </a>Benchmarks by suite</p>
+  <p class="contentsl3"><a href="#sec_OMPG2012"  >1.1.1 </a>Benchmarks in the OMPG2012 suite</p>
+
+  <p class="contentsl2"><a href="#sec_lang"                      >1.2 </a>Benchmarks by language</p>
+  <p class="contentsl3"><a href="#Cbenchmarks"                   >1.2.1 </a>C Benchmarks</p>
+  <p class="contentsl3"><a href="#CXXbenchmarks"                 >1.2.2 </a>C++ Benchmarks</p>
+  <p class="contentsl3"><a href="#Fortranbenchmarks"             >1.2.3 </a>Fortran Benchmarks</p>
+
+  <p class="contentsl1"><a name="Dtoc_2" href="#sections">2.</a> Major sections</p>
+  <p class="contentsl2"><a href="#sec_topbar"           >2.1    </a>Top bar</p>
+  <p class="contentsl3"><a href="#OMPG2012Result"        >2.1.1  </a>OMPG2012 Result</p>
+  <p class="contentsl3"><a href="#SPECompGbase2012"      >2.1.2  </a>SPECompG_base2012</p>
+  <p class="contentsl3"><a href="#SPECompGpeak2012"      >2.1.3  </a>SPECompG_peak2012</p>
+  <p class="contentsl3"><a href="#SPECompGenergybase2012"      >2.1.4  </a>SPECompG_energy_base2012</p>
+  <p class="contentsl3"><a href="#SPECompGenergypeak2012"      >2.1.5  </a>SPECompG_energy_peak2012</p>
+  <p class="contentsl3"><a href="#OMP2012license"       >2.1.6 </a>OMP2012 license #</p>
+  <p class="contentsl3"><a href="#HardwareAvailability" >2.1.7 </a>Hardware Availability</p>
+  <p class="contentsl3"><a href="#SoftwareAvailability" >2.1.8 </a>Software Availability</p>
+  <p class="contentsl3"><a href="#Testdate"             >2.1.9 </a>Test date</p>
+  <p class="contentsl3"><a href="#Testsponsor"          >2.1.10 </a>Test sponsor</p>
+  <p class="contentsl3"><a href="#Testedby"             >2.1.11 </a>Tested by</p>
+
+  <p class="contentsl2"><a href="#ResultsTable" >2.2 </a>Result table</p>
+  <p class="contentsl3"><a href="#Benchmark"    >2.2.1 </a>Benchmark</p>
+  <p class="contentsl3"><a href="#Threads"      >2.2.2 </a>Threads</p>
+  <p class="contentsl3"><a href="#Seconds"      >2.2.3 </a>Seconds</p>
+  <p class="contentsl3"><a href="#Ratio"        >2.2.4 </a>Ratio</p>
+  <p class="contentsl3"><a href="#EnergykJ"     >2.2.5 </a>Energy kJoules</p>
+  <p class="contentsl3"><a href="#MaximumPower" >2.2.6 </a>Maximum Power</p>
+  <p class="contentsl3"><a href="#AveragePower" >2.2.7 </a>Average Power</p>
+  <p class="contentsl3"><a href="#EnergyRatio"        >2.2.8 </a>Energy Ratio</p>
+
+
+  <p class="contentsl2"                                   >2.3 Notes/Tuning Information</p>
+  <p class="contentsl3"><a href="#CompilerInvocationNotes">2.3.1 </a>Compiler Invocation Notes</p>
+  <p class="contentsl3"><a href="#SubmitNotes"            >2.3.2 </a>Submit Notes</p>
+  <p class="contentsl3"><a href="#PortabilityNotes"       >2.3.3 </a>Portability Notes</p>
+  <p class="contentsl3"><a href="#BaseTuningNotes"        >2.3.4 </a>Base Tuning Notes</p>
+  <p class="contentsl3"><a href="#PeakTuningNotes"        >2.3.5 </a>Peak Tuning Notes</p>
+  <p class="contentsl3"><a href="#OperatingSystemNotes"   >2.3.6 </a>Operating System Notes</p>
+  <p class="contentsl3"><a href="#PlatformNotes"          >2.3.7 </a>Platform Notes</p>
+  <p class="contentsl3"><a href="#ComponentNotes"         >2.3.8 </a>Component Notes</p>
+  <p class="contentsl3"><a href="#GeneralNotes"           >2.3.9 </a>General Notes</p>
+
+  <p class="contentsl2"><a href="#CompilationFlagsUsed">2.4 </a>Compilation Flags Used</p>
+  <p class="contentsl3"><a href="#CompilerInvocation"  >2.4.1</a>Compiler Invocation</p>
+  <p class="contentsl3"><a href="#PortabilityFlags"    >2.4.2</a>Portability Flags</p>
+  <p class="contentsl3"><a href="#OptimizationFlags"   >2.4.3</a>Optimization Flags</p>
+  <p class="contentsl3"><a href="#OtherFlags"          >2.4.4</a>Other Flags</p>
+  <p class="contentsl3"><a href="#UnknownFlags"        >2.4.5</a>Unknown Flags</p>
+  <p class="contentsl3"><a href="#ForbiddenFlags"      >2.4.6</a>Forbidden Flags</p>
+
+  <p class="contentsl2"><a href="#Errors"    >2.5 </a>Errors</p>
+
+  <p class="contentsl1"><a name="Dtoc_3" href="#Hardware">3.</a> Hardware description</p>
+  <p class="contentsl2"><a href="#CPUName"           >3.1  </a>CPU Name</p>
+  <p class="contentsl2"><a href="#CPUCharacteristics">3.2  </a>CPU Characteristics</p>
+  <p class="contentsl2"><a href="#CPUMHz"            >3.3  </a>CPU MHz</p>
+  <p class="contentsl2"><a href="#CPUMHzMaximum"     >3.4  </a>Maximum CPU MHz</p>
+  <p class="contentsl2"><a href="#FPU"               >3.5  </a>FPU</p>
+  <p class="contentsl2"><a href="#CPUsenabled"       >3.6  </a>CPU(s) enabled</p>
+  <p class="contentsl2"><a href="#CPUsorderable"     >3.7  </a>CPU(s) orderable</p>
+  <p class="contentsl2"><a href="#PrimaryCache"      >3.8  </a>Primary Cache</p>
+  <p class="contentsl2"><a href="#SecondaryCache"    >3.9  </a>Secondary Cache</p>
+  <p class="contentsl2"><a href="#L3Cache"           >3.10 </a>L3 Cache</p>
+  <p class="contentsl2"><a href="#OtherCache"        >3.11 </a>Other Cache</p>
+  <p class="contentsl2"><a href="#Memory"            >3.12 </a>Memory</p>
+  <p class="contentsl2"><a href="#DiskSubsystem"     >3.13 </a>Disk Subsystem</p>
+  <p class="contentsl2"><a href="#OtherHardware"     >3.14 </a>Other Hardware</p>
+
+  <p class="contentsl1"><a name="Dtoc_4" href="#Software">4.</a> Software description</p>
+  <p class="contentsl2"><a href="#OperatingSystem"       >4.1 </a>Operating System</p>
+  <p class="contentsl2"><a href="#AutoParallel"          >4.2 </a>Auto Parallel</p>
+  <p class="contentsl2"><a href="#Compiler"              >4.3 </a>Compiler</p>
+  <p class="contentsl2"><a href="#FileSystem"            >4.4 </a>File System</p>
+  <p class="contentsl2"><a href="#SystemState"           >4.5 </a>System State</p>
+  <p class="contentsl2"><a href="#BasePointers"          >4.6 </a>Base Pointers</p>
+  <p class="contentsl2"><a href="#PeakPointers"          >4.7 </a>Peak Pointers</p>
+  <p class="contentsl2"><a href="#OtherSoftware"         >4.8 </a>Other Software</p>
+
+  <p class="contentsl1"><a name="Dtoc_5" href="#Power" >5.</a> Power and Temperature information</p>
+  <p class="contentsl2"><a href="#PowerSupply"         >5.1 </a>Power Supply</p>
+  <p class="contentsl2"><a href="#PowerSupplyDetails"  >5.2 </a>Power Supply Details</p>
+  <p class="contentsl2"><a href="#MaxPowerW"           >5.3 </a>Maximum Power (W)</p>
+  <p class="contentsl2"><a href="#IdlePowerW"          >5.4 </a>Idle Power (W)</p>
+  <p class="contentsl2"><a href="#MinTemperatureC"     >5.5 </a>Minimum Temperature (C)</p>
+  <p class="contentsl2"><a href="#CurrentRangesUsed"   >5.6 </a>Current Ranges Used</p>
+  <p class="contentsl2"><a href="#VoltageRangeUsed"    >5.7 </a>Voltage Range Used</p>
+  <p class="contentsl2"><a href="#PowerAnalyzer"       >5.8 </a>Power Analyzer</p>
+  <p class="contentsl2"><a href="#HardwareVendor"      >5.9 </a>Hardware Vendor</p>
+  <p class="contentsl2"><a href="#Model"               >5.10 </a>Model</p>
+  <p class="contentsl2"><a href="#SerialNumber"        >5.11 </a>Serial Number</p>
+  <p class="contentsl2"><a href="#InputConnection"     >5.12 </a>Input Connection</p>
+  <p class="contentsl2"><a href="#MetrologyInstitute"  >5.13 </a>Metrology Institute</p>
+  <p class="contentsl2"><a href="#CalibrationBy"       >5.14 </a>Calibration By</p>
+  <p class="contentsl2"><a href="#CalibrationLabel"    >5.15 </a>Calibration Label</p>
+  <p class="contentsl2"><a href="#CalibrationDate"     >5.16 </a>Calibration Date</p>
+  <p class="contentsl2"><a href="#PTDaemonVersion"     >5.17 </a>PTDaemon Version</p>
+  <p class="contentsl2"><a href="#SetupDescription"    >5.18 </a>Setup Description</p>
+  <p class="contentsl2"><a href="#TemperatureMeter"    >5.19 </a>Temperature Sensor</p>
+
+  <p class="contentsl1"><a name="Dtoc_6" href="#Other">6.</a> Other information</p>
+  <p class="contentsl2"><a href="#Median"             >6.1 </a>Median results</p>
+  <p class="contentsl2"><a href="#RunOrder"           >6.2 </a>Run order</p>
+
+<hr />
+<h1><a name="benchmarks">1. SPEC OMP2012 Benchmarks</a></h1>
+
+<h2><a name="sec_suite">1.1 Benchmarks by suite</a></h2>
+
+<h3><a name="sec_OMPG2012">1.1.1 Benchmarks in the SPEC OMPG2012 suite</a></h3>
+<p>The OMPG2012 suite is comprised of 14 compute intensive codes; 8 in Fortran, 5 in C, and 1 in C++.</p>
+
+<ol>
+  <li><a name="_350md" href="http://www.spec.org/omp2012/Docs/350.md.html">350.md</a> (Fortran)</li>
+  <li><a name="_351bwaves" href="http://www.spec.org/omp2012/Docs/351.bwaves.html">351.bwaves</a> (Fortran)</li>
+  <li><a name="_352nab" href="http://www.spec.org/omp2012/Docs/352.nab.html">352.nab</a> (C)</li>
+  <li><a name="_357bt331" href="http://www.spec.org/omp2012/Docs/357.bt331.html">357.bt331</a> (Fortran)</li>
+  <li><a name="_358botsalgn" href="http://www.spec.org/omp2012/Docs/358.botsalgn.html">358.botsalgn</a> (C)</li>
+  <li><a name="_359botsspar" href="http://www.spec.org/omp2012/Docs/359.botsspar.html">359.botsspar</a> (C)</li>
+  <li><a name="_360ilbdc" href="http://www.spec.org/omp2012/Docs/360.ilbdc.html">360.ilbdc</a> (Fortran)</li>
+  <li><a name="_362fma3d" href="http://www.spec.org/omp2012/Docs/362.fma3d.html">362.fma3d</a> (Fortran)</li>
+  <li><a name="_363swim" href="http://www.spec.org/omp2012/Docs/363.swim.html">363.swim</a> (Fortran)</li>
+  <li><a name="_367imagick" href="http://www.spec.org/omp2012/Docs/367.imagick.html">367.imagick</a> (C)</li>
+  <li><a name="_370mgrid331" href="http://www.spec.org/omp2012/Docs/370.mgrid331.html">370.mgrid331</a> (Fortran)</li>
+  <li><a name="_371applu331" href="http://www.spec.org/omp2012/Docs/371.applu331.html">371.applu331</a> (Fortran)</li>
+  <li><a name="_372smithwa" href="http://www.spec.org/omp2012/Docs/372.smithwa.html">372.smithwa</a> (C)</li>
+  <li><a name="_376kdtree" href="http://www.spec.org/omp2012/Docs/376.kdtree.html">376.kdtree</a> (C++)</li>
+</ol>
+
+<h2><a name="sec_lang">1.2 Benchmarks by language</a></h2>
+
+<h3><a name="Cbenchmarks">1.2.1 C Benchmarks</a></h3>
+<p>(Also, &quot;<a name="Cbenchmarksexceptasnotedbelow">C Benchmarks (except as noted below)</a>&quot;)</p>
+<p>Five benchmarks in the OMPG2012 suite are written in C:</p>
+<ul>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/352.nab.html">352.nab</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/358.botsalgn.html">358.botsalgn</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/359.botsspar.html">359.botsspar</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/367.imagick.html">367.imagick</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/372.smithwa.html">372.smithwa</a></li>
+</ul>
+
+<h3><a name="CXXbenchmarks">1.2.2 C++ Benchmarks</a></h3>
+<p>(Also, &quot;<a name="CXXbenchmarksexceptasnotedbelow">C++ Benchmarks (except as noted below)</a>&quot;)</p>
+<p>One benchmark in the OMPG2012 suite is written in C++:</p>
+<ul>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/376.kdtree.html">376.kdtree</a></li>
+</ul>
+
+<h3><a name="Fortranbenchmarks">1.2.3 Fortran Benchmarks</a></h3>
+<p>(Also, &quot;<a name="Fortranbenchmarksexceptasnotedbelow">Fortran Benchmarks (except as noted below)</a>&quot;)</p>
+
+<p>Eight benchmarks in the OMPG2012 suite are written in Fortran:</p>
+<ul>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/350.md.html">350.md</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/351.bwaves.html">351.bwaves</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/357.bt331.html">357.bt331</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/360.ilbdc.html">360.ilbdc</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/362.fma3d.html">362.fma3d</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/363.swim.html">363.swim</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/370.mgrid331.html">370.mgrid331</a></li>
+  <li><a class="external" href="http://www.spec.org/omp2012/Docs/371.applu331.html">371.applu331</a></li>
+</ul>
+
+<hr />
+<h1><a name="sections">2. Major sections</a></h1>
+
+<h2><a name="sec_topbar">2.1 Top bar</a></h2>
+
+<p>More detailed information about metrics is in sections <a class="external" href="runrules.html#section4.3.1">4.3.1</a> and <a
+class="external" href="runrules.html#section4.3.2">4.3.2</a> of the OMP2012 <a class="external" href="runrules.html">Run and
+Reporting Rules</a>.</p> 
+<h3><a name="OMPG2012Result">2.1.1 OMPG2012 Result</a></h3>
+<p>This result is from the SPEC OMPG2012 suite.</p>
+
+<h3><a name="SPECompGbase2012">2.1.2 SPECompG_base2012</a></h3>
+<p>The geometric mean of fourteen normalized ratios when compiled with
+conservative optimization for each benchmark.</p>
+
+<p>More detailed information about this metric is in <a class="external" href="runrules.html#section4.3.1">section 4.3.1</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h3><a name="SPECompGpeak2012">2.1.3 SPECompG_peak2012</a></h3>
+<p>The geometric mean of fourteen normalized ratios 
+when compiled with aggressive optimization for each
+benchmark.</p>
+<p>More detailed information about this metric is in <a class="external" href="runrules.html#section4.3.1">section 4.3.1</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h3><a name="SPECompGenergybase2012">2.1.2 SPECompG_energy_base2012</a></h3>
+<p>The geometric mean of fourteen normalized ratios when compiled with
+conservative optimization for each benchmark.</p>
+
+<p>More detailed information about this metric is in <a class="external" href="runrules.html#section4.3.2">section 4.3.2</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h3><a name="SPECompGpeak2012">2.1.3 SPECompG_energy_peak2012</a></h3>
+<p>The geometric mean of fourteen normalized ratios 
+when compiled with aggressive optimization for each
+benchmark.</p>
+<p>More detailed information about this metric is in <a class="external" href="runrules.html#section4.3.2">section 4.3.2</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h3><a name="OMP2012license">2.1.6 OMP2012 license #</a></h3>
+<p>The SPEC OMP2012 license number of the organization or individual that ran the
+result.</p>
+
+<h3><a name="HardwareAvailability">2.1.7 Hardware Availability</a></h3>
+<p>(Also, &quot;<a name="HardwareAvail">Hardware Avail</a>&quot;)</p>
+<p>The date when <strong>all</strong> the hardware necessary to run the
+result is generally available.  For example, if the CPU is available in
+Aug-2012, but the memory is not available until Oct-2012, then the hardware
+availability date is Oct-2012 (unless some other component pushes it out
+farther).</p>
+
+<h3><a name="SoftwareAvailability">2.1.8 Software Availability</a></h3>
+<p>(Also, &quot;<a name="SoftwareAvail">Software Avail</a>&quot;)</p>
+<p>The date when <strong>all</strong> the software necessary to run the
+result is generally available.  For example, if the operating system is
+available in Aug-2012, but the compiler or other libraries are not available
+until Oct-2012, then the software availability date is Oct-2012 (unless some
+other component pushes it out farther).</p>
+
+<h3><a name="Testdate">2.1.9 Test date</a></h3>
+<p>The date when the test is run.  This value is obtained from the system under test, unless the tester
+explicitly <a class="external" href="http://www.spec.org/omp2012/Docs/config.html#test_date">changes it</a>.</p> 
+<h3><a name="Testsponsor">2.1.10 Test sponsor</a></h3>
+<p>The name of the organization or individual that sponsored the test.
+Generally, this is the name of the license holder.</p>
+
+<h3><a name="Testedby">2.1.11 Tested by</a></h3>
+<p>The name of the organization or individual that ran the test.  If there are
+installations in multiple geographic locations, sometimes that will also be
+listed in this field.</p>
+
+
+<h2><a name="ResultsTable">2.2 Result table</a></h2>
+<p>In addition to the graph, the results of the individual benchmark runs
+are also presented in table form.</p>
+
+<h3><a name="Benchmark">2.2.1 Benchmark</a></h3>
+<p>The name of the benchmark.</p>
+
+<h3><a name="Threads">2.2.2 Threads</a></h3>
+<p>The number of OpenMP threads (OMP_NUM_THREADS) that were 
+used for this run.</p>
+
+<h3><a name="Seconds">2.2.3 Seconds</a></h3>
+<p>This is the amount of time in seconds that the benchmark
+took to run.  </p>
+
+<h3><a name="Ratio">2.2.4 Ratio</a></h3>
+<p>This is the ratio of benchmark run time to the
+run time on the reference platform.</p>
+
+<h3><a name="EnergykJ">2.2.5 Energy kJoules</a></h3>
+<p>This is the amount of energy consumed (in kiloJoules) during the
+execution of the benchmark. This will only be present if the option
+power metric is run.</p>
+
+<h3><a name="MaximumPower">2.2.6 Maximum Power</a></h3>
+<p>This is the maximum rate of power consumed (in Watts) during the
+execution of the benchmark. This will only be present if the option
+power metric is run.</p>
+
+<h3><a name="AveragePower">2.2.7 Average Power</a></h3>
+<p>This is the average rate of power consumed (in Watts) during the
+execution of the benchmark. This will only be present if the option
+power metric is run.</p>
+
+<h3><a name="EnergyRatio">2.2.8 EnergyRatio</a></h3>
+<p>This is the ratio of benchmark average power consumption to the
+run time on the reference platform. This will only be present if the option
+power metric is run.</p>
+
+<h2><a name="NotesTuningInformation">2.3 Notes/Tuning Information</a></h2>
+<p>(Also, &quot;<a name="NotesTuningInformationContinued">Notes/Tuning Information (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about compiler flags used,
+system settings, and other items that do not have dedicated fields elsewhere
+in the result.</p>
+
+<p>Run rules relating to these items can be found in <a class="external" href="runrules.html#section4.2">
+section 4.2</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+<h3><a name="CompilerInvocationNotes">2.3.1 </a>Compiler Invocation Notes</h3>
+<p>(Also, &quot;<a name="CompilerInvocationNotesContinued">Compiler Invocation Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about how the various compilers were invoked,
+whether any special paths had to be used, etc.
+</p>
+
+<h3><a name="SubmitNotes"           >2.3.2 </a>Submit Notes</h3>
+<p>(Also, &quot;<a name="SubmitNotesContinued">Submit Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about how the config file submit option was used to 
+assign processes to processors. </p>
+
+<h3><a name="PortabilityNotes"       >2.3.3 </a>Portability Notes</h3>
+<p>(Also, &quot;<a name="PortabilityNotesContinued">Portability Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about portability options and flags used to build the
+various benchmarks.</p>
+
+<h3><a name="BaseTuningNotes"        >2.3.4 </a>Base Tuning Notes</h3>
+<p>(Also, &quot;<a name="BaseTuningNotesContinued">Base Tuning Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about baseline optimization options and flags used to build the
+various benchmarks.</p>
+
+<h3><a name="PeakTuningNotes"        >2.3.5 </a>Peak Tuning Notes</h3>
+<p>(Also, &quot;<a name="PeakTuningNotesContinued">Peak Tuning Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about peak optimization options and flags used to build the
+various benchmarks.</p>
+
+<h3><a name="OperatingSystemNotes"   >2.3.6 </a>Operating System Notes</h3>
+<p>(Also, &quot;<a name="OperatingSystemNotesContinued">Operating System Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about changes to the default operating system state and
+other OS-specific tuning information.</p>
+
+<h3><a name="PlatformNotes"          >2.3.7 </a>Platform Notes</h3>
+<p>(Also, &quot;<a name="PlatformNotesContinued">Platform Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about changes to the default hardware state and
+other non-OS-specific tuning information.</p>
+
+<h3><a name="ComponentNotes"         >2.3.8 </a>Component Notes</h3>
+<p>(Also, &quot;<a name="ComponentNotesContinued">Component Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides information about various components needed to build a particular
+system.  This section is only used if the system under test is built from parts and not sold as a whole system.</p>
+
+<h3><a name="GeneralNotes"           >2.3.9 </a>General Notes</h3>
+<p>(Also, &quot;<a name="GeneralNotesContinued">General Notes (Continued)</a>&quot;)</p>
+<p>This section is where the tester provides notes about things not covered in the other notes sections.</p>
+
+<h2><a name="CompilationFlagsUsed">2.4 Compilation Flags Used</a></h2>
+<p>(Also, &quot;<a name="CompilationFlagsUsedContinued">Compilation Flags Used (Continued)</a>&quot;)</p>
+<p>This section is generated automatically by the benchmark tools.  It
+details compilation flags used and provides links (in the HTML and PDF result
+formats) to descriptions of those flags.</p>
+
+<h3><a name="CompilerInvocation"  >2.4.1 </a>Compiler Invocation</h3>
+<p>(Also, &quot;<a name="BaseCompilerInvocation">Base Compiler Invocation</a>&quot; and &quot;<a name="PeakCompilerInvocation">Peak Compiler Invocation</a>&quot;)</p>
+<p>This section lists the ways that the various compilers are invoked.</p>
+
+<h3><a name="PortabilityFlags"    >2.4.2 </a>Portability Flags</h3>
+<p>(Also, &quot;<a name="BasePortabilityFlags">Base Portability Flags</a>&quot; and &quot;<a name="PeakPortabilityFlags">Peak Portability Flags</a>&quot;)</p>
+<p>This section lists compilation flags that are used for portability.</p>
+
+<h3><a name="OptimizationFlags"   >2.4.3 </a>Optimization Flags</h3>
+<p>(Also, &quot;<a name="BaseOptimizationFlags">Base Optimization Flags</a>&quot; and &quot;<a name="PeakOptimizationFlags">Peak Optimization Flags</a>&quot;)</p>
+<p>This section lists compilation flags that are used for optimization.</p>
+
+<h3><a name="OtherFlags"          >2.4.4 </a>Other Flags</h3>
+<p>(Also, &quot;<a name="BaseOtherFlags">Base Other Flags</a>&quot; and &quot;<a name="PeakOtherFlags">Peak Other Flags</a>&quot;)</p>
+<p>This section lists compilation flags that are classified as neither
+portability nor optimization.</p>
+
+<h3><a name="UnknownFlags"        >2.4.5 </a>Unknown Flags</h3>
+<p>(Also, &quot;<a name="BaseUnknownFlags">Base Unknown Flags</a>&quot; and &quot;<a name="PeakUnknownFlags">Peak Unknown Flags</a>&quot;)</p>
+<p>This section of the reports lists compilation flags used that are not
+described in any flags description file.  Results with unknown flags are marked
+"invalid" and may not be published.  This marking may be removed by
+reformatting the result using a flags file that describes all of the unknown
+flags.</p>
+
+<h3><a name="ForbiddenFlags"      >2.4.6 </a>Forbidden Flags</h3>
+<p>(Also, &quot;<a name="BaseForbiddenFlags">Base Forbidden Flags</a>&quot; and &quot;<a name="PeakForbiddenFlags">Peak Forbidden Flags</a>&quot;)</p>
+<p>This section of the reports lists compilation flags used that are
+designated as "forbidden".  Results using forbidden flags are marked
+"invalid" and may not be published.</p>
+
+
+<h2><a name="Errors">2.5 Errors</a></h2>
+<p>This section is automatically inserted by the benchmark tools when there
+are errors present that prevent the result from being a valid reportable
+result.</p>
+
+<hr />
+<h1><a name="Hardware">3. Hardware description</a></h1>
+
+<p>Run rules relating to these items can be found in <a class="external" href="runrules.html#section4.2.2">
+section 4.2.2</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+<h3><a name="CPUName">3.1 CPU Name</a></h3>
+<p>A manufacturer-determined processor formal name.</p>
+
+<h3><a name="CPUCharacteristics">3.2 CPU Characteristics</a></h3>
+<p>Technical characteristics to help identify the processor.</p>
+
+<h3><a name="CPUMHz">3.3 CPU MHz</a></h3>
+<p>The clock frequency of the CPU, expressed in megahertz.</p>
+
+<h3><a name="CPUMHzMaximum">3.4 Maximum CPU MHz</a></h3>
+<p>The maximum clock frequency of the CPU, expressed in megahertz.
+This is referred to by some vendors as the Turbo frequency.</p>
+
+<h3><a name="FPU">3.5 FPU</a></h3>
+<p>The type of floating-point unit used in the system.</p>
+
+<h3><a name="CPUsenabled">3.6 CPU(s) enabled</a></h3>
+<p>The number of CPUs that were enabled and active during the benchmark run.  More information about CPU counting is in the <a
+class="external" href="runrules.html#cpucount">run rules</a>.</p> 
+
+<h3><a name="CPUsorderable">3.7 CPU(s) orderable</a></h3>
+<p>The number of CPUs that can be ordered in a system of the type
+being tested.</p>
+
+<h3><a name="PrimaryCache">3.8 Primary Cache</a></h3>
+<p>Description (size and organization) of the CPU's primary cache.  This cache is also referred to as
+"L1 cache".</p>
+
+<h3><a name="SecondaryCache">3.9 Secondary Cache</a></h3>
+<p>Description (size and organization) of the CPU's secondary cache.  This cache is also referred to as
+"L2 cache".</p>
+
+<h3><a name="L3Cache">3.10 L3 Cache</a></h3>
+<p>Description (size and organization) of the CPU's tertiary, or "Level 3" cache.</p>
+
+<h3><a name="OtherCache">3.11 Other Cache</a></h3>
+<p>Description (size and organization) of any other levels of cache memory.</p>
+
+<h3><a name="Memory">3.12 Memory</a></h3>
+<p>Description of the system main memory configuration.  End-user options that
+affect performance, such as arrangement of memory modules, interleaving,
+latency, etc, are documented here.</p>
+
+<h3><a name="DiskSubsystem">3.13 Disk Subsystem</a></h3>
+<p>A description of the disk subsystem (size, type, and RAID level if any) of
+the storage used to hold the benchmark tree during the run.</p>
+
+<h3><a name="OtherHardware">3.14 Other Hardware</a></h3>
+<p>Any additional equipment added to improve performance. </p> 
+
+
+<hr />
+<h1><a name="Software">4. Software description</a></h1>
+
+<p>Run rules relating to these items can be found in <a class="external" href="runrules.html#section4.2.3">
+section 4.2.3</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+<h3><a name="OperatingSystem">4.1 Operating System</a></h3>
+<p>The operating system name and version.  If there are patches applied that
+affect performance, they must be disclosed in the
+<a href="#NotesTuningInformation">notes</a>.</p>
+
+<h3><a name="AutoParallel">4.2 Auto Parallel</a></h3>
+<p>Were multiple threads/cores/chips employed by a parallelizing compiler? Note that 
+only OpenMP parallelism is allowed.  Please see the
+run rules relating to this at 
+<a class="external" href="runrules.html#section1.1.4">
+section 1.1.4</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h3><a name="Compiler">4.3 Compiler</a></h3>
+<p>The names and versions of all compilers, preprocessors, and performance
+libraries used to generate the result.</p>
+
+<h3><a name="FileSystem">4.4 File System</a></h3>
+<p>The type of the filesystem used to contain the run directories.</p>
+
+<h3><a name="SystemState">4.5 System State</a></h3>
+<p>The state (sometimes called "run level") of the system while the benchmarks
+were being run.  Generally, this is "single user", "multi-user", "default",
+etc.</p>
+
+<h3><a name="BasePointers">4.6 Base Pointers</a></h3>
+<p>Indicates whether all the benchmarks in base used 32-bit pointers, 64-bit pointers,
+or a mixture.  For example, if the C and C++ benchmarks used 32-bit pointers, and the 
+Fortran benchmarks used 64-bit pointers, then "32/64-bit" would be reported here.
+</p>
+
+<h3><a name="PeakPointers">4.7 Peak Pointers</a></h3>
+<p>Indicates whether all the benchmarks in peak used 32-bit pointers, 64-bit pointers,
+or a mixture.
+</p>
+
+<h3><a name="OtherSoftware">4.8 Other Software</a></h3>
+<p>Any performance-relevant non-compiler software used, including third-party libraries, accelerators, etc.</p>
+
+<hr />
+<h1><a name="Power">5. Power and Temperature information</a></h1>
+
+<p>Run rules relating to these items can be found in <a class="external" href="runrules.html#section4.2.6">
+section 4.2.6</a> of the
+OMP2012 <a class="external" href="runrules.html">Run and Reporting Rules</a>.</p> 
+
+<h2><a name="PowerSupply">5.1 Power Supply </a></h2>
+<p>This field is for the number and rating of the power supplies used in this system for this run.</p>
+
+<h2><a name="PowerSupplyDetails">5.2 Power Supply Details </a></h2>
+<p>This field is for more details about the power supply, like a part number or some other identifier.</p>
+
+<h2><a name="MaxPowerW">5.3 Maximum Power (W)</a></h2>
+<p>This is the maximum power (in Watts) that was measured during the entire benchmark suite run.  </p>
+
+<h2><a name="IdlePowerW">5.4 Idle Power (W)</a></h2>
+<p>This is a 60 second measurement of idle power (in Watts) on the machine that is made after the benchmark has been run
+and the system was given time 10 seconds to rest.  </p>
+
+<h2><a name="MinTemperatureC">5.5 Minimum Temperature (C)</a></h2>
+<p>This is the minimim temperature measured (in C) that was registered during the entire benchmark suite run.  </p>
+
+<h2><a name="CurrentRangesUsed">5.6 Current Ranges Used</a></h2>
+<p>This is the current ranges that were used by the power analyzer as reported by PTDaemon.</p>
+
+<h2><a name="VoltageRangeUsed">5.7 Voltage Range Used</a></h2>
+<p>This is the voltage range that was used by the power analyzer as reported
+by PTDaemon.</p>
+
+<h2><a name="PowerAnalyzer">5.8 Power Analyzer</a></h2>
+<p>This is the Power Analyzer name used to connect PTDaemon to the power analyzer.  
+If more than one power analyzer was used, there will be multiple descriptions presented.</p>
+
+<h2><a name="HardwareVendor">5.9 Hardware Vendor</a></h2>
+<p>This is the name of the company that provides the power analyzer or temperature meter.</p>
+
+<h2><a name="Model">5.10 Model</a></h2>
+<p>This is the model of the power analyzer or temperature meter.</p>
+
+<h2><a name="SerialNumber">5.11 Serial Number</a></h2>
+<p>This is the serial number of the power analyzer being used.  </p>
+
+<h2><a name="InputConnection">5.12 Input Connection</a></h2>
+<p>This is a description of the interface used to connect the power analyzer or temperature meter 
+to the PTDaemon host system, e.g. RS-232 (serial port), USC, GPIB, etc.</p>
+
+<h2><a name="MetrologyInstitute">5.13 Metrology Institute</a></h2>
+<p>
+Name of the national metrology institute, which specifies the calibration
+standards for power analyzers, appropriate for the Test Location reported
+in the FDR.  Calibration should be done according to the standard of
+the country where the test was performed or where the power analyzer
+was manufactured.
+</p>
+<p>
+Examples from accepted result respors: Country Metrology Institute
+<ul>
+<li> USA NIST (National Institute of Standards and Technology)</li>
+<li>Germany PTB (Physikalisch Technische Bundesanstalt)</li>
+<li>Japan AIST (National Institute of Advanced Science and Technology)</li>
+<li>Taiwan (ROC) NML (National Measurement Laboratory)</li>
+<li>China CNAS (China National Accreditation Service for Conformity Assessment) </li>
+</ul>
+
+A list of national metrology institutes for many countries is 
+maintained by NIST here 
+<a class="external" href="http://gsi.nist.gov/global/index.cfm"> 
+http://gsi.nist.gov/global/index.cfm.</a> </p>
+
+<h2><a name="CalibrationBy">5.14 Calibration By</a></h2>
+<p>This is name of the organization that performed the power analyzer calibration.</p>
+
+<h2><a name="CalibrationLabel">5.15 Calibration Label</a></h2>
+<p>This is a number or character string which uniquely identifies this meter calibration event. 
+May appear on the calibration certificate or on a sticker applied to the power analyzer. 
+The format of this number is specified by the metrology institute.</p>
+
+<h2><a name="CalibrationDate">5.16 Calibration Date</a></h2>
+<p>The date (DD-MMM-YYYY) the calibration certificate was issued, from the calibration label or the calibration certificate. </p>
+
+<h2><a name="PTDaemonVersion">5.17 PTDaemon Version</a></h2>
+<p>This is the version of the PTDaemon. It is automatically supplied by the tools.</p>
+
+<h2><a name="SetupDescription">5.18 Setup Description</a></h2>
+<p>This is a brief description of how the power analyzer or temperature sensor was
+used.  This could include which power supply was connected to this power analyzer, or how far
+away this temperature sensor was from the air intake of the system.</p>
+
+<h2><a name="TemperatureMeter">5.19 Temperature Sensor</a></h2>
+<p>This is the name used to connect the PTDaemon to the temperature sensor.  
+If more that one temperature sensor was used, there will be multiple descriptions presented.</p>
+
+<hr />
+<h1><a name="Other">6. Other information</a></h1>
+
+<h2><a name="Median">6.1 Median results</a></h2>
+<p>For a reportable OMP2012 run, three iterations of each benchmark are run, and the median of the three runs is selected to be
+part of the overall metric.  In output formats that support it, the medians in the result table are
+<span style="font-weight: bold; text-decoration: underline;">underlined in bold</span>.</p>
+
+<h2><a name="RunOrder">6.2 Run order</a></h2>
+<p>Each iteration
+now consists of running each benchmark in order.  For example, given benchmarks "910.aaa", "920.bbb", and "930.ccc", here's
+what you might see as the benchmarks were run:</p>
+
+<p style="font-weight: bold">OMPG2012</p>
+<pre>
+    Running (#1) 910.aaa ref base oct09a default
+    Running (#1) 920.bbb ref base oct09a default
+    Running (#1) 930.ccc ref base oct09a default
+    Running (#2) 910.aaa ref base oct09a default
+    Running (#2) 920.bbb ref base oct09a default
+    Running (#2) 930.ccc ref base oct09a default
+    Running (#3) 910.aaa ref base oct09a default
+    Running (#3) 920.bbb ref base oct09a default
+    Running (#3) 930.ccc ref base oct09a default
+</pre>
+
+<p>When you read the results table from a run<!---, such as <a class="external"
+href="http://www.spec.org/cpu2006/results/res2006q3/cpu2006-20060513-00001.html#baseres">this one</a>,--> the results in the results
+table are listed in the order that they were run, in column-major order.  In other words, if you're interested in the base scores
+as they were produced, start in the upper-lefthand column and read down the first column, then read the middle column, then the
+right column.</p> 
+<p>If the benchmarks were run with both base and peak tuning, all base runs were completed before starting peak.</p>
+
+
+<div class="w3cbutton3"> <a class="external" href="http://validator.w3.org/check?uri=referer"> <span class="w3c">W3C</span> <span
+  class="spec">XHTML 1.0</span> </a> </div> 
+<div class="w3cbutton3"> <a class="external" href="http://jigsaw.w3.org/css-validator/check/referer"> <span class="w3c">W3C</span>
+  <span class="spec">CSS</span> </a> </div> 
+<p style="border-top: thin black solid"> 
+&nbsp;&nbsp; Copyright 1999-2012 Standard Performance Evaluation Corporation All Rights Reserved</p>
+
+
+<!-- this space intentionally left blank: some empty space at the bottom increases the probability that clicking on a link in
+the table of contents will actually position the desired section at the top of your browser window -->
+<p style="margin-bottom:1900px;">&nbsp;</p>
+
+
+
+</body>
+</html>

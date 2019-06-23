@@ -1,0 +1,4 @@
+/usr/bin/gcc -c -o common/bots_main.o -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG -I. -I./omp-tasks/sparselu/sparselu_single -I./common  -O2 -fopenmp       -DSPEC_LP64         common/bots_main.c
+/usr/bin/gcc -c -o common/bots_common.o -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG -I. -I./omp-tasks/sparselu/sparselu_single -I./common  -O2 -fopenmp       -DSPEC_LP64         common/bots_common.c
+/usr/bin/gcc -c -o omp-tasks/sparselu/sparselu_single/sparselu.o -DSPEC -DSPEC_OMP -DSPEC_OPENMP -DNDEBUG -I. -I./omp-tasks/sparselu/sparselu_single -I./common  -O2 -fopenmp       -DSPEC_LP64         omp-tasks/sparselu/sparselu_single/sparselu.c
+/usr/bin/gcc  -O2 -fopenmp  -DSPEC_LP64        common/bots_main.o common/bots_common.o omp-tasks/sparselu/sparselu_single/sparselu.o             -lm        -o bots-sparselu

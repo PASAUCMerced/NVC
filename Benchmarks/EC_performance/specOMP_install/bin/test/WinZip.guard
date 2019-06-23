@@ -1,0 +1,3 @@
+This file (which contains Unix-style LF-only line endings) will be used
+as a guard against WinZip's helpful "Do CR/LF conversion on everything"
+feature.

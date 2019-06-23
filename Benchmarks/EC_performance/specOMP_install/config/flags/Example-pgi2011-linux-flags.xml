@@ -1,0 +1,2315 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription SYSTEM
+       "http://www.spec.org/dtd/cpuflags2.dtd">
+
+<!-- This file defines flags for use with the PGI 2011 Linux Compilers -->
+<flagsdescription>
+<filename>pgi10_linux_flags</filename>
+<title>PGI Server Complete for Linux, Release 2011.  Optimization, Compiler, and Other flags for use by SPEC CPU2006</title>
+
+
+<!-- Style -->
+
+<style>
+<![CDATA[
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 100% 0;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+div.flagDesc {
+  clear: both;
+  color: black;
+  background-color: #d6e7f7;
+  border: 1px solid #blue;
+  margin: 0 auto;
+  width: 90%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid #d6e7f7;
+  background: #d6e7f7;
+}
+
+ul.flagTOC > li > a:link {
+   color: blue;
+}
+
+ul.SubMenu li {
+  border: 1px solid #d6e7f7; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  border: 1px solid blue;
+  background-color: #d6e7f7;
+}
+]]>
+</style>
+
+<!-- Header -->
+
+<header>
+<![CDATA[
+<div id='banner'>
+<h2><b>Compilers: PGI Server Complete 2011</b></h2>
+<h2><b>Operating systems: Linux</b></h2>
+</div>
+]]>
+</header>
+
+ 
+
+
+<!-- Compilers -->
+
+<flag name='pgcc_w' class='compiler' regexp="pgcc\.exe\b" >
+<![CDATA[
+ <p>The PGI C compiler for Windows.</p>
+ ]]>
+<example>pgcc.exe</example>
+</flag>
+
+<flag name='pgcpp_w' class='compiler' regexp="pgcpp\.exe\b">
+<![CDATA[
+ <p>The PGI C++ compiler for Windows.</p>
+ ]]>
+<example>pgcpp.exe</example>
+</flag>
+  
+<flag name='pgf95_w' class='compiler' regexp="pgf95\.exe\b" >
+<![CDATA[
+ <p>The PGI Fortran 95 compiler for Windows.</p>
+ ]]>
+<example>pgf95.exe</example>
+</flag>
+  
+<flag name='pgfortran_w' class='compiler' regexp="pgfortran\.exe\b" >
+<![CDATA[
+ <p>The PGI Fortran compiler for Windows.</p>
+ ]]>
+<example>pgfortran.exe</example>
+</flag>
+
+<flag name='pgcc_l' class='compiler' regexp="pgcc\b" >
+<![CDATA[
+ <p>The PGI C compiler for Linux.</p>
+ ]]>
+<example>pgcc</example>
+</flag>
+
+<flag name='pgcpp_l' class='compiler' regexp="pgcpp\b">
+<![CDATA[
+ <p>The PGI C++ compiler for Linux.</p>
+ ]]>
+<example>pgcpp</example>
+</flag>
+  
+<flag name='pgf95_l' class='compiler' regexp="pgf95\b" >
+<![CDATA[
+ <p>The PGI Fortran 95 compiler for Linux.</p>
+ ]]>
+<example>pgf95</example>
+</flag>
+
+<flag name='pgfortran_l' class='compiler' regexp="pgfortran\b" >
+<![CDATA[
+ <p>The PGI Fortran compiler for Linux.</p>
+ ]]>
+<example>pgfortran</example>
+</flag>
+
+<!-- Portability, Other Flags. -->
+
+<flag name="w" class="other"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" regexp="-w\b">
+<![CDATA[
+ <p>Disable warning messages.</p>
+]]>
+<example>-w</example>
+</flag>
+
+<flag name="Mnomain" class="portability"
+ compilers="pgf95_l, pgfortran_l, pgf95_w, pgfortran_w" 
+ regexp="-Mnomain\b">
+<![CDATA[
+ <p>Don't include Fortran main program object module.</p>
+]]>
+<example>-Mnomain</example>
+</flag>
+
+<flag name="c9x" class="optimization"
+compilers="pgcc_l, pgcc_w" regexp="-c9x\b">
+<![CDATA[
+ <p>Use C99 language features.</p>
+]]>
+<example>-c9x</example></flag>
+
+<!-- Optimization Flags -->
+
+
+<flag name="fast" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-fasts?s?e?\b">
+<![CDATA[
+ <p>Chooses generally optimal flags for the target platform.  As of the PGI 7.0 release, the flags "-fast" 
+and "-fastsse" are equivlent for 64-bit compilations.  For 32-bit compilations "-fast" does not include 
+"-Mscalarsse", "-Mcache_align", or "-Mvect=sse".</p>
+ ]]>
+<example>-fast</example>
+<include flag="O2" />
+<include flag="Munroll_c_n" flagtext="-Munroll=c:1" />
+<include flag="Mautoinline" />
+<include flag="Msmart" />
+<include flag="Mlre" />
+<include flag="Mnoframe" />
+<include flag="Mvect_sse" />
+<include flag="Mcache_align" />
+<include flag="Mflushz" />
+<include flag="Mdaz" />
+<include flag="Mscalarsse" />
+</flag>
+
+<flag name="no-exceptions" 
+ class="optimization" 
+ compilers="pgcpp_l, pgcpp_w" 
+ regexp="--no_exceptions\b">
+<![CDATA[
+ <p>Disable C++ exception handling support.</p>
+ ]]>
+<example>--no_exceptions</example>
+</flag>
+
+<flag name="no-rtti" 
+ class="optimization" 
+ compilers="pgcpp_l, pgcpp_w" 
+ regexp="--no_rtti\b">
+<![CDATA[
+ <p>Disable C++ run time type information support.</p>
+ ]]>
+<example>--no_rtti</example>
+</flag>
+
+<flag name="zc_eh" class="optimization"
+ compilers="pgcpp_l, pgcpp_w"
+ regexp="--zc_eh\b">
+<![CDATA[
+<p>Generate zero-overhead C++ exception handlers.</p>
+]]>
+</flag>
+
+<flag name="Mautoinline" 
+ class="optimization" 
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+ regexp="-Mautoinline\b">
+<![CDATA[
+<p>Inline functions declared with the inline keyword.</p>
+]]>
+<example>-Mautoinline</example>
+</flag>
+
+<flag name="Mnoautoinline" 
+ class="optimization" 
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+ regexp="-Mnoautoinline\b">
+<![CDATA[
+<p>Disable inlining of functions declared with the inline keyword. &lt;Default&gt;</p>
+]]>
+<example>-Mnoautoinline</example>
+</flag>
+
+
+<flag name="Mcache_align" 
+ class="optimization" 
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+ regexp="-Mcache_align\b">
+<![CDATA[
+ <p>Align "unconstrained" data objects of size greater than or equal to 16
+bytes on cache-line boundaries.  An "unconstrained" object is a variable or
+array that is not a member of an aggregate structure or common block, is not
+allocatable, and is not an automatic array.  On by default on 64-bit Linux systems.</p>
+ ]]> 
+<example>-Mcache_align</example>
+</flag>
+
+<flag name="Mdalign" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-Mdalign\b">
+<![CDATA[
+ <p>Align doubles on double alignment boundaries</p>
+]]>
+<example>-Mdalign</example>
+</flag>
+
+<flag name="Mnodalign" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-Mnodalign\b">
+<![CDATA[
+ <p>Do not align doubles on double alignment boundaries. &lt;Default&gt;</p>
+]]>
+<example>-Mnodalign</example>
+</flag>
+
+<flag name="Mnoflushz" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-Mnoflushz\b">
+<![CDATA[
+ <p>Disable SSE to flush-to-zero mode;</p>
+]]>
+<example>-Mnoflushz</example>
+</flag>
+
+<flag name="Mflushz" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-Mflushz\b">
+<![CDATA[
+ <p>Set SSE to flush-to-zero mode; if a floating-point underflow occurs, the value is set to zero.</p>
+]]>
+<example>-Mflushz</example>
+</flag>
+
+<flag name="Mdaz" 
+  class="optimization" 
+  compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+  regexp="-Mdaz\b">
+<![CDATA[
+ <p>Treat denormalized numbers as zero.  Included with "-fast" on Intel based systems.  For AMD based systems, "-Mdaz" is 
+not included by default with "-fast".</p>
+]]>
+<example>-Mdaz</example>
+</flag>
+
+<flag name="Mframe" class="optimization" 
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+ regexp="-Mframe\b">
+<![CDATA[
+ <p>Generate code to set up a stack frame. &lt;Default&gt;</p>
+]]>
+<example>-Mframe</example>
+</flag>
+
+<flag name="Mnoframe" class="optimization" 
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+ regexp="-Mnoframe\b">
+<![CDATA[
+ <p>Eliminates operations that set up a true stack frame pointer for every function.  With this option enabled, you
+cannot perform a traceback on the generated code and you cannot access local variables.</p>
+]]>
+<example>-Mnoframe</example>
+</flag>
+
+<flag name="Mfprelaxed_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mfprelaxed=([^,\s]+),(\S+)\b" >
+<include text="-Mfprelaxed=$1" />
+<include text="-Mfprelaxed=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mfprelaxed_rsqrt" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfprelaxed=rsqrt\b">
+<![CDATA[
+ <p>Instructs the compiler to use relaxed precision in the calculation of floating-point reciprocal square root (1/sqrt). Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfprelaxed=rsqrt</example>
+</flag>
+
+<flag name="Mfprelaxed_sqrt" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfprelaxed=sqrt\b">
+<![CDATA[
+ <p>Instructs the compiler to use relaxed precision in the calculation of floating-point square root. Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfprelaxed=sqrt</example>
+</flag>
+
+<flag name="Mfprelaxed_div" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfprelaxed=div\b">
+<![CDATA[
+ <p>Instructs the compiler to use relaxed precision in the calculation of floating-point division. Can result in improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfprelaxed=div</example>
+</flag>
+
+<flag name="Mfprelaxed_order" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfprelaxed=order\b">
+<![CDATA[
+ <p>Instructs the compiler to allow floating-point expression reordering, including factoring. Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfprelaxed=order</example>
+</flag>
+
+<flag name="Mfprelaxed" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfprelaxed\b">
+<![CDATA[
+ <p>Instructs the compiler to use relaxed precision in the calculation of some intrinsic functions.  Can result in 
+improved performance at the expense of numerical accuracy.  The default on an AMD system is "-Mfprelaxed=sqrt,rsqrt,order".  The
+default on an Intel system is "-Mfprelaxed=rsqrt,sqrt,div,order"</p>
+ ]]>
+<example>-Mfprelaxed</example>
+<include flag="Mfprelaxed_rsqrt" />
+<include flag="Mfprelaxed_sqrt" />
+<include flag="Mfprelaxed_div" />
+<include flag="Mfprelaxed_order" />
+</flag>
+
+
+<flag name="Mfpapprox_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mfpapprox=([^,\s]+),(\S+)\b" >
+<include text="-Mfpapprox=$1" />
+<include text="-Mfpapprox=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mfpapprox_rsqrt" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfpapprox=rsqrt\b">
+<![CDATA[
+ <p>Instructs the compiler to use low-precision approximation in the calculation of reciprocal square root (1/sqrt). Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfpapprox=rsqrt</example>
+</flag>
+
+<flag name="Mfpapprox_sqrt" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfpapprox=sqrt\b">
+<![CDATA[
+ <p>Instructs the compiler to use low-precision approximation in the calculation of square root. Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfpapprox=sqrt</example>
+</flag>
+
+<flag name="Mfpapprox_div" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfpapprox=div\b">
+<![CDATA[
+ <p>Instructs the compiler to use low-precision approximation in the calculation of divides.  Can result in 
+improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfpapprox=div</example>
+</flag>
+
+<flag name="Mfpapprox" class="optimization" 
+      compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w" 
+      regexp="-Mfpapprox\b">
+<![CDATA[
+ <p>Instructs the compiler to perform low-precision approximation in the calculation of floating-point division, square-root, and reciprocal square root.  
+Can result in improved performance at the expense of numerical accuracy.</p>
+ ]]>
+<example>-Mfpapprox</example>
+<include flag="Mfpapprox_rsqrt" />
+<include flag="Mfpapprox_sqrt" />
+<include flag="Mfpapprox_div" />
+</flag>
+
+
+<flag name="Mpre_all" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpre=all\b" >
+<![CDATA[
+Enable aggressive partial redundancy elimination.
+ ]]>
+<example>-Mpre</example>
+</flag>
+
+<flag name="Mpre" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpre\b" >
+<![CDATA[
+Enable partial redundancy elimination.
+ ]]>
+<example>-Mpre</example>
+</flag>
+
+<flag name="Mprefetch_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=([^,\s]+),(\S+)\b" >
+<include text="-Mprefetch=$1" />
+<include text="-Mprefetch=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mprefetch_d_m" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=d[istance]*:(\d+)\b">
+<![CDATA[
+ <p>Set the fetch-ahead distance for prefetch instructions to <b>$1</b> cache lines</p>
+]]>
+<example>-Mprefetch=d:m</example>
+<ex_replacement>N</ex_replacement>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch_n_p" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=n:(\d+)\b">
+<![CDATA[
+ <p>Set maximum number of prefetch instructions to generate for a given loop to <b>$1</b>.</p>
+]]>
+<example>-Mprefetch=n:p</example>
+<ex_replacement>N</ex_replacement>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch_nta" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=nta\b">
+<![CDATA[
+ <p>Use the <i>prefetchnta</i> instruction.</p>
+]]>
+<example>-Mprefetch_nta</example>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch_plain" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=plain\b">
+<![CDATA[
+ <p>Use the <i>prefetch</i> instruction.</p>
+]]>
+<example>-Mprefetch=plain</example>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch_t0" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=t0\b" >
+<![CDATA[
+ <p>Use the <i>prefetcht0</i> instruction.</p>
+]]>
+<example>-Mprefetch=t0</example>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch_w" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch=w\b" >
+<![CDATA[
+ <p>Use the AMD-specific <i>prefetchw</i> instruction.</p>
+]]>
+<example>-Mprefetch=w</example>
+<include flag="Mprefetch" />
+</flag>
+
+<flag name="Mprefetch" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mprefetch\b">
+<![CDATA[
+ <p>Enable generation of prefetch instructions on processors where they are supported.</p>
+]]>
+<example>-Mprefetch</example>
+</flag>
+
+<flag name="Mnoprefetch" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnoprefetch\b" >
+<![CDATA[
+ <p>Disable generation of prefetch instructions. &lt;Default&gt;</p>
+]]>
+<example>-Mnoprefetch</example>
+</flag>
+
+<flag name="Mscalarsse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mscalarsse\b">
+<![CDATA[
+ <p>Use SSE/SSE2 instructions to perform scalar floating-point arithmetic on targets where these
+ instructions are supported. This option is default on SSE2 enabled target architectures.</p>
+]]>
+<example>-Mscalarsse</example>
+</flag>
+
+<flag name="Mnoscalarsse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnoscalarsse\b">
+<![CDATA[
+ <p>Do not use SSE/SSE2 instructions to perform scalar floating-point arithmetic; use x87 operations instead.</p>
+]]>
+<example>-Mnoscalarsse</example>
+</flag>
+
+<flag name="Msignextend" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msignextend\b">
+<![CDATA[
+ <p>Instructs the compiler to extend the sign bit that is set as a result of an object's conversion from one
+ data type to an object of a larger signed data type.</p>
+]]>
+<example>-Msignextend</example>
+</flag>
+
+<flag name="Mloop32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mloop32\b">
+<![CDATA[
+ <p>Aligns or does not align innermost loops on 32 byte boundaries with -tp barcelona.
+Small loops on barcelona systems may run fast if aligned on 32-byte boundaries; however, in practice, most
+assemblers do not yet implement efficient padding causing some programs to run more slowly with this as
+default. Use -Mloop32 on systems with an assembler tuned for barcleona. The default is -Mnoloop32.
+</p>
+]]>
+<example>-Mloop32</example>
+</flag>
+
+<flag name="Mlre_array" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlre=array\b">
+<![CDATA[
+ <p>Treat individual array element references as candidates for possible loop-carried redundancy elimination.
+ The default is to eliminate only redundant expressions involving two or more operands.</p>
+]]>
+<example>-Mlre_array</example>
+<include flag="Mlre" />
+</flag>
+
+<flag name="Mlre_assoc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlre=assoc\b">
+<![CDATA[
+ <p>Allow expression re-association; specifying this sub-option can increase opportunities for loop-carried 
+ redundancy elimination.</p>
+]]>
+<example>-Mlre=assoc</example>
+<include flag="Mlre" />
+</flag>
+
+<flag name="Mlre_noassoc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlre=noassoc\b">
+<![CDATA[
+ <p>Disable expression re-association.</p>
+]]>
+<example>-Mlre=noassoc</example>
+<include flag="Mlre" />
+</flag>
+
+<flag name="Mlre" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlre\b">
+<![CDATA[
+ <p>Enables loop-carried redundancy elimination, an optimization that can reduce the number of arithmetic operations
+ and memory references in loops.</p>
+]]>
+<example>-Mlre</example>
+</flag>
+
+<flag name="Mnolre" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnolre\b">
+<![CDATA[
+ <p>Disable loop-carried redundancy elimination. &lt;Default&gt;</p>
+]]>
+<example>-Mnolre</example>
+</flag>
+
+<flag name="Mnovintr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnovintr\b">
+<![CDATA[
+ <p>Instructs the compiler not to perform idiom recognition or introduce calls to hand-optimized vector functions.</p>
+]]>
+<example>-Mnovintr</example>
+</flag>
+
+<flag name="Mpfi_indirect" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpfi=indirect\b">
+<![CDATA[
+ <p>Generate profile-feedback instrumentation (PFI); this includes extra code to collect run-time statistics and dump 
+ them to a trace file for use in a subsequent compilation.  PFI gathers information about a program's execution and data values 
+but does not gather information from hardware performance counters.  PFI does gather data for optimizations which are unique to profile-feedback optimization.</p>
+<p>The indirect sub-option enables collection of indirect function call targets, which can be used for indirect function call inlining.</p> 
+]]>
+<example>-Mpfi=indirect</example>
+</flag>
+
+<flag name="Mpfo_indirect" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpfo=indirect\b">
+<![CDATA[
+ <p>Enable profile-feedback optimizations including indirect function call inlining.  This option requires a pgfi.out file generated from a binary built with -Mpfi=indirect.</p>
+]]>
+<example>-Mpfo=indirect</example>
+</flag>
+
+<flag name="Mpfi" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpfi\b">
+<![CDATA[
+ <p>Generate profile-feedback instrumentation (PFI); this includes extra code to collect run-time statistics and dump 
+ them to a trace file for use in a subsequent compilation.  PFI gathers information about a program's execution and data values 
+but does not gather information from hardware performance counters.  PFI does gather data for optimizations which are unique to profile-feedback optimization.</p>
+]]>
+<example>-Mpfi</example>
+</flag>
+
+<flag name="Mpfo" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mpfo\b">
+<![CDATA[
+ <p>Enable profile-feedback optimizations.  </p>
+]]>
+<example>-Mpfo</example>
+</flag>
+
+
+<flag name="Mipa_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=([^,\s]+),(\S+)\b">
+<include text="-Mipa=$1" />
+<include text="-Mipa=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mipa_align" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=align\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Recognize when targets of pointer dummy are aligned.</p>
+]]>
+<example>-Mipa=align</example>
+</flag>
+
+<flag name="Mipa_noalign" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noalign\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable recognizition when targets of pointer dummy are aligned.</p>
+]]>
+<example>-Mipa=noalign</example>
+</flag>
+
+<flag name="Mipa_arg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=arg\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Remove arguments replaced by -Mipa=ptr,const</p>
+]]>
+<include flag="Mipa_ptr" />
+<include flag="Mipa_const" />
+<example>-Mipa=arg</example>
+</flag>
+
+<flag name="Mipa_noarg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noarg\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not remove arguments replaced by -Mipa=ptr,const</p>
+]]>
+<include flag="Mipa_ptr" />
+<include flag="Mipa_const" />
+<example>-Mipa=noarg</example>
+</flag>
+
+<flag name="Mipa_cg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=cg\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Generate call graph information for pgicg tool.</p>
+]]>
+<example>-Mipa=cg</example>
+</flag>
+
+<flag name="Mipa_nocg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nocg\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not generate call graph information for pgicg
+ tool.</p>
+]]>
+<example>-Mipa=nocg</example>
+</flag>
+
+<flag name="Mipa_const" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=const\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Enable interprocedural constant propagation.</p>
+]]>
+<example>-Mipa=const</example>
+</flag>
+
+<flag name="Mipa_noconst" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noconst\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable interprocedural constant propagation.</p>
+]]>
+<example>-Mipa=noconst</example>
+</flag>
+
+<flag name="Mipa_except" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=except:([\-\w,]+)\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Used with -Mipa=inline to specify functions which should not be inlined.</p>
+]]>
+<include flag="Mipa_inline" />
+<example>-Mipa=except:func</example>
+</flag>
+
+<flag name="Mipa_fast" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=fast\b">
+<![CDATA[
+ <p>Instructs the compiler to perform interprocedural analysis.  Equivalant to -Mipa=align,arg,const,f90ptr,shape,globals,libc,localarg,ptr,pure.</p>
+]]>
+<example>-Mipa=fast</example>
+<include flag="Mipa_align" />
+<include flag="Mipa_arg" />
+<include flag="Mipa_const" />
+<include flag="Mipa_f90ptr" />
+<include flag="Mipa_shape" />
+<include flag="Mipa_globals" />
+<include flag="Mipa_libc" />
+<include flag="Mipa_localarg" />
+<include flag="Mipa_ptr" />
+<include flag="Mipa_pure" />
+</flag>
+
+<flag name="Mipa_force" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=force\b" >
+<![CDATA[
+ <p>Interprocedural Analysis option: Force all objects to recompile regardless
+ whether IPA information has changed.</p>
+]]>
+<example>-Mipa=force</example>
+</flag>
+
+<flag name="Mipa_globals" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=globals\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Optimize references to global values.</p>
+]]>
+<example>-Mipa=globals</example>
+</flag>
+
+<flag name="Mipa_noglobals" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noglobals\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not optimize references to global values.</p>
+]]>
+<example>-Mipa=noglobals</example>
+</flag>
+
+<flag name="Mipa_inline:n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=inline:(\d+)\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Automatically determine which functions
+ to inline, limit to <b>$1</b> levels where <b>$1</b> is a supplied constant value.  If no value is suppiled, then the default value of 2 is used.  IPA-based function inlining is performed from leaf routines upward.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Mipa=inline:4</example>
+</flag>
+
+<flag name="Mipa_inline" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=inline\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Automatically determine which functions to inline, limit to 2 levels (default).  
+ IPA-based function inlining is performed from leaf routines upward.</p>
+]]>
+<example>-Mipa=inline</example>
+</flag>
+
+<flag name="Mipa_inlineonpfo:n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=inlinenopfo:(\d+)\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Automatically determine which functions
+ to inline, independent of information gathered from profile guided feedback (-Mpfi), limit to <b>$1</b> levels where <b>$1</b> is a supplied constant value.  If no value is suppiled, then the default value of 2 is used.  IPA-based function inlining is performed from leaf routines upward.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Mipa=inlinenopfo:4</example>
+</flag>
+
+<flag name="Mipa_inlinenopfo" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=inlinenopfo\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Automatically determine which functions to inline, independent of information gathered from profile guided feedback (-Mpfi), limit to 2 levels (default).  
+ IPA-based function inlining is performed from leaf routines upward.</p>
+]]>
+<example>-Mipa=inlinenopfo</example>
+</flag>
+
+<flag name="Mipa_staticfunc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=staticfunc\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Inline static functions which are outside the scope of the current file.</p>
+]]>
+<example>-Mipa=staticfunc</example>
+</flag>
+
+<flag name="Mipa_libinline" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=libinline\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Allow inlining of routines from libraries.</p>
+]]>
+<include flag="Mipa_inline" />
+<example>-Mipa=libinline</example>
+</flag>
+
+<flag name="Mipa_nolibinline" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nolibinline\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not inline routines from libraries.</p>
+]]>
+<include flag="Mipa_inline" />
+<example>-Mipa=nolibinline</example>
+</flag>
+
+<flag name="Mipa_jobs" class="other"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=jobs:\d+\b">
+<![CDATA[
+ <p>Interprocedural Analysis option:  Specifies the number of concurent IPA second pass compliation proccess that may be performed.  This option speeds-up the compilation time on multi-core systems but does not perform any optimizations.</p>
+]]>
+<example>-Mipa=libc</example>
+</flag>
+
+<flag name="Mipa_libc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=libc\b">
+<![CDATA[
+ <p>Interprocedural Analysis option:  Used to optimize calls to certain functions from the system's standard C library, libc.</p>
+]]>
+<example>-Mipa=libc</example>
+</flag>
+
+<flag name="Mipa_libopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=libopt\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Allow recompiling and optimization of routines from libraries using IPA information.</p>
+]]>
+<example>-Mipa=libopt</example>
+</flag>
+
+<flag name="Mipa_nolibopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nolibopt\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Don't optimize routines in libraries.</p>
+]]>
+<example>-Mipa=nolibopt</example>
+</flag>
+
+<flag name="Mipa_localarg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=localarg\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: -Mipa=arg plus externalizes local pointer targets.</p>
+]]>
+<include flag="Mipa_arg" />
+<example>-Mipa=localarg</example>
+</flag>
+
+<flag name="Mipa_local" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=local\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: -Mipa=arg plus externalizes local pointer targets.</p>
+]]>
+<include flag="Mipa_arg" />
+<example>-Mipa=localarg</example>
+</flag>
+
+<flag name="Mipa_nolocalarg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nolocal[arg]*\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not externalize local pointer targets.</p>
+]]>
+<example>-Mipa=nolocalarg</example>
+</flag>
+
+<flag name="Mipa_ptr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=ptr\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Enable pointer disambiguation across procedure calls.</p>
+]]>
+<example>-Mipa=ptr</example>
+</flag>
+
+<flag name="Mipa_noptr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noptr\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable pointer disambiguation.</p>
+]]>
+<example>-Mipa=noptr</example>
+</flag>
+
+<flag name="Mipa_f90ptr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=f90ptr\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Fortran 90/95 Pointer disambiguation across calls.</p>
+]]>
+<example>-Mipa=f90ptr</example>
+</flag>
+
+<flag name="Mipa_nof90ptr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nof90ptr\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable Fortran 90/95 pointer disambiguation</p>
+]]>
+<example>-Mipa=nof90ptr</example>
+</flag>
+
+<flag name="Mipa_pure" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=pure\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Pure function detection.</p>
+]]>
+<example>-Mipa=pure</example>
+</flag>
+
+<flag name="Mipa_nopure" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=nopure\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable pure function detection.</p>
+]]>
+<example>-Mipa=nopure</example>
+</flag>
+
+<flag name="Mipa_reshape" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=reshape\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Allows inlining in Fortran even when array shapes do not match.</p>
+]]>
+<example>-Mipa=reshape</example>
+</flag>
+
+<flag name="Mipa_shape" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=shape\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Perform Fortran 90 array shape propagation.</p>
+]]>
+<example>-Mipa=shape</example>
+</flag>
+
+<flag name="Mipa_noshape" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=noshape\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Disable Fortran 90 array shape propagation.</p>
+]]>
+<example>-Mipa=noshape</example>
+</flag>
+
+<flag name="Mipa_vestigial" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=vestigial\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Remove functions that are never called.</p>
+]]>
+<example>-Mipa=vestigial</example>
+</flag>
+
+<flag name="Mipa_novestigial" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa=novestigial\b">
+<![CDATA[
+ <p>Interprocedural Analysis option: Do not remove functions that are never called.</p>
+]]>
+<example>-Mipa=novestigial</example>
+</flag>
+
+<flag name="Mipa" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mipa\b">
+<![CDATA[
+ <p>Enable Interprocedural Analysis.</p>
+]]>
+<include flag="Mipa_const" />
+<example>-Mipa</example>
+</flag>
+
+<flag name="Mconcur_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=([^,\s]+),(\S+)\b">
+<include text="-Mconcur=$1" />
+<include text="-Mconcur=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mconcur_allcores" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=allcores\b">
+<![CDATA[
+<p>Instructs the PGI runtime libraries to create a number of threads  
+equal to the number of cores on the system during parallel execution.
+Note that the settings of the environment variables OMP_NUM_THREADS or NCPUS will take precedence.
+</p>
+]]>
+<example>-Mconcur=allcores</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_bind" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=bind\b">
+<![CDATA[
+<p>Instructs the PGI runtime libraries to automatically bind threads to the executing system's cores.</p>
+]]>
+<example>-Mconcur=bind</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_altcode" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=altcode\b">
+<![CDATA[
+ <p>Instructs the parallelizer to generate alternate serial code for parallelized loops.  Without arguments, 
+ the parallelizer determines an appropriate cutoff length and generates serial code to be executed whenever
+ the loop count is less than or equal to that length.</p>
+]]>
+<example>-Mconcur=altcode</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_altcoden" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=altcode:(\d+)\b">
+<![CDATA[
+ <p>Instructs the parallelizer to generate alternate serial code for parallelized loops.  With arguments, the serial altcode
+ is executed whenever the loop count is less than or equal to <b>$1</b>.</p>
+]]>
+<example>-Mconcur=altcode:n</example>
+<ex_replacement>N</ex_replacement>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_noaltcode" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=noaltcode\b">
+<![CDATA[
+ <p>Always execute the parallelized version of a loop regardless of the loop count.</p>
+]]>
+<example>-Mconcur=noaltcode</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_noassoc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=noassoc\b" >
+<![CDATA[
+ <p>Disables parallelization of loops with reductions.</p>
+]]>
+<example>-Mconcur=noassoc</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_cncall" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=cncall\b">
+<![CDATA[
+ <p>Assume loops containing calls are safe to parallelize and allows loops containing calls to be
+ candidates for parallelization.  Also, no minimum loop count threshold must be satisfied before 
+ parallelization will occur, and last values of scalars are assumed to be safe.</p>
+]]>
+<example>-Mconcur=cncall</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_nocncall" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=nocncall\b">
+<![CDATA[
+ <p>Do not assume loops containing calls are safe to parallelize.</p>
+]]>
+<example>-Mconcur=nocncall</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_dist_block" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=dist:block\b">
+<![CDATA[
+ <p>Parallelize with block distribution.  Contiguous blocks of iterations of a parallelizable loop
+ are assigned to the available processors.</p>
+]]>
+<example>-Mconcur=dist:bloc</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_dist_cyclic" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=dist:cyclic\b">
+<![CDATA[
+ <p>Parallelize with cyclic distribution.  The outermost parallelizable loop in any loop nest is 
+ parallelized.  If a parallelized loop is innermost, its iterations are allocated to processors cyclically.
+ For example, if there are 3 processors executing a loop, processor 0 performs iterations 0, 3, 6, etc.; processor 1
+ performs iterations 1, 4, 7, etc.; and processor 2 performs iterations 2, 5, 8, etc.</p>
+]]>
+<example>-Mconcur=dist:cyclic</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_innermost" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=innermost\b">
+<![CDATA[
+ <p>Enable parallelization of innermost loops.</p>
+]]>
+<example>-Mconcur=innermost</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_noinnermost" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=noinnermost\b">
+<![CDATA[
+ <p>Disable parallelization of innermost loops.</p>
+]]>
+<example>-Mconcur=noinnermost</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur_levels" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur=levels:\d+\b">
+<![CDATA[
+ <p>Parallelize loops nested at most $1 levels deep</p>
+]]>
+<example>-Mconcur=innermost:5</example>
+<include flag="Mconcur" />
+</flag>
+
+<flag name="Mconcur" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ parallel="yes" 
+ regexp="-Mconcur\b">
+<![CDATA[
+ <p>Instructs the compiler to enable auto-concurrentization of loops.  If <i>-Mconcur</i> is specified, multiple processors
+ will be used to execute loops that the compiler determines to be parallelizable.</p>
+]]>
+<example>-Mconcur</example>
+</flag>
+
+<flag name="Minline_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=([^,\s]+),(\S+)\b">
+<include text="-Minline=$1" />
+<include text="-Minline=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Minline_lib" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=lib:([\.\-\w]+)\b">
+<![CDATA[
+ <p>Instructs the inliner to inline the functions within the library <b>filename.ext</b>.</p>
+]]>
+<example>-Minline=lib:filename.ext</example>
+</flag>
+
+<flag name="Minline_except" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=except:([\-\w,]+)\b" >
+<![CDATA[
+ <p>Instructs the inliner to inline all eligible functions except <b>$1</b>, a function in the source text.
+ Multiple functions can be listed, comma-separated.</p>
+]]>
+<example>-Minline=except:func</example>
+<ex_replacement>foo</ex_replacement>
+</flag>
+
+<flag name="Minline_name" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=name:([\-\w,]+)\b" >
+<![CDATA[
+ <p>Instructs the inliner to inline function <b>func</b>.</p>
+]]>
+<example>-Minline=name:func</example>
+</flag>
+
+<flag name="Minline_reshape" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=reshape\b">
+<![CDATA[
+ <p>Allows inlining in Fortran even when array shapes do not match.</p>
+]]>
+<example>-Minline=reshape</example>
+</flag>
+
+<flag name="Minline_size" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=size:(\d+)\b">
+<![CDATA[
+ <p>Instructs the inliner to inline functions with <b>$1</b> or fewer statements where <b>$1</b> is a supplied constant value.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Minline=size:n</example>
+</flag>
+
+<flag name="Minline_levels" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline=levels:(\d+)\b">
+<![CDATA[
+ <p>Instructs the inliner to perform <b>$1</b> levels of inlining where <b>$1</b> is a supplied constant value.  If no value is suppiled, then the default value of 2 is used.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Minline=levels:4</example>
+</flag>
+
+<flag name="Minline" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Minline\b">
+<![CDATA[
+ <p>Instructs the inliner to perform 1 level of inlining.</p>
+]]>
+<example>-Minline</example>
+</flag>
+
+<flag name="Mnopropcond" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnopropcond\b">
+<![CDATA[
+ <p>Disable constant propagation from assertions derived from equality conditionals.</p>
+]]>
+<example>-Mnopropcond</example>
+</flag>
+
+<flag name="Msmartalloc_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msmartalloc=([^,\s]+),(\S+)\b">
+<include text="-Msmartalloc=$1" />
+<include text="-Msmartalloc=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Msmartalloc_huge_n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msmartalloc\=huge\:(\d+)\b">
+<![CDATA[
+ <p>Link with the huge page runtime library and allocate a maximum of <b>$1</b> huge pages where <b>$1</b> is a supplied constant value.
+ If no constant value is supplied, then the maximum number of huge pages the application can use is limited by the number of huge pages the operating system has available or the value of the environment variable PGI_HUGE_PAGES.  Note that setting PGI_HUGE_PAGES will override the value of <b>$1</b>.
+</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Msmartalloc=huge:150</example>
+</flag>
+
+<flag name="Msmartalloc_huge" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msmartalloc\=huge\b">
+<![CDATA[
+ <p>Link with the huge page runtime library.  The maximum number of huge pages the application can use is limited by the number of huge pages the operating system has available or the value of the environment variable PGI_HUGE_PAGES.</p>
+]]>
+<example>-Msmartalloc=huge</example>
+</flag>
+
+<flag name="Msmartalloc_hugebss" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-Msmartalloc\=hugebss\b">
+<![CDATA[
+ <p>Link with the huge page runtime library.  Use huge pages for an executable's .BSS section.</p>
+]]>
+<example>-Msmartalloc=hugebss</example>
+</flag>
+
+<flag name="Msmartalloc_lin" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-Msmartalloc\b">
+<![CDATA[
+ <p>Adds a call to the routine "mallopt" in the main routine.  This option can have a dramatic impact on the performance of programs that dynamically allocate memory, especially for those which have a few large mallocs.  To be effective, this switch must be specified when compiling the file containing the Fortran, C, or C++ main routine.</p>
+]]>
+<example>-Msmartalloc</example>
+</flag>
+
+<flag name="Msmartalloc_win" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msmartalloc\b">
+<![CDATA[
+ <p>Link with PGI's Alloc library which replaces the system's Malloc, Calloc, Realloc, and Free functions with PGI versions.  Programs using -Msmartalloc must be compiled and linked with "-Bdynamic".</p>
+]]>
+<example>-Msmartalloc</example>
+<include flag="Bdynamic_win" />
+<include flag="force_multiple" />
+</flag>
+
+<flag name="Mlargeaddressaware_no" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlargeaddressaware\=no\b">
+<![CDATA[
+ <p>Disable support for large (> 2GB) addresses on 64-bit Windows.</p>
+]]>
+<example>-Mlargeaddressaware=no</example>
+</flag>
+
+<flag name="Msafeptr_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msafeptr=([^,\s]+),(\S+)\b">
+<include text="-Msafeptr=$1" />
+<include text="-Msafeptr=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Msafeptr_all" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=all\b">
+<![CDATA[
+ <p>Assume all pointers and arrays are independent and safe for aggressive optimizations,
+ and in particular that no pointers or arrays overlap of conflict with each other.</p>
+]]>
+<example>-Msafeptr=all</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr_arg" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=arg\b">
+<![CDATA[
+ <p>Instructs the compiler that arrays and pointers are treated with the same copyin and copyout
+ semantics as Fortran dummy arguments.</p>
+]]>
+<example>-Msafeptr=arg</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr_auto" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=auto\b">
+<![CDATA[
+ <p>Instructs the compiler that local pointers and arrays do not overlap or
+ conflict with each other and are independent.</p>
+]]>
+<example>-Msafeptr=auto</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr_local" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=local\b">
+<![CDATA[
+ <p>Instructs the compiler that local pointers and arrays do not overlap or
+ conflict with each other and are independent.</p>
+]]>
+<example>-Msafeptr=local</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr_static" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=static\b">
+<![CDATA[
+ <p>Instructs the compiler that static pointers and arrays do not overlap or conflict
+ with each other and are independent.</p>
+]]>
+<example>-Msafeptr=static</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr_global" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr=global\b">
+<![CDATA[
+ <p>Instructs the compiler that global or external pointers and arrays do not overlap or 
+ conflict with each other and are independent.</p>
+]]>
+<example>-Msafeptr=global</example>
+<include flag="Msafeptr" />
+</flag>
+
+<flag name="Msafeptr" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="-Msafeptr\b">
+<![CDATA[
+ <p>Instructs the C/C++ compiler to override data dependencies between pointers of a given storage class.</p>
+]]>
+<example>-Msafeptr</example>
+</flag>
+
+<flag name="Munroll_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll=([^,\s]+),(\S+)\b">
+<include text="-Munroll=$1" />
+<include text="-Munroll=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Munroll_c_n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll=c:(\d+)\b">
+<![CDATA[
+ <p>Instructs the compiler to completely unroll loops with a constant loop count of less than
+ or equal to <b>$1</b> where <b>$1</b> is a supplied constant value.  If no constant value is given, then a default of 4 is used.  A value of 1 inhibits the complete unrolling of loops with constant loop counts.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Munroll=c:1</example>
+<include flag="Munroll" />
+</flag>
+
+<flag name="Munroll_n_n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll=n:(\d+)\b">
+<![CDATA[
+ <p>"-Munroll=n:n" instructs the compiler to unroll loops <b>$1</b> times where <b>$1</b> is a supplied constant value.  
+If no constant value is given, then a default of 4 is used.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Munroll=n:n</example>
+<include flag="Munroll" />
+</flag>
+
+<flag name="Munroll_m_n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll=m:(\d+)\b">
+<![CDATA[
+ <p>"-Munroll=m:n" instructs the compiler to unroll loops with multiple blocks <b>$1</b> times where <b>$1</b> is a supplied constant value.  
+If no constant value is given, then a default of 4 is used.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Munroll=m:n</example>
+<include flag="Munroll" />
+</flag>
+
+<flag name="Munroll_m" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll=m\b">
+<![CDATA[
+ <p>Instructs the compiler to unroll loops with multiple blocks using the default value of 4 times</p>
+]]>
+<example>-Munroll=m</example>
+<include flag="Munroll" />
+</flag>
+
+<flag name="Munroll" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Munroll\b">
+<![CDATA[
+ <p>Invokes the loop unroller.</p>
+]]>
+<example>-Munroll</example>
+</flag>
+
+<flag name="Mnounroll" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnounroll\b">
+<![CDATA[
+ <p>Disable loop unrolling. &lt;Default&gt;</p>
+]]>
+<example>-Mnounroll</example>
+</flag>
+
+<flag name="Mnodepchk" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="\-Mnodepchk\b">
+<![CDATA[
+ <p>Don't check dependence relations for vector or parallel code.</p>
+]]>
+</flag>
+
+<flag name="Msafe_lastval" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="\-Msafe_lastval\b">
+<![CDATA[
+ <p>Allow parallelization of loops with conditional scalar assignments.</p>
+]]>
+</flag>
+
+<flag name="Mstride0" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="\-Mstride0\b">
+<![CDATA[
+ <p>Generate code to check for zero loop increments.</p>
+]]>
+</flag>
+
+<flag name="Msmart" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Msmart\b">
+<![CDATA[
+ <p>Enable an optional post-pass instruction scheduling.</p>
+]]>
+<example>-Msmart</example>
+</flag>
+
+<flag name="Mnosmart" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnosmart\b">
+<![CDATA[
+ <p>Disable an optional post-pass instruction scheduling. &lt;Default&gt;</p>
+]]>
+<example>-Mnosmart</example>
+</flag>
+
+<flag name="Mvect_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=([^,\s]+),([\:\S]+)\b">
+<include text="-Mvect=$1" />
+<include text="-Mvect=$2" />
+<display enable="0" />
+CPU2006 flags file rule used to split an optimization flag containing sub-options into multiple flag descriptions.  
+Please refer to the flag file rule of the various sub-options for the actual flag description. 
+</flag>
+
+<flag name="Mnovect" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnovect\b">
+<![CDATA[
+ <p>Disable automatic vector pipelining. &lt;Default&gt;</p>
+]]>
+<example>-Mnovect</example>
+</flag>
+
+<flag name="Mvect_altcode" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=altcode\b">
+<![CDATA[
+ <p>Instructs the vectorizer to generate alternate code for vectorized loops when appropriate.  For each
+ vectorized loop the compiler decides whether to generate altcode and what type or types to generate, which may
+ be any or all of:</p>
+<ul>
+<li>Altcode without iteration peeling</li>
+<li>Altcode with non-temporal stores and other data cache optimizations</li>
+<li>Altcode base on array alignments calculated dynamically at runtime.</li>
+</ul>
+<p>The compiler also determines suitable loop count and array alignment conditions for executing the altcode.</p>
+]]>
+<example>-Mvect=altcode</example>
+</flag>
+
+<flag name="Mvect_noaltcode" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=noaltcode\b">
+<![CDATA[
+ <p>Disables alternate code generation for vectorized loops.</p>
+]]>
+<example>-Mvect=noaltcode</example>
+</flag>
+
+<flag name="Mvect_assoc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=altcode\b">
+<![CDATA[
+ <p>Instructs the vectorizer to enable certain associativity conversions that can change the results of a computations
+ due to roundoff error.  A typical optimization is to change an arithmetic operation to an arithmetic opteration that is 
+ mathmatically correct, but can be computationally different, due to round-off error.</p>
+]]>
+<example>-Mvect=assoc</example>
+</flag>
+
+<flag name="Mvect_noassoc" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=noassoc\b">
+<![CDATA[
+ <p>Instructs the vectorizer to disable associativity conversions.</p>
+]]>
+<example>-Mvect=noassoc</example>
+</flag>
+
+<flag name="Mvect_cachesize_n" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="\-Mvect=cachesize:(\d+)\b">
+<![CDATA[
+ <p>Instructs the vectorizer, when performing cache tiling optimizations, to assume a cache size of <b>$1</b>.
+ The default size is processor dependent.</p>
+]]>
+<ex_replacement>N</ex_replacement>
+<example>-Mvect=cachesize:n</example>
+</flag>
+
+<flag name="Mvect_fuse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=fuse\b">
+<![CDATA[
+ <p>Instructs the vectorizer to enable loop fusion.</p>
+]]>
+<example>-Mvect=fuse</example>
+<include flag="Mvect" />
+</flag>
+
+<flag name="Mvect_nogather" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=nogather\b">
+<![CDATA[
+ <p>Instructs the vectorizer to disable vectorization of indirect array references.</p>
+]]>
+<example>-Mvect=nogather</example>
+<include flag="Mvect" />
+</flag>
+
+<flag name="Mvect_idiom" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=idiom\b">
+<![CDATA[
+ <p>Instructs the vectorizer to enable idiom recognition.</p>
+]]>
+<example>-Mvect=idiom</example>
+</flag>
+
+<flag name="Mvect_noidiom" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=noidiom\b">
+<![CDATA[
+ <p>Instructs the vectorizer to disable idiom recognition.</p>
+]]>
+<example>-Mvect=noidiom</example>
+</flag>
+
+<flag name="Mvect_nosizelimit" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=nosizelimit\b">
+<![CDATA[
+ <p>Generate vector loops for all loops where possible regardless of the number of
+ statements in the loop.  This overrides a heuristic in the vectorizer that ordinarily
+ prevents vectorization of loops with a number of statements that exceed a certain threshold.</p>
+]]>
+<example>-Mvect=nosizelimit</example>
+<include flag="Mvect" />
+</flag>
+
+<flag name="Mvect_partial" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=partial\b">
+<![CDATA[
+ <p>Instructs the vectorizer to generate partial vectorization.</p>
+]]>
+<example>-Mvect=partial</example>
+<include flag="Mvect" />
+</flag>
+
+<flag name="Mvect_prefetch" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=prefetch\b">
+<![CDATA[
+ <p>Instructs the vectorizer to generate prefetch instructions.</p>
+]]>
+<example>-Mvect=prefetch</example>
+<include flag="Mvect" />
+</flag>
+
+<flag name="Mvect_short" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=short\b">
+<![CDATA[
+ <p>Enables generation of packed SSE instructions for short
+vector operations that arise from scalar code outside of loops or within
+the body of a loop iteration.
+ </p>
+]]>
+<include flag="Mvect" />
+<example>-Mvect=short</example>
+</flag>
+
+<flag name="Mvect_sse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=sse\b">
+<![CDATA[
+ <p>Instructs the vectorizer to search for vectorizable loops and, where possible, make use of
+ SSE, SSE2, and prefetch instructions.</p>
+]]>
+<include flag="Mvect" />
+<example>-Mvect=sse</example>
+</flag>
+
+<flag name="Mvect_nosse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect=nosse\b">
+<![CDATA[
+ <p>Instructs the driver to disable the -Mvect=sse option which is part of the "-fast" option.</p>
+]]>
+<include flag="Mvect_sse" />
+<include flag="fast" />
+<example>-Mvect=nosse</example>
+</flag>
+
+<flag name="Mvect" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mvect\b">
+<![CDATA[
+ <p>Enable automatic vector pipelining.</p>
+]]>
+<include flag="Mvect_assoc" />
+<include flag="Mvect_altcode" />
+<include text="Mvect=cachesize:262144" />
+<example>-Mvect</example>
+</flag>
+
+<flag name="Mnofptrap" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mnofptrap\b">
+<![CDATA[
+ <p>Disables -Ktrap=fp.</p>
+]]>
+<example>-Mnofptrap</example>
+<include flag="Ktrap" />
+</flag>
+
+<flag name="Ktrap" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Ktrap\w*\b">
+<![CDATA[
+ <p>-Ktrap is only processed by the compilers when compiling main functions' programs. The options inv, denorm, divz, ovf, unf, and inexact correspond to the processor's exception mask bits invalid operation, denormalized operand, divide-by-zero, overflow, underflow, and precision, respectively. Normally, the processor's exception mask bits are on (floating-point exceptions are masked the processor recovers from the exceptions and continues). If a floating-point exception occurs and its corresponding mask bit is off (or  unmasked ), execution terminates with an arithmetic exception (C's SIGFPE signal). -Ktrap=fp is equivalent to -Ktrap=inv,divz,ovf.
+</p>
+]]>
+<example>-Ktrap=fp</example>
+</flag>
+
+<flag name="Mlongbranch" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlongbranch\b">
+<![CDATA[
+ <p>Enable long branches.</p>
+]]>
+<example>-Mlongbranch</example>
+</flag>
+
+<flag name="acml" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-lacml\b">
+<![CDATA[
+ <p>Link with the AMD Core Math Library. Available from www.amd.com</p>
+]]>
+<example>-lacml</example>
+</flag>
+
+<flag name="mp" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-mp\b">
+<![CDATA[
+ <p>Use the -mp option to instruct the compiler to interpret user-inserted OpenMP shared-memory parallel programming directives and generate an executable file which will utilize multiple processors in a shared-memory parallel system. 
+
+When used strictly as a linker flag, the PGI OpenMP runtime will be linked and users can use the environment variables MP_BIND and MP_BLIST to bind a serial program to a CPU.
+</p>
+]]>
+<example>-mp</example>
+</flag>
+
+<flag name="mp_align" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-mp=align\b">
+<![CDATA[
+ <p>The align sub-option to -mp forces loop iterations to be allocated to OpenMP processes using an algorithm that maximizes alignment of vector sub-sections in loops that are both parallelized and vectorized for SSE. This can improve performance in program units that include many such loops. It can result in load-balancing problems that significantly decrease performance in program units with relatively short loops that contain a large amount of work in each iteration. </p>
+]]>
+<example>-mp=align</example>
+<include flag="mp" />
+</flag>
+
+<flag name="mp_numa" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-mp=numa\b">
+<![CDATA[
+ <p>The numa suboption to -mp uses libnuma on systems where it is available.</p>
+]]>
+<example>-mp=numa</example>
+<include flag="mp" />
+</flag>
+
+<flag name="mp_nonuma" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-mp=nonuma\b">
+<![CDATA[
+ <p>The nonuma suboption to -mp tells the driver to not link with libnuma.</p>
+]]>
+<example>-mp=nonuma</example>
+<include flag="mp" />
+</flag>
+
+<flag name="mcmodel_medium" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-mcmodel=medium\b">
+<![CDATA[
+ <p>(For use only on 64-bit Linux targets) Generate code for the medium memory model in the linux86-64 execution environment. The default small memory model of the linux86-64 environment limits the combined area for a user's object or executable to 1GB, with the Linux kernel managing usage of the second 1GB of address for system routines, shared libraries, stacks, etc. Programs are started at a fixed address, and the program can use a single instruction to make most memory references. The medium memory model allows for larger than 2GB data areas, or .bss sections. Program units compiled using either -mcmodel=medium or -fpic require additional instructions to reference memory. The effect on performance is a function of the data-use of the application. The -mcmodel=medium switch must be used at both compile time and link time to create 64-bit executables. Program units compiled for the default small memory model can be linked into medium memory model executables as long as they are compiled -fpic, or position-independent.</p>
+]]>
+<example>-mcmodel=medium</example>
+<include flag="Mlarge_arrays" />
+</flag>
+
+
+<flag name="Mlarge_arrays" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mlarge_arrays\b">
+<![CDATA[<p>Enable support for 64-bit indexing and single static data objects larger than 2GB in size. This option is default in the presence of -mcmodel=medium. Can be used separately together with the default small memory model for certain 64-bit applications that manage their own memory space.</p>
+]]>
+<example>-Mlarge_arrays</example>
+</flag>
+
+<flag name="Mdse" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mdse\b">
+<![CDATA[
+<p>Enable dead store elimination.</p>
+]]>
+</flag>
+
+<flag name="alias_ansi" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgcc_w, pgcpp_w"
+ regexp="\-alias\=ansi\b">
+<![CDATA[
+<p>Enable optimizations using ANSI C type-based pointer disambiguation.</p>
+]]>
+</flag>
+
+
+<flag name="Odefault" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O\b">
+<![CDATA[
+ <p>Set the optimization level to -O2</p>
+]]>
+<include flag="O2" />
+<example>-O</example>
+</flag>
+
+<flag name="O0" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O0\b">
+<![CDATA[
+ <p>A basic block is generated for each C statement.  No scheduling is done
+between statements.  No global optimizations are performed.</p>
+]]>
+<example>-O0</example>
+</flag>
+
+<flag name="O1" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O1\b">
+<![CDATA[
+ <p>Level-one optimization specifies local optimization (-O1). The compiler performs scheduling of basic blocks as well as register allocation. This optimization level is a good choice when the code is very irregular; that is it contains many short statements containing IF statements and the program does not contain loops (DO or DO WHILE statements). For certain types of code, this optimization level may perform better than level-two (-O2) although this case rarely occurs.</p>
+<p>The PGI compilers perform many different types of local optimizations, including but not limited to:</p>
+<ul>
+<li>Algebraic identity removal</li>
+<li>Constant folding</li>
+<li>Common subexpression elimination</li>
+<li>Local register optimization</li>
+<li>Peephole optimizations</li>
+<li>Redundant load and store elimination</li>
+<li>Strength reductions</li>
+</ul>
+Note that this is the default optimiation level when no optimization flags are specified on the compilation command line.
+]]>
+<example>-O1</example>
+</flag>
+
+<flag name="O2" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O2\b">
+<![CDATA[
+ <p>
+Level-two optimization (-O2 or -O) specifies global optimization. The -fast option generally will specify global optimization; however, the -fast switch will vary from release to release depending on a reasonable selection of switches for any one particular release. The -O or -O2 level performs all level-one local optimizations as well as global optimizations. Control flow analysis is applied and global registers are allocated for all functions and subroutines. Loop regions are given special consideration. This optimization level is a good choice when the program contains loops, the loops are short, and the structure of the code is regular.</p>
+<p>The PGI compilers perform many different types of global optimizations, including but not limited to:</p>
+<ul>
+<li>Branch to branch elimination</li>
+<li>Constant propagation</li>
+<li>Copy propagation</li>
+<li>Dead store elimination</li>
+<li>Global register allocation</li>
+<li>Invariant code motion</li>
+<li>Induction variable elimination</li>
+</ul>
+]]>
+<include flag="O1" />
+<example>-O2</example>
+</flag>
+
+<flag name="O3" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O3\b">
+<![CDATA[
+ <p>All level 1 and 2 optimizations are performed.
+In addition, this level enables more aggressive code hoisting and scalar replacement optimizations that may or may not be profitable.</p>
+]]>
+<include flag="O2" />
+<example>-O3</example>
+</flag>
+
+<flag name="O4" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-O4\b">
+<![CDATA[
+ <p>Performs all level 1, 2, and 3 optimizations and enables hoisting of guarded invariant floating point expressions.</p>
+]]>
+<include flag="O3" />
+<example>-O4</example>
+</flag>
+
+<flag name="tp_subopt" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+([^,\s]+),(\S+)\b">
+<include text="-tp $1" />
+<include text="-tp $2" />
+<display enable="1" />
+Create a Unified Binary using multiple targets.
+</flag>
+
+<flag name="tpk8-32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+k8-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Processor 32-bit mode.</p>
+]]>
+<example>-tp k8-32</example>
+</flag>
+
+<flag name="tpk8-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+k8-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Processor 64-bit mode.</p>
+]]>
+<example>-tp k8-64</example>
+</flag>
+
+<flag name="tpbarcelona-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+barcelona-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Barcelona Processor 64-bit mode.</p>
+]]>
+<example>-tp barcelona-64</example>
+</flag>
+
+
+<flag name="tpbarcelona32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+barcelona-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Barcelona Processor 32-bit mode.</p>
+]]>
+<example>-tp barcelona-32</example>
+</flag>
+
+<flag name="tpshanghai-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+shanghai-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Shangahi Processor 64-bit mode.</p>
+]]>
+<example>-tp shanghai-64</example>
+</flag>
+
+
+<flag name="tpshanghai32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+shanghai-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Shanghai Processor 32-bit mode.</p>
+]]>
+<example>-tp shanghai-32</example>
+</flag>
+
+
+<flag name="tpbarcelona" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+barcelona\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD64 Barcelona Processor 32-bit mode.</p>
+]]>
+<example>-tp barcelona</example>
+</flag>
+
+
+<flag name="tppenryn-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+penryn-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Penryn Processor 64-bit mode.</p>
+]]>
+<example>-tp penryn-64</example>
+</flag>
+
+
+<flag name="tppenryn32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+penryn-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Penryn Processor 32-bit mode.</p>
+]]>
+<example>-tp penryn-32</example>
+</flag>
+
+
+<flag name="tpnehalem-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+nehalem-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Nehalem Processor 64-bit mode.</p>
+]]>
+<example>-tp nehalem-64</example>
+</flag>
+
+
+<flag name="tpnehalem32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+nehalem-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Nehalem Processor 32-bit mode.</p>
+]]>
+<example>-tp nehalem-32</example>
+</flag>
+
+
+<flag name="tpistanbul-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+istanbul-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD Istanbul Processor 64-bit mode.</p>
+]]>
+<example>-tp Istanbul-64</example>
+</flag>
+
+
+<flag name="tpistanbul32" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+istanbul-32\b">
+<![CDATA[
+ <p>Specify the type of the target processor as AMD Istanbul Processor 32-bit mode.</p>
+]]>
+<example>-tp istanbul-32</example>
+</flag>
+
+
+<flag name="tppenryn" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+penryn\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Penryn Processor 32-bit mode.</p>
+]]>
+<example>-tp penryn</example>
+</flag>
+
+
+<flag name="tpp7-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+p7-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel P7 Architecture with
+ EM64t, 64-bit mode.</p>
+]]>
+<example>-tp p7-64</example>
+</flag>
+
+<flag name="tpp7" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+p7\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel P7 Architecture (Pentium
+ 4, Xeon, Centrino).</p>
+]]>
+<example>-tp p7</example>
+</flag>
+
+<flag name="tpcore2-64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+core2-64\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Core 2 EM64T or compatible architecture using 64-bit mode.</p>
+]]>
+<example>-tp core2-64</example>
+</flag>
+
+<flag name="tpcore2" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+core2\b">
+<![CDATA[
+ <p>Specify the type of the target processor as Intel Core 2 or compatible architecture using 32-bit mode.</p>
+]]>
+<example>-tp core2</example>
+</flag>
+
+<flag name="tpx64" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+x64\b">
+<![CDATA[
+ <p>Use the unified AMD/Intel 64-bit mode.</p>
+]]>
+<example>-tp x64</example>
+</flag>
+
+
+<flag name="tp" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-tp\s+([\-\w]+)\b">
+<include text="-tp $1" />
+<display enable="0" />
+</flag>
+
+
+<flag name="Mx" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Mx[\,x\d]+\b">
+<![CDATA[
+<p>Experimental flags.</p>
+]]>
+</flag>
+
+<flag name="Bstatic" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Bstatic\b">
+<![CDATA[
+<p>Link with static libraries.</p>
+]]>
+</flag>
+
+<flag name="Bstatic_pgi" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-Bstatic_pgi\b">
+<![CDATA[
+<p>Staticily link with the PGI runtime libraries.  System libraries may still be dynamically linked.</p>
+]]>
+</flag>
+
+<flag name="Bdynamic_lin" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-Bdynamic\b">
+<![CDATA[
+<p>Link with dynamic libraries.</p>
+]]>
+</flag>
+
+<flag name="Bdynamic_win" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Bdynamic\b">
+<![CDATA[
+<p>Link with Dynamic Link Libraries (DLL).  Note that -Bdynamic must also be used during compilation as well as linking.  Implies -D_DLL.</p>
+]]>
+<example>-Bdynamic</example>
+</flag>
+
+<flag name="stack_nocheck" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-stack=nocheck,(\d+),(\d+)\b">
+<![CDATA[
+<p>Disable runtime stack checking and set the stack's reservere size to $1 bytes and commit size to $2 bytes at link time.</p>
+]]>
+<example>-stack=nocheck,39000000,3900000</example>
+<ex_replacement>N</ex_replacement>
+</flag>
+
+<flag name="force_multiple" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-Wl,-force:multiple\b">
+<![CDATA[
+<p>Pass the flag "-force:multiple" to the linker to create an output file whether or not the linker finds more than one definition for a symbol.  This flag is required when linking with either PGI's Alloc library (-Msmartalloc) or Microquill's Smartheap library.  Both libraries replace the system's Malloc, Calloc, Realloc, and Free functions.</p>
+]]>
+<example>-Wl,-force:multiple</example>
+</flag>
+
+<flag name="BOOST_CONFIG_MSC_VER" class="portability"
+ compilers="pgcpp_w"
+ regexp="-DSPEC_CPU_BOOST_CONFIG_MSC_VER\S+\b">
+<![CDATA[
+<p>Use the Microsoft C++ configuration for Boost.  Used with the "boost_msvc_config" src.alt.</p>
+]]>
+<example>-DSPEC_CPU_BOOST_CONFIG_MSC_VER</example>
+</flag>
+
+<flag name="Link_path" class="other"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l, pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp="-L\S+\b">
+<![CDATA[
+<p>Specifies a directory to search for libraries. Use -L to add directories to the search path for library files.
+Multiple -L options are valid. However, the position of multiple -L options is important relative to -l
+options supplied.</p> 
+]]>
+<example>-L/path/to/libs</example>
+</flag>
+
+<flag name="SmartHeap_lin" class="optimization"
+ compilers="pgcc_l, pgcpp_l, pgf95_l, pgfortran_l"
+ regexp="-lsmartheap\b">
+<![CDATA[
+<p>Link using <a href="http://www.microquill.com/">MicroQuill's</a> SmartHeap 8 (32-bit) library for Linux.   
+Description from Microquill: </p>
+<p>SmartHeap is a fast (3X-100X faster than compiler-supplied libraries), portable (Windows, Linux, Solaris, HP-UX, IBM-AIX, Dec OSF Tru64, SGI Irix), reliable, ANSI-compliant malloc/operator new library. SmartHeap supports multiple memory pools, includes a fixed-size allocator, and is thread-safe. SmartHeap also includes comprehensive memory debugging APIs to detect leakage, overwrites, double-frees, wild pointers, out of memory, references to previously freed memory, and other memory errors.
+</p>
+]]>
+</flag>
+
+<flag name="SmartHeap_win32" class="optimization"
+ compilers="pgcc_w, pgcpp_w, pgf95_w, pgfortran_w"
+ regexp=".*shW32.lib\b">
+<![CDATA[
+<p>Link using <a href="http://www.microquill.com/">MicroQuill's</a> SmartHeap 8 (32-bit) library for Windows.   
+Description from Microquill: </p>
+<p>SmartHeap is a fast (3X-100X faster than compiler-supplied libraries), portable (Windows, Linux, Solaris, HP-UX, IBM-AIX, Dec OSF Tru64, SGI Irix), reliable, ANSI-compliant malloc/operator new library. SmartHeap supports multiple memory pools, includes a fixed-size allocator, and is thread-safe. SmartHeap also includes comprehensive memory debugging APIs to detect leakage, overwrites, double-frees, wild pointers, out of memory, references to previously freed memory, and other memory errors.
+</p>
+]]>
+</flag>
+
+
+
+</flagsdescription>
+
+
+
+
+
+
+ 

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription SYSTEM
+       "http://www.spec.org/dtd/cpuflags2.dtd">
+
+<!-- =====================================================================
+  Information about the meaning of boot-time settings, BIOS options,
+  kernel tuning, and so forth go in this separate 'platform_settings' file.
+
+  They'll be appended to the end of both the flags dump and per-result flag report.
+
+  As the contents should be HTML, it will save lots of time to just enclose
+  the whole thing in a CDATA section.  Section 2.3.1 again.
+
+  NOTE that these should be vendor, or platform, specific and thus the file
+  should be named in a way to identify which platform was used.  For example,
+  one could replace the string Example with the vendor name in the filename,
+  i.e. ACME-linux-platform-revA.xml.
+     ===================================================================-->
+
+<!-- This file defines platform settings -->
+<flagsdescription>
+
+<filename>Example-linux-platform-revA</filename>
+
+<title>SPEC CPU2006 Flag Description for Example Platform</title>
+
+<!-- Platform Settings -->
+<submit_command>
+<![CDATA[
+<p><b>Using numactl to bind processes and memory to cores</b></p>
+<p>For multi-copy runs or single copy runs on systems with multiple sockets, it is advantageous to bind a process to a particular core.  Otherwise, the OS may arbitrarily move your process from one core to another.  This can effect performance.  To help, SPEC allows the use of a "submit" command where users can specify a utility to use to bind processes.  We have found the utility 'numactl' to be the best choice.</p>
+<p>numactl runs processes with a specific NUMA scheduling or memory placement policy.  The policy is set for a command and inherited by all of its children.  The numactl flag "--physcpubind" specifies which core(s) to bind the process. "-l" instructs numactl to keep a process memory on the local node while "-m" specifies which node(s) to place a process memory.  For full details on using numactl, please refer to your Linux documentation, 'man numactl'</p>
+<p>Note that some versions of numactl, particularly the version found on SLES 10, we have found that the utility incorrectly interprets application arguments as it's own.  For example, with the command "numactl --physcpubind=0 -l a.out -m a", numactl will interpret a.out's "-m" option as it's own "-m" option.  To work around this problem, a user can put the command to be run in a shell script and then run the shell script using numactl.  For example: "echo 'a.out -m a' > run.sh ; numactl --physcpubind=0 bash run.sh"</p>
+]]>
+</submit_command>
+
+<sw_environment>
+<![CDATA[
+<p><b> ulimit -s &lt;n&gt;</b></p>
+<p>
+           Sets the stack size to <b>n</b> kbytes, or <b>unlimited</b> to allow the stack size
+           to grow without limit. 
+</p>
+]]>
+</sw_environment>
+
+</flagsdescription>
+

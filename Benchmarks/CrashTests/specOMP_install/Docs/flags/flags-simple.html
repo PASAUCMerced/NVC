@@ -1,0 +1,1938 @@
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta name="generator" content="SPEC OMP2012 Tools  (flags v1395)" />
+<meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+<style type="text/css" id="internalScreen" media="screen">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+  white-space: nowrap;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagDescParallel, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagDescParallel::before {
+  content: "Indicates automatic parallelization: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+  white-space: nowrap;
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.resultpage_landscape {
+  width: 1200px;
+}
+
+div.logo {
+  float: left;
+  width: 38px;
+  height: 57px;
+}
+
+.titlebarcontainer, .resultstable, .ncsection {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+.ncsection {
+  background-color: white;
+  color: black;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 91%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+div.ncsection {
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+}
+
+.systembar {
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+}
+
+td.systembar {
+  padding: 0.2em;
+}
+
+.metricbar {
+  margin: 0;
+  font-size: 120%;
+}
+
+/* CSS for the old-style div-based systembar */
+
+div.systembar {
+  float: left;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+div.metricbar {
+  padding: 0.1em;
+  float: right;
+  width: 33%;
+  height: 50%;
+}
+
+.base, .metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.peak, .metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Datebar stuff for older results */
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0.1em 0 0.1em 0.5em;
+}
+
+span.value {
+  float: right;
+  padding: 0.1em 0.5em 0.1em 0;
+}
+
+div.datebar {
+  width: 100%;
+  float: left;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor         { width: 48%; }
+p#tester               { width: 48%; }
+p#license_num          { width: 24%; }
+p#test_date            { width: 23%; }
+p#hw_avail, p#sw_avail { width: 25%; }
+
+/* Table-based datebar and systembar on newer results */
+table.datebar, table.titlebarcontainer {
+  float: left;
+  width: 100%;
+  min-height: 100%;
+  border-collapse: collapse;
+  border: solid 1px black;
+  table-layout: fixed;
+}
+
+table.datebar th {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-left: 0.5em;
+  padding: 0 0.5em 0 0.25em;
+}
+
+table.datebar td {
+  text-align: left;
+  padding: 0 0.5em 0 0;
+}
+
+table.titlebarcontainer tr {
+  vertical-align: top;
+}
+table.titlebarcontainer td {
+  border-right: 1px solid black;
+}
+
+th#license_num          { width: 17%; }
+th#test_sponsor         { width: 17%; }
+th#tester               { width: 17%; }
+th#test_date            { width: 22%; }
+th#hw_avail             { width: 22%; }
+th#sw_avail             { width: 22%; }
+td#license_num_val      { width: 52%; }
+td#test_sponsor_val     { width: 52%; }
+td#tester_val           { width: 52%; }
+td#test_date_val        { width: 13%; white-space: nowrap; }
+td#hw_avail_val         { width: 13%; white-space: nowrap; }
+td#sw_avail_val         { width: 13%; white-space: nowrap; }
+
+
+div.graph {
+  margin: auto;
+}
+
+div.sysdesc > h2 {
+  text-align: center;
+  background-color: #c8c8c8;
+  color: black;
+  padding: 0.5em 0 0.5em 0;
+  margin: 0;
+} 
+  
+div.sysdesc {
+  margin: 0.5em 0 0.5em 0;
+}
+
+div.infobox, div.sysdesc {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware,
+div.infobox table#BenchmarkSoftware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox table#Systems {
+  width: 100%;
+}
+
+div.infobox table#Power {
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+div.infobox table#Systems tbody th {
+  width: 20%;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes table {
+  width: 100%;
+}
+
+div.notes table tr td {
+  text-align: right;
+  vertical-align: top;
+}
+
+/* Alas, IE6... if only you didn't suck so much...
+div.notes table tr td + td {
+*/
+div.notes table td.al {
+  text-align: left;
+  width: 85%;
+}
+
+div.notes table tr td {
+  padding-bottom: 1em;
+}
+
+div.notes table.portability tr td {
+  padding: 0em;
+}
+
+div.notes table.portability {
+  padding: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.l_edge { 
+  border-left: solid 2px black;
+}
+
+td.r_edge { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.selected a:link, .selected a:visited {
+  border-bottom: 0;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+
+/* Keep flags from being wrapped */
+span.userflag, span.flagtext {
+  white-space: nowrap;
+}
+/* Most of the screen-specific CSS is also the common CSS */
+
+/* Style for the non-image W3C marking at the bottom of the page, courtesy of
+ * Marek Prokop (http://www.sovavsiti.cz/css/w3c_buttons.html)
+ */
+.w3cbutton3 {
+  margin: 1em 1em 0 0;
+  width: 9em;
+  border: 1px solid #ccc;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 70%;
+  font-weight: bold;
+  float: left;
+}
+.w3cbutton3 a {
+  display: block;
+  width: 100%;
+}
+.w3cbutton3 a:link,
+.w3cbutton3 a:visited,
+.w3cbutton3 a:hover {
+  background-color: #fc6;
+  color: #000;
+  text-decoration: none;
+  border-bottom: none;
+}
+.w3cbutton3 span.w3c {
+  padding: 0 0.4em;
+  background-color: #fff;
+  color: #0c479d;
+}
+
+-->
+</style>
+<style type="text/css" id="internalPrint" media="print">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+  white-space: nowrap;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagDescParallel, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagDescParallel::before {
+  content: "Indicates automatic parallelization: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+  white-space: nowrap;
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.resultpage_landscape {
+  width: 1200px;
+}
+
+div.logo {
+  float: left;
+  width: 38px;
+  height: 57px;
+}
+
+.titlebarcontainer, .resultstable, .ncsection {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+.ncsection {
+  background-color: white;
+  color: black;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 91%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+div.ncsection {
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+}
+
+.systembar {
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+}
+
+td.systembar {
+  padding: 0.2em;
+}
+
+.metricbar {
+  margin: 0;
+  font-size: 120%;
+}
+
+/* CSS for the old-style div-based systembar */
+
+div.systembar {
+  float: left;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+div.metricbar {
+  padding: 0.1em;
+  float: right;
+  width: 33%;
+  height: 50%;
+}
+
+.base, .metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.peak, .metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Datebar stuff for older results */
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0.1em 0 0.1em 0.5em;
+}
+
+span.value {
+  float: right;
+  padding: 0.1em 0.5em 0.1em 0;
+}
+
+div.datebar {
+  width: 100%;
+  float: left;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor         { width: 48%; }
+p#tester               { width: 48%; }
+p#license_num          { width: 24%; }
+p#test_date            { width: 23%; }
+p#hw_avail, p#sw_avail { width: 25%; }
+
+/* Table-based datebar and systembar on newer results */
+table.datebar, table.titlebarcontainer {
+  float: left;
+  width: 100%;
+  min-height: 100%;
+  border-collapse: collapse;
+  border: solid 1px black;
+  table-layout: fixed;
+}
+
+table.datebar th {
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-left: 0.5em;
+  padding: 0 0.5em 0 0.25em;
+}
+
+table.datebar td {
+  text-align: left;
+  padding: 0 0.5em 0 0;
+}
+
+table.titlebarcontainer tr {
+  vertical-align: top;
+}
+table.titlebarcontainer td {
+  border-right: 1px solid black;
+}
+
+th#license_num          { width: 17%; }
+th#test_sponsor         { width: 17%; }
+th#tester               { width: 17%; }
+th#test_date            { width: 22%; }
+th#hw_avail             { width: 22%; }
+th#sw_avail             { width: 22%; }
+td#license_num_val      { width: 52%; }
+td#test_sponsor_val     { width: 52%; }
+td#tester_val           { width: 52%; }
+td#test_date_val        { width: 13%; white-space: nowrap; }
+td#hw_avail_val         { width: 13%; white-space: nowrap; }
+td#sw_avail_val         { width: 13%; white-space: nowrap; }
+
+
+div.graph {
+  margin: auto;
+}
+
+div.sysdesc > h2 {
+  text-align: center;
+  background-color: #c8c8c8;
+  color: black;
+  padding: 0.5em 0 0.5em 0;
+  margin: 0;
+} 
+  
+div.sysdesc {
+  margin: 0.5em 0 0.5em 0;
+}
+
+div.infobox, div.sysdesc {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware,
+div.infobox table#BenchmarkSoftware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox table#Systems {
+  width: 100%;
+}
+
+div.infobox table#Power {
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+div.infobox table#Systems tbody th {
+  width: 20%;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes table {
+  width: 100%;
+}
+
+div.notes table tr td {
+  text-align: right;
+  vertical-align: top;
+}
+
+/* Alas, IE6... if only you didn't suck so much...
+div.notes table tr td + td {
+*/
+div.notes table td.al {
+  text-align: left;
+  width: 85%;
+}
+
+div.notes table tr td {
+  padding-bottom: 1em;
+}
+
+div.notes table.portability tr td {
+  padding: 0em;
+}
+
+div.notes table.portability {
+  padding: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.l_edge { 
+  border-left: solid 2px black;
+}
+
+td.r_edge { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.selected a:link, .selected a:visited {
+  border-bottom: 0;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+
+/* Keep flags from being wrapped */
+span.userflag, span.flagtext {
+  white-space: nowrap;
+}
+/* Classes that contain links - useless on paper */
+.flagTOC, .SubMenu, .NoPrint {
+  display: none;
+}
+
+/* Don't decorate links - they're not clickable */
+a {
+  text-decoration: none;
+  background: inherit;
+  color: inherit;
+}
+
+.resultpage {
+  width: 100%;
+}
+
+.w3cbutton3 {
+  display: none;
+}
+-->
+</style>
+<style type="text/css" id="user">
+
+
+body { background: white; }
+
+
+</style>
+<title>Non-Apple SPEC MPI Flags</title>
+</head><body>
+<h1>Non-Apple SPEC MPI Flags</h1>
+
+
+<p>Compilers: GCC 4.0.1 (Apple)</p>
+<p>Last updated: 14-Feb-2006</p>
+
+<div class="NoPrint">
+<h3>Sections</h3>
+<p>Selecting one of the following will take you directly to that section:</p>
+<ul>
+<li><a href="#Section_optimization">Optimization Flags</a></li>
+<li><a href="#Section_compiler">Compiler Flags</a></li>
+</ul>
+</div>
+
+<hr />
+
+<div class="flagClass" id="optimization">
+<h2><a name="Section_optimization" id="Section_optimization">Optimization Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_F-fast">-fast</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-O3">-O3</a>
+    <ul class="SubMenu">
+     <li><a href="#user_F-finline-functions">-finline-functions</a></li>
+     <li><a href="#user_F-frename-registers">-frename-registers</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_F-funroll-loops">-funroll-loops</a>
+    <ul class="SubMenu">
+     <li><a href="#user_F-fstrength-reduce">-fstrength-reduce</a></li>
+     <li><a href="#user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_F-fstrict-aliasing">-fstrict-aliasing</a></li>
+   <li><a href="#user_F-fsched-interblock">-fsched-interblock</a></li>
+   <li><a href="#user_F-falign-loops">-falign-loops=16</a></li>
+   <li><a href="#user_F-falign-jumps">-falign-jumps=16</a></li>
+   <li><a href="#user_F-falign-functions">-falign-functions=16</a></li>
+   <li><a href="#user_F-falign-jumps-max-skip">-falign-jumps-max-skip=15</a></li>
+   <li><a href="#user_F-falign-loops-max-skip">-falign-loops-max-skip=15</a></li>
+   <li><a href="#user_F-malign-natural">-malign-natural</a></li>
+   <li><a href="#user_F-ffast-math">-ffast-math</a>
+    <ul class="SubMenu">
+     <li><a href="#user_F-fno-math-errno">-fno-math-errno</a></li>
+     <li><a href="#user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+     <li><a href="#user_F-fno-trapping-math">-fno-trapping-math</a>
+      <ul class="SubMenu">
+       <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+      </ul>
+     </li>
+     <li><a href="#user_F-ffinite-math-only">-ffinite-math-only</a></li>
+     <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_F-mdynamic-no-pic">-mdynamic-no-pic</a></li>
+   <li><a href="#user_F-mpowerpc-gpopt">-mpowerpc-gpopt</a></li>
+   <li><a href="#user_F-force_cpusubtype_ALL">-force_cpusubtype_ALL</a></li>
+   <li><a href="#user_F-fstrict-aliasing">-fstrict-aliasing</a></li>
+   <li><a href="#user_F-mtune">-mtune=G5</a></li>
+   <li><a href="#user_F-mcpu">-mcpu=G5</a></li>
+   <li><a href="#user_F-mpowerpc64">-mpowerpc64</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-O3">-O3</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-finline-functions">-finline-functions</a></li>
+   <li><a href="#user_F-frename-registers">-frename-registers</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-mcpu">-mcpu=7450, -mcpu=G5</a></li>
+ <li><a href="#user_F-falign-functions">-falign-functions,
+-falign-functions=n</a></li>
+ <li><a href="#user_F-falign-loops">-falign-loops,
+-falign-loops=n</a></li>
+ <li><a href="#user_F-falign-loops-max-skip">-falign-loops-max-skip,
+-falign-loops-max-skip=n</a></li>
+ <li><a href="#user_F-falign-jumps">-falign-jumps,
+-falign-jumps=n</a></li>
+ <li><a href="#user_F-falign-jumps-max-skip">-falign-jumps-max-skip,
+-falign-jumps-max-skip=n</a></li>
+ <li><a href="#user_F-force_cpusubtype_ALL">-force_cpusubtype_ALL</a></li>
+ <li><a href="#user_F-fsched-interblock">-fsched-interblock</a></li>
+ <li><a href="#user_F-fstrict-aliasing">-fstrict-aliasing</a></li>
+ <li><a href="#user_F-funroll-loops">-funroll-loops</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-fstrength-reduce">-fstrength-reduce</a></li>
+   <li><a href="#user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-ffast-math">-ffast-math</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-fno-math-errno">-fno-math-errno</a></li>
+   <li><a href="#user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+   <li><a href="#user_F-fno-trapping-math">-fno-trapping-math</a>
+    <ul class="SubMenu">
+     <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+    </ul>
+   </li>
+   <li><a href="#user_F-ffinite-math-only">-ffinite-math-only</a></li>
+   <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-mpowerpc64">-mpowerpc64</a></li>
+ <li><a href="#user_F-malign-natural">-malign-natural</a></li>
+ <li><a href="#user_F-mpowerpc-gpopt">-mpowerpc-gpopt</a></li>
+ <li><a href="#user_F-mtune">-mtune=7450,
+-mtune=G5</a></li>
+ <li><a href="#user_F-mdynamic-no-pic">-mdynamic-no-pic</a></li>
+ <li><a href="#user_F-fstrength-reduce">-fstrength-reduce</a></li>
+ <li><a href="#user_F-fno-trapping-math">-fno-trapping-math</a>
+  <ul class="SubMenu">
+   <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+  </ul>
+ </li>
+ <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+ <li><a href="#user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+ <li><a href="#user_F-ffinite-math-only">-ffinite-math-only</a></li>
+ <li><a href="#user_F-fno-math-errno">-fno-math-errno</a></li>
+ <li><a href="#user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+ <li><a href="#user_F-finline-functions">-finline-functions</a></li>
+ <li><a href="#user_F-frename-registers">-frename-registers</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fast" id="user_F-fast">
+-fast
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fast(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Optimize for maximum performance. -fast  changes the overall optimization
+strategy of GCC in order to produce the fastest possible running code for
+PPC7450 and G5 architectures. By default, -fast optimizes for G5. Programs
+optimized for G5 will not run on PPC7450.</p>
+
+<p>-fast currently enables the following optimization flags. These flags may
+change in the future. You cannot override any of these options if you use -fast
+except by setting -mcpu=7450. Note that -ffast-math, -fstrict-aliasing and
+-malign-natural are unsafe in some situations.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-O3">-O3</a>
+   <ul class="SubMenu">
+    <li><a href="#user_F-finline-functions">-finline-functions</a></li>
+    <li><a href="#user_F-frename-registers">-frename-registers</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_F-funroll-loops">-funroll-loops</a>
+   <ul class="SubMenu">
+    <li><a href="#user_F-fstrength-reduce">-fstrength-reduce</a></li>
+    <li><a href="#user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_F-fstrict-aliasing">-fstrict-aliasing</a></li>
+  <li><a href="#user_F-fsched-interblock">-fsched-interblock</a></li>
+  <li><a href="#user_F-falign-loops">-falign-loops=16</a></li>
+  <li><a href="#user_F-falign-jumps">-falign-jumps=16</a></li>
+  <li><a href="#user_F-falign-functions">-falign-functions=16</a></li>
+  <li><a href="#user_F-falign-jumps-max-skip">-falign-jumps-max-skip=15</a></li>
+  <li><a href="#user_F-falign-loops-max-skip">-falign-loops-max-skip=15</a></li>
+  <li><a href="#user_F-malign-natural">-malign-natural</a></li>
+  <li><a href="#user_F-ffast-math">-ffast-math</a>
+   <ul class="SubMenu">
+    <li><a href="#user_F-fno-math-errno">-fno-math-errno</a></li>
+    <li><a href="#user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+    <li><a href="#user_F-fno-trapping-math">-fno-trapping-math</a>
+     <ul class="SubMenu">
+      <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+     </ul>
+    </li>
+    <li><a href="#user_F-ffinite-math-only">-ffinite-math-only</a></li>
+    <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_F-mdynamic-no-pic">-mdynamic-no-pic</a></li>
+  <li><a href="#user_F-mpowerpc-gpopt">-mpowerpc-gpopt</a></li>
+  <li><a href="#user_F-force_cpusubtype_ALL">-force_cpusubtype_ALL</a></li>
+  <li><a href="#user_F-fstrict-aliasing">-fstrict-aliasing</a></li>
+  <li><a href="#user_F-mtune">-mtune=G5</a></li>
+  <li><a href="#user_F-mcpu">-mcpu=G5</a></li>
+  <li><a href="#user_F-mpowerpc64">-mpowerpc64</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-O3" id="user_F-O3">-O3</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-O3(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Optimize yet more.  -O3 turns on all optimizations specified by -O2
+   and also turns on the -finline-functions and -frename-registers
+   options.</p>
+<p>Okay, I (cds) made an extreme tactical error when choosing gcc as the 
+   basis of an allegedly "simple" flags example.  I don't want this example 
+   to grow to the size of the GCC man page so let me just leave off by saying 
+   that a formal reference to -O2 <strong>should</strong> be included here, 
+   and that the description of -O2 <strong>must</strong> also contain 
+   references to the 25 flags that <i>it</i> turns on.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-finline-functions">-finline-functions</a></li>
+  <li><a href="#user_F-frename-registers">-frename-registers</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-mcpu" id="user_F-mcpu">-mcpu=7450, -mcpu=G5</a></li>
+<li class="flagDescRE"><span class="tt">-mcpu=(\S+)\b</span></li>
+<li class="descText">
+<p>Set architecture type, register usage, choice of mnemonics, and
+   instruction scheduling parameters for a particular machine type.</p>
+
+<p>Supported values for this flag are</p>
+<ul>
+  <li>rios	</li>
+  <li>rios1	</li>
+  <li>rsc	</li>
+  <li>rios2	</li>
+  <li>rs64a	</li>
+  <li>601	</li>
+  <li>602	</li>
+  <li>603	</li>
+  <li>603e	</li>
+  <li>604	</li>
+  <li>604e	</li>
+  <li>620	</li>
+  <li>630	</li>
+  <li>740	</li>
+  <li>7400	</li>
+  <li>7450	</li>
+  <li>750	</li>
+  <li>power	</li>
+  <li>power2	</li>
+  <li>powerpc	</li>
+  <li>403	</li>
+  <li>505	</li>
+  <li>801	</li>
+  <li>821	</li>
+  <li>823	</li>
+  <li>860	</li>
+  <li>common	</li>
+  <!-- Um, hey, G5 isn't listed as one of the choices!  Someone file a doc
+       bug against the Apple GCC man page! -->
+</ul>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-falign-functions" id="user_F-falign-functions">
+-falign-functions,
+-falign-functions=n
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-falign-functions(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Align the start of functions to the next power-of-two greater than
+   <i>n</i>, skipping up to <i>n</i> bytes.  For instance,
+   <tt>-falign-functions=32</tt> aligns functions to the next 32-byte
+   boundary, but <tt>-falign-functions=24</tt> would align to the next
+   32-byte boundary only if this can be done by skipping 23 bytes or less.</p>
+
+<p><tt>-fno-align-functions</tt> and <tt>-falign-functions=1</tt> are
+   equivalent and mean that functions will not be aligned.</p>
+
+<p>Some assemblers only support this flag when <i>n</i> is a power of two; in
+   that case, it is rounded up.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-falign-loops" id="user_F-falign-loops">
+-falign-loops,
+-falign-loops=n
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-falign-loops(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Align loops to a power-of-two boundary, skipping up to <i>n</i> bytes like
+   <tt>-falign-functions.</tt>  The hope is that the loop will be executed
+   many times, which will make up for any execution of the dummy
+   operations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-falign-loops-max-skip" id="user_F-falign-loops-max-skip">
+-falign-loops-max-skip,
+-falign-loops-max-skip=n
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-falign-loops-max-skip(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>When aligning loops to a power-of-two boundary, only do so if can skip by
+   up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-falign-jumps" id="user_F-falign-jumps">
+-falign-jumps,
+-falign-jumps=n
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-falign-jumps(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Align branch targets to a power-of-two boundary, for branch targets
+    where the targets can only be reached by jumping, skipping up to <i>n</i>
+    bytes like <tt>-falign-functions.</tt>  In this case, no dummy operations
+    need be executed.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-falign-jumps-max-skip" id="user_F-falign-jumps-max-skip">
+-falign-jumps-max-skip,
+-falign-jumps-max-skip=n
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-falign-jumps-max-skip(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>When aligning branch targets to a power-of-two boundary, only do so
+   if can skip by up to <i>n</i> bytes.</p>
+
+<p>If <i>n</i> is not specified, use a machine-dependent default.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-force_cpusubtype_ALL" id="user_F-force_cpusubtype_ALL">
+-force_cpusubtype_ALL
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-force_cpusubtype_ALL(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Hey!  What does this flag do?  It's not in the man page.</p>
+<p>Well, I know that <strong>you</strong>, as the well informed and well-
+   connected (with your compiler vendor) will be able to document ALL of
+   your implicitly included flags.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fsched-interblock" id="user_F-fsched-interblock">
+-fsched-interblock
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fsched-interblock(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Schedule instructions across basic blocks.  This is enabled by default when
+scheduling before register allocation, i.e. with <tt>-fschedule-insns</tt> or  
+at <tt>-O2</tt> or higher.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fstrict-aliasing" id="user_F-fstrict-aliasing">
+-fstrict-aliasing
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fstrict-aliasing(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Allows the compiler to assume the strictest aliasing rules applicable to
+   the language being compiled.  For C (and C++), this activates optimizations
+   based on the type of expressions.  In particular, an object of one type is
+   assumed never to reside at the same address as an object of a different
+   type, unless the types are almost the same.  For example, an "unsigned int"
+   can alias an "int", but not a "void*" or a "double".  A character type may
+   alias any other type.</p>
+
+<p>Pay special attention to code like this:</p>
+<pre>
+   union a_union {
+     int i;
+     double d;
+   };
+
+   int f() {
+     a_union t;
+     t.d = 3.0;
+     return t.i;
+   }
+</pre>
+
+<p>The practice of reading from a different union member than the one
+   most recently written to (called ``type-punning'') is common.  Even
+   with <tt>-fstrict-aliasing</tt>, type-punning is allowed, provided the
+   memory is accessed through the union type.  So, the code above will
+   work as expected.  However, this code might not:</p>
+<pre>
+   int f() {
+     a_union t;
+     int* ip;
+     t.d = 3.0;
+     ip = &amp;t.i;
+     return *ip;
+   }
+</pre>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-funroll-loops" id="user_F-funroll-loops">
+-funroll-loops
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-funroll-loops(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Unroll loops whose number of iterations can be determined at compile time
+   or upon entry to the loop.  <tt>-funroll-loops</tt> implies both
+   <tt>-fstrength-reduce</tt> and <tt>-frerun-cse-after-loop</tt>.  This
+   option makes code larger, and may or may not make it run faster.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-fstrength-reduce">-fstrength-reduce</a></li>
+  <li><a href="#user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-ffast-math" id="user_F-ffast-math">
+-ffast-math
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-ffast-math(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Sets the following flags:</p>
+<ul>
+  <li>-fno-math-errno		</li>
+  <li>-funsafe-math-optimizations</li>
+  <li>-fno-trapping-math	</li>
+  <li>-ffinite-math-only	</li>
+  <li>-fno-signaling-nans	</li>
+</ul>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-fno-math-errno">-fno-math-errno</a></li>
+  <li><a href="#user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+  <li><a href="#user_F-fno-trapping-math">-fno-trapping-math</a>
+   <ul class="SubMenu">
+    <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+   </ul>
+  </li>
+  <li><a href="#user_F-ffinite-math-only">-ffinite-math-only</a></li>
+  <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-mpowerpc64" id="user_F-mpowerpc64">
+-mpowerpc64
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-mpowerpc64(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>The <tt>-mpowerpc64</tt> option allows GCC to generate the additional 64-bit
+instructions that are found in the full PowerPC64 architecture and
+to treat GPRs as 64-bit, doubleword quantities.  GCC defaults to
+<tt>-mno-powerpc64</tt>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-malign-natural" id="user_F-malign-natural">-malign-natural</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-malign-natural(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Aligns larger data types such as doubles on their natural boundaries.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-mpowerpc-gpopt" id="user_F-mpowerpc-gpopt">-mpowerpc-gpopt</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-mpowerpc-gpopt(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Allows GCC to use the optional PowerPC architecture instructions in the  
+General Purpose group, including floating-point square root.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-mtune" id="user_F-mtune">
+-mtune=7450,
+-mtune=G5
+</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-mtune(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Sets the instruction scheduling parameters for a particular machine type,
+but does not set the architecture type, register usage, or choice of
+mnemonics, as <tt>-mcpu=</tt><i>cpu_type</i> would.  The same values for
+<i>cpu_type</i> are used for <tt>-mtune</tt> as for <tt>-mcpu</tt>.  If both
+are specified, the code generated will use the architecture, registers, and
+mnemonics set by <tt>-mcpu</tt>, but the scheduling parameters set by
+<tt>-mtune</tt>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-mdynamic-no-pic" id="user_F-mdynamic-no-pic">-mdynamic-no-pic</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-mdynamic-no-pic(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Compile code so that it is not relocatable, but that its external
+   references are relocatable.  The resulting code is suitable for
+   applications, but not shared libraries.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fstrength-reduce" id="user_F-fstrength-reduce">-fstrength-reduce</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fstrength-reduce(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Perform the optimizations of loop strength reduction and elimination of
+iteration variables.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fno-trapping-math" id="user_F-fno-trapping-math">-fno-trapping-math</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fno-trapping-math(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Compile code assuming that floating-point operations cannot generate
+user-visible traps.  These traps include division by zero, overflow,
+underflow, inexact result and invalid operation.  This option implies
+<tt>-fno-signaling-nans</tt>.  Setting this option may allow faster code
+if one relies on `non-stop' IEEE arithmetic, for example.</p>
+
+<p>Use of this option can result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications for
+   math functions.</p>
+</li>
+<li class="flagDescInc"><span class="flagDescInc">Includes:</span>
+ <ul class="flagTOC">
+  <li><a href="#user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+ </ul>
+<div class="clear"></div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fno-signaling-nans" id="user_F-fno-signaling-nans">-fno-signaling-nans</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fno-signaling-nans(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Compile code assuming that IEEE signaling NaNs may not generate
+user-visible traps during floating-point operations.  Setting this
+option enabled optimizations that may change the number of exceptions
+visible with signaling NaNs.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-funsafe-math-optimizations" id="user_F-funsafe-math-optimizations">-funsafe-math-optimizations</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-funsafe-math-optimizations(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Allow optimizations for floating-point arithmetic that
+(a) assume that arguments and results are valid and (b) may violate  
+IEEE or ANSI standards.  When used at link-time, it may include  
+libraries or startup files that change the default FPU control  
+word or other similar optimizations.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-ffinite-math-only" id="user_F-ffinite-math-only">-ffinite-math-only</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-ffinite-math-only(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Allow optimizations for floating-point arithmetic that assume that
+   arguments and results are not NaNs or +-Infs.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-fno-math-errno" id="user_F-fno-math-errno">-fno-math-errno</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-fno-math-errno(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Do not set ERRNO after calling math functions that are executed
+   with a single instruction, e.g., sqrt.  A program that relies on
+   IEEE exceptions for math error handling may want to use this flag
+   for speed while maintaining IEEE arithmetic compatibility.</p>
+
+<p>Use of this option may result in incorrect output for programs which
+   depend on an exact implementation of IEEE or ISO rules/specifications
+   for math functions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-frerun-cse-after-loop" id="user_F-frerun-cse-after-loop">-frerun-cse-after-loop</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-frerun-cse-after-loop(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Re-run common subexpression elimination after loop optimizations
+   have been performed.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-finline-functions" id="user_F-finline-functions">-finline-functions</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-finline-functions(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>Integrate all simple functions into their callers.  The compiler
+   heuristically decides which functions are simple enough to be worth
+   integrating in this way.</p>
+
+<p>If all calls to a given function are integrated, and the function
+   is declared "static", then the function is normally not output as
+   assembler code in its own right.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_F-frename-registers" id="user_F-frename-registers">-frename-registers</a></li>
+<li class="flagDescRE"><span class="tt">(?:^|(?&lt;=\s))-frename-registers(?:=\S*)?(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Attempt to avoid false dependencies in scheduled code by making use
+   of registers left over after register allocation.  This optimization will
+   most benefit processors with lots of registers.  It can, however, make
+   debugging impossible, since variables will no longer stay in a `home
+   register'.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<div class="flagClass" id="compiler">
+<h2><a name="Section_compiler" id="Section_compiler">Compiler Flags</a></h2>
+<div class="flagTOC">
+<ul class="flagTOC">
+ <li><a href="#user_cc">cc</a></li>
+ <li><a href="#user_CC">g++</a></li>
+</ul>
+<div class="clear"></div>
+</div>
+
+<ul class="flagDescList">
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_cc" id="user_cc">cc</a></li>
+<li class="flagDescRE"><span class="tt">(?:/\S+/)?cc\b</span></li>
+<li class="descText">
+<p>
+Invoke Apple's <i>modified</i> version of the GCC C compiler.
+</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<div class="flagDesc">
+<ul class="flagDesc">
+<li class="flagName"><a name="user_CC" id="user_CC">g++</a></li>
+<li class="flagDescRE"><span class="tt">(?:/\S+/)?g\+\+(?=\s|$)</span></li>
+<li class="descText">
+<p>
+Invoke Apple's modified version of the GCC C++ compiler.
+</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+
+</div>
+<hr />
+<h2><a name="otherTuningInfo">System and Other Tuning Information</a></h2>
+
+
+<p>No system settings were harmed in the making of this result.</p>
+
+
+<hr />
+</body>
+</html>

@@ -1,0 +1,72 @@
+#!/home/cc/specOMP_install/bin/specperl
+#!/home/cc/specOMP_install/bin/specperl -d
+#!/usr/bin/perl
+#
+#  toolsver - a tool for displaying version strings stored in a raw result file
+#  Copyright 2005-2011 Standard Performance Evaluation Corporation
+#   All Rights Reserved
+#
+#  Author: Cloyce D. Spradling
+#
+# $Id: toolsver 1640 2012-05-09 20:12:09Z CloyceS $
+
+use MIME::Base64;
+use IO::File;
+use strict;
+require 'vars.pl';
+require 'util.pl';
+
+use vars qw(%info $processed);
+
+$processed = 0;
+%info = ();
+
+# We'll use Perl's magic <> so that files can be piped in through stdin
+# or given on the command line.
+# This will process any number of files.
+
+my ($curr, $what, $idx, $data);
+while (<>) {
+    tr/\015\012//d;
+    next unless /^(?:spec\.${main::lcsuite}\.)?tool(set|vers)(\d*)(?: =|:) (.*)$/o;
+    ($what, $idx, $data) = ($1, $2, $3);
+    if ($what ne $curr && exists($info{'set'}) && exists($info{'vers'})) {
+      do_output($processed++, $info{'set'}, $info{'vers'});
+      %info = ();
+    }
+    $curr = $what;
+    if (defined($idx) && $idx ne '') {
+	$info{$what}->[$idx+0] = $data;
+    } else {
+        $info{$what} = $data;
+    }
+}
+if (exists($info{'set'}) && exists($info{'vers'})) {
+  do_output($processed++, $info{'set'}, $info{'vers'});
+}
+
+sub do_output {
+    my ($processed, $set, $enc) = @_;
+
+    if ($processed > 1) {	# Output a separator if necessary
+	print "\n --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE --- CUT HERE ---\n\n";
+    }
+    if (ref($enc) eq 'ARRAY') {
+	$enc = join('', @$enc);
+    }
+    my $vers = decode_decompress($enc)."\n";
+    print "$ARGV:\n";
+    print " Binary toolset used was '$set'\n";
+    print " Versions of Perl-based tools:\n";
+    foreach my $item (sort byfile split(/,/, $vers)) {
+        my ($file, $ver) = split(/:/, $item, 2);
+        printf "  %6d $file\n", $ver;
+    }
+    print "\n\n";
+}
+
+sub byfile {
+  return -1 if ($a =~ /runspec/);
+  return 1 if ($b =~ /runspec/);
+  return $a cmp $b;
+}

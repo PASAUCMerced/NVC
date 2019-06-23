@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE flagsdescription
+    SYSTEM "http://www.spec.org/dtd/cpuflags2.dtd"
+>
+
+<!-- This file defines flags in the 'mandatory' class; that is, flags which are
+     automatically supplied by the tools for ALL benchmarks.
+     Flags in this class are ignored when doing per-flag checks for a
+     particular run (because they are always present), but _are_
+     output in the full flag report.
+
+  Copyright 2005-2011 Standard Performance Evaluation Corporation
+
+  $Revision: 305 $
+  $Date: 2012-03-29 13:14:46 -0400 (Thu, 29 Mar 2012) $
+-->
+<flagsdescription>
+
+<!-- Normal flags files should suggest a name for themselves. -->
+<filename>flags_mandatory</filename>
+
+<title>SPEC OMP2012 Default Flags</title>
+
+<header>
+<![CDATA[
+<h2>SPEC OMP2012 Default Flags</h2>
+
+<p>These are the flags that are universally supplied by the tools harness.</p>
+]]>
+</header>
+
+<flag name="DSPEC" class="mandatory">
+The preprocessor macro SPEC is defined for all benchmarks compiled
+by the OMP2012 tools harness.
+</flag>
+
+<flag name="USPEC" class="forbidden">
+It is forbidden to undefine this mandatory flag.
+</flag>
+
+<flag name="DSPEC_OPENMP" class="mandatory">
+The preprocessor macro SPEC_OPENMP is defined for all benchmarks compiled
+by the OMP2012 tools harness.
+</flag>
+
+<flag name="DSPEC_OMP" class="mandatory">
+The preprocessor macro SPEC_OMP is defined for all benchmarks compiled
+by the OMP2012 tools harness.
+</flag>
+
+<flag name="USPEC_OPENMP" class="forbidden">
+It is forbidden to undefine this mandatory flag.
+</flag>
+
+<flag name="USPEC_OMP" class="forbidden">
+It is forbidden to undefine this mandatory flag.
+</flag>
+
+<flag name="DSPEC_MPI" class="forbidden">
+It is forbidden to define this flag.
+</flag>
+
+<flag name="DNDEBUG" class="mandatory">
+The preprocessor macro NDEBUG is defined for all benchmarks compiled
+by the OMP2012 tools harness.  It is used to disable asserts() in codes
+that use them.
+</flag>
+
+<flag name="UNDEBUG" class="forbidden">
+It is forbidden to undefine this mandatory flag.
+</flag>
+
+<flag name="DSPEC_WINDOWS" class="mandatory">
+The preprocessor macro SPEC_WINDOWS is defined for all benchmarks
+compiled by the OMP2012 tools harness on Microsoft Windows systems.
+</flag>
+
+<flag name="DSPEC_OMP_WINDOWS" class="mandatory">
+The preprocessor macro SPEC_OMP_WINDOWS is defined for all benchmarks
+compiled by the OMP2012 tools harness on Microsoft Windows systems.
+</flag>
+
+<flag name="compile_opt" class="mandatory" regexp="(?:^|(?&lt;=\s))-c\b">
+This is a part of the default setting for OBJOPT for all platforms.  It
+causes an object file to be generated from source.
+</flag>
+
+<flag name="unix_output" class="mandatory" regexp="(?:^|(?&lt;=\s))-o [^\s\&quot;]+">
+This option is used to specify the name of the output file on non-Windows platforms.
+</flag>
+
+<flag name="unix_mathlib" class="mandatory" regexp="(?:^|(?&lt;=\s))-lm\b">
+This is the default setting for MATHLIBOPT on non-Windows platforms.
+</flag>
+
+<flag name="windows_compout" class="mandatory" regexp="(?:^|(?&lt;=\s))-Fo\S+\b">
+This option is used to specify the name of the output object file on Windows platforms.
+</flag>
+
+<flag name="windows_ldout" class="mandatory" regexp="(?:^|(?&lt;=\s))-Fe\S+\b">
+This option is used to specify the name of the output executable on Windows platforms.
+</flag>
+
+<flag name="DSPEC_ILP32" class="portability">
+This option is used to indicate that the host system's integers, longs, and
+pointers are 32-bits wide.  Not all benchmarks recognize this macro, but
+the preferred practice for data model selection applies the flags to all
+benchmarks; this flag description is a placeholder for those benchmarks that
+do not recognize this macro.
+</flag>
+
+<flag name="DSPEC_P64" class="portability">
+This option is used to indicate that the host system's integers and longs,
+are 32-bits wide, and pointers are 64-bits wide.  Not all benchmarks
+recognize this macro, but the preferred practice for data model selection
+applies the flags to all benchmarks; this flag description is a placeholder
+for those benchmarks that do not recognize this macro.
+</flag>
+
+<flag name="DSPEC_LP64" class="portability">
+This option is used to indicate that the host system's integers are 32-bits
+wide, and longs and pointers are 64-bits wide.  Not all benchmarks
+recognize this macro, but the preferred practice for data model selection
+applies the flags to all benchmarks; this flag description is a placeholder
+for those benchmarks that do not recognize this macro.
+</flag>
+
+<flag name="DSPEC_ILP64" class="portability">
+This option is used to indicate that the host system's integers, longs,
+and pointers are 64-bits wide.  Not all benchmarks recognize this macro,
+but the preferred practice for data model selection applies the flags to
+all benchmarks; this flag description is a placeholder for those benchmarks
+that do not recognize this macro.
+</flag>
+
+
+</flagsdescription>

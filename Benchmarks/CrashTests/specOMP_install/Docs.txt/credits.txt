@@ -1,0 +1,168 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                            Credits for SPEC OMP2012
+
+   Last updated: $Date: 2012-10-12 10:13:58 -0400 (Fri, 12 Oct 2012) $ by
+   $Author: BrianWhitney $
+   (To check for possible updates to this document, please see
+   http://www.spec.org/omp2012/Docs/ )
+
+   Creating a suite of source code benchmarks to provide a consistent,
+   comparative measure of OpenMP and CPU-intensive performance is not simple.
+   The challenges are numerous, for example:
+
+     * locating meaningful programs;
+     * ensuring that they port to numerous environments;
+     * defining rules to govern how the programs are compiled, run and
+       reported;
+     * developing a toolset to help enforce these rules while still making
+       things easy to use; and
+     * defining a process by which decisions can be made amongst the group
+       working on the project.
+
+   And in the end, you hope you have something that is fair, relevant, and
+   understandable, that will address technology for a period of years.
+
+   Such is the case with SPEC OMP2012, which is an update and replacement for
+   OMP2001. The new benchmark suite:
+
+     * Provides a variety of applications and application areas included in
+       the suite.
+     * Uses application source code that is significantly complex.
+     * Tests more features of OpenMP.
+     * Provides for the optional collection of power data while running the
+       benchmark.
+     * Improves the tools for running and using the suite.
+     * Clarifies and updates the run rules.
+     * Improves documentation.
+
+   All of this is due to the efforts of a large team of people from around
+   the world, that SPEC would like to thank (with apologies and thanks to
+   those who may not be listed).
+
+  Program Authors and Contributors
+
+   SPEC OMP benchmarks are based on real-world applications and feature
+   tests. We therefore thank the authors of those codes.
+
+   Thank you to the many participants of the "SPEC OMP Benchmark Search
+   Program" and, in particular, the authors that contributed programs that
+   were made part of the suite:
+
+       OMP2012 programs
+   350.md       Don Berry
+   351.bwaves   Mark Kremenetsky
+   352.nab      Russ Brown, et al
+   357.bt331    R. Van der Wijngaart, T. Harris, M. Yarrow, H. Jin
+   358.botsalgn Nanos Group, Barcelona Supercomputing Centre (Alex Duran)
+   359.botsspar Nanos Group, Barcelona Supercomputing Centre (Alex Duran)
+   360.ilbdc    Thomas Seiser
+   362.fma3d    Sam Key
+   363.swim     Paul N. Swarztrauber
+   367.imagick  ImageMagick Studio LLC
+   370.mgrid331 Eric Barszca, Paul O Frederickson, A. Woo, M. Yarrow, H. Jin
+   371.applu331 S. Weeratunga, V. Venkatakrishnan, E. Barszcz, M. Yarrow, H.
+                Jin
+   372.smithwa  R. Brown
+   376.kdtree   R. Brown
+
+   For more information regarding the SPEC benchmarks, including information
+   about other contributors, see the documentation in the individual
+   benchmarks directories.
+
+  SPEC
+
+   We would also like to thank:
+
+     * SPEC management, who provided us with resources, and kept the SPEC HPG
+       Subcommittee on their toes:
+
+          * Walter Bays - President, SPEC
+          * Kaivalya Dixit - Long-time President, and Guiding Light of SPEC
+          * Larry Gray - Long-time Treasurer, SPEC
+
+     * The SPEC office, who were the ones who really provided us with the
+       resources:
+
+          * Dianne Rice - Administration
+          * Cathy Sandifer, Jason Glick - Webmasters
+          * Charles McKay - Office
+          * Bob Cramblitt - Press Relations
+
+  Benchmark Project Leaders, Analysis, Tools, Testing, and Documentation
+
+   Most importantly, thank you to the people who sweated through technical
+   details and porting issues, debated their view points vigorously, and were
+   willing to drive issues to conclusion. Without these people this benchmark
+   suite would truly not exist.
+
+   Huiyu Feng, Robert Henschel, Huian Li, Matthias Mueller, Chris Parrott,
+   Brian Whitney, for being project leads of one or more benchmarks and
+   sheperding them into the final suite.
+
+   Huiyu Feng, Daniel Hackenberg, Gabriele Jost, Huian Li, Daniel Molka,
+   Chris Parrott, Joe Robichaux, Pavel Shelepugin, Brian Whitney for
+   regularly testing out the kits and providing status reports.
+
+   Huiyu Feng, Daniel Molka, Chris Parrott, Joe Robichaux, Brian Whitney for
+   help in discovering and fixing key portability issues within indvidiual
+   benchmarks.
+
+   John Baron, Huiyu Feng, Brian Whitney, Daniel Hackenberg, Daniel Molka,
+   for providing performance data and analysis of the individual benchmarks.
+
+   Daniel Hackenberg and Daniel Molka for taking the lead on power metrics.
+   And Gabriele Jost and Brian Whitney for help with the testing.
+
+   Matthijs van Waveren for taking the lead on the run & reporting rules.
+
+   Cloyce Spradling is the primary author of the SPEC OMP2012 toolset and
+   Brian Whitney for his translation of SPEC HPG requirements so Cloyce could
+   implement them.
+
+   The SPECpower Committee for all their work on power measurements which is
+   being made use of in this benchmark suite.
+
+  Behind the scenes
+
+   Finally, we thank all of the people behind the scenes in the compiler
+   groups, architecture groups and performance groups who supported their
+   work for SPEC at their respective companies.
+
+  The Bottom Line
+
+   The SPEC OMP2001 was a popular suite that lasted more than ten years. We
+   hope this suite will take its place and be an equally important
+   contribution to the OpenMP community.
+
+   Thank you!
+
+   Kalyan Kumaran, Chair, SPEC HPG Committee
+   Mattias Mueller, Vice-Chair, SPEC HPG Subcommittee
+   Matthijs Van Waveren, Secretary, SPEC HPG Committee
+   Brian Whitney, HPG Release Manager
+
+   --------------------------------------------------------------------------
+
+   Copyright (c) 1999-2012 Standard Performance Evaluation Corporation
+   All Rights Reserved
+
+

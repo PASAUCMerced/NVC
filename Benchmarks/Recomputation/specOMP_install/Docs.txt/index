@@ -1,0 +1,209 @@
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+The following text file was automatically generated
+from a document that you really should read in HTML
+format.  This text document is only a poor fallback
+if you cannot read HTML, but it is NOT RECOMMENDED.
+
+To read this document in the recommended way, point
+your favorite web browser at one of these 3 places:
+(1) The SPEC site http://www.spec.org/omp2012/Docs/
+(2) The docs directory from your OMP2012 DVD, e.g.:
+    /dvdrom/Docs/ for Unix or E:\Docs\ for Windows.
+(3) The Docs directory on the system where you have
+    installed your SPEC OMP2012 tree - for example:
+    /spec/Docs/ (Unix) or D:\myspec\Docs\ (Windows)
+---------------------------------------------------
+W A R N I N G      W A R N I N G      W A R N I N G
+---------------------------------------------------
+
+                           SPEC OMP2012 Documentation
+
+   This index was last updated: $Date: 2012-10-10 19:57:10 -0400 (Wed, 10 Oct
+   2012) $ by $Author: BrianWhitney $
+
+   (To check for possible updates to the SPEC OMP2012 documentation, see
+   www.spec.org/omp2012/Docs.
+
+Suggested reading order:
+
+   If you are just getting started with SPEC OMP2012, here is a suggested
+   reading order:
+
+    1. Start with readme1st.html to get an overview of the suite and the
+       process.
+
+    2. Use system-requirements.html to help you choose which computer to use
+       as your first test system.
+
+    3. Once you've chosen the test system, install the suite, using
+       install-guide-unix.html. Please note that Windows operating system has
+       not been tested, but it is possible it will work, see
+       install-guide-windows.html for hints on installing on Windows.
+
+    4. Read at least the first part of runspec.html, because runspec is the
+       primary tool in the suite. It is used to build the benchmarks, run
+       them, and report on their results. You should read at least section 1
+       through section 3.1 of that document.
+
+    5. After that, you can pick and choose which documents to read based on
+       where your needs may take you. The list in the next section can help
+       you decide. Note that the run rules will need to be studied carefully
+       if you plan to quote results in public.
+
+List of documents
+
+   The following documents are included with SPEC OMP2012.
+
+   config.html
+
+   SPEC OMP2012 provides benchmarks in source code form, which are compiled
+   under control of SPEC's toolset. A config file controls how they are
+   compiled, and also controls various settings for your tests. If you are
+   new to the suite, you will probably start with an existing config file,
+   such as one downloaded from www.spec.org/omp2012. Eventually, you will
+   either want to understand the details of what is inside that config file,
+   or you will want to write your own. This document tells you how.
+
+   credits.html
+
+   Information about the contributors to SPEC OMP2012.
+
+   errata.html
+
+   Known problems and errata information.
+
+   faq.html
+
+   Frequently asked technical questions
+
+   flag-description.html
+
+   When the benchmarks are compiled, compilation flags (such as -O5 or
+   -unroll) are detected and automatically reported by the tools. A flag
+   description file helps the tools recognize such flags and describe them in
+   reports. The tester is responsible for providing a flag description file
+   to go with his or her config file. This document tells you how to write a
+   flag description file.
+
+   Note that if you are just getting started with OMP2012, you may find that
+   your starter config file already points to a valid flags description, via
+   the config file flagsurl field.
+
+   install-guide-unix.html
+
+   How to install SPEC OMP2012 on Unix, Linx, and Mac OS X systems. Includes
+   an example installation and an example of running the first benchmark.
+
+   install-guide-windows.html
+
+   How to install SPEC OMP2012 on Microsoft Windows systems. Includes an
+   example installation and an example of running the first benchmark.
+   Running on Windows is not officially supported.
+
+   legal.html
+
+   Copyright notice and other legal information.
+
+   makevars.html
+
+   Advanced users of the suite who want to understand exactly how the
+   benchmarks are built can use this file to help decipher the process.
+
+   monitors.html
+
+   Information about monitoring hooks.
+
+   readme1st.html
+
+   Written in the form of questions and answers, this document provides
+   useful background information to the SPEC OMP benchmarks, explains which
+   system components are measured, gives a high-level overview of the
+   benchmarking steps, summarizes the contents of the SPEC OMP2012 package,
+   and details types of metrics available with the suite.
+
+   runrules.html
+
+   The SPEC OMP2012 Run and reporting rules. These must be followed for
+   generating publicly disclosed results. If you plan to quote results in
+   public, you will need to study these rules carefully.
+
+   runspec.html
+
+   Information on the "runspec" command, which is the primary user interface
+   for running SPEC OMP2012 benchmarks and reporting results.
+
+   runspec-avoidance.html
+
+   Some users prefer to avoid using the SPEC-supplied toolset, because they
+   have specialized tasks that require more direct access to the benchmarks.
+   Such tasks might include instrumenting the code, doing performance traces,
+   or debugging an experimental compiler. This document describes how you can
+   use SPEC's tools for the minimal purpose of just generating work
+   directories, for use as a private sandbox.
+
+   sysinfo
+
+   A SPEC result includes a system description. If your system allows it, you
+   may be able to automate part of the process of gathering a system
+   description. This perl script provides an example of how that might be
+   done. Note: some web browsers may refuse to open a file of type ".pl". If
+   clicking on the link doesn't work, try saving the file and opening it with
+   your favorite text editor.
+
+   system-requirements.html
+
+   A list of the hardware and software needed in order to run the SPEC
+   OMP2012 suite.
+
+   techsupport.html
+
+   Information on SPEC technical support.
+
+   tools-build.html
+
+   How to build (or re-build) the tools such as runspec
+
+   utility.html
+
+   How to use various utilities, such as specinvoke, specdiff, and specmake.
+
+Benchmark Documentation
+
+   Benchmark    Language Application domain
+   350.md       Fortran  Physics: Molecular Dynamics
+   351.bwaves   Fortran  Physics: Computational Fluid Dynamics (CFD)
+   352.nab      C        Molecular Modeling
+   357.bt331    Fortran  Physics: Computational Fluid Dynamics (CFD)
+   358.botsalgn C        Protein Alignment
+   359.botsspar C        Sparse LU
+   360.ilbdc    Fortran  Lattic Boltzmann
+   362.fma3d    Fortran  Mechanical Response Simulation
+   363.swim     Fortran  Weather Prediction
+   367.imagick  C        Image Processing
+   370.mgrid331 Fortran  Physics: Computational Fluid Dynamics (CFD)
+   371.applu331 Fortran  Physics: Computational Fluid Dynamics (CFD)
+   372.smithwa  C        Optimal Pattern Matching
+   376.kdtree   C++      Sorting and Searching
+
+   Some individual benchmark in the suite have additional documents, found in
+   the benchmark "Docs" subdirectory on your installed benchmark tree, or on
+   the OMP2012 distribution media. For example, additional information about
+   350.md may be found in:
+
+   $SPEC/benchspec/OMP2012/350.md/Docs/350.md.html (Unix)
+   or
+   %SPEC%\benchspec\OMP2012\350.md\Docs\350.md.html (Windows)
+
+Redistributable Sources
+
+   On the SPEC distribution, you will find:
+
+ redistributable_sources/README      Information about freely-available sources
+                                     that have been incorporated in SPEC OMP2012
+
+   --------------------------------------------------------------------------
+
+   Copyright (c) 2001-2012 Standard Performance Evaluation Corporation
+   All Rights Reserved
