@@ -1,4 +1,4 @@
-Non-Volatile Main Memory Crash Test Tool is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; Non-Volatile Main Memory Crash Test Tool also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
+Non-Volatile Memory Crash Test Tool (NVCT) is a PIN-based crash simulator. The tool simulates a multi-level cache hierarchy with cache coherence and main memory; NVCT also includes a random crash generator, a set of APIs to support the configuration of crash tests and application restart, and a component to examine data inconsistency for post-crash analysis. 
 
 
 --------------------------------------------------
@@ -14,28 +14,61 @@ Non-Volatile Main Memory Crash Test Tool is a PIN-based crash simulator. The too
 
 1. Download and install the latest Pin framework matching your platform from
 http://www.pintool.org/downloads.html. In case you don't download Pin, our build script has an option to automatically download from WWW.
-* I have tested the current release only on Pin 2.14 rev 67254 *
+* I have tested the current release only on Pin 2.14 rev 71313 *
 
 
 --------------------------------------------------
 	Compiling
 --------------------------------------------------
-To build the environment for Non-Volatile Main Memory Crash Test Tool, simply type "sh build.sh"
-This will configure the environment of building Non-Volatile Main Memory Crash Test Tool. 
 
-To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
+0. To build the environment for Non-Volatile Memory Crash Test Tool, simply type "sh build.sh"
+   This will configure the environment of building Non-Volatile Main Memory Crash Test Tool. 
 
-copy Makefile.move to test folder Makefile, "cp Makefile.move test/Makefile"
+1. Type "make" to build NVCT and related library
 
-Change PIN setting and enable c++11, "vim 
-/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
-In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
+If there is PIN test error during building the NVCT: 
+* To fix pin general issue, get root access and run "echo 0 > /proc/sys/kernel/yama/ptrace_scope"
 
-In test folder, run "make"
-This will build the NVC
+If there is issue about using c++11 to compile:
+* Change PIN setting and enable c++11, "vim /pin-2.14-71313-gcc.4.4.7-linux/source/tools/Config/makefile.unix.config".
+   In line 84 "TOOL_CXXFLAGS_NOOPT", adding "-std=c++11" at the end of the line.
 
+If you want to recompile NVCT instead of any other libraies:
+* In test folder, run "make"
+   This will build the NVCT
+   
 --------------------------------------------------
-Documentation of Non-Volatile Main Memory Crash Test Tool's key APIs 
+	How to run NVCT
+--------------------------------------------------
+The cache simulator code is in folder "tests". Before run NVCT, change cache configuration first in "tests/dcache.cpp" or by adding KNOB command flag in PIN.
+
+A. Change code in tests/dcache.cpp:
+	The maxmium number of instruction crash could happens:      line 57   INS_MAX
+	The maxmium number of thread application use:               line 62   MAX_THREAD_NUM
+
+B. Knob command flag:
+	```
+	-t   how many thread using in application
+	-p   private cache num, atmost two thread have one private cache
+	-s1  l1 cache size in kilobytes
+	-a1  l1 cache associativity (1 for direct mapped)
+	-l1  l1 cacheline size in bytes
+	-s2  l2 cache size in kilobytes
+	-a2  l2 cache associativity (1 for direct mapped)
+	-l2  l2 cacheline size in bytes
+	-s3  l3 cache size in kilobytes
+	-a3  l3 cache associativity (1 for direct mapped)
+	-l3  l3 cacheline size in bytes
+	```
+
+Run NVCT:
+The command to run NVCT is:
+/home/cc/NVC/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin -p32 /home/cc/tools/NVC/pin-2.14-71313-gcc.4.4.7-linux/ia32/bin/pinbin -t obj-intel64//dcache.so -- /path/to/application 
+
+Crash test for application with single thread can simply use script in folder "tests"
+E.g. ./run /path/to/application
+--------------------------------------------------
+Documentation of NVCT's key APIs 
 --------------------------------------------------
 
 1. void start_crash(); void end_crash();
@@ -83,16 +116,31 @@ Documentation of Non-Volatile Main Memory Crash Test Tool's key APIs
 	Description:
 		 Read specified number of bytes in simulated memory from a source address to a destination address. 
 		 The function returns whether the data in source address is in simulated memory.
+		 
+---------------------------------------------------
+Example to use 
+---------------------------------------------------
+We provide few examples to show how to use NVCT to trigger a crash and recompute based on carsh result. 
+The crash examples can be found under "Benchmarks/CrashTests"; 
+The recomputation examples can be found under "Benchmarks/Recomputation".
+
+
+---------------------------------------------------
+Useful scripts
+---------------------------------------------------
+NVC provides some scripts for doing large amount of crash tests and recompuation tests at the same time by lerveraging Linux screen.
+The scripts can be found under "Scripts"
+
 
 ---------------------------------------------------
 General issues
 ---------------------------------------------------
         
-     There is a known problem of using Pin on Linux systems that prevent the use
-     of ptrace attach via the sysctl /proc/sys/kernel/yama/ptrace_scope.
-     In this case Pin is not able to use its default (parent) injection mode.
-     To resolve this, either use the "-injection child" option or 
-     set the kernel/yama/ptrace_scope sysctl to 0. 
+> There is a known problem of using Pin on Linux systems that prevent the use
+> of ptrace attach via the sysctl /proc/sys/kernel/yama/ptrace_scope.
+> In this case Pin is not able to use its default (parent) injection mode.
+> To resolve this, either use the "-injection child" option or 
+> set the kernel/yama/ptrace_scope sysctl to 0.
 
 So what we do is geting root access and seting the kernel/yama/ptrace_scope sysctl to 0
 
