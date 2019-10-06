@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <vector>
+#include <stdio.h>
 //kai
 #include "../my_include/my_include.h"
 //**************************************************

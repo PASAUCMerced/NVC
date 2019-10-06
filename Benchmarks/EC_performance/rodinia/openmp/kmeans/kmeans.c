@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
         fclose(file);
     }
     printf("Time for process: %f\n", timing);
-
+    printf("%lu\n",sizeof(cluster_centres));
     free(attributes);
     free(cluster_centres[0]);
     free(cluster_centres);

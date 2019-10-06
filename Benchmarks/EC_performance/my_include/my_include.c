@@ -74,8 +74,8 @@ void end_crash()
 void clflush(void* addr)
 {
 	//_mm_clflushopt(addr);
-	//_mm_clflush(addr);
-	_mm_clwb(addr);
+	_mm_clflush(addr);
+	//_mm_clwb(addr);
 }
 
 void clwb(void* addr)

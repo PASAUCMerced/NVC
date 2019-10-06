@@ -9,15 +9,17 @@ MPI_INC = /opt/local/include/openmpi
 MPI_LIB = /opt/local/lib
 
 SERCXX = g++ -DUSE_MPI=0
-MPICXX = mpic++ -DUSE_MPI=1
-CXX = $(MPICXX)
+MPICXX = mpig++ -DUSE_MPI=1
+#CXX = $(MPICXX)
+CXX = $(SERCXX)
 
 SOURCES2.0 = \
 	lulesh.cc \
 	lulesh-comm.cc \
 	lulesh-viz.cc \
 	lulesh-util.cc \
-	lulesh-init.cc
+	lulesh-init.cc \
+	../my_include/my_include.c 
 OBJECTS2.0 = $(SOURCES2.0:.cc=.o)
 
 #Default build suggestions with OpenMP for g++
@@ -48,7 +50,7 @@ LDFLAGS = -g -O3 -fopenmp
 
 all: $(LULESH_EXEC)
 
-lulesh2.0: $(OBJECTS2.0)
+$(LULESH_EXEC): $(OBJECTS2.0)
 	@echo "Linking"
 	$(CXX) $(OBJECTS2.0) $(LDFLAGS) -lm -o $@
 
