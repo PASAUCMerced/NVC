@@ -2,12 +2,12 @@ Non-Volatile Memory Crash Test Tool (NVC) is a PIN-based crash simulator. The to
 
 
 --------------------------------------------------
-	Supported platform
+Supported platform
 --------------------------------------------------
 1. Linux x86_64
 
 --------------------------------------------------
-	Requirements	
+Requirements	
 --------------------------------------------------
 
 0. Ensure you have g++ 4.8.2 or higher as the default compiler and make sure you compile everything with -std=c++11 flag
@@ -17,8 +17,9 @@ http://www.pintool.org/downloads.html. In case you don't download Pin, our build
 * I have tested the current release only on Pin 2.14 rev 71313 *
 
 2. Linux kernel version 4.x may have problem on runing Pin 2.14. Solution: https://github.com/s5z/zsim/issues/109
+
 --------------------------------------------------
-	Compiling
+Compiling
 --------------------------------------------------
 
 0. To build the environment for Non-Volatile Memory Crash Test Tool, simply type "sh build.sh"
@@ -38,7 +39,7 @@ If you want to recompile NVC instead of any other libraies:
    This will build the NVC
    
 --------------------------------------------------
-	How to run NVC
+How to run NVC
 --------------------------------------------------
 The cache simulator code is in folder "tests". Before run NVC, change cache configuration first in "tests/dcache.cpp" or by adding KNOB command flag in PIN.
 
@@ -150,6 +151,7 @@ echo 0 > /proc/sys/kernel/yama/ptrace_scope
 Publication based on NVC
 --------------------------------------------------
 Jie Ren, Kai Wu, and Dong Li. 2018. Understanding Application Recomputability without Crash Consistency in Non-Volatile Memory. In Proceedings of the Workshop on Memory Centric High Performance Computing (MCHPC'18). ACM, New York, NY, USA, 27-36. DOI: https://doi.org/10.1145/3286475.3286476
+
 Jie Ren, Kai Wu and Dong Li. "Exploring Non-Volatility of Non-Volatile Memory for High Performance Computing Under Failures," 2020 IEEE International Conference on Cluster Computing (CLUSTER), 2020, pp. 237-247, doi: 10.1109/CLUSTER49012.2020.00034.
 
 
