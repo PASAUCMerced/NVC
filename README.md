@@ -150,3 +150,6 @@ echo 0 > /proc/sys/kernel/yama/ptrace_scope
 Publication based on NVC
 --------------------------------------------------
 Jie Ren, Kai Wu, and Dong Li. 2018. Understanding Application Recomputability without Crash Consistency in Non-Volatile Memory. In Proceedings of the Workshop on Memory Centric High Performance Computing (MCHPC'18). ACM, New York, NY, USA, 27-36. DOI: https://doi.org/10.1145/3286475.3286476
+Jie Ren, Kai Wu and Dong Li. "Exploring Non-Volatility of Non-Volatile Memory for High Performance Computing Under Failures," 2020 IEEE International Conference on Cluster Computing (CLUSTER), 2020, pp. 237-247, doi: 10.1109/CLUSTER49012.2020.00034.
+
+
